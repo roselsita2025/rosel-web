@@ -85,13 +85,20 @@ const server = app.listen(PORT, async () => {
     console.log(`💬 WebSocket server initialized`);
 });
 
-// Catch all handler: send back React's index.html file for any non-API routes
-app.get('*', (req, res, next) => {
-  // Skip API routes
-  if (req.path.startsWith('/api/')) {
-    return next();
+// Serve React app for all non-API routes
+// This must be the last route defined
+app.get('/*', (req, res) => {
+  // Only serve React app for non-API routes
+  if (!req.path.startsWith('/api/')) {
+    try {
+      res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
+    } catch (error) {
+      console.error('Error serving React app:', error);
+      res.status(500).json({ message: 'Error serving application' });
+    }
+  } else {
+    res.status(404).json({ message: 'API route not found' });
   }
-  res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
 });
 
 // Graceful shutdown
