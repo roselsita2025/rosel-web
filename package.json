@@ -7,7 +7,7 @@
     "server": "nodemon backend/index.js",
     "client": "cd frontend && npm run dev",
     "start": "node backend/index.js",
-    "build": "cd frontend && npm run build",
+    "build": "cd frontend && npm install && npm run build",
     "install-client": "cd frontend && npm install",
     "heroku-postbuild": "npm run install-client && npm run build"
   },
