@@ -86,7 +86,11 @@ const server = app.listen(PORT, async () => {
 });
 
 // Catch all handler: send back React's index.html file for any non-API routes
-app.get('*', (req, res) => {
+app.get('*', (req, res, next) => {
+  // Skip API routes
+  if (req.path.startsWith('/api/')) {
+    return next();
+  }
   res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
 });
 
