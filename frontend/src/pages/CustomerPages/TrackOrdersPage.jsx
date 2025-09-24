@@ -12,13 +12,13 @@ import {
     XCircle, 
     AlertCircle,
     RefreshCw,
-    Filter,
     Search,
     ArrowLeft,
     ExternalLink
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import LoadingSpinner from '../../components/LoadingSpinner';
+import Footer from '../../components/Footer';
 
 const TrackOrdersPage = () => {
     const { user } = useAuthStore();
@@ -37,7 +37,6 @@ const TrackOrdersPage = () => {
     } = useOrderStore();
 
     const [selectedOrder, setSelectedOrder] = useState(null);
-    const [statusFilter, setStatusFilter] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [pagination, setPagination] = useState(null);
@@ -47,7 +46,7 @@ const TrackOrdersPage = () => {
         const loadData = async () => {
             try {
                 await Promise.all([
-                    fetchOrders({ page: currentPage, status: statusFilter }),
+                    fetchOrders({ page: currentPage }),
                     fetchOrderStats()
                 ]);
             } catch (error) {
@@ -56,7 +55,7 @@ const TrackOrdersPage = () => {
         };
 
         loadData();
-    }, [currentPage, statusFilter]);
+    }, [currentPage]);
 
     // Filter orders based on search term
     const filteredOrders = orders.filter(order => {
@@ -77,7 +76,7 @@ const TrackOrdersPage = () => {
 
     const handleRefresh = async () => {
         try {
-            await fetchOrders({ page: currentPage, status: statusFilter });
+            await fetchOrders({ page: currentPage });
         } catch (error) {
             console.error('Error refreshing orders:', error);
         }
@@ -92,8 +91,9 @@ const TrackOrdersPage = () => {
     }
 
     return (
-        <div className="min-h-screen pt-32 pb-8 bg-[#f8f3ed]">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <>
+            <div className="min-h-screen bg-[#f8f3ed] flex flex-col">
+                <div className="flex-1 pt-32 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-8">
                 {/* Header */}
                 <motion.div
                     initial={{ opacity: 0, y: -20 }}
@@ -176,40 +176,22 @@ const TrackOrdersPage = () => {
                     </motion.div>
                 )}
 
-                {/* Filters and Search */}
+                {/* Search */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.2 }}
                     className="rounded-lg shadow-md p-6 mb-8 bg-[#fffefc]"
                 >
-                    <div className="flex flex-col sm:flex-row gap-4">
-                        <div className="flex-1">
-                            <div className="relative">
-                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-                                <input
-                                    type="text"
-                                    placeholder="Search by order number or recipient name..."
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#860809] focus:border-transparent"
-                                />
-                            </div>
-                        </div>
-                        <div className="sm:w-48">
-                            <select
-                                value={statusFilter}
-                                onChange={(e) => setStatusFilter(e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#860809] focus:border-transparent"
-                            >
-                                <option value="">All Statuses</option>
-                                <option value="pending">Pending</option>
-                                <option value="processing">Processing</option>
-                                <option value="shipped">Shipped</option>
-                                <option value="delivered">Delivered</option>
-                                <option value="cancelled">Cancelled</option>
-                            </select>
-                        </div>
+                    <div className="relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                        <input
+                            type="text"
+                            placeholder="Search by order number or recipient name..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#860809] focus:border-transparent"
+                        />
                     </div>
                 </motion.div>
 
@@ -245,9 +227,9 @@ const TrackOrdersPage = () => {
                             <Package className="mx-auto h-12 w-12 text-gray-400" />
                             <h3 className="mt-2 text-sm font-medium text-[#030105] font-alice">No orders found</h3>
                             <p className="mt-1 text-sm text-[#a31f17] font-libre">
-                                {searchTerm || statusFilter ? 'Try adjusting your search or filter criteria.' : 'You haven\'t placed any orders yet.'}
+                                {searchTerm ? 'Try adjusting your search criteria.' : 'You haven\'t placed any orders yet.'}
                             </p>
-                            {!searchTerm && !statusFilter && (
+                            {!searchTerm && (
                                 <div className="mt-6">
                                     <Link
                                         to="/products"
@@ -357,7 +339,11 @@ const TrackOrdersPage = () => {
                     getStatusDescription={getStatusDescription}
                 />
             )}
-        </div>
+            </div>
+            
+            {/* Footer */}
+            <Footer />
+        </>
     );
 };
 

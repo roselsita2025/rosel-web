@@ -8,6 +8,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ShoppingCart, ArrowLeft } from "lucide-react";
 import { useAuthStore } from "../../store/authStore.js";
+import Footer from "../../components/Footer";
 
 
 
@@ -91,6 +92,9 @@ const CartsPage = () => {
 				</div>
 			</motion.section>
 		)}
+		
+		{/* Footer */}
+		<Footer />
 	</div>
   );
 };

@@ -1,4 +1,4 @@
-import { LucideAward, LucideShield, LucideTruck, LucideArrowRight, LucideChevronLeft, LucideChevronRight, LucideTag, LucideWarehouse, LucideCrown} from "lucide-react";
+import { LucideArrowRight, LucideChevronLeft, LucideChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Footer from "../../components/Footer.jsx";
@@ -166,89 +166,6 @@ const WelcomePage = () => {
         </div>
       </motion.section>
 
-      {/* Features Section */}
-      <motion.section 
-        className="pt-4 pb-16 sm:py-12 lg:py-8 bg-[#f8f3ed]"
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
-      >
-        <motion.h1 
-          className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-16 sm:mb-7 lg:mb-12 mt-7 max-w-xs sm:max-w-none mx-auto font-libre"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          viewport={{ once: true }}
-        >
-          Why Choose Rosel Frozen Meat?
-        </motion.h1>
-        
-        {/* Features Cards Row */}
-        <div className="flex flex-col lg:flex-row justify-center items-center gap-8 max-w-7xl mx-auto px-4">
-          {/* Card 1 */}
-          <motion.div 
-            className="flex flex-col items-center p-6 rounded-lg w-72 sm:w-64 h-[28rem] sm:h-96"
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            viewport={{ once: true }}
-          >
-            <div className="w-36 h-36 sm:w-24 sm:h-24 lg:w-28 lg:h-28 bg-[#f7e9b8] rounded-lg mb-4 flex items-center justify-center">
-              <LucideTag className="w-16 h-16 sm:w-12 sm:h-12 lg:w-14 lg:h-14 text-[#901414]" />
-            </div>
-            <h3 className="text-3xl sm:text-xl lg:text-2xl font-bold text-[#901414] mb-3 text-center font-alice">Good Pricing</h3>
-            <p className="text-xl sm:text-sm lg:text-base text-[#82695b] text-center mb-4 font-libre">Rosel Frozen Meat offers competitive prices without compromising on quality.</p>
-          </motion.div>
-
-
-          {/* Card 2 */}
-          <motion.div 
-            className="flex flex-col items-center p-6 rounded-lg w-72 sm:w-64 h-[28rem] sm:h-96"
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            viewport={{ once: true }}
-          >
-            <div className="w-36 h-36 sm:w-24 sm:h-24 lg:w-28 lg:h-28 bg-[#f7e9b8] rounded-lg mb-4 flex items-center justify-center">
-              <LucideTruck className="w-16 h-16 sm:w-12 sm:h-12 lg:w-14 lg:h-14 text-[#901414]" />
-            </div>
-            <h3 className="text-3xl sm:text-xl lg:text-2xl font-bold text-[#901414] mb-3 text-center font-alice">Online Deliver</h3>
-            <p className="text-xl sm:text-sm lg:text-base text-[#82695b] text-center mb-4 font-libre">Convenient online delivery service ensures customers get their orders fresh without waiting.</p>
-          </motion.div>
-
-
-          {/* Card 3 */}
-          <motion.div 
-            className="flex flex-col items-center p-6 rounded-lg w-72 sm:w-64 h-[28rem] sm:h-96"
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            viewport={{ once: true }}
-          >
-            <div className="w-36 h-36 sm:w-24 sm:h-24 lg:w-28 lg:h-28 bg-[#f7e9b8] rounded-lg mb-4 flex items-center justify-center">
-              <LucideWarehouse className="w-16 h-16 sm:w-12 sm:h-12 lg:w-14 lg:h-14 text-[#901414]" />
-            </div>
-            <h3 className="text-3xl sm:text-xl lg:text-2xl font-bold text-[#901414] mb-3 text-center font-alice">Local Pick-Up</h3>
-            <p className="text-xl sm:text-sm lg:text-base text-[#82695b] text-center mb-4 font-libre">Convenient same-day local pick-up ensures customers get their orders fresh without waiting.</p>
-          </motion.div>
-
-          {/* Card 4 */}
-          <motion.div 
-            className="flex flex-col items-center p-6 rounded-lg w-72 sm:w-64 h-[28rem] sm:h-96"
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            viewport={{ once: true }}
-          >
-            <div className="w-36 h-36 sm:w-24 sm:h-24 lg:w-28 lg:h-28 bg-[#f7e9b8] rounded-lg mb-4 flex items-center justify-center">
-              <LucideCrown className="w-16 h-16 sm:w-12 sm:h-12 lg:w-14 lg:h-14 text-[#901414]" />
-            </div>
-            <h3 className="text-3xl sm:text-xl lg:text-2xl font-bold text-[#901414] mb-3 text-center font-alice">Prestige</h3>
-            <p className="text-xl sm:text-sm lg:text-base text-[#82695b] text-center font-libre">Trusted by loyal customers, Rosel upholds a reputation for quality and reliability in frozen goods.</p>
-          </motion.div>
-        </div>
-      </motion.section>
 
       {/* Premium Selection Section */}
       <motion.section 

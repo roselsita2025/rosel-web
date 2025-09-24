@@ -193,126 +193,126 @@ const AboutPage = () => {
             <div className="relative overflow-hidden w-full">
               <div className="animate-scroll py-4" style={{ gap: '2rem' }}>
                 {/* First set of brand logos */}
-                <div className="flex-shrink-0 w-32 h-20 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
+                <div className="flex-shrink-0 w-36 h-24 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
                   <img src="/brandlogo/ajclg.png" alt="AJC" className="max-w-full max-h-full object-contain" />
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
+                <div className="flex-shrink-0 w-36 h-24 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
                   <img src="/brandlogo/alliancelg.png" alt="Alliance" className="max-w-full max-h-full object-contain" />
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
+                <div className="flex-shrink-0 w-36 h-24 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
                   <img src="/brandlogo/amecolg.png" alt="Ameco" className="max-w-full max-h-full object-contain" />
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
+                <div className="flex-shrink-0 w-36 h-24 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
                   <img src="/brandlogo/auroralg.png" alt="Aurora" className="max-w-full max-h-full object-contain" />
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
+                <div className="flex-shrink-0 w-36 h-24 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
                   <img src="/brandlogo/casinolg.png" alt="Casino" className="max-w-full max-h-full object-contain" />
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
+                <div className="flex-shrink-0 w-36 h-24 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
                   <img src="/brandlogo/copacollg.png" alt="Copacol" className="max-w-full max-h-full object-contain" />
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
+                <div className="flex-shrink-0 w-36 h-24 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
                   <img src="/brandlogo/excellg.png" alt="Excel" className="max-w-full max-h-full object-contain" />
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
+                <div className="flex-shrink-0 w-36 h-24 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
                   <img src="/brandlogo/fieldalelg.png" alt="Fieldale" className="max-w-full max-h-full object-contain" />
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
+                <div className="flex-shrink-0 w-36 h-24 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
                   <img src="/brandlogo/friboilg.png" alt="Friboi" className="max-w-full max-h-full object-contain" />
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
+                <div className="flex-shrink-0 w-36 h-24 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
                   <img src="/brandlogo/hatfieldlg.png" alt="Hatfield" className="max-w-full max-h-full object-contain" />
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
+                <div className="flex-shrink-0 w-36 h-24 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
                   <img src="/brandlogo/inghamslg.png" alt="Inghams" className="max-w-full max-h-full object-contain" />
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
+                <div className="flex-shrink-0 w-36 h-24 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
                   <img src="/brandlogo/literalg.png" alt="Litera" className="max-w-full max-h-full object-contain" />
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
+                <div className="flex-shrink-0 w-36 h-24 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
                   <img src="/brandlogo/minervalg.png" alt="Minerva" className="max-w-full max-h-full object-contain" />
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
+                <div className="flex-shrink-0 w-36 h-24 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
                   <img src="/brandlogo/modellilg.png" alt="Modelli" className="max-w-full max-h-full object-contain" />
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
+                <div className="flex-shrink-0 w-36 h-24 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
                   <img src="/brandlogo/montairelg.png" alt="Montaire" className="max-w-full max-h-full object-contain" />
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
+                <div className="flex-shrink-0 w-36 h-24 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
                   <img src="/brandlogo/olymellg.png" alt="Olymel" className="max-w-full max-h-full object-contain" />
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
+                <div className="flex-shrink-0 w-36 h-24 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
                   <img src="/brandlogo/pedrigaolg.png" alt="Pedrigao" className="max-w-full max-h-full object-contain" />
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
+                <div className="flex-shrink-0 w-36 h-24 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
                   <img src="/brandlogo/pilgrimslg.png" alt="Pilgrims" className="max-w-full max-h-full object-contain" />
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
+                <div className="flex-shrink-0 w-36 h-24 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
                   <img src="/brandlogo/sadialg.png" alt="Sadia" className="max-w-full max-h-full object-contain" />
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
+                <div className="flex-shrink-0 w-36 h-24 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
                   <img src="/brandlogo/searalg.png" alt="Seara" className="max-w-full max-h-full object-contain" />
                 </div>
                 
                 {/* Duplicate set for seamless loop */}
-                <div className="flex-shrink-0 w-32 h-20 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
+                <div className="flex-shrink-0 w-36 h-24 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
                   <img src="/brandlogo/ajclg.png" alt="AJC" className="max-w-full max-h-full object-contain" />
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
+                <div className="flex-shrink-0 w-36 h-24 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
                   <img src="/brandlogo/alliancelg.png" alt="Alliance" className="max-w-full max-h-full object-contain" />
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
+                <div className="flex-shrink-0 w-36 h-24 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
                   <img src="/brandlogo/amecolg.png" alt="Ameco" className="max-w-full max-h-full object-contain" />
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
+                <div className="flex-shrink-0 w-36 h-24 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
                   <img src="/brandlogo/auroralg.png" alt="Aurora" className="max-w-full max-h-full object-contain" />
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
+                <div className="flex-shrink-0 w-36 h-24 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
                   <img src="/brandlogo/casinolg.png" alt="Casino" className="max-w-full max-h-full object-contain" />
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
+                <div className="flex-shrink-0 w-36 h-24 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
                   <img src="/brandlogo/copacollg.png" alt="Copacol" className="max-w-full max-h-full object-contain" />
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
+                <div className="flex-shrink-0 w-36 h-24 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
                   <img src="/brandlogo/excellg.png" alt="Excel" className="max-w-full max-h-full object-contain" />
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
+                <div className="flex-shrink-0 w-36 h-24 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
                   <img src="/brandlogo/fieldalelg.png" alt="Fieldale" className="max-w-full max-h-full object-contain" />
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
+                <div className="flex-shrink-0 w-36 h-24 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
                   <img src="/brandlogo/friboilg.png" alt="Friboi" className="max-w-full max-h-full object-contain" />
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
+                <div className="flex-shrink-0 w-36 h-24 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
                   <img src="/brandlogo/hatfieldlg.png" alt="Hatfield" className="max-w-full max-h-full object-contain" />
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
+                <div className="flex-shrink-0 w-36 h-24 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
                   <img src="/brandlogo/inghamslg.png" alt="Inghams" className="max-w-full max-h-full object-contain" />
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
+                <div className="flex-shrink-0 w-36 h-24 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
                   <img src="/brandlogo/literalg.png" alt="Litera" className="max-w-full max-h-full object-contain" />
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
+                <div className="flex-shrink-0 w-36 h-24 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
                   <img src="/brandlogo/minervalg.png" alt="Minerva" className="max-w-full max-h-full object-contain" />
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
+                <div className="flex-shrink-0 w-36 h-24 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
                   <img src="/brandlogo/modellilg.png" alt="Modelli" className="max-w-full max-h-full object-contain" />
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
+                <div className="flex-shrink-0 w-36 h-24 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
                   <img src="/brandlogo/montairelg.png" alt="Montaire" className="max-w-full max-h-full object-contain" />
               </div>
-                <div className="flex-shrink-0 w-32 h-20 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
+                <div className="flex-shrink-0 w-36 h-24 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
                   <img src="/brandlogo/olymellg.png" alt="Olymel" className="max-w-full max-h-full object-contain" />
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
+                <div className="flex-shrink-0 w-36 h-24 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
                   <img src="/brandlogo/pedrigaolg.png" alt="Pedrigao" className="max-w-full max-h-full object-contain" />
               </div>
-                <div className="flex-shrink-0 w-32 h-20 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
+                <div className="flex-shrink-0 w-36 h-24 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
                   <img src="/brandlogo/pilgrimslg.png" alt="Pilgrims" className="max-w-full max-h-full object-contain" />
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
+                <div className="flex-shrink-0 w-36 h-24 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
                   <img src="/brandlogo/sadialg.png" alt="Sadia" className="max-w-full max-h-full object-contain" />
               </div>
-                <div className="flex-shrink-0 w-32 h-20 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
+                <div className="flex-shrink-0 w-36 h-24 bg-[#fffefc] border-2 border-[#860809] rounded-lg flex items-center justify-center p-2">
                   <img src="/brandlogo/searalg.png" alt="Seara" className="max-w-full max-h-full object-contain" />
                 </div>
               </div>

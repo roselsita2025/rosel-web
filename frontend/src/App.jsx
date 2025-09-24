@@ -169,7 +169,7 @@ function App() {
   const isAdmin = user?.role === "admin";
   const isAdminPage = ["/dashboard", "/analytics", "/profile", "/account-settings", "/coupons", "/manage-products", "/order-management", "/admin/replacement-requests", "/admin/chat-management"].includes(location.pathname) || location.pathname.startsWith("/admin/replacement-requests/");
 
-  const hideNavbar = ["/login", "/signup", "/forgot-password"].includes(location.pathname);
+  const hideNavbar = ["/login", "/signup", "/forgot-password", "/verify-email"].includes(location.pathname);
 
   useEffect(()=>{
     checkAuth();

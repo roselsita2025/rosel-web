@@ -75,7 +75,7 @@ const ProductsPage = () => {
 				transition={{ duration: 0.8, delay: 0.2 }}
 			>
 				<motion.h1 
-					className='text-center text-5xl sm:text-5xl font-bold text-white mb-4 font-libre'
+					className='text-center text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 font-libre'
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.6, delay: 0.4 }}
@@ -83,7 +83,7 @@ const ProductsPage = () => {
 					Our Products
 				</motion.h1>
 				<motion.p 
-					className='text-center text-base sm:text-lg text-white mb-12 max-w-3xl mx-auto font-alice'
+					className='text-center text-sm sm:text-base md:text-lg text-white mb-8 sm:mb-10 md:mb-12 max-w-3xl mx-auto font-alice px-4'
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.6, delay: 0.6 }}
@@ -93,7 +93,7 @@ const ProductsPage = () => {
 				</motion.p>
 
 				<motion.div 
-					className='grid grid-cols-6 gap-3 justify-items-center max-w-7xl mx-auto'
+					className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4 md:gap-3 justify-items-center max-w-7xl mx-auto'
 					initial={{ opacity: 0, y: 50 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.8, delay: 0.8 }}

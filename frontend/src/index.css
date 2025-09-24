@@ -13,7 +13,7 @@
 }
 
 .animate-scroll {
-  animation: scroll 40s linear infinite;
+  animation: scroll 50s linear infinite;
   width: 200%;
   display: flex;
   flex-shrink: 0;

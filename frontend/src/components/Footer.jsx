@@ -5,7 +5,7 @@ const Footer = () => {
   return (
     <>
       {/* Footer Section */}
-      <section className="py-8 bg-[#f8f3ed] text-[#030105]">
+      <section className="py-8 bg-[#f8f3ed] text-[#030105] shadow-lg border-t border-gray-300">
         <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-24 max-w-7xl">
           <div className="space-y-4 flex flex-col">
             <h3 className="text-2xl font-bold">Rosel</h3>
