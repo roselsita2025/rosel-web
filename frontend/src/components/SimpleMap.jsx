@@ -21,7 +21,7 @@ const SimpleMap = ({ className = "" }) => {
       try {
         const response = await axios.get(`${API_URL}/contact/info`);
         if (response.data.success) {
-          console.log('SimpleMap fetched coordinates:', response.data.data.lat, response.data.data.lng);
+          // SimpleMap fetched coordinates
           setPinLocation({
             lat: response.data.data.lat,
             lng: response.data.data.lng,
@@ -39,22 +39,20 @@ const SimpleMap = ({ className = "" }) => {
 
   useEffect(() => {
     if (pinLocation.lat && pinLocation.lng && pinLocation.lat !== 14.4500) {
-      console.log('Initializing map with fetched coordinates:', pinLocation.lat, pinLocation.lng);
+      // Initializing map with fetched coordinates
       initializeMap();
     }
   }, [pinLocation]);
 
   const initializeMap = () => {
-    console.log('SimpleMap initializeMap called, window.google:', !!window.google);
-    console.log('window.google.maps:', !!window.google?.maps);
-    console.log('window.google.maps.Map:', !!window.google?.maps?.Map);
+    // SimpleMap initializeMap called
     
     if (window.google && window.google.maps && window.google.maps.Map) {
       const mapElement = document.getElementById('simple-map');
-      console.log('Map element found:', !!mapElement);
+      // Map element found
       
       if (mapElement && !map) {
-        console.log('Creating simple Google Map with coordinates:', pinLocation.lat, pinLocation.lng);
+        // Creating simple Google Map
         
         const googleMap = new window.google.maps.Map(mapElement, {
           center: pinLocation,
@@ -122,11 +120,11 @@ const SimpleMap = ({ className = "" }) => {
         setMapLoaded(true);
         // Reset retry counter on success
         window._mapRetryCount = 0;
-        console.log('Simple Google Map with pin initialized successfully');
+        // Simple Google Map with pin initialized successfully
       }
     } else if (window.google && window.google.maps && !window.google.maps.Map) {
       // API is loaded but Map constructor is not available yet
-      console.log('Google Maps API loaded but Map constructor not ready, retrying...');
+      // Google Maps API loaded but Map constructor not ready, retrying
       // Add a retry counter to prevent infinite retries
       if (!window._mapRetryCount) {
         window._mapRetryCount = 0;
@@ -142,7 +140,7 @@ const SimpleMap = ({ className = "" }) => {
       // Load Google Maps script if not already loaded
       if (!document.querySelector('script[src*="maps.googleapis.com"]')) {
         const apiKey = import.meta.env.VITE_MAPS_PLATFORM_API_KEY;
-        console.log('Google Maps API Key:', apiKey);
+        // Google Maps API Key loaded
         
         if (!apiKey) {
           console.error('VITE_MAPS_PLATFORM_API_KEY is not defined in environment variables');
@@ -150,13 +148,13 @@ const SimpleMap = ({ className = "" }) => {
           return;
         }
         
-        console.log('Loading Google Maps script...');
+        // Loading Google Maps script
         const script = document.createElement('script');
         script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&loading=async`;
         script.async = true;
         script.defer = true;
         script.onload = () => {
-          console.log('Google Maps script loaded, initializing simple map...');
+          // Google Maps script loaded, initializing simple map
           setTimeout(initializeMap, 100);
         };
         script.onerror = () => {
@@ -165,7 +163,7 @@ const SimpleMap = ({ className = "" }) => {
         };
         document.head.appendChild(script);
       } else {
-        console.log('Google Maps script already loaded, retrying initialization...');
+        // Google Maps script already loaded, retrying initialization
         setTimeout(initializeMap, 100);
       }
     }

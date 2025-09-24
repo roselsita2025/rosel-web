@@ -26,7 +26,7 @@ const PeopleAlsoBought = () => {
 				const res = await axios.get(`${API_URL}/products/recommendations`);
 				const products = Array.isArray(res.data.products) ? res.data.products : [];
 				setRecommendations(products.slice(0, 6));
-				console.log('API Response:', res.data);
+				// API Response received
 			} catch (error) {
 				toast.error(error.response.data.message || "An error occurred while fetching recommendations");
 			} finally {

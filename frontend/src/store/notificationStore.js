@@ -41,7 +41,7 @@ export const useNotificationStore = create((set, get) => ({
 
     // Actions
     initializeSocket: (token) => {
-        console.log('🔌 Initializing notification socket with token:', token ? 'Token present' : 'No token');
+        // Initializing notification socket
         
         const socket = io(import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000', {
             auth: {
@@ -50,12 +50,12 @@ export const useNotificationStore = create((set, get) => ({
         });
 
         socket.on('connect', () => {
-            console.log('✅ Connected to notification server with socket ID:', socket.id);
+            // Connected to notification server
             set({ isConnected: true });
         });
 
         socket.on('disconnect', (reason) => {
-            console.log('❌ Disconnected from notification server. Reason:', reason);
+            // Disconnected from notification server
             set({ isConnected: false });
         });
 
@@ -66,7 +66,7 @@ export const useNotificationStore = create((set, get) => ({
 
         // Listen for new notifications
         socket.on('new_notification', (data) => {
-            console.log('🔔 Received new notification via WebSocket:', data);
+            // Received new notification via WebSocket
             const { notification } = data;
             
             // Add notification to the store
@@ -104,7 +104,7 @@ export const useNotificationStore = create((set, get) => ({
     disconnectSocket: () => {
         const { socket } = get();
         if (socket) {
-            console.log('🔌 Disconnecting notification socket');
+            // Disconnecting notification socket
             socket.disconnect();
             set({ socket: null, isConnected: false });
         }
@@ -119,9 +119,7 @@ export const useNotificationStore = create((set, get) => ({
                 ...filters
             });
 
-            console.log('🔔 Fetching notifications with params:', params.toString());
             const response = await axios.get(`${API_URL}?${params}`);
-            console.log('📊 Notifications response:', response.data);
             const { notifications, pagination, unreadCount } = response.data.data;
 
             set({
@@ -131,7 +129,7 @@ export const useNotificationStore = create((set, get) => ({
                 isLoading: false
             });
 
-            console.log('✅ Notifications updated:', { notifications: notifications.length, pagination, unreadCount });
+            // Notifications updated successfully
             return { notifications, pagination, unreadCount };
         } catch (error) {
             console.error('❌ Error fetching notifications:', error);
@@ -145,9 +143,7 @@ export const useNotificationStore = create((set, get) => ({
 
     fetchNotificationSummary: async () => {
         try {
-            console.log('🔔 Fetching notification summary...');
             const response = await axios.get(`${API_URL}/summary`);
-            console.log('📊 Notification summary response:', response.data);
             const { recentNotifications, categoryCounts, totalUnread } = response.data.data;
 
             set({
@@ -159,7 +155,7 @@ export const useNotificationStore = create((set, get) => ({
                 unreadCount: totalUnread
             });
 
-            console.log('✅ Notification summary updated:', { recentNotifications, categoryCounts, totalUnread });
+            // Notification summary updated successfully
             return { recentNotifications, categoryCounts, totalUnread };
         } catch (error) {
             console.error('❌ Error fetching notification summary:', error);

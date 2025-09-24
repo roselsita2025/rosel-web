@@ -1,4 +1,4 @@
-import { ArrowRight, CheckCircle, HandHeart, Package, Clock, Mail, Truck, Star } from "lucide-react";
+import { ArrowRight, CheckCircle, HandHeart, Package, Clock, Mail, Truck } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -35,7 +35,13 @@ const PurchaseSuccessPage = () => {
 				clearCart();
 				// Store order details if available
 				if (response.data.orderId) {
-					setOrderDetails({ orderId: response.data.orderId });
+					// Fetch complete order details including shipping method and Lalamove details
+					const orderResponse = await axios.get(`${API_URL}/orders/tracking/${response.data.orderId}`);
+					if (orderResponse.data.success) {
+						setOrderDetails(orderResponse.data.data);
+					} else {
+						setOrderDetails({ orderId: response.data.orderId });
+					}
 				}
 			} catch (error) {
 				console.log(error);
@@ -220,7 +226,7 @@ const PurchaseSuccessPage = () => {
                                         className='text-sm font-semibold'
                                         style={{ color: '#901414' }}
                                     >
-                                        {orderDetails?.orderId ? `#${orderDetails.orderId.slice(-8).toUpperCase()}` : '#PROCESSING'}
+                                        {orderDetails?.orderNumber ? `#${orderDetails.orderNumber}` : '#PROCESSING'}
                                     </span>
                                 </div>
                                 <div className='flex items-center justify-between'>
@@ -237,20 +243,23 @@ const PurchaseSuccessPage = () => {
                                         Processing
                                     </span>
                                 </div>
-                                <div className='flex items-center justify-between'>
-                                    <span 
-                                        className='text-sm'
-                                        style={{ color: '#82695b' }}
-                                    >
-                                        Estimated Delivery:
-                                    </span>
-                                    <span 
-                                        className='text-sm font-semibold'
-                                        style={{ color: '#901414' }}
-                                    >
-                                        3-5 business days
-                                    </span>
-                                </div>
+                                {/* Only show estimated delivery for Lalamove orders */}
+                                {orderDetails?.shippingMethod === 'lalamove' && orderDetails?.lalamoveDetails?.duration && (
+                                    <div className='flex items-center justify-between'>
+                                        <span 
+                                            className='text-sm'
+                                            style={{ color: '#82695b' }}
+                                        >
+                                            Estimated Delivery:
+                                        </span>
+                                        <span 
+                                            className='text-sm font-semibold'
+                                            style={{ color: '#901414' }}
+                                        >
+                                            {Math.ceil(orderDetails.lalamoveDetails.duration / 60)} minutes
+                                        </span>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -290,13 +299,6 @@ const PurchaseSuccessPage = () => {
                 transition={{ duration: 0.6, delay: 0.6 }}
                 className='text-center mt-12'
             >
-                <div className='flex items-center justify-center gap-2 mb-4'>
-                    <Star size={24} style={{ color: '#ffd901' }} />
-                    <Star size={24} style={{ color: '#ffd901' }} />
-                    <Star size={24} style={{ color: '#ffd901' }} />
-                    <Star size={24} style={{ color: '#ffd901' }} />
-                    <Star size={24} style={{ color: '#ffd901' }} />
-                </div>
                 <p 
                     className='text-lg font-medium'
                     style={{ color: '#901414' }}

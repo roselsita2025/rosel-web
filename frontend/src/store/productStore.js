@@ -57,18 +57,15 @@ export const productStore = create((set, get) => ({
 		
 		// Prevent duplicate calls if already loading or products already exist (unless force refresh)
 		if (loading || (!forceRefresh && products && products.length > 0)) {
-			console.log("productStore: Skipping fetch - already loading or products exist");
+			// Skipping fetch - already loading or products exist
 			return;
 		}
 		
 		set({ loading: true });
 		try {
-			console.log("productStore: Fetching products from API...");
 			// Try to get all products for customers first, fallback to featured if not authenticated
 			const response = await axios.get(`${API_URL}/products/all`);
-			console.log("productStore: API response:", response.data);
 			set({ products: response.data.products, loading: false });
-			console.log("productStore: Products set in store:", response.data.products);
 		} catch (error) {
 			console.error("productStore: Error fetching products:", error);
 			console.error("productStore: Error response:", error.response);
@@ -77,11 +74,9 @@ export const productStore = create((set, get) => ({
 			
 			// If unauthorized (401) or forbidden (403), fallback to featured products for guests
 			if (error.response?.status === 401 || error.response?.status === 403) {
-				console.log("productStore: Unauthorized access, falling back to featured products");
 				try {
 					const featuredResponse = await axios.get(`${API_URL}/products/featured`);
 					set({ products: featuredResponse.data, loading: false });
-					console.log("productStore: Loaded featured products for guest user");
 				} catch (featuredError) {
 					console.error("productStore: Error fetching featured products:", featuredError);
 					set({ error: "Failed to fetch products", loading: false });
@@ -147,7 +142,7 @@ export const productStore = create((set, get) => ({
 			set({ products: response.data, loading: false });
 		} catch (error) {
 			set({ error: "Failed to fetch products", loading: false });
-			console.log("Error fetching featured products:", error);
+			// Error fetching featured products
 		}
 	},
 
@@ -199,7 +194,7 @@ export const productStore = create((set, get) => ({
 			set({ categories: response.data.categories, loading: false });
 		} catch (error) {
 			set({ error: "Failed to fetch categories", loading: false });
-			console.log("Error fetching categories:", error);
+			// Error fetching categories
 		}
 	},
 

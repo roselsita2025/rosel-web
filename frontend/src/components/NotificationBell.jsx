@@ -31,7 +31,7 @@ const NotificationBell = () => {
     // Memoize the initialization function to prevent unnecessary re-runs
     const initializeNotifications = useCallback(async () => {
         if (user && user.isVerified && !initializedRef.current) {
-            console.log('🔔 NotificationBell: Initializing for user:', user);
+            // NotificationBell: Initializing for user
             initializedRef.current = true;
             
             // Get token from localStorage or cookies
@@ -41,7 +41,7 @@ const NotificationBell = () => {
                 ?.split('=')[1];
             
             if (token) {
-                console.log('🔌 Initializing notification socket...');
+                // Initializing notification socket
                 initializeSocket(token);
             }
             
@@ -167,10 +167,10 @@ const NotificationBell = () => {
             {/* Notification Bell Button */}
             <button
                 onClick={() => {
-                    console.log('🔔 Notification bell clicked, current state:', { isDropdownOpen, unreadCount, summary });
+                    // Notification bell clicked
                     setIsDropdownOpen(!isDropdownOpen);
                     if (!isDropdownOpen) {
-                        console.log('🔄 Fetching fresh notifications...');
+                        // Fetching fresh notifications
                         fetchNotificationSummary();
                     }
                 }}
@@ -204,7 +204,7 @@ const NotificationBell = () => {
                                 )}
                                 <button
                                     onClick={() => {
-                                        console.log('🔄 Refreshing notifications...');
+                                        // Refreshing notifications
                                         fetchNotificationSummary();
                                     }}
                                     className="p-1 hover:bg-gray-200 rounded text-gray-400 hover:text-blue-600"

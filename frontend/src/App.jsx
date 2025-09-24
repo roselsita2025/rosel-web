@@ -40,6 +40,7 @@ import ProductsPage from "./pages/GuestPages/ProductsPage.jsx";
 import SearchResultsPage from "./pages/GuestPages/SearchResultsPage.jsx";
 import AboutPage from "./pages/GuestPages/AboutPage.jsx";
 import ContactUsPage from "./pages/GuestPages/ContactUsPage.jsx";
+import RatingsPage from "./pages/GuestPages/RatingsPage.jsx";
 import OrderGuidelinesPage from "./pages/GuestPages/OrderGuidelinesPage.jsx";
 import PrivacyPolicyPage from "./pages/GuestPages/PrivacyPolicyPage.jsx";
 import ReplacementPolicyPage from "./pages/GuestPages/ReplacementPolicyPage.jsx";
@@ -202,7 +203,7 @@ function App() {
           if (response.ok) {
             const data = await response.json();
             if (data.success && data.token) {
-              console.log('🚀 Initializing global socket connection for user:', user.name, 'Role:', user.role);
+              // Initializing global socket connection for user
               initializeSocket(data.token);
               socketInitialized.current = true;
             } else {
@@ -219,12 +220,12 @@ function App() {
       getSocketToken();
     } else if (!user && !isCheckingAuth) {
       // Guest user - no socket connection needed (only log when auth check is complete)
-      console.log('👤 Guest user - no socket connection required');
+      // Guest user - no socket connection required
     }
 
     return () => {
       if (user && socketInitialized.current) {
-        console.log('🛑 Disconnecting global socket for user:', user.name);
+        // Disconnecting global socket for user
         disconnectSocket();
         socketInitialized.current = false;
       }
@@ -250,6 +251,7 @@ function App() {
         <Route path = '/product/:productId' element = { <AdminRestrictedRoute> <ProductDetailPage /> </AdminRestrictedRoute> } />
         <Route path = '/about' element = { <AdminRestrictedRoute> <AboutPage /> </AdminRestrictedRoute> } />
         <Route path = '/contactus' element = { <AdminRestrictedRoute> <ContactUsPage /> </AdminRestrictedRoute> } />
+        <Route path = '/ratings' element = { <AdminRestrictedRoute> <RatingsPage /> </AdminRestrictedRoute> } />
         <Route path = '/order-guidelines' element = { <AdminRestrictedRoute> <OrderGuidelinesPage /> </AdminRestrictedRoute> } />
         <Route path = '/privacy-policy' element = { <AdminRestrictedRoute> <PrivacyPolicyPage /> </AdminRestrictedRoute> } />
         <Route path = '/replacement-policy' element = { <AdminRestrictedRoute> <ReplacementPolicyPage /> </AdminRestrictedRoute> } />

@@ -27,18 +27,13 @@ import notificationRoutes from './routes/notification.route.js';
 import contactRoutes from './routes/contact.route.js';
 import posRoutes from './routes/pos.route.js';
 import activityLogRoutes from './routes/activityLog.route.js';
+import reviewRoutes from './routes/reviews.js';
 
 import './utils/env.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-console.log('Environment variables loaded:', {
-    CLIENT_URL: process.env.CLIENT_URL,
-    STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY ? 'SET' : 'NOT SET',
-    MONGO_URI: process.env.MONGO_URI ? 'SET' : 'NOT SET',
-    NODE_ENV: process.env.NODE_ENV
-});
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -67,6 +62,7 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/pos", posRoutes);
 app.use("/api/activity-logs", activityLogRoutes);
+app.use("/api/reviews", reviewRoutes);
 
 // Serve static files from the React app build directory
 app.use(express.static(path.join(__dirname, '../frontend/dist')));
@@ -78,10 +74,6 @@ const server = app.listen(PORT, async () => {
     // Initialize WebSocket service
     socketService.initialize(server);
     
-    console.log(`Server is running on port ${PORT}`);
-    console.log(`🌐 Server URL: http://localhost:${PORT}`);
-    console.log(`📡 Webhook endpoint: http://localhost:${PORT}/api/webhooks/lalamove`);
-    console.log(`🔍 Health check: http://localhost:${PORT}/api/webhooks/health`);
     console.log(`💬 WebSocket server initialized`);
 });
 

@@ -26,7 +26,7 @@ export const useChatStore = create((set, get) => ({
     
     // Actions
     initializeSocket: (token) => {
-        console.log('Initializing socket with token:', token ? 'Token present' : 'No token');
+        // Initializing socket
         
         const socket = io(import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000', {
             auth: {
@@ -35,12 +35,12 @@ export const useChatStore = create((set, get) => ({
         });
 
         socket.on('connect', () => {
-            console.log('✅ Connected to chat server with socket ID:', socket.id);
+            // Connected to chat server
             set({ isConnected: true });
         });
 
         socket.on('disconnect', (reason) => {
-            console.log('❌ Disconnected from chat server. Reason:', reason);
+            // Disconnected from chat server
             set({ isConnected: false });
         });
 
@@ -50,7 +50,7 @@ export const useChatStore = create((set, get) => ({
         });
 
         socket.on('connection_status', (data) => {
-            console.log('📡 Connection status update:', data);
+            // Connection status update
             set({ isConnected: data.connected });
         });
 
@@ -102,17 +102,14 @@ export const useChatStore = create((set, get) => ({
         });
 
         set({ socket });
-        console.log('💾 Socket stored in state:', socket.id);
+        // Socket stored in state
     },
 
     disconnectSocket: () => {
         const { socket } = get();
         if (socket) {
-            console.log('🔌 Disconnecting socket:', socket.id);
             socket.disconnect();
             set({ socket: null, isConnected: false });
-        } else {
-            console.log('⚠️ No socket to disconnect');
         }
     },
 

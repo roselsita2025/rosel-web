@@ -27,11 +27,6 @@ class SocketService {
         try {
             const token = socket.handshake.auth.token || socket.handshake.headers.authorization?.split(' ')[1];
             
-            console.log('🔐 Socket authentication attempt:', {
-                hasToken: !!token,
-                socketId: socket.id,
-                authToken: socket.handshake.auth.token ? 'Present' : 'Missing'
-            });
             
             if (!token) {
                 console.error('❌ No token provided for socket authentication');
@@ -48,7 +43,6 @@ class SocketService {
 
             socket.userId = user._id.toString();
             socket.user = user;
-            console.log('✅ Socket authenticated successfully for user:', user.name, 'Role:', user.role);
             next();
         } catch (error) {
             console.error('❌ Socket authentication error:', error.message);
@@ -57,20 +51,17 @@ class SocketService {
     }
 
     handleConnection(socket) {
-        console.log(`✅ User ${socket.user.name} (${socket.user.role}) connected with socket ${socket.id}`);
-        
         // Store user connection
         this.connectedUsers.set(socket.userId, socket.id);
         this.userSockets.set(socket.id, socket.userId);
 
         // Join user to their personal room
         socket.join(`user_${socket.userId}`);
-        console.log(`📡 User ${socket.user.name} joined personal room: user_${socket.userId}`);
 
         // Join admin to admin room if they're an admin
         if (socket.user.role === 'admin') {
             socket.join('admin_room');
-            console.log(`👑 Admin ${socket.user.name} joined admin room`);
+            // Admin joined admin room
         }
 
         // Emit connection status to user
@@ -89,7 +80,7 @@ class SocketService {
         // Handle leaving chat rooms
         socket.on('leave_chat', (chatId) => {
             socket.leave(`chat_${chatId}`);
-            console.log(`User ${socket.user.name} left chat ${chatId}`);
+            // User left chat
         });
 
         // Handle new messages
@@ -131,11 +122,9 @@ class SocketService {
 
         // Handle disconnect
         socket.on('disconnect', (reason) => {
-            console.log(`❌ User ${socket.user.name} disconnected. Reason: ${reason}`);
+            // User disconnected
             this.connectedUsers.delete(socket.userId);
             this.userSockets.delete(socket.id);
-            
-            console.log(`🗑️ Removed user ${socket.user.name} from connected users`);
         });
     }
 
@@ -311,8 +300,7 @@ class SocketService {
             adminName: socket.user.name
         });
 
-        console.log(`Chat ${chatId} assigned to admin ${socket.user.name}`);
-        console.log(`Notified customer ${chat.customer._id} and chat room ${chatId}`);
+        // Chat assigned to admin and customer notified
     }
 
     // Utility methods
@@ -327,12 +315,8 @@ class SocketService {
 
     emitToUser(userId, event, data) {
         const socketId = this.connectedUsers.get(userId);
-        console.log(`📡 Emitting to user ${userId}:`, { event, socketId, connected: !!socketId });
         if (socketId) {
             this.io.to(socketId).emit(event, data);
-            console.log(`✅ Emitted ${event} to socket ${socketId}`);
-        } else {
-            console.log(`❌ User ${userId} not connected to WebSocket`);
         }
     }
 

@@ -623,34 +623,34 @@ const ManageProductsPage = () => {
 								
 								{/* Filter Controls */}
 								<div className='mb-3 space-y-2'>
-											<input
-												placeholder='Search by name or barcode'
-												value={updateFilterText}
-												onChange={(e)=>setUpdateFilterText(e.target.value)}
-												onKeyDown={async (e)=>{ if(e.key==='Enter' && updateFilterText.trim()){ const p = await productStore.getState().fetchProductByBarcode(updateFilterText.trim()); if(p){ setSelectedProductId(p._id); } } }}
+								<input
+										placeholder='Search by name or barcode'
+										value={updateFilterText}
+										onChange={(e)=>setUpdateFilterText(e.target.value)}
+										onKeyDown={async (e)=>{ if(e.key==='Enter' && updateFilterText.trim()){ const p = await productStore.getState().fetchProductByBarcode(updateFilterText.trim()); if(p){ setSelectedProductId(p._id); } } }}
 												className='w-full bg-[#fffefc] border border-gray-300 rounded px-3 py-2 text-[#030105] focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice'
-											/>
+									/>
 									<div className='grid grid-cols-2 gap-2'>
-													<select 
-														value={updateFilterCategory} 
-														onChange={(e)=>setUpdateFilterCategory(e.target.value)} 
+										<select 
+											value={updateFilterCategory} 
+											onChange={(e)=>setUpdateFilterCategory(e.target.value)} 
 														className='bg-[#fffefc] border border-gray-300 rounded px-2 py-2 text-[#030105] focus:ring-2 focus:ring-[#860809] focus:border-transparent text-sm font-alice'
-													>
+										>
 											<option value=''>All Categories</option>
 											{FIXED_CATEGORIES.map(c=> <option key={c} value={c}>{c}</option>)}
 										</select>
-													<select 
-														value={updateFilterStatus} 
-														onChange={(e)=>setUpdateFilterStatus(e.target.value)} 
+										<select 
+											value={updateFilterStatus} 
+											onChange={(e)=>setUpdateFilterStatus(e.target.value)} 
 														className='bg-[#fffefc] border border-gray-300 rounded px-2 py-2 text-[#030105] focus:ring-2 focus:ring-[#860809] focus:border-transparent text-sm font-alice'
-													>
+										>
 											<option value=''>All Status</option>
 											<option value='available'>Available</option>
 											<option value='unavailable'>Unavailable</option>
 										</select>
 									</div>
 								</div>
-											<div className='flex items-center gap-2 mb-2'>
+								<div className='flex items-center gap-2 mb-2'>
 												<label className='text-xs text-[#a31f17] font-alice'>Search mode</label>
 												<select value={updateSearchMode} onChange={(e)=>setUpdateSearchMode(e.target.value)} className='bg-[#fffefc] border border-gray-300 rounded px-2 py-1 text-[#030105] focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice'>
 										<option value='manual'>Manual</option>
@@ -675,30 +675,30 @@ const ManageProductsPage = () => {
 										<button 
 											onClick={() => handleUpdateSort('name', updateSortKey === 'nameAsc' ? 'desc' : 'asc')}
 														className={`px-2 py-1 text-xs rounded transition-colors font-alice ${
-															updateSortKey === 'nameAsc' || updateSortKey === 'nameDesc' 
+												updateSortKey === 'nameAsc' || updateSortKey === 'nameDesc' 
 																? 'bg-[#860809] text-white' 
 																: 'bg-[#f8f3ed] text-[#030105] hover:bg-[#860809] hover:text-white'
-														}`}
+											}`}
 										>
 											Name {updateSortKey === 'nameAsc' ? '↑' : updateSortKey === 'nameDesc' ? '↓' : '↕'}
 										</button>
 										<button 
 											onClick={() => handleUpdateSort('price', updateSortKey === 'priceAsc' ? 'desc' : 'asc')}
 															className={`px-2 py-1 text-xs rounded transition-colors font-alice ${
-																updateSortKey === 'priceAsc' || updateSortKey === 'priceDesc' 
+												updateSortKey === 'priceAsc' || updateSortKey === 'priceDesc' 
 																	? 'bg-[#860809] text-white' 
 																	: 'bg-[#f8f3ed] text-[#030105] hover:bg-[#860809] hover:text-white'
-															}`}
+											}`}
 										>
 											Price {updateSortKey === 'priceAsc' ? '↑' : updateSortKey === 'priceDesc' ? '↓' : '↕'}
 										</button>
 										<button 
 											onClick={() => handleUpdateSort('qty', updateSortKey === 'qtyAsc' ? 'desc' : 'asc')}
 															className={`px-2 py-1 text-xs rounded transition-colors font-alice ${
-																updateSortKey === 'qtyAsc' || updateSortKey === 'qtyDesc' 
+												updateSortKey === 'qtyAsc' || updateSortKey === 'qtyDesc' 
 																	? 'bg-[#860809] text-white' 
 																	: 'bg-[#f8f3ed] text-[#030105] hover:bg-[#860809] hover:text-white'
-															}`}
+											}`}
 										>
 											Stock {updateSortKey === 'qtyAsc' ? '↑' : updateSortKey === 'qtyDesc' ? '↓' : '↕'}
 										</button>

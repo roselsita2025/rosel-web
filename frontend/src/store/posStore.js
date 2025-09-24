@@ -11,7 +11,7 @@ const usePOSStore = create((set, get) => ({
     set({ loading: true, error: null });
     
     try {
-      console.log('Creating transaction with data:', transactionData);
+      // Creating transaction
       
       const response = await fetch(`${import.meta.env.VITE_API_URL}/pos/transaction`, {
         method: 'POST',
@@ -22,8 +22,7 @@ const usePOSStore = create((set, get) => ({
         body: JSON.stringify(transactionData),
       });
 
-      console.log('Response status:', response.status, response.statusText);
-      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+      // Response received
 
       // Check if response is HTML (error page) instead of JSON
       const contentType = response.headers.get('content-type');

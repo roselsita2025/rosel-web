@@ -9,25 +9,11 @@ import { notificationService } from "../services/notificationService.js";
 
 export const createCheckoutSession = async (req, res) => {
     try {
-        console.log('Payment request received:', {
-            products: req.body.products?.length,
-            couponCode: req.body.couponCode,
-            shippingInfo: !!req.body.shippingInfo,
-            shippingMethod: req.body.shippingMethod,
-            lalamoveQuote: !!req.body.lalamoveQuote,
-            finalTotal: req.body.finalTotal
-        });
+        // Payment request received
         
-        // Debug: Log the full lalamoveQuote structure
-        if (req.body.lalamoveQuote) {
-            console.log('Lalamove quote structure:', JSON.stringify(req.body.lalamoveQuote, null, 2));
-        }
+        // Lalamove quote structure available
 
-        console.log('Environment variables check:', {
-            CLIENT_URL: process.env.CLIENT_URL,
-            STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY ? 'SET' : 'NOT SET',
-            NODE_ENV: process.env.NODE_ENV
-        });
+        // Environment variables validated
 
         const { products, couponCode, shippingInfo, shippingMethod, lalamoveQuote, finalTotal, taxAmount, subtotal } = req.body;
 
@@ -73,7 +59,7 @@ export const createCheckoutSession = async (req, res) => {
         let subtotalCents = 0;
         const lineItems = products.map((product) => {
             const cartQuantity = product.cartQuantity || product.quantity || 1;
-            console.log('Processing product:', { name: product.name, price: product.price, cartQuantity: cartQuantity, stockQuantity: product.quantity });
+            // Processing product
             
             // Calculate discounted price per unit
             const originalPrice = product.price;
@@ -98,7 +84,7 @@ export const createCheckoutSession = async (req, res) => {
             };
         });
 
-        console.log('Line items created:', lineItems.length, 'Subtotal cents:', subtotalCents);
+        // Line items created successfully
 
         // Calculate shipping fee for Stripe
         let shippingFeeCents = 0;
@@ -199,17 +185,9 @@ export const createCheckoutSession = async (req, res) => {
         // Create temporary order without stripeSessionId initially
         const tempOrder = new Order(tempOrderData);
         await tempOrder.save();
-        console.log('Temporary order created:', tempOrder._id);
-        console.log('Stored lalamoveDetails:', JSON.stringify(tempOrder.lalamoveDetails, null, 2));
+        // Temporary order created successfully
 
-        console.log('Creating Stripe session with:', {
-            lineItemsCount: lineItems.length,
-            appliedCouponCode,
-            userId: req.user._id.toString(),
-            shippingMethod,
-            clientUrl: process.env.CLIENT_URL,
-            tempOrderId: tempOrder._id.toString()
-        });
+        // Creating Stripe session
 
         // Add shipping fee as a separate line item if applicable
         if (shippingFeeCents > 0) {
@@ -238,7 +216,7 @@ export const createCheckoutSession = async (req, res) => {
                 },
                 quantity: 1,
             });
-            console.log('Added tax line item:', taxCents, 'cents');
+            // Added tax line item
         }
 
 
@@ -261,9 +239,9 @@ export const createCheckoutSession = async (req, res) => {
         // Update the temporary order with the Stripe session ID
         tempOrder.stripeSessionId = session.id;
         await tempOrder.save();
-        console.log('Updated temporary order with Stripe session ID:', session.id);
+        // Updated temporary order with Stripe session ID
 
-        console.log('Stripe session created successfully:', session.id);
+        // Stripe session created successfully
 
         // Return session id and subtotal for reference (total is computed by Stripe)
         res.status(200).json({ 

@@ -8,14 +8,11 @@ class LalamoveService {
         this.hostname = process.env.LALAMOVE_HOSTNAME;
         // Try different market codes for sandbox
         this.market = process.env.LALAMOVE_MARKET;
-        console.log('Lalamove service initialized with market:', this.market);
         
         // Try PH_MNL for Philippines Manila
         if (this.market === 'PH') {
             this.market = 'PH_MNL';
-            console.log('Updated market to:', this.market);
         }
-        console.log('Using market:', this.market);
         this.locode = process.env.LALAMOVE_LOCODE;
         this.pickupLat = parseFloat(process.env.LALAMOVE_PICKUP_LAT);
         this.pickupLng = parseFloat(process.env.LALAMOVE_PICKUP_LNG);

@@ -3,10 +3,8 @@ import { User } from "../models/user.model.js";
 
 export const verifyToken = async (req, res, next) => {
   const token = req.cookies.token;
-  console.log("🔍 verifyToken middleware called, has token:", !!token);
   
   if (!token) {
-    console.log("❌ No token provided");
     return res
       .status(401)
       .json({ success: false, message: "Unauthorized - no token provided" });
@@ -15,10 +13,8 @@ export const verifyToken = async (req, res, next) => {
   try {
     // Verify JWT
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log("✅ Token verified, userId:", decoded.userId);
     
     if (!decoded || !decoded.userId) {
-      console.log("❌ Invalid token structure");
       return res
         .status(401)
         .json({ success: false, message: "Unauthorized - invalid token" });
@@ -27,13 +23,10 @@ export const verifyToken = async (req, res, next) => {
     // Fetch full user document from DB
     const user = await User.findById(decoded.userId).populate("cartItems.product");
     if (!user) {
-      console.log("❌ User not found in database");
       return res
         .status(404)
         .json({ success: false, message: "User not found" });
     }
-
-    console.log("✅ User authenticated:", user.name, "Role:", user.role);
 
     // Attach user to request
     req.user = user;       // full Mongoose doc

@@ -428,16 +428,16 @@ const ShippingOptionsPage = () => {
                                     <span className='text-[#030105] font-alice'>Method</span>
                                     <span className='text-[#860809] font-libre'>
                                         {selectedShipping === 'pickup' ? 'Pick Up in Store' : 'Lalamove Delivery'}
-                                    </span>
-                                </div>
+                                            </span>
+                                        </div>
 
-                                {/* Shipping Fee */}
+                                    {/* Shipping Fee */}
                                 <div className='flex justify-between text-sm'>
                                     <span className='text-[#030105] font-alice'>Shipping Fee</span>
                                     <span className='text-[#030105] font-libre'>
-                                        {selectedShipping === 'pickup' ? 'FREE' : `₱${deliveryFee.toFixed(2)}`}
-                                    </span>
-                                </div>
+                                            {selectedShipping === 'pickup' ? 'FREE' : `₱${deliveryFee.toFixed(2)}`}
+                                        </span>
+                                    </div>
 
                                 {/* Lalamove Details */}
                                 {selectedShipping === 'lalamove' && lalamoveQuote && (
@@ -458,11 +458,11 @@ const ShippingOptionsPage = () => {
                                 )}
 
                                 <div className='border-t border-gray-300 pt-3'>
-                                    <div className='flex justify-between font-semibold'>
+                                        <div className='flex justify-between font-semibold'>
                                         <span className='text-[#030105] font-alice'>Final Total</span>
                                         <span className='text-[#860809] font-libre'>
-                                            ₱{finalTotal.toFixed(2)}
-                                        </span>
+                                                ₱{finalTotal.toFixed(2)}
+                                            </span>
                                     </div>
                                 </div>
                             </div>

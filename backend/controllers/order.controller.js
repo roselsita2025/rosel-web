@@ -30,12 +30,7 @@ export const getCustomerOrders = async (req, res) => {
             .skip(skip)
             .limit(parseInt(limit));
         
-        console.log('🔍 Customer orders query:', {
-            userId,
-            filter,
-            ordersFound: orders.length,
-            orders: orders.map(o => ({ id: o._id, paymentStatus: o.paymentStatus, status: o.status }))
-        });
+        // Customer orders query executed
         
         // Get total count for pagination
         const totalOrders = await Order.countDocuments(filter);
@@ -253,15 +248,13 @@ export const updateOrderStatus = async (req, res) => {
         // Send notification to customer about order status update
         if (status && status !== originalStatus) {
             try {
-                console.log(`📢 Sending notification for order ${orderId}: ${originalStatus} → ${status}`);
                 await notificationService.sendOrderStatusUpdateNotification(updatedOrder, status);
-                console.log(`✅ Notification sent successfully for order ${orderId}`);
             } catch (notificationError) {
                 console.error('Error sending order status update notification:', notificationError);
                 // Don't fail the order update if notification fails
             }
         } else {
-            console.log(`ℹ️ No notification sent for order ${orderId}: status unchanged (${originalStatus})`);
+            // No notification sent - status unchanged
         }
         
         res.status(200).json({

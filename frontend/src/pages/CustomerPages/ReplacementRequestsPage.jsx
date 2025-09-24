@@ -5,7 +5,6 @@ import {
     ArrowLeft, 
     Plus, 
     Search, 
-    Filter, 
     RefreshCw,
     Package,
     AlertCircle,
@@ -32,7 +31,6 @@ const ReplacementRequestsPage = () => {
 
     const [selectedRequest, setSelectedRequest] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [statusFilter, setStatusFilter] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
 
@@ -42,7 +40,6 @@ const ReplacementRequestsPage = () => {
             try {
                 await getCustomerRequests({
                     page: currentPage,
-                    status: statusFilter,
                     limit: 10
                 });
             } catch (error) {
@@ -51,7 +48,7 @@ const ReplacementRequestsPage = () => {
         };
 
         loadRequests();
-    }, [currentPage, statusFilter]);
+    }, [currentPage]);
 
     const handleRequestClick = async (request) => {
         try {
@@ -67,7 +64,6 @@ const ReplacementRequestsPage = () => {
         try {
             await getCustomerRequests({
                 page: currentPage,
-                status: statusFilter,
                 limit: 10
             });
         } catch (error) {
@@ -140,43 +136,22 @@ const ReplacementRequestsPage = () => {
                     </div>
                 </motion.div>
 
-                {/* Filters and Search */}
+                {/* Search */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.1 }}
                     className="rounded-lg shadow-md border border-gray-300 p-6 mb-8 bg-[#fffefc]"
                 >
-                    <div className="flex flex-col sm:flex-row gap-4">
-                        <div className="flex-1">
-                            <div className="relative">
-                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-                                <input
-                                    type="text"
-                                    placeholder="Search by request number, product name, or description..."
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice"
-                                />
-                            </div>
-                        </div>
-                        <div className="sm:w-48">
-                            <select
-                                value={statusFilter}
-                                onChange={(e) => setStatusFilter(e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice"
-                            >
-                                <option value="">All Statuses</option>
-                                <option value="pending">Pending</option>
-                                <option value="under_review">Under Review</option>
-                                <option value="approved">Approved</option>
-                                <option value="rejected">Rejected</option>
-                                <option value="processing">Processing</option>
-                                <option value="shipped">Shipped</option>
-                                <option value="completed">Completed</option>
-                                <option value="cancelled">Cancelled</option>
-                            </select>
-                        </div>
+                    <div className="relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                        <input
+                            type="text"
+                            placeholder="Search by request number, product name, or description..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice"
+                        />
                     </div>
                 </motion.div>
 
@@ -212,9 +187,9 @@ const ReplacementRequestsPage = () => {
                             <Package className="mx-auto h-12 w-12 text-gray-400" />
                             <h3 className="mt-2 text-sm font-medium text-[#860809] font-alice">No replacement requests found</h3>
                             <p className="mt-1 text-sm text-[#a31f17] font-libre">
-                                {searchTerm || statusFilter ? 'Try adjusting your search or filter criteria.' : 'You haven\'t submitted any replacement requests yet.'}
+                                {searchTerm ? 'Try adjusting your search criteria.' : 'You haven\'t submitted any replacement requests yet.'}
                             </p>
-                            {!searchTerm && !statusFilter && (
+                            {!searchTerm && (
                                 <div className="mt-6">
                                     <Link
                                         to="/replacement-request/new"

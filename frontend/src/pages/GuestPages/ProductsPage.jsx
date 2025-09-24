@@ -27,21 +27,19 @@ const ProductsPage = () => {
 			try {
 				// Try to bypass cache with timestamp parameter
 				const response = await axios.get(`${API_URL}/products/featured?t=${Date.now()}`);
-				console.log('Featured products response:', response.data);
-				console.log('Number of featured products:', response.data?.length);
+				// Featured products loaded successfully
 				
 				// If we get very few products, try the all products endpoint as fallback
 				if (response.data?.length <= 1) {
-					console.log('Very few featured products, trying all products endpoint...');
+					// Very few featured products, trying all products endpoint
 					try {
 						const allResponse = await axios.get(`${API_URL}/products/all`);
-						console.log('All products response:', allResponse.data);
-						console.log('Number of all products:', allResponse.data?.products?.length);
+						// All products response received
 						
 						// Take the first 8 products as fallback
 						if (allResponse.data?.products?.length > 0) {
 							const fallbackProducts = allResponse.data.products.slice(0, 8);
-							console.log('Using fallback products:', fallbackProducts.length);
+							// Using fallback products
 							setFeaturedProducts(fallbackProducts);
 							return;
 						}

@@ -104,7 +104,6 @@ export const useAuthStore = create((set, get) => ({
         } catch (error) {
             // Silently handle authentication check failure for guests
             // This is expected behavior for non-authenticated users
-            console.log("Auth check: User not authenticated (guest mode)");
             set({error: null, isCheckingAuth: false, isAuthenticated: false, user: null});
         }
     },

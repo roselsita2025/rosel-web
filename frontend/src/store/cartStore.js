@@ -47,7 +47,7 @@ export const cartStore = create((set, get) => ({
 		} catch (error) {
 			// Handle unauthorized access gracefully for guests
 			if (error?.response?.status === 401) {
-				console.log("Coupon: User not authenticated, coupon validation not available for guests");
+				// User not authenticated, coupon validation not available for guests
 			}
 			throw error; // Re-throw to let the component handle the error
 		}
@@ -64,9 +64,8 @@ export const cartStore = create((set, get) => ({
 			set({cart: res.data});
 			get().calculateTotals();
 		} catch (error) {
-			// Fallback to guest cart for unauthorized users
-			if (error?.response?.status === 401) {
-				console.log("Cart: User not authenticated, loading guest cart");
+			// Fallback to guest cart for unauthorized users or server not available
+			if (error?.response?.status === 401 || error?.response?.status === 404) {
 				const guestCart = readGuestCart();
 				set({ cart: guestCart });
 				get().calculateTotals();
@@ -81,7 +80,6 @@ export const cartStore = create((set, get) => ({
 	},
 
     addToCart: async (product) => {
-         console.log("Cart length before adding:", get().cart.length);
         
         // Check if product is in stock
         if (product.quantity <= 0) {
@@ -111,8 +109,8 @@ export const cartStore = create((set, get) => ({
             get().calculateTotals();
             return { status: 'success' };
         } catch (error) {
-            // Unauthorized -> guest cart fallback
-            if (error?.response?.status === 401 || error?.response?.status === 403) {
+            // Unauthorized or server not available -> guest cart fallback
+            if (error?.response?.status === 401 || error?.response?.status === 403 || error?.response?.status === 404) {
                 set((prevState) => {
                     const existingItemLocal = prevState.cart.find((item) => item._id === product._id);
                     const newCart = existingItemLocal
@@ -126,7 +124,7 @@ export const cartStore = create((set, get) => ({
                 get().calculateTotals();
                 return { status: 'success' };
             } else {
-                console.log(error);
+                // Error adding product to cart
                 return { status: 'error', message: error?.response?.data?.message || 'Error adding product to cart' };
             }
         }
@@ -143,7 +141,7 @@ export const cartStore = create((set, get) => ({
 			set((prevState) => ({ cart: prevState.cart.filter((item) => item._id !== productId) }));
 			get().calculateTotals();
 		} catch (error) {
-			if (error?.response?.status === 401 || error?.response?.status === 403) {
+			if (error?.response?.status === 401 || error?.response?.status === 403 || error?.response?.status === 404) {
 				set((prevState) => {
 					const newCart = prevState.cart.filter((item) => item._id !== productId);
 					writeGuestCart(newCart);
@@ -176,7 +174,7 @@ export const cartStore = create((set, get) => ({
 				}));
 				get().calculateTotals();
 			} catch (error) {
-				if (error?.response?.status === 401 || error?.response?.status === 403) {
+				if (error?.response?.status === 401 || error?.response?.status === 403 || error?.response?.status === 404) {
 					set((prevState) => {
 						const newCart = prevState.cart.map((item) => (item._id === productId ? { ...item, cartQuantity: quantity } : item));
 						writeGuestCart(newCart);

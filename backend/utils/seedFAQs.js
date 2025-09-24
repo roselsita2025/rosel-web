@@ -5,7 +5,6 @@ export const seedFAQs = async () => {
         // Check if FAQs already exist
         const existingFAQs = await FAQ.countDocuments();
         if (existingFAQs > 0) {
-            console.log('FAQs already exist, skipping seed');
             return;
         }
 
