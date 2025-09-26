@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useNotificationStore } from '../store/notificationStore.js';
 import { useAuthStore } from '../store/authStore.js';
 
-const NotificationBell = () => {
+const NotificationBell = ({ isAtTop = false }) => {
     const { user } = useAuthStore();
     const {
         summary,
@@ -174,12 +174,12 @@ const NotificationBell = () => {
                         fetchNotificationSummary();
                     }
                 }}
-                className="relative p-2 rounded hover:bg-[#f7e9b8] text-[#901414] hover:text-[#810e0e] transition-colors duration-200 group"
+                className={`relative p-2 rounded transition-colors duration-200 group ${isAtTop ? 'hover:bg-white/20 text-white hover:text-white/80' : 'hover:bg-[#f7e9b8] text-[#901414] hover:text-[#810e0e]'}`}
                 aria-label="Notifications"
             >
-                <Bell size={20} />
+                <Bell size={isAtTop ? 24 : 20} />
                 {unreadCount > 0 && (
-                    <span className="absolute -top-1 -left-1 bg-[#901414] text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium group-hover:bg-[#a31f17] transition duration-300 ease-in-out">
+                    <span className={`absolute -top-1 -left-1 text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium transition duration-300 ease-in-out ${isAtTop ? 'bg-white text-[#901414] group-hover:bg-white/90' : 'bg-[#901414] text-white group-hover:bg-[#a31f17]'}`}>
                         {unreadCount > 99 ? '99+' : unreadCount}
                     </span>
                 )}

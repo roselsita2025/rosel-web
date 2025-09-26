@@ -126,7 +126,7 @@ const WelcomePage = () => {
   };
 
   return (
-    <div className="w-full ">
+    <div className="w-full relative z-10">
       {/* Hero Section */}
       <motion.section
         className="flex min-h-[80vh] md:h-screen relative px-4 pt-24 pb-4 lg:pt-24 lg:py-12"
@@ -392,7 +392,7 @@ const WelcomePage = () => {
                 {/* Navigation Arrows */}
                 <motion.button
                   onClick={prevProduct}
-                  className="absolute left-2 top-1/3 transform -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg transition-all duration-300"
+                  className="absolute left-2 top-1/3 transform -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg transition-all duration-300 z-40"
                   initial={{ opacity: 0, x: -20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.6, delay: 0.3 }}
@@ -402,7 +402,7 @@ const WelcomePage = () => {
                 </motion.button>
                 <motion.button
                   onClick={nextProduct}
-                  className="absolute right-2 top-1/3 transform -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg transition-all duration-300"
+                  className="absolute right-2 top-1/3 transform -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg transition-all duration-300 z-40"
                   initial={{ opacity: 0, x: 20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.6, delay: 0.3 }}

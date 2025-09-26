@@ -2,8 +2,8 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
-import { Package, ShoppingCart, Calculator, ArrowUpDown, ChevronUp, ChevronDown } from "lucide-react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { Package, ShoppingCart, Calculator, ArrowUpDown, ChevronUp, ChevronDown, PhilippinePeso } from "lucide-react";
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell, PieChart, Pie, Sector } from "recharts";
 import { productStore } from "../../store/productStore.js";
 import { useAuthStore } from "../../store/authStore.js";
 import AdminLayout from "../../components/AdminLayout.jsx";
@@ -29,6 +29,10 @@ const DashboardPage = () => {
 
   const [isLoading, setIsLoading] = useState(true);
   const [dailySalesData, setDailySalesData] = useState([]);
+  const [categorySalesData, setCategorySalesData] = useState([]);
+  const [customerData, setCustomerData] = useState([]);
+  const [ratingDistribution, setRatingDistribution] = useState({});
+  const [customerCurrentPage, setCustomerCurrentPage] = useState(1);
   const [timeframe, setTimeframe] = useState('today');
   const [selectedDate, setSelectedDate] = useState(''); // format: YYYY-MM-DD
   const [rangeStart, setRangeStart] = useState('');
@@ -149,6 +153,10 @@ const DashboardPage = () => {
         const response = await axios.get(`${API_URL}/analytics/by-source?source=${dataSource}`);
         setAnalyticsData(response.data.analyticsData);
         setDailySalesData(response.data.dailySalesData);
+        
+        // Note: topProducts data is fetched separately in another useEffect
+        // Category sales data will be processed when topProducts state updates
+        
         console.log(response.data);
       } catch (error) {
         console.error("Error fetching analytics data:", error);
@@ -159,6 +167,85 @@ const DashboardPage = () => {
 
     fetchAnalyticsData();
   }, [dataSource]);
+
+  // Process category sales data when topProducts changes
+  useEffect(() => {
+    if (topProducts && topProducts.length > 0) {
+      console.log('Processing topProducts for category sales:', topProducts);
+      const categoryMap = new Map();
+      topProducts.forEach(product => {
+        const category = product.productCategory || 'Uncategorized';
+        if (categoryMap.has(category)) {
+          const existing = categoryMap.get(category);
+          existing.quantitySold += product.quantitySold || 0;
+          existing.revenue += product.revenue || 0;
+        } else {
+          categoryMap.set(category, {
+            category,
+            quantitySold: product.quantitySold || 0,
+            revenue: product.revenue || 0
+          });
+        }
+      });
+      
+      // Color palette for different categories
+      const colors = [
+        '#860809', // Dark red for highest
+        '#a31f17', // Medium red for second
+        '#c53030', // Lighter red for third
+        '#e53e3e', // Even lighter red
+        '#fc8181', // Light red
+        '#feb2b2', // Lightest red
+        '#fed7d7', // Very light red
+        '#fbb6ce', // Pink-red
+        '#f687b3', // Medium pink
+        '#ed64a6'  // Dark pink
+      ];
+      
+      const processedData = Array.from(categoryMap.values())
+        .sort((a, b) => b.quantitySold - a.quantitySold)
+        .map((item, index) => ({
+          ...item,
+          color: colors[index % colors.length]
+        }));
+      
+      setCategorySalesData(processedData);
+      console.log('Processed Category Sales Data:', processedData);
+    } else {
+      console.log('No topProducts data available for category processing');
+      setCategorySalesData([]);
+    }
+  }, [topProducts]);
+
+  // Fetch customer analytics data
+  useEffect(() => {
+    const fetchCustomerData = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/analytics/customers?timeframe=${timeframe}&source=${dataSource}`);
+        console.log('Customer Analytics Response:', response.data);
+        setCustomerData(response.data.customerData || []);
+        setRatingDistribution(response.data.ratingDistribution || {});
+      } catch (error) {
+        console.error("Error fetching customer data:", error);
+        setCustomerData([]);
+        setRatingDistribution({});
+      }
+    };
+
+    fetchCustomerData();
+  }, [timeframe, dataSource]);
+
+  // Pagination logic for customer table
+  const customerItemsPerPage = 5;
+  const customerTotalPages = Math.ceil(customerData.length / customerItemsPerPage);
+  const customerStartIndex = (customerCurrentPage - 1) * customerItemsPerPage;
+  const customerEndIndex = customerStartIndex + customerItemsPerPage;
+  const currentCustomers = customerData.slice(customerStartIndex, customerEndIndex);
+
+  // Reset to first page when customer data changes
+  useEffect(() => {
+    setCustomerCurrentPage(1);
+  }, [customerData]);
 
   useEffect(() => {
     const fetchNewOrders = async () => {
@@ -280,108 +367,118 @@ const DashboardPage = () => {
     <AdminLayout>
       <div className='py-4'>
         <div className='relative z-10 container mx-auto px-6 bg-[#f8f3ed] min-h-screen'>
-        {/* Analytics Cards Section */}
-        <div className='flex items-center justify-between mb-4'>
-          <h2 className='text-xl font-bold text-[#860809] font-libre'>Analytics</h2>
-          <div className='flex gap-2 items-center'>
-            <button
-              type='button'
-              onClick={handleGenerateSalesCsv}
-              className='px-3 py-1 rounded-md text-sm font-medium bg-[#860809] text-white hover:bg-[#a31f17] transition-colors duration-200 font-alice'
-            >
-              Generate Sales Report
-            </button>
-            {[
-              { key: 'today', label: 'Today' },
-              { key: 'week', label: 'Week' },
-              { key: 'month', label: 'Month' },
-              { key: 'year', label: 'Year' },
-              { key: 'custom', label: 'Custom' },
-            ].map((option) => (
-              <button
-                key={option.key}
-                onClick={() => {
-                  setTimeframe(option.key);
-                  if (option.key !== 'custom') {
-                    setSelectedDate('');
-                    setRangeStart('');
-                    setRangeEnd('');
-                  }
-                }}
-                className={`${
-                  timeframe === option.key
-                    ? 'bg-[#860809] text-white'
-                    : 'bg-[#f8f3ed] text-[#030105]'
-                } px-3 py-1 rounded-md text-sm font-medium transition-colors duration-200 font-alice`}
-              >
-                {option.label}
-              </button>
-            ))}
-            {timeframe === 'custom' && (
-              <div className='flex items-center gap-3'>
-                <div className='flex gap-2'>
-                  <button onClick={()=>setCustomMode('date')} className={`px-2 py-1 rounded-md text-sm font-alice ${customMode==='date' ? 'bg-[#860809] text-white' : 'bg-[#f8f3ed] text-[#030105]'}`}>Select Date</button>
-                  <button onClick={()=>setCustomMode('range')} className={`px-2 py-1 rounded-md text-sm font-alice ${customMode==='range' ? 'bg-[#860809] text-white' : 'bg-[#f8f3ed] text-[#030105]'}`}>Range</button>
-                </div>
-                {customMode === 'date' && (
-                  <div className='flex items-center gap-2'>
-                    <input
-                      type='date'
-                      value={selectedDate}
-                      onChange={(e)=>{ setSelectedDate(e.target.value); }}
-                      className='px-2 py-1 rounded-md border border-gray-300 text-[#030105] bg-[#fffefc] font-alice'
-                    />
-                    {selectedDate && (
-                      <button onClick={()=>setSelectedDate('')} className='px-2 py-1 rounded-md text-sm bg-[#f8f3ed] text-[#030105] font-alice'>Clear</button>
-                    )}
-                  </div>
-                )}
-                {customMode === 'range' && (
-                  <div className='flex items-center gap-2'>
-                    <input
-                      type='date'
-                      value={rangeStart}
-                      onChange={(e)=>{ setRangeStart(e.target.value); }}
-                      className='px-2 py-1 rounded-md border border-gray-300 text-[#030105] bg-[#fffefc] font-alice'
-                    />
-                    <span className='text-[#030105] text-sm font-alice'>to</span>
-                    <input
-                      type='date'
-                      value={rangeEnd}
-                      onChange={(e)=>{ setRangeEnd(e.target.value); }}
-                      className='px-2 py-1 rounded-md border border-gray-300 text-[#030105] bg-[#fffefc] font-alice'
-                    />
-                    {(rangeStart || rangeEnd) && (
-                      <button onClick={()=>{ setRangeStart(''); setRangeEnd(''); }} className='px-2 py-1 rounded-md text-sm bg-[#f8f3ed] text-[#030105] font-alice'>Clear</button>
-                    )}
-                  </div>
-                )}
+        {/* Analytics Section */}
+        <div className='mb-6'>
+          <h2 className='text-xl font-bold text-[#860809] font-libre mb-4'>Analytics</h2>
+          
+          <div className='flex flex-col lg:flex-row gap-4 items-center'>
+            {/* First Column: Data Source */}
+            <div className='flex-1'>
+              <div className='flex gap-2 items-center bg-[#f8f3ed] p-1 rounded-lg'>
+                <span className='text-sm font-medium text-[#030105] mr-2 font-alice'>Data Source:</span>
+                {[
+                  { key: 'orders', label: 'Online Orders' },
+                  { key: 'pos', label: 'POS' },
+                  { key: 'combined', label: 'All' },
+                ].map((option) => (
+                  <button
+                    key={option.key}
+                    onClick={() => setDataSource(option.key)}
+                    className={`${
+                      dataSource === option.key
+                        ? 'bg-[#860809] text-white'
+                        : 'bg-transparent text-[#030105] hover:bg-[#860809] hover:text-white'
+                    } px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 font-alice`}
+                  >
+                    {option.label}
+                  </button>
+                ))}
               </div>
-            )}
-          </div>
-        </div>
-        
-        {/* Data Source Selection */}
-        <div className='flex items-center justify-center mb-6'>
-          <div className='flex gap-2 items-center bg-[#f8f3ed] p-1 rounded-lg'>
-            <span className='text-sm font-medium text-[#030105] mr-2 font-alice'>Data Source:</span>
-            {[
-              { key: 'orders', label: 'Online Orders Only' },
-              { key: 'pos', label: 'POS Only' },
-              { key: 'combined', label: 'Combined' },
-            ].map((option) => (
+            </div>
+
+            {/* Second Column: Timeframe Selection */}
+            <div className='flex-1'>
+              <div className='flex gap-2 items-center justify-center'>
+                {[
+                  { key: 'today', label: 'Today' },
+                  { key: 'week', label: 'Week' },
+                  { key: 'month', label: 'Month' },
+                  { key: 'year', label: 'Year' },
+                  { key: 'custom', label: 'Custom' },
+                ].map((option) => (
+                  <button
+                    key={option.key}
+                    onClick={() => {
+                      setTimeframe(option.key);
+                      if (option.key !== 'custom') {
+                        setSelectedDate('');
+                        setRangeStart('');
+                        setRangeEnd('');
+                      }
+                    }}
+                    className={`${
+                      timeframe === option.key
+                        ? 'bg-[#860809] text-white'
+                        : 'bg-[#f8f3ed] text-[#030105]'
+                    } px-3 py-1 rounded-md text-sm font-medium transition-colors duration-200 font-alice`}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+              {timeframe === 'custom' && (
+                <div className='flex items-center gap-3 mt-2 justify-center'>
+                  <div className='flex gap-2'>
+                    <button onClick={()=>setCustomMode('date')} className={`px-2 py-1 rounded-md text-sm font-alice ${customMode==='date' ? 'bg-[#860809] text-white' : 'bg-[#f8f3ed] text-[#030105]'}`}>Select Date</button>
+                    <button onClick={()=>setCustomMode('range')} className={`px-2 py-1 rounded-md text-sm font-alice ${customMode==='range' ? 'bg-[#860809] text-white' : 'bg-[#f8f3ed] text-[#030105]'}`}>Range</button>
+                  </div>
+                  {customMode === 'date' && (
+                    <div className='flex items-center gap-2'>
+                      <input
+                        type='date'
+                        value={selectedDate}
+                        onChange={(e)=>{ setSelectedDate(e.target.value); }}
+                        className='px-2 py-1 rounded-md border border-gray-300 text-[#030105] bg-[#fffefc] font-alice'
+                      />
+                      {selectedDate && (
+                        <button onClick={()=>setSelectedDate('')} className='px-2 py-1 rounded-md text-sm bg-[#f8f3ed] text-[#030105] font-alice'>Clear</button>
+                      )}
+                    </div>
+                  )}
+                  {customMode === 'range' && (
+                    <div className='flex items-center gap-2'>
+                      <input
+                        type='date'
+                        value={rangeStart}
+                        onChange={(e)=>{ setRangeStart(e.target.value); }}
+                        className='px-2 py-1 rounded-md border border-gray-300 text-[#030105] bg-[#fffefc] font-alice'
+                      />
+                      <span className='text-[#030105] text-sm font-alice'>to</span>
+                      <input
+                        type='date'
+                        value={rangeEnd}
+                        onChange={(e)=>{ setRangeEnd(e.target.value); }}
+                        className='px-2 py-1 rounded-md border border-gray-300 text-[#030105] bg-[#fffefc] font-alice'
+                      />
+                      {(rangeStart || rangeEnd) && (
+                        <button onClick={()=>{ setRangeStart(''); setRangeEnd(''); }} className='px-2 py-1 rounded-md text-sm bg-[#f8f3ed] text-[#030105] font-alice'>Clear</button>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Third Column: Generate Report Button */}
+            <div className='flex-1 flex justify-end'>
               <button
-                key={option.key}
-                onClick={() => setDataSource(option.key)}
-                className={`${
-                  dataSource === option.key
-                    ? 'bg-[#860809] text-white'
-                    : 'bg-transparent text-[#030105] hover:bg-[#860809] hover:text-white'
-                } px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 font-alice`}
+                type='button'
+                onClick={handleGenerateSalesCsv}
+                className='px-4 py-2 rounded-md text-sm font-medium bg-[#860809] text-white hover:bg-[#a31f17] transition-colors duration-200 font-alice'
               >
-                {option.label}
+                Generate Reports
               </button>
-            ))}
+            </div>
           </div>
         </div>
         <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6'>
@@ -400,7 +497,7 @@ const DashboardPage = () => {
           <AnalyticsCard
             title='Total Revenue'
             value={`₱${timeframeRevenue.toLocaleString()}`}
-            icon={() => <span className="text-2xl font-bold">₱</span>}
+            icon={PhilippinePeso}
             color='from-[#860809] to-[#a31f17]'
           />
           <AnalyticsCard
@@ -411,7 +508,291 @@ const DashboardPage = () => {
           />
         </div>
 
-        {/* Top Selling Product Section */}
+
+        {/* Charts Section - Two Columns */}
+        <motion.div
+          className= 'mb-6'
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.25 }}
+        >
+          
+          <div className='flex flex-col lg:flex-row gap-6'>
+            {/* First Column - Bar Chart (40%) */}
+            <div className='bg-[#fffefc] rounded-lg shadow-lg border border-gray-300 pt-4 w-full lg:w-2/6'>
+              <h3 className='text-lg font-semibold text-[#860809] mb-4 font-libre text-center'>
+                Category Sales Trends
+              </h3>
+              <ResponsiveContainer width='100%' height={300}>
+                <BarChart data={categorySalesData.length > 0 ? categorySalesData : [
+                  { category: 'pork', quantitySold: 0 },
+                  { category: 'beef', quantitySold: 0 },
+                  { category: 'chicken', quantitySold: 0 },
+                  { category: 'sliced', quantitySold: 0 },
+                  { category: 'processed', quantitySold: 0 },
+                  { category: 'ground', quantitySold: 0 }
+                ]} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray='3 3' stroke='black' strokeOpacity={0.2} />
+                  <XAxis 
+                    dataKey='category' 
+                    stroke='#030105' 
+                    angle={-45}
+                    textAnchor='end'
+                    height={80}
+                    fontSize={12}
+                  />
+                  <YAxis 
+                    stroke='#030105' 
+                    domain={[0, 8]}
+                    tickCount={5}
+                  />
+                  <Tooltip 
+                    contentStyle={{
+                      backgroundColor: '#fffefc',
+                      border: '1px solid #f8f3ed',
+                      borderRadius: '8px',
+                      color: '#030105'
+                    }}
+                  />
+                  <Bar 
+                    dataKey='quantitySold' 
+                    radius={[4, 4, 0, 0]}
+                    name='Quantity Sold'
+                  >
+                    {categorySalesData.length > 0 ? categorySalesData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color || '#860809'} />
+                    )) : [
+                      { category: 'pork', quantitySold: 0 },
+                      { category: 'beef', quantitySold: 0 },
+                      { category: 'chicken', quantitySold: 0 },
+                      { category: 'sliced', quantitySold: 0 },
+                      { category: 'processed', quantitySold: 0 },
+                      { category: 'ground', quantitySold: 0 }
+                    ].map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill='#f3f4f6' />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+
+            {/* Second Column - Line Chart (60%) */}
+            <div className='bg-[#fffefc] rounded-lg shadow-lg border border-gray-300 pt-4 w-full lg:w-4/6'>
+              <h3 className='text-lg font-semibold text-[#860809] mb-4 font-libre text-center'>
+                {dataSource === 'orders' ? 'Online Orders Sales & Revenue Trends' : 
+                 dataSource === 'pos' ? 'POS Sales & Revenue Trends' : 
+                 'Combined Sales & Revenue Trends'}
+              </h3>
+              <ResponsiveContainer width='100%' height={300}>
+                <LineChart data={dailySalesData}>
+                  <CartesianGrid strokeDasharray='3 3' stroke='black' strokeOpacity={0.2} horizontal={true} vertical={true} />
+                  <XAxis dataKey='date' stroke='#030105' />
+                  <YAxis yAxisId='left' stroke='#030105' />
+                  <YAxis yAxisId='right' orientation='right' stroke='#030105' />
+                  <Tooltip 
+                    contentStyle={{
+                      backgroundColor: '#fffefc',
+                      border: '1px solid #f8f3ed',
+                      borderRadius: '8px',
+                      color: '#030105'
+                    }}
+                  />
+                  <Legend />
+                  <Line
+                    yAxisId='left'
+                    type='monotone'
+                    dataKey='sales'
+                    stroke='#22c55e'
+                    strokeWidth={3}
+                    activeDot={{ r: 8, fill: '#16a34a' }}
+                    name='Sales'
+                  />
+                  <Line
+                    yAxisId='right'
+                    type='monotone'
+                    dataKey='revenue'
+                    stroke='#3b82f6'
+                    strokeWidth={3}
+                    activeDot={{ r: 8, fill: '#2563eb' }}
+                    name='Revenue'
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Customer Section */}
+        <motion.div
+          className='mb-6'
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        >
+          
+          <div className='flex flex-col lg:flex-row gap-6'>
+            {/* First Column - Customer Table (60%) */}
+            <div className='bg-[#fffefc] rounded-lg shadow-lg border border-gray-300 pt-4 w-full lg:w-3/5'>
+              <h3 className='text-lg font-semibold text-[#860809] mb-2 font-libre text-center'>
+                Top Customers
+              </h3>
+              <p className='text-xs text-gray-600 text-center mb-4 font-alice'>
+                All customers (not filtered by timeframe)
+              </p>
+              <div className='overflow-x-auto'>
+                <table className='w-full'>
+                  <thead>
+                    <tr className='border-b border-gray-200'>
+                      <th className='text-left py-3 px-4 text-sm font-semibold text-[#860809] font-alice'>Customer Name</th>
+                      <th className='text-left py-3 px-4 text-sm font-semibold text-[#860809] font-alice'>Email</th>
+                      <th className='text-center py-3 px-4 text-sm font-semibold text-[#860809] font-alice'>Orders</th>
+                      <th className='text-center py-3 px-4 text-sm font-semibold text-[#860809] font-alice'>Rating</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {currentCustomers.length > 0 ? (
+                      currentCustomers.map((customer, index) => (
+                        <tr key={customer._id} className='border-b border-gray-100 hover:bg-gray-50'>
+                          <td className='py-3 px-4 text-sm text-[#030105] font-alice'>{customer.customerName}</td>
+                          <td className='py-3 px-4 text-sm text-[#030105] font-alice'>{customer.customerEmail}</td>
+                          <td className='py-3 px-4 text-sm text-center text-[#030105] font-alice'>{customer.totalOrders}</td>
+                          <td className='py-3 px-4 text-sm text-center text-[#030105] font-alice'>
+                            {customer.averageRating > 0 ? (
+                              <span className='flex items-center justify-center'>
+                                <span className='text-yellow-500'>★</span>
+                                <span className='ml-1'>{customer.averageRating}</span>
+                                <span className='ml-1 text-gray-500'>({customer.totalRatings})</span>
+                              </span>
+                            ) : (
+                              <span className='text-gray-400'>No ratings</span>
+                            )}
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="4" className='py-8 text-center text-gray-500 font-alice'>
+                          No customer data available
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+              
+              {/* Pagination Controls */}
+              {customerTotalPages > 1 && (
+                <div className='flex items-center justify-between mt-4 px-4'>
+                  <div className='text-sm text-gray-600 font-alice'>
+                    Showing {customerStartIndex + 1} to {Math.min(customerEndIndex, customerData.length)} of {customerData.length} customers
+                  </div>
+                  <div className='flex items-center space-x-2'>
+                    <button
+                      onClick={() => setCustomerCurrentPage(prev => Math.max(prev - 1, 1))}
+                      disabled={customerCurrentPage === 1}
+                      className='px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed font-alice'
+                    >
+                      Previous
+                    </button>
+                    <span className='text-sm text-gray-600 font-alice'>
+                      Page {customerCurrentPage} of {customerTotalPages}
+                    </span>
+                    <button
+                      onClick={() => setCustomerCurrentPage(prev => Math.min(prev + 1, customerTotalPages))}
+                      disabled={customerCurrentPage === customerTotalPages}
+                      className='px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed font-alice'
+                    >
+                      Next
+                    </button>
+                  </div>
+                </div>
+              )}
+              
+              {/* Last Updated Timestamp - Bottom of first column */}
+              <div className='text-center mt-4'>
+                <p className='text-xs text-gray-500 font-alice'>
+                  As of {new Date().toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric'
+                  })}
+                </p>
+              </div>
+            </div>
+
+            {/* Second Column - Ratings Pie Chart (40%) */}
+            <div className='bg-[#fffefc] rounded-lg shadow-lg border border-gray-300 pt-4 w-full lg:w-2/5'>
+              <h3 className='text-lg font-semibold text-[#860809] mb-2 font-libre text-center'>
+                Rating Distribution
+              </h3>
+              <p className='text-xs text-gray-600 text-center mb-4 font-alice'>
+                All customer reviews (not filtered by timeframe)
+              </p>
+              {Object.values(ratingDistribution).some(count => count > 0) ? (
+                <ResponsiveContainer width='100%' height={300}>
+                  <PieChart>
+                    <Pie
+                      data={Object.entries(ratingDistribution)
+                        .filter(([rating, count]) => count > 0)
+                        .map(([rating, count]) => ({
+                          name: `${rating} Star${rating !== '1' ? 's' : ''}`,
+                          value: count,
+                          rating: parseInt(rating)
+                        }))}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ name, value, percent }) => `${name}: ${value} (${(percent * 100).toFixed(0)}%)`}
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {Object.entries(ratingDistribution)
+                        .filter(([rating, count]) => count > 0)
+                        .map(([rating, count], index) => (
+                        <Cell 
+                          key={`cell-${index}`} 
+                          fill={
+                            rating === '5' ? '#22c55e' : // Green for 5 stars
+                            rating === '4' ? '#84cc16' : // Light green for 4 stars
+                            rating === '3' ? '#eab308' : // Yellow for 3 stars
+                            rating === '2' ? '#f97316' : // Orange for 2 stars
+                            '#ef4444' // Red for 1 star
+                          } 
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip 
+                      contentStyle={{
+                        backgroundColor: '#fffefc',
+                        border: '1px solid #f8f3ed',
+                        borderRadius: '8px',
+                        color: '#030105'
+                      }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className='flex items-center justify-center h-[300px] text-gray-500 font-alice'>
+                  No rating data available
+                </div>
+              )}
+                          {/* Last Updated Timestamp - Bottom of first column */}
+            <div className='text-center mt-4'>
+              <p className='text-xs text-gray-500 font-alice'>
+                As of {new Date().toLocaleDateString('en-US', { 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric'
+                })}
+              </p>
+            </div>
+            </div>
+            
+          </div>
+        </motion.div>
+
+        {/* Top Selling Product Section - MOVED HERE */}
         <div className='mb-6'>
           {/* Top Selling Product */}
           <motion.div
@@ -585,55 +966,6 @@ const DashboardPage = () => {
           </motion.div>
         </div>
 
-        {/* Line Chart Section */}
-        <motion.div
-          className='bg-[#fffefc] rounded-lg p-6 shadow-lg border border-gray-300 mb-6'
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.25 }}
-        >
-          <h2 className='text-2xl font-bold text-[#860809] mb-6 font-libre'>
-            {dataSource === 'orders' ? 'Online Orders Sales & Revenue Trends' : 
-             dataSource === 'pos' ? 'POS Sales & Revenue Trends' : 
-             'Combined Sales & Revenue Trends'}
-          </h2>
-          <ResponsiveContainer width='100%' height={400}>
-            <LineChart data={dailySalesData}>
-              <CartesianGrid strokeDasharray='3 3' stroke='#f8f3ed' />
-              <XAxis dataKey='date' stroke='#030105' />
-              <YAxis yAxisId='left' stroke='#030105' />
-              <YAxis yAxisId='right' orientation='right' stroke='#030105' />
-              <Tooltip 
-                contentStyle={{
-                  backgroundColor: '#fffefc',
-                  border: '1px solid #f8f3ed',
-                  borderRadius: '8px',
-                  color: '#030105'
-                }}
-              />
-              <Legend />
-              <Line
-                yAxisId='left'
-                type='monotone'
-                dataKey='sales'
-                stroke='#22c55e'
-                strokeWidth={3}
-                activeDot={{ r: 8, fill: '#16a34a' }}
-                name='Sales'
-              />
-              <Line
-                yAxisId='right'
-                type='monotone'
-                dataKey='revenue'
-                stroke='#3b82f6'
-                strokeWidth={3}
-                activeDot={{ r: 8, fill: '#2563eb' }}
-                name='Revenue'
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </motion.div>
-
       </div>
     </div>
     </AdminLayout>
@@ -654,7 +986,7 @@ const AnalyticsCard = ({ title, value, icon: Icon, color }) => (
       </div>
     </div>
     <div className={`absolute inset-0 bg-gradient-to-br ${color} opacity-10`} />
-    <div className='absolute -bottom-2 -right-2 text-[#860809] opacity-20'>
+    <div className='absolute -bottom-2 -right-2 text-[#860809] opacity-30'>
       <Icon className='h-20 w-20' />
     </div>
   </motion.div>

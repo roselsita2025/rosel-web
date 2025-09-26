@@ -27,7 +27,7 @@ const PrivacyPolicyPage = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
             >
-              We value your privacy. This policy explains what we collect, how we use it, and your choices.
+              We recognize the importance of your trust and are fully committed to protecting your personal information in compliance with the Data Privacy Act of 2012 (RA 10173) and all applicable rules and regulations enforced by the National Privacy Commission (NPC).
             </motion.p>
             <motion.p 
               className="text-sm text-white mt-4"
@@ -41,7 +41,7 @@ const PrivacyPolicyPage = () => {
         </div>
       </motion.section>
 
-      {/* Content */}
+      {/* Data Collection & Processing */}
       <motion.section 
         className="py-16 bg-[#fffefc]"
         initial={{ opacity: 0, y: 50 }}
@@ -50,145 +50,242 @@ const PrivacyPolicyPage = () => {
         viewport={{ once: true }}
       >
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto space-y-10">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
+          <div className="max-w-6xl mx-auto">
+            <motion.h2 
+              className="text-4xl font-bold text-[#860809] mb-8"
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-3xl font-bold text-[#860809] mb-4">1. Information We Collect</h2>
-              <div className="space-y-2 text-[#030105]">
-                <p>We collect information you provide directly and data collected automatically when you use our services.</p>
-                <ul className="list-disc pl-5 space-y-1">
-                  <li>Account details: name, email, password (hashed), phone, address</li>
-                  <li>Order details: products, amounts, delivery preferences</li>
-                  <li>Payment details processed by our provider (we do not store card data)</li>
-                  <li>Device and usage data: IP, browser, pages viewed</li>
-                  <li>Communications: messages to support and chatbot interactions</li>
-                </ul>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-3xl font-bold text-[#860809] mb-4">2. How We Use Your Information</h2>
-              <ul className="list-disc pl-5 space-y-2 text-[#030105]">
-                <li>Process orders, payments, and deliveries</li>
-                <li>Manage your account, authentication, and security</li>
-                <li>Provide customer support and service updates</li>
-                <li>Improve our website, products, and user experience</li>
-                <li>Detect, prevent, and address fraud or abuse</li>
-              </ul>
-            </motion.div>
-
-            <motion.div
+              Information We Collect
+            </motion.h2>
+            
+            <motion.div 
+              className="bg-[#f8f3ed] p-8 rounded-xl shadow-lg border-2 border-[#860809] mb-8"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-3xl font-bold text-[#860809] mb-4">3. Cookies & Tracking</h2>
-              <p className="text-[#030105]">
-                We use cookies to keep you logged in, remember preferences, and measure site performance. You may disable
-                cookies in your browser, but some features may not work as intended.
+              <p className="text-[#030105] leading-relaxed mb-6">
+                When shopping with us, we may collect, process, and store personal information, including but not limited to:
               </p>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="bg-[#fffefc] p-6 rounded-lg border border-[#a31f17]">
+                  <h3 className="text-xl font-bold text-[#860809] mb-4">Personal Details</h3>
+                  <ul className="list-disc pl-5 space-y-2 text-[#030105]">
+                    <li>Full name, billing and delivery address</li>
+                    <li>Contact numbers and email address</li>
+                    <li>Transaction history and order preferences</li>
+                  </ul>
+                </div>
+                <div className="bg-[#fffefc] p-6 rounded-lg border border-[#a31f17]">
+                  <h3 className="text-xl font-bold text-[#860809] mb-4">Verification Details</h3>
+                  <ul className="list-disc pl-5 space-y-2 text-[#030105]">
+                    <li>Identification details when required</li>
+                    <li>Product replacement verification</li>
+                    <li>Order verification purposes</li>
+                  </ul>
+                </div>
+              </div>
             </motion.div>
+          </div>
+        </div>
+      </motion.section>
 
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
+      {/* Purpose of Data Use */}
+      <motion.section 
+        className="py-16 bg-[#f8f3ed]"
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
+      >
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            <motion.h2 
+              className="text-4xl font-bold text-[#860809] mb-8"
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.5 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-3xl font-bold text-[#860809] mb-4">4. Payments</h2>
-              <p className="text-[#030105]">
-                Payments are processed securely by our payment partner. We do not store full card details on our servers.
-                Transaction metadata may be retained to fulfill orders and for accounting.
+              How We Use Your Information
+            </motion.h2>
+            
+            <motion.div 
+              className="bg-[#fffefc] p-8 rounded-xl shadow-lg border-2 border-[#860809]"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              viewport={{ once: true }}
+            >
+              <p className="text-[#030105] leading-relaxed mb-6">
+                We use this information solely for the following purposes:
+              </p>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div className="bg-[#f8f3ed] p-4 rounded-lg border border-[#a31f17]">
+                    <h3 className="text-lg font-bold text-[#860809] mb-2">Order Processing</h3>
+                    <p className="text-[#030105]">To process and fulfill your orders efficiently</p>
+                  </div>
+                  <div className="bg-[#f8f3ed] p-4 rounded-lg border border-[#a31f17]">
+                    <h3 className="text-lg font-bold text-[#860809] mb-2">Communication</h3>
+                    <p className="text-[#030105]">To communicate updates, order confirmations, and delivery notifications</p>
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <div className="bg-[#f8f3ed] p-4 rounded-lg border border-[#a31f17]">
+                    <h3 className="text-lg font-bold text-[#860809] mb-2">Service Enhancement</h3>
+                    <p className="text-[#030105]">To enhance our services and optimize your customer experience</p>
+                  </div>
+                  <div className="bg-[#f8f3ed] p-4 rounded-lg border border-[#a31f17]">
+                    <h3 className="text-lg font-bold text-[#860809] mb-2">Legal Compliance</h3>
+                    <p className="text-[#030105]">To comply with legal obligations, including fraud prevention, auditing, and compliance reporting</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </motion.section>
+
+      {/* Data Protection & Sharing */}
+      <motion.section 
+        className="py-16 bg-[#fffefc]"
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
+      >
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            <motion.h2 
+              className="text-4xl font-bold text-[#860809] mb-8"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              viewport={{ once: true }}
+            >
+              Data Protection & Sharing
+            </motion.h2>
+            
+            <div className="grid md:grid-cols-2 gap-8">
+              <motion.div 
+                className="bg-[#f8f3ed] p-8 rounded-xl shadow-lg border-2 border-[#860809]"
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                viewport={{ once: true }}
+              >
+                <h3 className="text-2xl font-bold text-[#860809] mb-6">Data Protection Guarantee</h3>
+                <p className="text-[#030105] leading-relaxed mb-4">
+                  We guarantee that we will not sell, rent, transfer, or disclose your personal data to unauthorized third parties.
+                </p>
+                <p className="text-[#030105] leading-relaxed">
+                  Data may be shared exclusively with accredited partners such as delivery services strictly for the purpose of completing the transaction.
+                </p>
+              </motion.div>
+
+              <motion.div 
+                className="bg-[#f8f3ed] p-8 rounded-xl shadow-lg border-2 border-[#860809]"
+                initial={{ opacity: 0, x: 30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                viewport={{ once: true }}
+              >
+                <h3 className="text-2xl font-bold text-[#860809] mb-6">Data Retention & Security</h3>
+                <p className="text-[#030105] leading-relaxed mb-4">
+                  All data collected shall be retained only for as long as necessary to fulfill the purposes stated above, unless a longer retention period is required by law.
+                </p>
+                <p className="text-[#030105] leading-relaxed">
+                  Industry-standard security measures are employed to prevent unauthorized access, alteration, or misuse of data.
+                </p>
+              </motion.div>
+            </div>
+          </div>
+        </div>
+      </motion.section>
+
+      {/* Customer Rights & Consent */}
+      <motion.section 
+        className="py-16 bg-[#f8f3ed]"
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
+      >
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            <motion.h2 
+              className="text-4xl font-bold text-[#860809] mb-8"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              viewport={{ once: true }}
+            >
+              Your Rights & Consent
+            </motion.h2>
+            
+            <motion.div 
+              className="bg-[#fffefc] p-8 rounded-xl shadow-lg border-2 border-[#860809] mb-8"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              viewport={{ once: true }}
+            >
+              <h3 className="text-2xl font-bold text-[#860809] mb-6">Consent & Data Processing</h3>
+              <p className="text-[#030105] leading-relaxed mb-4">
+                By using our services, customers expressly consent to the collection, storage, and lawful processing of their data in accordance with this policy.
+              </p>
+              <p className="text-[#030105] leading-relaxed">
+                Customers also reserve the right, under <strong>RA 10173</strong>, to access, correct, or request the deletion of their personal information by contacting our Data Protection Officer (DPO).
               </p>
             </motion.div>
 
-            <motion.div
+            <motion.div 
+              className="bg-[#fffefc] p-8 rounded-xl shadow-lg border-2 border-[#860809]"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.6 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-3xl font-bold text-[#860809] mb-4">5. Sharing of Information</h2>
-              <ul className="list-disc pl-5 space-y-2 text-[#030105]">
-                <li>Delivery partners for shipping and order fulfillment</li>
-                <li>Payment processors for checkout and refunds</li>
-                <li>Service providers (e.g., cloud hosting, analytics) under contract</li>
-                <li>When required by law or to protect rights and safety</li>
-              </ul>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.7 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-3xl font-bold text-[#860809] mb-4">6. Data Security & Retention</h2>
-              <p className="text-[#030105]">
-                We implement technical and organizational measures to protect your data. We keep information only as long
-                as necessary for the purposes described or as required by law.
+              <h3 className="text-2xl font-bold text-[#860809] mb-6">Product Quality & Replacement Policy</h3>
+              <p className="text-[#030105] leading-relaxed mb-4">
+                We take great pride in the premium quality of our meat products, which undergo strict quality control procedures to ensure that every item delivered meets sanitary, safety, and freshness standards as prescribed by the <strong>Food Safety Act of 2013 (RA 10611)</strong>.
+              </p>
+              <p className="text-[#030105] leading-relaxed">
+                However, recognizing that isolated incidents of product defects may arise, we provide a clear and transparent product replacement policy aligned with both <strong>RA 7394 (Consumer Act of the Philippines)</strong> and <strong>RA 10611</strong>.
               </p>
             </motion.div>
+          </div>
+        </div>
+      </motion.section>
 
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.8 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-3xl font-bold text-[#860809] mb-4">7. Your Rights</h2>
-              <ul className="list-disc pl-5 space-y-2 text-[#030105]">
-                <li>Access, update, or delete your account information</li>
-                <li>Withdraw consent where processing is based on consent</li>
-                <li>Object to or restrict certain processing</li>
-                <li>Request a copy of your data (where applicable)</li>
-              </ul>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.9 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-3xl font-bold text-[#860809] mb-4">8. Children's Privacy</h2>
-              <p className="text-[#030105]">
-                Our services are not directed to children under 13. We do not knowingly collect personal information from children.
-              </p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 1.0 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-3xl font-bold text-[#860809] mb-4">9. Updates to This Policy</h2>
-              <p className="text-[#030105]">
-                We may update this policy from time to time. We will post the latest version here and update the effective date.
-              </p>
-            </motion.div>
-
+      {/* Contact Information */}
+      <motion.section 
+        className="py-16 bg-[#fffefc]"
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
+      >
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
             <motion.div 
-              className="bg-[#f8f3ed] p-6 rounded-xl border-2 border-[#860809]"
+              className="bg-[#f8f3ed] p-8 rounded-xl shadow-lg border-2 border-[#860809] text-center"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 1.1 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-3xl font-bold text-[#860809] mb-4">10. Contact Us</h2>
-              <p className="text-[#030105]">
-                For privacy inquiries or requests, please visit our Contact page or email our support team.
+              <h2 className="text-3xl font-bold text-[#860809] mb-6">Contact Our Data Protection Officer</h2>
+              <p className="text-[#030105] leading-relaxed mb-4">
+                For privacy inquiries, data access requests, or any concerns regarding your personal information, please contact our Data Protection Officer (DPO).
+              </p>
+              <p className="text-[#030105] leading-relaxed">
+                You can reach us through our Contact page or email our support team for assistance with your privacy rights under RA 10173.
               </p>
             </motion.div>
           </div>

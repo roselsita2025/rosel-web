@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { Mail, Lock, Loader, LucideShield, LucideTruck, LucideAward, LucideUser } from "lucide-react";
+import { Mail, Lock, Loader, LucideShield, LucideTruck, LucideAward, LucideUser, Home } from "lucide-react";
 import { Link } from "react-router-dom";
 import Input from "../../components/Input";
 import { useAuthStore } from "../../store/authStore";
@@ -31,8 +31,17 @@ const LoginPage = () => {
         initial={{ opacity: 0, y: 20 }}
 			animate={{ opacity: 1, y: 0 }}
 			transition={{ duration: 0.5 }}
-			className='max-w-md w-full bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden'
+			className='max-w-md w-full bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden relative'
       >
+        {/* Home Icon */}
+        <Link 
+          to="/welcome" 
+          className="absolute top-4 left-4 z-10 p-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
+          title="Go to Home"
+        >
+          <Home className="w-5 h-5 text-gray-600 hover:text-[#8F3333]" />
+        </Link>
+        
         <div className='p-7 pb-2'>
 				<h2 className='text-lg font-semibold text-center text-black flex items-center justify-center'>
 					<LucideUser className='w-5 h-5 mr-2' />

@@ -299,22 +299,15 @@ export const checkAuth = async (req, res) => {
 
 export const getSocketToken = async (req, res) => {
     try {
-        console.log("🔐 getSocketToken called for userId:", req.userId);
-        
         const user = await User.findById(req.userId);
         if (!user) {
-            console.log("❌ User not found for userId:", req.userId);
             return res.status(400).json({ success: false, message: "User not found" });
         }
-
-        console.log("✅ User found:", user.name, "Role:", user.role);
 
         // Generate a temporary token for WebSocket authentication
         const socketToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
             expiresIn: "1h", // Short-lived token for security
         });
-
-        console.log("🎫 Socket token generated successfully");
 
         res.status(200).json({
             success: true,
@@ -325,7 +318,7 @@ export const getSocketToken = async (req, res) => {
             }
         });
     } catch (error) {
-        console.log("❌ Error in getSocketToken:", error);
+        console.error("❌ Error in getSocketToken:", error);
         res.status(400).json({ success: false, message: error.message });
     }
 };

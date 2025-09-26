@@ -705,3 +705,154 @@ export const getTopProductsBySource = async (startDate, endDate, dataSource = 'c
         .sort((a, b) => b.orderCount - a.orderCount || new Date(b.latestOrderDate) - new Date(a.latestOrderDate))
         .slice(0, limit);
 };
+
+// Get customer analytics data
+export const getCustomerAnalytics = async (req, res) => {
+    try {
+        const { timeframe = 'all', source = 'combined' } = req.query;
+        
+        // Calculate date range based on timeframe
+        let startDate, endDate;
+        const now = new Date();
+        
+        switch (timeframe) {
+            case 'today':
+                startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+                break;
+            case 'week':
+                startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                endDate = now;
+                break;
+            case 'month':
+                startDate = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+                endDate = now;
+                break;
+            case 'year':
+                startDate = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+                endDate = now;
+                break;
+            default:
+                startDate = null;
+                endDate = null;
+        }
+
+        // Build match criteria for orders
+        let orderMatch = {
+            paymentStatus: 'paid',
+            status: { $nin: ['cancelled', 'refunded'] }
+        };
+
+        if (startDate && endDate) {
+            orderMatch.createdAt = { $gte: startDate, $lte: endDate };
+        }
+
+        // Add source filter
+        if (source !== 'combined') {
+            orderMatch.source = source;
+        }
+
+        // Get customer data with order counts and ratings - always show all customers
+        // This is not affected by timeframe or data source filters
+        const customerData = await Order.aggregate([
+            {
+                $match: {
+                    paymentStatus: 'paid',
+                    status: { $nin: ['cancelled', 'refunded'] }
+                }
+            },
+            {
+                $group: {
+                    _id: '$user',
+                    customerName: { $first: { $concat: ['$shippingInfo.firstName', ' ', '$shippingInfo.lastName'] } },
+                    customerEmail: { $first: '$shippingInfo.email' },
+                    totalOrders: { $sum: 1 },
+                    totalSpent: { $sum: '$productSubtotal' }
+                }
+            },
+            {
+                $lookup: {
+                    from: 'reviews',
+                    localField: '_id',
+                    foreignField: 'userId',
+                    as: 'reviews'
+                }
+            },
+            {
+                $addFields: {
+                    totalRatings: { $size: '$reviews' },
+                    averageRating: {
+                        $cond: {
+                            if: { $gt: [{ $size: '$reviews' }, 0] },
+                            then: { $avg: '$reviews.rating' },
+                            else: 0
+                        }
+                    }
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    customerName: 1,
+                    customerEmail: 1,
+                    totalOrders: 1,
+                    totalSpent: 1,
+                    totalRatings: 1,
+                    averageRating: { $round: ['$averageRating', 1] }
+                }
+            },
+            { $sort: { totalOrders: -1 } },
+            { $limit: 10 }
+        ]);
+
+        // Get rating distribution directly from reviews collection - always show all reviews
+        // This is not affected by timeframe or data source filters
+        const Review = (await import('../models/Review.js')).default;
+        
+        const ratingDistribution = await Review.aggregate([
+            {
+                $group: {
+                    _id: '$rating',
+                    count: { $sum: 1 }
+                }
+            },
+            {
+                $project: {
+                    rating: '$_id',
+                    count: 1,
+                    _id: 0
+                }
+            },
+            { $sort: { rating: 1 } }
+        ]);
+
+        // Format rating distribution
+        const ratingData = {};
+        for (let i = 1; i <= 5; i++) {
+            ratingData[i] = 0;
+        }
+        
+        ratingDistribution.forEach(item => {
+            ratingData[item.rating] = item.count;
+        });
+
+        console.log('Customer Data (all customers - not filtered):', customerData);
+        console.log('Rating Distribution Raw (all reviews - not filtered):', ratingDistribution);
+        console.log('Rating Distribution Formatted:', ratingData);
+        console.log('Note: Customer Analytics section is not affected by timeframe/source filters');
+
+        res.json({
+            success: true,
+            customerData,
+            ratingDistribution: ratingData
+        });
+
+    } catch (error) {
+        console.error('Error fetching customer analytics:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error fetching customer analytics',
+            error: error.message
+        });
+    }
+};

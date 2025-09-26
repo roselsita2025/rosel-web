@@ -33,7 +33,7 @@ const OrderGuidelinesPage = () => {
         </div>
       </motion.section>
 
-      {/* How to Order */}
+      {/* Operating Hours & Business Policies */}
       <motion.section 
         className="py-16 bg-[#fffefc]"
         initial={{ opacity: 0, y: 50 }}
@@ -50,47 +50,50 @@ const OrderGuidelinesPage = () => {
               transition={{ duration: 0.6, delay: 0.2 }}
               viewport={{ once: true }}
             >
-              How to Order
+              Operating Hours & Business Policies
             </motion.h2>
-            <div className="grid md:grid-cols-2 gap-8">
-              <motion.ol 
-                className="space-y-4 bg-[#f8f3ed] p-6 rounded-xl shadow border-2 border-[#860809]"
-                initial={{ opacity: 0, x: -30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
-                viewport={{ once: true }}
-              >
-                {[
-                  "Browse products and add items to your cart.",
-                  "Review your cart and apply coupons if available.",
-                  "Enter delivery information and choose shipping method.",
-                  "Proceed to payment and complete checkout.",
-                  "Receive order confirmation and track status in your account.",
-                ].map((step, idx) => (
-                  <li key={idx} className="flex items-start">
-                    <span className="mr-3 mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#860809] text-white text-sm font-bold">
-                      {idx + 1}
-                    </span>
-                    <span className="text-[#030105]">{step}</span>
-                  </li>
-                ))}
-              </motion.ol>
+            
+            <motion.div 
+              className="bg-[#f8f3ed] p-8 rounded-xl shadow-lg border-2 border-[#860809] mb-8"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              viewport={{ once: true }}
+            >
+              <h3 className="text-2xl font-bold text-[#860809] mb-6">Store Operating Hours</h3>
+              <div className="bg-[#fffefc] p-6 rounded-lg border border-[#a31f17] mb-6">
+                <p className="text-lg font-semibold text-[#860809] mb-4">
+                  Daily: 9:00 AM to 10:00 PM
+                </p>
+                <p className="text-[#030105] leading-relaxed">
+                  Our store operates daily from 9:00 AM to 10:00 PM, strictly adhering to internal business protocols and external regulations governing the safe and proper handling of perishable food products. Orders submitted beyond operational hours shall be automatically queued and processed on the next business day.
+                </p>
+              </div>
+              <p className="text-[#030105] leading-relaxed">
+                This policy is in place not merely for logistical efficiency but also for the preservation of quality, in accordance with the principles of <strong>Republic Act (RA) 7394, the Consumer Act of the Philippines</strong>, which ensures that all consumers receive goods that meet the highest safety and quality standards.
+              </p>
+            </motion.div>
 
-              <motion.div 
-                className="bg-[#f8f3ed] p-6 rounded-xl border-2 border-[#860809]"
-                initial={{ opacity: 0, x: 30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
-                viewport={{ once: true }}
-              >
-                <h3 className="text-2xl font-bold text-[#860809] mb-4">Quick Tips</h3>
-                <ul className="list-disc pl-5 space-y-2 text-[#030105]">
-                  <li>Create an account and verify your email for a faster checkout.</li>
-                  <li>Double-check your address and contact number before placing the order.</li>
-                  <li>For time-sensitive deliveries, choose Lalamove when available.</li>
-                </ul>
-              </motion.div>
-            </div>
+            <motion.div 
+              className="bg-[#f8f3ed] p-8 rounded-xl shadow-lg border-2 border-[#860809]"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.6 }}
+              viewport={{ once: true }}
+            >
+              <h3 className="text-2xl font-bold text-[#860809] mb-6">Order Review & Verification</h3>
+              <p className="text-[#030105] leading-relaxed mb-4">
+                Customers are strongly encouraged to review their orders thoroughly before finalizing checkout. This includes verifying:
+              </p>
+              <ul className="list-disc pl-6 space-y-2 text-[#030105] mb-4">
+                <li>Product type and specific cuts</li>
+                <li>Quantity and pricing</li>
+                <li>Delivery address and contact details</li>
+              </ul>
+              <p className="text-[#030105] leading-relaxed">
+                Any errors or omissions provided during checkout may result in processing delays, which the company shall not be held liable for. To ensure fairness, same-day delivery requests must be confirmed and paid before the designated cut-off time.
+              </p>
+            </motion.div>
           </div>
         </div>
       </motion.section>
@@ -217,7 +220,7 @@ const OrderGuidelinesPage = () => {
         </div>
       </motion.section>
 
-      {/* Changes, Cancellations, Returns */}
+      {/* Customer Agreement & Terms */}
       <motion.section 
         className="py-16 bg-[#f8f3ed]"
         initial={{ opacity: 0, y: 50 }}
@@ -228,52 +231,73 @@ const OrderGuidelinesPage = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <motion.h2 
-              className="text-3xl font-bold text-[#860809] mb-6"
+              className="text-4xl font-bold text-[#860809] mb-8"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               viewport={{ once: true }}
             >
-              Order Changes, Cancellations & Returns
+              Customer Agreement & Terms
             </motion.h2>
-            <div className="grid md:grid-cols-3 gap-6">
-              <motion.div 
-                className="bg-[#fffefc] p-6 rounded-xl shadow border-2 border-[#860809]"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
-                viewport={{ once: true }}
-              >
-                <h3 className="text-xl font-bold text-[#a31f17] mb-2">Change Requests</h3>
-                <p className="text-[#030105]">
-                  Changes can be requested while your order is still in processing. Visit Track Orders to submit a change.
+            
+            <motion.div 
+              className="bg-[#fffefc] p-8 rounded-xl shadow-lg border-2 border-[#860809] mb-8"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              viewport={{ once: true }}
+            >
+              <h3 className="text-2xl font-bold text-[#860809] mb-6">By placing an order with our store, the customer voluntarily acknowledges and agrees that:</h3>
+              <div className="space-y-6">
+                <div className="bg-[#f8f3ed] p-6 rounded-lg border border-[#a31f17]">
+                  <div className="flex items-start">
+                    <span className="mr-4 mt-1 inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#860809] text-white text-lg font-bold flex-shrink-0">
+                      1
+                    </span>
+                    <p className="text-[#030105] leading-relaxed">
+                      <strong>Orders placed after 10:00 PM will be automatically processed the following day.</strong>
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="bg-[#f8f3ed] p-6 rounded-lg border border-[#a31f17]">
+                  <div className="flex items-start">
+                    <span className="mr-4 mt-1 inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#860809] text-white text-lg font-bold flex-shrink-0">
+                      2
+                    </span>
+                    <p className="text-[#030105] leading-relaxed">
+                      <strong>Deliveries and pickups will only be honored within business hours to comply with operational safety standards.</strong>
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="bg-[#f8f3ed] p-6 rounded-lg border border-[#a31f17]">
+                  <div className="flex items-start">
+                    <span className="mr-4 mt-1 inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#860809] text-white text-lg font-bold flex-shrink-0">
+                      3
+                    </span>
+                    <p className="text-[#030105] leading-relaxed">
+                      <strong>Cancellations made after orders have been dispatched will not be honored, except in cases permitted under the Consumer Act of the Philippines, specifically relating to defective or unsafe products.</strong>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div 
+              className="bg-[#fffefc] p-8 rounded-xl shadow-lg border-2 border-[#860809]"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.6 }}
+              viewport={{ once: true }}
+            >
+              <h3 className="text-2xl font-bold text-[#860809] mb-6">Company Rights & Fraud Protection</h3>
+              <div className="bg-[#f8f3ed] p-6 rounded-lg border border-[#a31f17]">
+                <p className="text-[#030105] leading-relaxed">
+                  The company reserves the absolute right to cancel or reject transactions suspected to involve fraudulent activity, misrepresentation, or abuse of the ordering system. These policies are designed not only to protect the integrity of our services but also to uphold fair trade practices as mandated by Philippine law.
                 </p>
-              </motion.div>
-              <motion.div 
-                className="bg-[#fffefc] p-6 rounded-xl shadow border-2 border-[#860809]"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.5 }}
-                viewport={{ once: true }}
-              >
-                <h3 className="text-xl font-bold text-[#a31f17] mb-2">Cancellations</h3>
-                <p className="text-[#030105]">
-                  Cancellation is possible before dispatch/pickup preparation. Fees may apply depending on payment status.
-                </p>
-              </motion.div>
-              <motion.div 
-                className="bg-[#fffefc] p-6 rounded-xl shadow border-2 border-[#860809]"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.6 }}
-                viewport={{ once: true }}
-              >
-                <h3 className="text-xl font-bold text-[#a31f17] mb-2">Replacements</h3>
-                <p className="text-[#030105]">
-                  For concerns on quality, quantity, or incorrect items, submit a Replacement Request within 24 hours of receipt.
-                </p>
-              </motion.div>
-            </div>
+              </div>
+            </motion.div>
           </div>
         </div>
       </motion.section>

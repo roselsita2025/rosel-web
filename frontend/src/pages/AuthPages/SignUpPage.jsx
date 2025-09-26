@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Loader, Lock, LucideAward, LucideShield, LucideTruck, Mail, User, LucideUserPlus } from "lucide-react";
+import { Loader, Lock, LucideAward, LucideShield, LucideTruck, Mail, User, LucideUserPlus, Home } from "lucide-react";
 import { useState } from "react";
 import Input from "../../components/Input";
 import { Link, useNavigate } from "react-router-dom";
@@ -51,8 +51,17 @@ const SignUpPage = () => {
             initial={{ opacity: 0, y: 20 }}
 		    animate={{ opacity: 1, y: 0 }}
 		    transition={{ duration: 0.5 }}
-		    className='max-w-md w-full bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden'
+		    className='max-w-md w-full bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden relative'
         >
+            {/* Home Icon */}
+            <Link 
+              to="/welcome" 
+              className="absolute top-4 left-4 z-10 p-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
+              title="Go to Home"
+            >
+              <Home className="w-5 h-5 text-gray-600 hover:text-[#8F3333]" />
+            </Link>
+            
             <div className='p-7 pt-4 pb-2'>
 		        <h2 className='text-lg font-semibold mb-1 text-center text-black flex items-center justify-center'>
 			        <LucideUserPlus className='w-5 h-5 mr-2 text-black' />

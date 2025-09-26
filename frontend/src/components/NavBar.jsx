@@ -1,5 +1,5 @@
 import { ShoppingCart, UserPlus, LogIn, LogOut, User, Menu, X, ChevronLeft, ChevronRight, Search } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuthStore } from "../store/authStore.js";
 import { cartStore } from "../store/cartStore.js";
 import { useEffect, useRef, useState } from "react";
@@ -19,6 +19,7 @@ const Navbar = () => {
 	const isAdmin = user?.role === "admin";
 	const { cart } = cartStore();
 	const navigate = useNavigate();
+	const location = useLocation();
 	const { isSidebarCollapsed, toggleSidebar } = useSidebar();
 	const { fetchPendingOrdersCount } = useAdminOrderStore();
 	const { fetchPendingRequestsCount } = useReplacementRequestStore();
@@ -39,6 +40,9 @@ const Navbar = () => {
 	// Scroll detection for navbar hide/show
 	const [isNavbarVisible, setIsNavbarVisible] = useState(true);
 	const [lastScrollY, setLastScrollY] = useState(0);
+	
+	// Scroll detection for navbar transparency
+	const [isAtTop, setIsAtTop] = useState(true);
 	
 	// Search bar visibility
 	const [isSearchVisible, setIsSearchVisible] = useState(false);
@@ -68,8 +72,28 @@ const Navbar = () => {
 
 	// Scroll detection effect
 	useEffect(() => {
+		// Pages where scroll-based styling should be disabled
+		const excludedPages = [
+			'/track-orders',
+			'/profile', 
+			'/account-settings',
+			'/my-replacement-request',
+			'/replacement-request',
+			'/cart',
+			'/information',
+			'/shipping',
+			'/payment',
+			'/ratings'
+		];
+		
+		const isExcludedPage = excludedPages.some(page => location.pathname.includes(page));
+		
 		const handleScroll = () => {
 			const currentScrollY = window.scrollY;
+			
+			// Check if at the very top of the page (only apply scroll styling if not on excluded pages)
+			// On excluded pages, always use normal navbar styling (isAtTop = false)
+			setIsAtTop(isExcludedPage ? false : currentScrollY === 0);
 			
 			// Show navbar when at top or scrolling up
 			if (currentScrollY < 10) {
@@ -87,7 +111,7 @@ const Navbar = () => {
 
 		window.addEventListener('scroll', handleScroll, { passive: true });
 		return () => window.removeEventListener('scroll', handleScroll);
-	}, [lastScrollY]);
+	}, [lastScrollY, location.pathname]);
 
 	// Fetch pending orders count for admin
 	useEffect(() => {
@@ -421,7 +445,7 @@ const Navbar = () => {
 			) : (
 				<>
 					{/* Mobile Sidebar */}
-					<div className={`fixed inset-0 z-50 lg:hidden ${isMobileMenuOpen ? 'block' : 'hidden'}`}>
+					<div className={`fixed inset-0 z-30 lg:hidden ${isMobileMenuOpen ? 'block' : 'hidden'}`}>
 						{/* Backdrop */}
 						<div 
 							className="fixed inset-0 bg-black bg-opacity-50"
@@ -433,7 +457,7 @@ const Navbar = () => {
 							isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
 						}`}> 
 								<div className="flex items-center justify-between px-4 py-4 border-b border-[#860809]">
-									<span className="text-lg font-bold text-[#860809] font-libre">Menu</span>
+									<span className="text-lg font-bold text-[#860809] font-libre">ROSEL FROZEN MEATS</span>
 								<button
 									onClick={() => setIsMobileMenuOpen(false)}
 										className="p-2 rounded hover:bg-[#fffefc] transition"
@@ -513,20 +537,21 @@ const Navbar = () => {
 						</div>
 					</div>
 
-					<header className={`fixed top-0 left-0 w-full bg-[#f8f3ed] z-50 transition-all duration-300 ${isNavbarVisible ? 'translate-y-0' : '-translate-y-full'}`} style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+					<header className={`fixed top-0 left-0 w-full ${isAtTop ? 'bg-transparent' : 'bg-[#f8f3ed]'} z-20 transition-all duration-300 ${isNavbarVisible ? 'translate-y-0' : '-translate-y-full'}`} style={{ boxShadow: isAtTop ? 'none' : '0 1px 3px rgba(0,0,0,0.1)' }}>
 						<div className='container mx-auto px-4 sm:px-8 lg:px-12 py-3 sm:py-4 lg:py-6'>
 							<div className='flex flex-wrap justify-between items-center '>
 								{/* Mobile menu button and logo */}
 								<div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-3">
 									<button
 										onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-										className="lg:hidden p-1 sm:p-2 rounded hover:bg-[#f7e9b8] transition"
+										className={`lg:hidden p-1 sm:p-2 rounded transition ${isAtTop ? 'hover:bg-white/20' : 'hover:bg-[#f7e9b8]'}`}
 										aria-label="Toggle menu"
 									>
-										{isMobileMenuOpen ? <X className="text-[#901414]" size={20} /> : <Menu className="text-[#901414]" size={20} />}
+										{isMobileMenuOpen ? <X className={isAtTop ? "text-white" : "text-[#901414]"} size={isAtTop ? 24 : 20} /> : <Menu className={isAtTop ? "text-white" : "text-[#901414]"} size={isAtTop ? 24 : 20} />}
 									</button>
-									<Link to='/welcome' className='text-lg sm:text-xl lg:text-2xl font-bold text-[#901414] items-center space-x-2 flex font-nexa'>
-										<img src="/rosellogo.png" alt="Rosel Logo" className="h-8 w-12 sm:h-10 sm:w-16" />
+									{/* Show logo and brand text only on desktop for customer/guest users */}
+									<Link to='/welcome' className={`hidden lg:flex ${isAtTop ? 'text-xl sm:text-2xl lg:text-3xl' : 'text-lg sm:text-xl lg:text-2xl'} font-bold ${isAtTop ? 'text-white' : 'text-[#901414]'} items-center space-x-2 font-nexa`}>
+										<img src="/rosellogo.png" alt="Rosel Logo" className={isAtTop ? "h-10 w-15 sm:h-12 sm:w-19" : "h-8 w-12 sm:h-10 sm:w-16"} />
 										Rosel Frozen Meats
 									</Link>
 								</div>
@@ -535,28 +560,28 @@ const Navbar = () => {
 								<nav className='hidden lg:flex flex-wrap items-center [&>*]:mx-5 gap-4 justify-center flex-grow '>
 									<Link
 												to={"/welcome"}
-												className='text-[#901414] font-semibold hover:text-[#810e0e] transition duration-300 ease-in-out hover:underline hover:underline-offset-8 hover:decoration-[#810e0e] font-alice'
+												className={`${isAtTop ? 'text-lg' : 'text-base'} ${isAtTop ? 'text-white hover:text-white/80' : 'text-[#901414] hover:text-[#810e0e]'} font-semibold transition duration-300 ease-in-out hover:underline hover:underline-offset-8 ${isAtTop ? 'hover:decoration-white/80' : 'hover:decoration-[#810e0e]'} font-alice`}
 											>
 												Home
 											</Link>
 
 									<Link
 												to={"/products"} //Add Shop page later
-												className='text-[#901414] font-semibold hover:text-[#810e0e] transition duration-300 ease-in-out hover:underline hover:underline-offset-8 hover:decoration-[#810e0e] font-alice'
+												className={`${isAtTop ? 'text-lg' : 'text-base'} ${isAtTop ? 'text-white hover:text-white/80' : 'text-[#901414] hover:text-[#810e0e]'} font-semibold transition duration-300 ease-in-out hover:underline hover:underline-offset-8 ${isAtTop ? 'hover:decoration-white/80' : 'hover:decoration-[#810e0e]'} font-alice`}
 											>
 												Products
 											</Link>
 
 									<Link
 												to={"/about"} //Add About page later
-												className='text-[#901414] font-semibold hover:text-[#810e0e] transition duration-300 ease-in-out hover:underline hover:underline-offset-8 hover:decoration-[#810e0e] font-alice'
+												className={`${isAtTop ? 'text-lg' : 'text-base'} ${isAtTop ? 'text-white hover:text-white/80' : 'text-[#901414] hover:text-[#810e0e]'} font-semibold transition duration-300 ease-in-out hover:underline hover:underline-offset-8 ${isAtTop ? 'hover:decoration-white/80' : 'hover:decoration-[#810e0e]'} font-alice`}
 											>
 												About
 											</Link>
 									
 									<Link
 												to={"/contactus"} //Add Contact page later
-												className='text-[#901414] font-semibold hover:text-[#810e0e] transition duration-300 ease-in-out hover:underline hover:underline-offset-8 hover:decoration-[#810e0e] font-alice'
+												className={`${isAtTop ? 'text-lg' : 'text-base'} ${isAtTop ? 'text-white hover:text-white/80' : 'text-[#901414] hover:text-[#810e0e]'} font-semibold transition duration-300 ease-in-out hover:underline hover:underline-offset-8 ${isAtTop ? 'hover:decoration-white/80' : 'hover:decoration-[#810e0e]'} font-alice`}
 											>
 												Contact
 											</Link>
@@ -568,10 +593,10 @@ const Navbar = () => {
 											{!isSearchVisible ? (
 												<button
 													onClick={() => setIsSearchVisible(true)}
-													className='p-2 rounded hover:bg-[#f7e9b8] transition text-[#901414]'
+													className={`p-2 rounded transition ${isAtTop ? 'hover:bg-white/20 text-white' : 'hover:bg-[#f7e9b8] text-[#901414]'}`}
 													aria-label="Search"
 												>
-													<Search size={20} />
+													<Search size={isAtTop ? 24 : 20} />
 												</button>
 											) : (
 												<div className='w-72'>
@@ -605,21 +630,19 @@ const Navbar = () => {
 											)}
 										</div>
 									)}
-									<NotificationBell />
+									<NotificationBell isAtTop={isAtTop} />
 									{/* {user && ( */}
 									<Link
 										to={"/carts"}
-										className='relative group text-[#901414] hover:text-[#810e0e] transition duration-300 
-									ease-in-out p-2 rounded hover:bg-[#f7e9b8]'
+										className={`relative group transition duration-300 ease-in-out p-2 rounded ${isAtTop ? 'text-white hover:text-white/80 hover:bg-white/20' : 'text-[#901414] hover:text-[#810e0e] hover:bg-[#f7e9b8]'}`}
 									>
-										<ShoppingCart className='group-hover:text-[#810e0e]' size={20} />
+										<ShoppingCart className={`${isAtTop ? 'group-hover:text-white/80' : 'group-hover:text-[#810e0e]'}`} size={isAtTop ? 24 : 20} />
 										<span className='hidden sm:inline'>
 											{/* Cart */}
 										</span>
 										{cart.length > 0 && (
 											<span
-												className='absolute -top-2 -left-2 bg-[#901414] text-white rounded-full px-2 py-0.5 
-											text-xs group-hover:bg-[#a31f17] transition duration-300 ease-in-out'
+												className={`absolute -top-2 -left-2 ${isAtTop ? 'bg-white text-[#901414] group-hover:bg-white/90' : 'bg-[#901414] text-white group-hover:bg-[#a31f17]'} rounded-full px-2 py-0.5 text-xs transition duration-300 ease-in-out`}
 											>
 												{cart.length}
 											</span>
@@ -641,14 +664,14 @@ const Navbar = () => {
 									<div className='relative' ref={profileMenuRef}>
 										<button
 											onClick={() => setIsProfileMenuOpen((prev) => !prev)}
-											className='p-2 rounded hover:bg-[#f7e9b8] text-[#901414] hover:text-[#810e0e] transition-colors duration-200'
+											className={`p-2 rounded transition-colors duration-200 ${isAtTop ? 'hover:bg-white/20 text-white hover:text-white/80' : 'hover:bg-[#f7e9b8] text-[#901414] hover:text-[#810e0e]'}`}
 											aria-haspopup='menu'
 											aria-expanded={isProfileMenuOpen}
 										>
 											{user && (user.profileImageUrl || user.avatarUrl || user.profileImage || user.photoURL || user.photo) ? (
-												<img src={user.profileImageUrl || user.avatarUrl || user.profileImage || user.photoURL || user.photo} alt='Profile' className='w-5 h-5 sm:w-6 sm:h-6 object-cover rounded-full' />
+												<img src={user.profileImageUrl || user.avatarUrl || user.profileImage || user.photoURL || user.photo} alt='Profile' className={`${isAtTop ? 'w-6 h-6 sm:w-7 sm:h-7' : 'w-5 h-5 sm:w-6 sm:h-6'} object-cover rounded-full`} />
 											) : (
-												<User size={20} />
+												<User size={isAtTop ? 24 : 20} />
 											)}
 										</button>
 
@@ -684,11 +707,11 @@ const Navbar = () => {
 									<div className='relative' ref={profileMenuRef}>
 										<button
 											onClick={() => setIsProfileMenuOpen((prev) => !prev)}
-											className='p-2 rounded hover:bg-[#f7e9b8] text-[#901414] hover:text-[#810e0e] transition-colors duration-200'
+											className={`p-2 rounded transition-colors duration-200 ${isAtTop ? 'hover:bg-white/20 text-white hover:text-white/80' : 'hover:bg-[#f7e9b8] text-[#901414] hover:text-[#810e0e]'}`}
 											aria-haspopup='menu'
 											aria-expanded={isProfileMenuOpen}
 										>
-											<User size={20} />
+											<User size={isAtTop ? 24 : 20} />
 										</button>
 
 										{isProfileMenuOpen && (

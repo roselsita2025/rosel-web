@@ -73,8 +73,6 @@ const server = app.listen(PORT, async () => {
     
     // Initialize WebSocket service
     socketService.initialize(server);
-    
-    console.log(`💬 WebSocket server initialized`);
 });
 
 // Serve React app for all non-API routes

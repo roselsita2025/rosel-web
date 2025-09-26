@@ -17,7 +17,8 @@ import {
     getNewOrdersCountBySource,
     getTotalSalesQuantityBySource,
     getRevenueBySource,
-    getTopProductsBySource
+    getTopProductsBySource,
+    getCustomerAnalytics
 } from "../controllers/analytics.controller.js";
 
 
@@ -402,5 +403,8 @@ router.get("/top-products-by-source", verifyToken, verifyAdmin, async (req, res)
         res.status(500).json({ message: "Server error", error: error.message });
     }
 });
+
+// Get customer analytics
+router.get("/customers", verifyToken, verifyAdmin, getCustomerAnalytics);
 
 export default router;

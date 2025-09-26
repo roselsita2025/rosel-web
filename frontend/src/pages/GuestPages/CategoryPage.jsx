@@ -4,7 +4,7 @@ import { useParams, Link } from 'react-router-dom';
 import { motion } from "framer-motion";
 import Footer from "../../components/Footer.jsx";
 import CategoryItem from "../../components/GuestComponents/CategoryItem.jsx";
-import { ShoppingCart, Eye, Filter, ChevronDown } from "lucide-react";
+import { ShoppingCart, Eye, Filter, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { cartStore } from "../../store/cartStore.js";
 import { useAuthStore } from "../../store/authStore.js";
 
@@ -36,9 +36,43 @@ const CategoryPage = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const productsPerPage = 20;
 
+    // Carousel state for category cards
+    const [currentCategoryIndex, setCurrentCategoryIndex] = useState(0);
+    const [itemsPerView, setItemsPerView] = useState(6); // Default for large screens
+
     useEffect(() => {
 		fetchProductsByCategory(category);
 	}, [fetchProductsByCategory, category]);
+
+    // Carousel responsive logic
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth < 640) {
+                setItemsPerView(2); // Mobile: 2 cards
+            } else if (window.innerWidth < 1024) {
+                setItemsPerView(3); // Medium: 3 cards
+            } else {
+                setItemsPerView(6); // Large: all cards
+            }
+        };
+
+        handleResize();
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+    // Navigation functions
+    const nextCategory = () => {
+        setCurrentCategoryIndex((prevIndex) =>
+            prevIndex + itemsPerView >= categories.length ? 0 : prevIndex + itemsPerView
+        );
+    };
+
+    const prevCategory = () => {
+        setCurrentCategoryIndex((prevIndex) =>
+            prevIndex - itemsPerView < 0 ? Math.max(0, categories.length - itemsPerView) : prevIndex - itemsPerView
+        );
+    };
 
     // Close dropdowns when clicking outside
     useEffect(() => {
@@ -181,21 +215,30 @@ const CategoryPage = () => {
 				}
 			`}</style>
 			<div className='min-h-screen bg-white w-full'>
-			{/* Category Header Section - positioned below navbar */}
-			<div className='pt-20 sm:pt-24 sm:pb-2 bg-[#901414] w-full flex justify-center'>
-				<div className='w-full max-w-6xl px-3 sm:px-4 md:px-6 lg:px-8 py-8 flex flex-col items-center mx-auto'>
-					<motion.h1
-						className='w-full text-center text-2xl sm:text-3xl md:text-4xl font-bold text-white'
-						initial={{ opacity: 0, y: -20 }}
+			{/* Category Header Section - Apply ProductsPage Section 1 styling */}
+			<section className='bg-[#901414] relative z-10 px-4 sm:px-6 lg:px-8 pt-24 '>
+				<motion.div 
+					initial={{ opacity: 0, y: 20 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={{ duration: 0.8, delay: 0.2 }}
+				>
+					<motion.h1 
+						className='text-center text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 font-libre'
+						initial={{ opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
-						transition={{ duration: 0.8 }}
+						transition={{ duration: 0.6, delay: 0.4 }}
 					>
 						{category.charAt(0).toUpperCase() + category.slice(1)}
-
-						<p className="w-full max-w-7xl text-center text-base sm:text-md mt-4 text-white font-medium ">
+					</motion.h1>
+					<motion.p 
+						className='text-center text-sm sm:text-base md:text-lg text-white max-w-3xl mx-auto font-alice px-4'
+						initial={{ opacity: 0, y: 20 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ duration: 0.6, delay: 0.6 }}
+					>
 						{(() => {
 							const details = {
-								pork: "Discover our selection of premium pork products, perfect for every meal. Discover our selection of premium pork products, perfect for every meal.",
+								pork: "Discover our selection of premium pork products, perfect for every meal.",
 								beef: "Beef products here are delicious, tender, and full of flavor.",
 								chicken: "Enjoy our fresh chicken products, perfect for healthy and tasty dishes.",
 								sliced: "Sliced products for your convenience—ready to cook or serve.",
@@ -205,31 +248,71 @@ const CategoryPage = () => {
 							const key = category.toLowerCase();
 							return details[key] || "Browse our selection of quality products.";
 						})()}
-					</p>
-					</motion.h1>
+					</motion.p>
+				</motion.div>
+			</section>
 
-				</div>
-			</div>
+			{/* Categories Grid Section - Apply ProductsPage Section 2 styling with carousel */}
+			<section
+				className="relative z-10 w-full mx-auto px-4 sm:px-6 lg:px-8 pb-8 pt-8"
+				style={{
+					background: "linear-gradient(to bottom, #901414 0%, #901414 50%, #fff 50%, #fff 100%)"
+				}}
+			>
+				<motion.div
+					className='relative max-w-7xl mx-auto'
+					initial={{ opacity: 0, y: 50 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={{ duration: 0.8, delay: 1.0 }}
+				>
+					{/* Navigation Buttons - Only show on mobile and medium screens when there are more items than can be displayed */}
+					{itemsPerView < 6 && categories.length > itemsPerView && (
+						<>
+							<button
+								onClick={prevCategory}
+								className="absolute left-2 top-1/2 -translate-y-1/2 z-20 bg-white/95 hover:bg-white text-[#901414] p-2 rounded-full shadow-lg transition-all duration-300 hover:scale-110"
+								aria-label="Previous categories"
+							>
+								<ChevronLeft size={20} />
+							</button>
+							<button
+								onClick={nextCategory}
+								className="absolute right-2 top-1/2 -translate-y-1/2 z-20 bg-white/95 hover:bg-white text-[#901414] p-2 rounded-full shadow-lg transition-all duration-300 hover:scale-110"
+								aria-label="Next categories"
+							>
+								<ChevronRight size={20} />
+							</button>
+						</>
+					)}
 
-			{/* Categories Grid Section */}
-			<div className='w-full bg-[#f8f3ed] py-4 sm:py-6'>
-				<div className='max-w-6xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8'>
-					<motion.div
-						className='grid grid-cols-6 gap-3 justify-items-center max-w-6xl mx-auto'
-						initial={{ opacity: 0, y: 20 }}
-						animate={{ opacity: 1, y: 0 }}
-						transition={{ duration: 0.8, delay: 0.3 }}
-					>
-						{categories.map((cat) => (
-							<CategoryItem 
-								category={cat} 
-								key={cat.name} 
-								isActive={cat.href === `/${category}`}
-							/>
-						))}
-					</motion.div>
-				</div>
-			</div>
+					{/* Category Cards Container */}
+					<div className="overflow-hidden px-16 sm:px-20">
+						<div
+							className={`flex transition-transform duration-500 ease-in-out ${
+								itemsPerView === 6 ? 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4 md:gap-3' : 'gap-2 sm:gap-3'
+							}`}
+							style={{
+								transform: itemsPerView < 6 ? `translateX(-${currentCategoryIndex * (100 / itemsPerView)}%)` : 'none'
+							}}
+						>
+							{categories.map((cat, index) => (
+								<motion.div
+									key={cat.name}
+									className={`${itemsPerView < 6 ? 'flex-shrink-0 w-1/2 sm:w-1/3' : ''} flex justify-center`}
+									initial={{ opacity: 0, y: 30 }}
+									animate={{ opacity: 1, y: 0 }}
+									transition={{ duration: 0.6, delay: 1.2 + (index * 0.1) }}
+								>
+									<CategoryItem 
+										category={cat} 
+										isActive={cat.href === `/${category}`}
+									/>
+								</motion.div>
+							))}
+						</div>
+					</div>
+				</motion.div>
+			</section>
 
 			{/* Main Content - Centered Layout */}
 			<div className='w-full px-3 sm:px-4 md:px-6 lg:px-8 pt-4 sm:pt-6 md:pt-8 pb-4 sm:pb-6 md:pb-8 max-w-6xl mx-auto'>

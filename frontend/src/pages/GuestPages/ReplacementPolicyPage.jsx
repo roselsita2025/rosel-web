@@ -27,7 +27,7 @@ const ReplacementPolicyPage = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
             >
-              Clear guidelines for requesting replacements due to damage, incorrect items, or quality concerns.
+              Comprehensive guidelines for requesting replacements with strict requirements for evidence, identity verification, and timeframe compliance in accordance with Philippine consumer protection laws.
             </motion.p>
             <motion.p 
               className="text-sm text-white mt-4"
@@ -41,7 +41,7 @@ const ReplacementPolicyPage = () => {
         </div>
       </motion.section>
 
-      {/* Eligibility & Timeframe */}
+      {/* Required Documentation */}
       <motion.section 
         className="py-16 bg-[#fffefc]"
         initial={{ opacity: 0, y: 50 }}
@@ -50,40 +50,167 @@ const ReplacementPolicyPage = () => {
         viewport={{ once: true }}
       >
         <div className="container mx-auto px-4">
-          <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-8">
-            <motion.div 
-              className="bg-[#f8f3ed] p-6 rounded-xl shadow border-2 border-[#860809]"
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
+          <div className="max-w-6xl mx-auto">
+            <motion.h2 
+              className="text-4xl font-bold text-[#860809] mb-8 text-center"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-3xl font-bold text-[#860809] mb-4">Eligibility</h2>
-              <ul className="list-disc pl-5 space-y-2 text-[#030105]">
-                <li>Damaged or compromised packaging upon delivery or pickup</li>
-                <li>Incorrect item received versus order confirmation</li>
-                <li>Missing items from the order</li>
-                <li>Quality concerns on first opening (off-odor, unusual color/texture)</li>
-              </ul>
-            </motion.div>
-            <motion.div 
-              className="bg-[#f8f3ed] p-6 rounded-xl shadow border-2 border-[#860809]"
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              Required Documentation
+            </motion.h2>
+            
+            <div className="grid md:grid-cols-2 gap-8">
+              <motion.div 
+                className="bg-[#f8f3ed] p-8 rounded-xl shadow-lg border-2 border-[#860809]"
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                viewport={{ once: true }}
+              >
+                <h3 className="text-2xl font-bold text-[#860809] mb-6">1. Proof of Defect or Discrepancy</h3>
+                <div className="space-y-4">
+                  <div className="bg-[#fffefc] p-4 rounded-lg border border-[#a31f17]">
+                    <h4 className="text-lg font-bold text-[#860809] mb-2">Photographic Evidence</h4>
+                    <p className="text-[#030105] mb-2">Customers must provide clear photographic or video evidence of the issue immediately upon receipt of the product.</p>
+                    <ul className="list-disc pl-5 space-y-1 text-[#030105]">
+                      <li>Unaltered, time-stamped images or recordings</li>
+                      <li>Capture the condition of the item as delivered</li>
+                      <li>Include packaging and product labels</li>
+                    </ul>
+                  </div>
+                </div>
+              </motion.div>
+
+              <motion.div 
+                className="bg-[#f8f3ed] p-8 rounded-xl shadow-lg border-2 border-[#860809]"
+                initial={{ opacity: 0, x: 30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                viewport={{ once: true }}
+              >
+                <h3 className="text-2xl font-bold text-[#860809] mb-6">2. Proof of Identity</h3>
+                <div className="space-y-4">
+                  <div className="bg-[#fffefc] p-4 rounded-lg border border-[#a31f17]">
+                    <h4 className="text-lg font-bold text-[#860809] mb-2">Valid Government ID</h4>
+                    <p className="text-[#030105] mb-2">A valid government-issued identification card must be presented:</p>
+                    <ul className="list-disc pl-5 space-y-1 text-[#030105]">
+                      <li>Passport</li>
+                      <li>Driver's License</li>
+                      <li>National ID</li>
+                      <li>UMID</li>
+                    </ul>
+                    <p className="text-[#030105] mt-3 font-semibold">The name on the order and the presented ID must match to protect against fraudulent claims.</p>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        </div>
+      </motion.section>
+
+      {/* Timeframe & Evaluation */}
+      <motion.section 
+        className="py-16 bg-[#f8f3ed]"
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
+      >
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="grid md:grid-cols-2 gap-8">
+              <motion.div 
+                className="bg-[#fffefc] p-8 rounded-xl shadow-lg border-2 border-[#860809]"
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                viewport={{ once: true }}
+              >
+                <h3 className="text-2xl font-bold text-[#860809] mb-6">3. Timeframe of Reporting</h3>
+                <div className="bg-[#f8f3ed] p-6 rounded-lg border border-[#a31f17]">
+                  <p className="text-[#030105] leading-relaxed mb-4">
+                    <strong>Replacement requests must be lodged within the same day of receipt.</strong>
+                  </p>
+                  <p className="text-[#030105] leading-relaxed">
+                    Claims made after the allowable timeframe will not be entertained, except when explicitly provided for under Philippine consumer protection laws.
+                  </p>
+                </div>
+              </motion.div>
+
+              <motion.div 
+                className="bg-[#fffefc] p-8 rounded-xl shadow-lg border-2 border-[#860809]"
+                initial={{ opacity: 0, x: 30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                viewport={{ once: true }}
+              >
+                <h3 className="text-2xl font-bold text-[#860809] mb-6">4. Evaluation and Approval</h3>
+                <div className="bg-[#f8f3ed] p-6 rounded-lg border border-[#a31f17]">
+                  <p className="text-[#030105] leading-relaxed mb-4">
+                    <strong>The store reserves the right to inspect, verify, and evaluate the reported claim.</strong>
+                  </p>
+                  <p className="text-[#030105] leading-relaxed">
+                    Replacements shall be granted only when the request passes inspection and is deemed valid and consistent with fair consumer protection principles.
+                  </p>
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        </div>
+      </motion.section>
+
+      {/* Exclusions from Replacement */}
+      <motion.section 
+        className="py-16 bg-[#fffefc]"
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
+      >
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            <motion.h2 
+              className="text-4xl font-bold text-[#860809] mb-8 text-center"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-3xl font-bold text-[#860809] mb-4">Timeframe</h2>
-              <p className="text-[#030105]">
-                Submit a replacement request within 24 hours of receiving your order. Requests beyond this
-                window may not be eligible due to the perishable nature of frozen goods.
-              </p>
+              Exclusions from Replacement
+            </motion.h2>
+            
+            <motion.div 
+              className="bg-[#f8f3ed] p-8 rounded-xl shadow-lg border-2 border-[#860809]"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              viewport={{ once: true }}
+            >
+              <div className="space-y-6">
+                <div className="bg-[#fffefc] p-6 rounded-lg border border-[#a31f17]">
+                  <h3 className="text-xl font-bold text-[#860809] mb-4">Items Not Eligible for Replacement</h3>
+                  <ul className="list-disc pl-5 space-y-3 text-[#030105]">
+                    <li><strong>Items mishandled, stored improperly, or tampered with after delivery</strong></li>
+                    <li><strong>Claims without sufficient evidence or filed beyond the allowable period</strong></li>
+                    <li><strong>Requests for replacement due to personal preference or change of mind</strong></li>
+                  </ul>
+                </div>
+                
+                <div className="bg-[#fffefc] p-6 rounded-lg border border-[#a31f17]">
+                  <h3 className="text-xl font-bold text-[#860809] mb-4">Legal Reference</h3>
+                  <p className="text-[#030105] leading-relaxed">
+                    In line with <strong>Section 100 of RA 7394</strong>, which does not obligate sellers to accept returns for reasons not related to product defects or safety concerns.
+                  </p>
+                </div>
+              </div>
             </motion.div>
           </div>
         </div>
       </motion.section>
 
-      {/* What is not covered */}
+      {/* Customer Agreement & Waiver */}
       <motion.section 
         className="py-16 bg-[#f8f3ed]"
         initial={{ opacity: 0, y: 50 }}
@@ -94,31 +221,50 @@ const ReplacementPolicyPage = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <motion.h2 
-              className="text-3xl font-bold text-[#860809] mb-6"
+              className="text-4xl font-bold text-[#860809] mb-8 text-center"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               viewport={{ once: true }}
             >
-              Not Covered
+              Customer Agreement & Waiver
             </motion.h2>
-            <motion.ul 
-              className="list-disc pl-5 space-y-2 text-[#030105]"
+            
+            <motion.div 
+              className="bg-[#fffefc] p-8 rounded-xl shadow-lg border-2 border-[#860809]"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
               viewport={{ once: true }}
             >
-              <li>Improper handling or storage after delivery (e.g., not kept frozen)</li>
-              <li>Normal variations in color, marbling, or size within product specifications</li>
-              <li>Change of mind or preference after opening</li>
-              <li>Products bought on clearance with disclosed imperfections</li>
-            </motion.ul>
+              <div className="space-y-6">
+                <div className="bg-[#f8f3ed] p-6 rounded-lg border border-[#a31f17]">
+                  <h3 className="text-2xl font-bold text-[#860809] mb-4">Agreement to Policy Terms</h3>
+                  <p className="text-[#030105] leading-relaxed text-lg">
+                    <strong>By proceeding with a purchase, customers expressly waive any claim outside the above-stated provisions and agree to the conditions of this policy.</strong>
+                  </p>
+                </div>
+                
+                <div className="bg-[#f8f3ed] p-6 rounded-lg border border-[#a31f17]">
+                  <h3 className="text-xl font-bold text-[#860809] mb-4">Legal Compliance</h3>
+                  <p className="text-[#030105] leading-relaxed">
+                    This policy is designed to comply with Philippine consumer protection laws while ensuring fair and transparent replacement procedures for legitimate product defects or discrepancies.
+                  </p>
+                </div>
+                
+                <div className="bg-[#f8f3ed] p-6 rounded-lg border border-[#a31f17]">
+                  <h3 className="text-xl font-bold text-[#860809] mb-4">Policy Enforcement</h3>
+                  <p className="text-[#030105] leading-relaxed">
+                    All replacement requests will be evaluated strictly according to these guidelines. The store's decision on replacement eligibility is final and binding.
+                  </p>
+                </div>
+              </div>
+            </motion.div>
           </div>
         </div>
       </motion.section>
 
-      {/* How to request a replacement */}
+      {/* Contact Information */}
       <motion.section 
         className="py-16 bg-[#fffefc]"
         initial={{ opacity: 0, y: 50 }}
@@ -127,164 +273,22 @@ const ReplacementPolicyPage = () => {
         viewport={{ once: true }}
       >
         <div className="container mx-auto px-4">
-          <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-8">
+          <div className="max-w-6xl mx-auto">
             <motion.div 
-              className="bg-[#f8f3ed] p-6 rounded-xl shadow border-2 border-[#860809]"
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-3xl font-bold text-[#860809] mb-4">How to Request</h2>
-              <ol className="list-decimal pl-5 space-y-2 text-[#030105]">
-                <li>Log in to your account and open Track Orders.</li>
-                <li>Select the affected order and choose "Replacement Request".</li>
-                <li>Provide details and upload clear photos/videos (packaging, labels, product).</li>
-                <li>Submit within 24 hours of receipt for review.</li>
-              </ol>
-            </motion.div>
-            <motion.div 
-              className="bg-[#f8f3ed] p-6 rounded-xl shadow border-2 border-[#860809]"
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-3xl font-bold text-[#860809] mb-4">Required Proof</h2>
-              <ul className="list-disc pl-5 space-y-2 text-[#030105]">
-                <li>Order number and delivery/pickup date</li>
-                <li>Photos of outer packaging and product condition</li>
-                <li>Short description of the issue (e.g., wrong item, damaged, missing)</li>
-              </ul>
-            </motion.div>
-          </div>
-        </div>
-      </motion.section>
-
-      {/* Review & Outcomes */}
-      <motion.section 
-        className="py-16 bg-[#f8f3ed]"
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
-      >
-        <div className="container mx-auto px-4">
-          <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-6">
-            <motion.div 
-              className="bg-[#fffefc] p-6 rounded-xl shadow border-2 border-[#860809]"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              viewport={{ once: true }}
-            >
-              <h3 className="text-xl font-bold text-[#860809] mb-2">Review Timeline</h3>
-              <p className="text-[#030105]">Most requests are reviewed within 1–2 business days.</p>
-            </motion.div>
-            <motion.div 
-              className="bg-[#fffefc] p-6 rounded-xl shadow border-2 border-[#860809]"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              viewport={{ once: true }}
-            >
-              <h3 className="text-xl font-bold text-[#860809] mb-2">Possible Outcomes</h3>
-              <ul className="list-disc pl-5 space-y-2 text-[#030105]">
-                <li>Replacement of the affected item(s)</li>
-                <li>Partial replacement or store credit when appropriate</li>
-                <li>Request for additional information if evidence is unclear</li>
-              </ul>
-            </motion.div>
-            <motion.div 
-              className="bg-[#fffefc] p-6 rounded-xl shadow border-2 border-[#860809]"
+              className="bg-[#f8f3ed] p-8 rounded-xl shadow-lg border-2 border-[#860809] text-center"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
               viewport={{ once: true }}
             >
-              <h3 className="text-xl font-bold text-[#860809] mb-2">Final Decisions</h3>
-              <p className="text-[#030105]">Quality assessments and eligibility determinations are final once completed.</p>
-            </motion.div>
-          </div>
-        </div>
-      </motion.section>
-
-      {/* Logistics & Fees */}
-      <motion.section 
-        className="py-16 bg-[#fffefc]"
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
-      >
-        <div className="container mx-auto px-4">
-          <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-8">
-            <motion.div 
-              className="bg-[#f8f3ed] p-6 rounded-xl shadow border-2 border-[#860809]"
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-3xl font-bold text-[#860809] mb-4">Logistics</h2>
-              <ul className="list-disc pl-5 space-y-2 text-[#030105]">
-                <li>For delivery issues, we may arrange courier pickup or a re-delivery.</li>
-                <li>For pickup orders, replacements are usually claimed at the store.</li>
-              </ul>
-            </motion.div>
-            <motion.div 
-              className="bg-[#f8f3ed] p-6 rounded-xl shadow border-2 border-[#860809]"
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-3xl font-bold text-[#860809] mb-4">Fees</h2>
-              <p className="text-[#030105]">
-                Eligible replacements are provided at no additional cost. If the request is not eligible, delivery or
-                handling fees may apply for return/re-delivery options.
+              <h2 className="text-3xl font-bold text-[#860809] mb-6">Need Assistance?</h2>
+              <p className="text-[#030105] leading-relaxed mb-4">
+                For questions about replacement requests or to submit a claim, please contact our customer service team.
+              </p>
+              <p className="text-[#030105] leading-relaxed">
+                You can reach us through our Contact page or email our support team for assistance with replacement procedures.
               </p>
             </motion.div>
-          </div>
-        </div>
-      </motion.section>
-
-      {/* Important Notes */}
-      <motion.section 
-        className="py-16 bg-[#f8f3ed]"
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
-      >
-        <div className="container mx-auto px-4">
-          <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-6">
-            {[
-              {
-                title: "Frozen Goods",
-                text: "Keep products frozen until use. Do not refreeze thawed items.",
-              },
-              {
-                title: "Inspection on Receipt",
-                text: "Please inspect items upon receipt and report issues immediately.",
-              },
-              {
-                title: "Contact Support",
-                text: "If you cannot submit online, contact us via the Contact page for assistance.",
-              },
-            ].map((note, index) => (
-              <motion.div 
-                key={note.title} 
-                className="bg-[#fffefc] p-6 rounded-xl shadow border-2 border-[#860809]"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 + (index * 0.1) }}
-                viewport={{ once: true }}
-              >
-                <h3 className="text-xl font-bold text-[#860809] mb-2">{note.title}</h3>
-                <p className="text-[#030105]">{note.text}</p>
-              </motion.div>
-            ))}
           </div>
         </div>
       </motion.section>
