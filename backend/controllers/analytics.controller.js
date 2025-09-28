@@ -836,10 +836,7 @@ export const getCustomerAnalytics = async (req, res) => {
             ratingData[item.rating] = item.count;
         });
 
-        console.log('Customer Data (all customers - not filtered):', customerData);
-        console.log('Rating Distribution Raw (all reviews - not filtered):', ratingDistribution);
-        console.log('Rating Distribution Formatted:', ratingData);
-        console.log('Note: Customer Analytics section is not affected by timeframe/source filters');
+        // Customer analytics data processed successfully
 
         res.json({
             success: true,
@@ -848,7 +845,6 @@ export const getCustomerAnalytics = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Error fetching customer analytics:', error);
         res.status(500).json({
             success: false,
             message: 'Error fetching customer analytics',

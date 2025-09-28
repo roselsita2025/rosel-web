@@ -33,7 +33,7 @@ const SearchResultsPage = () => {
     }, [useLocation().search]);
 
     const categories = useMemo(() => ([
-        'pork','beef','chicken','sliced','processed','ground'
+        'pork','beef','chicken','sliced','processed','seafood'
     ]), []);
 
     const handleApply = () => {

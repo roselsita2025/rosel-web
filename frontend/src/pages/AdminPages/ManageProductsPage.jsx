@@ -8,7 +8,7 @@ import AdminLayout from "../../components/AdminLayout.jsx";
 import toast from "react-hot-toast";
 import axios from "axios";
 
-const FIXED_CATEGORIES = ["pork", "beef", "chicken", "sliced", "processed", "ground"]; // align with backend
+const FIXED_CATEGORIES = ["pork", "beef", "chicken", "sliced", "processed", "seafood"]; // align with backend
 
 const STOCK_OUT_REASONS = [
 	{ value: "defective", label: "Defective" },
@@ -177,6 +177,11 @@ const ManageProductsPage = () => {
 			mainImageUrl: mainImageUrl || undefined,
 		};
 		await updateProduct(selectedProduct._id, payload);
+		
+		// Clear the removal list and new images after successful update
+		setRemoveImageUrls([]);
+		setNewImages([]);
+		setMainImageUrl("");
 	};
 
 	const onUpdateQuantity = async (e) => {
@@ -863,16 +868,63 @@ const ManageProductsPage = () => {
 
 										{/* Images editor */}
 										<div>
-											<h4 className='text-sm font-semibold text-[#82695b] mb-2'>Images</h4>
+											<div className='flex items-center justify-between mb-2'>
+												<h4 className='text-sm font-semibold text-[#82695b]'>Images</h4>
+												{removeImageUrls.length > 0 && (
+													<span className='text-xs text-red-600 font-medium'>
+														{removeImageUrls.length} image{removeImageUrls.length > 1 ? 's' : ''} marked for removal
+													</span>
+												)}
+											</div>
 											<input type='file' accept='image/*' multiple onChange={handleUpdateImageChange} className='hidden' id='update-images' />
 											<label htmlFor='update-images' className='inline-flex items-center gap-2 px-3 py-2 bg-[#82695b] border border-[#82695b] rounded text-[#feffff] cursor-pointer hover:bg-[#6b5649] transition-colors'><Upload className='h-4 w-4' /> Add Images</label>
 											<div className='mt-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2'>
-												{[...(selectedProduct.images||[]), ...(newImages||[])].map((url, idx)=> (
-													<div key={idx} className={`relative rounded overflow-hidden border ${ (mainImageUrl && url===mainImageUrl) ? 'border-[#901414]' : 'border-[#82695b]' }`}>
-														<img src={url} alt='img' className='w-full h-24 object-cover' onClick={()=>setMainImageUrl(url)} />
-														<button type='button' className='absolute top-1 right-1 bg-[#901414]/70 p-1 rounded' onClick={()=>setRemoveImageUrls((prev)=>[...prev, url])}><Trash2 className='h-4 w-4 text-[#feffff]' /></button>
-													</div>
-												))}
+												{[...(selectedProduct.images||[]), ...(newImages||[])].map((url, idx)=> {
+													const isMarkedForRemoval = removeImageUrls.includes(url);
+													return (
+														<div key={idx} className={`relative rounded overflow-hidden border transition-all duration-200 ${
+															isMarkedForRemoval 
+																? 'border-red-500 opacity-50' 
+																: (mainImageUrl && url===mainImageUrl) 
+																	? 'border-[#901414]' 
+																	: 'border-[#82695b]'
+														}`}>
+															<img 
+																src={url} 
+																alt='img' 
+																className={`w-full h-24 object-cover transition-all duration-200 ${
+																	isMarkedForRemoval ? 'grayscale' : 'cursor-pointer'
+																}`} 
+																onClick={() => !isMarkedForRemoval && setMainImageUrl(url)} 
+															/>
+															<button 
+																type='button' 
+																className={`absolute top-1 right-1 p-1 rounded transition-all duration-200 ${
+																	isMarkedForRemoval 
+																		? 'bg-red-500 hover:bg-red-600' 
+																		: 'bg-[#901414]/70 hover:bg-[#901414]'
+																}`}
+																onClick={() => {
+																	if (isMarkedForRemoval) {
+																		// Remove from removal list (undo)
+																		setRemoveImageUrls(prev => prev.filter(imgUrl => imgUrl !== url));
+																	} else {
+																		// Add to removal list
+																		setRemoveImageUrls(prev => [...prev, url]);
+																	}
+																}}
+																title={isMarkedForRemoval ? 'Click to undo removal' : 'Click to remove image'}
+															>
+																<Trash2 className='h-4 w-4 text-[#feffff]' />
+															</button>
+															{isMarkedForRemoval && (
+																<div className='absolute inset-0 bg-red-500/20 flex items-center justify-center'>
+																	<span className='text-red-600 font-semibold text-sm'>Will be removed</span>
+																</div>
+															)}
+														</div>
+													);
+												})}
 											</div>
 										</div>
 

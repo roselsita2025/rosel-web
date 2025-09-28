@@ -95,7 +95,7 @@ const Chatbot = () => {
                     { id: 'chicken', text: 'Chicken', icon: Package },
                     { id: 'sliced', text: 'Sliced', icon: Package },
                     { id: 'processed', text: 'Processed', icon: Package },
-                    { id: 'ground', text: 'Ground', icon: Package },
+                    { id: 'seafood', text: 'Seafood', icon: Package },
                     { id: 'all-products', text: 'View All Products', icon: ShoppingCart }
                 ]
             },
@@ -153,8 +153,8 @@ const Chatbot = () => {
                     { id: 'browse-products', text: 'Back to Categories', icon: ArrowLeft }
                 ]
             },
-            'ground': {
-                content: "Our ground products are perfect for cooking! Let me take you to our ground selection.",
+            'seafood': {
+                content: "Our seafood products are fresh and delicious! Let me take you to our seafood selection.",
                 options: [
                     { id: 'browse-products', text: 'Back to Categories', icon: ArrowLeft }
                 ]
@@ -184,7 +184,7 @@ const Chatbot = () => {
                 ]
             },
             'delivery-info': {
-                content: "We offer fast and reliable delivery! Our delivery times are typically 1-3 business days. We deliver to most areas in the Philippines.",
+                content: "We offer fast and reliable delivery! Our delivery times are typically within 24 hours. We deliver to Luzon areas.",
                 options: [
                     { id: 'ask-question', text: 'Ask Another Question', icon: HelpCircle },
                     { id: 'browse-products', text: 'Back to Main Menu', icon: ArrowLeft }
@@ -237,7 +237,7 @@ const Chatbot = () => {
             case 'chicken':
             case 'sliced':
             case 'processed':
-            case 'ground':
+            case 'seafood':
                 navigate(`/category/${optionId}`);
                 // Close chat after navigation
                 setTimeout(() => {
@@ -291,7 +291,7 @@ const Chatbot = () => {
                         <ArrowLeft className="w-4 h-4 text-[#fffefc]" />
                     </button>
                     <div>
-                        <h3 className="font-bold text-[#030105]">AI Assistant</h3>
+                        <h3 className="font-bold text-[#030105]">Chatbot Assistant</h3>
                         <p className="text-sm text-[#030105] opacity-70">
                             Your helpful shopping companion
                         </p>

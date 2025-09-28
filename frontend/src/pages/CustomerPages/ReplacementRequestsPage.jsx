@@ -14,6 +14,7 @@ import { useReplacementRequestStore } from '../../store/replacementRequestStore'
 import ReplacementRequestCard from '../../components/ReplacementRequestCard';
 import ReplacementRequestModal from '../../components/ReplacementRequestModal';
 import LoadingSpinner from '../../components/LoadingSpinner';
+import Footer from '../../components/Footer';
 
 const ReplacementRequestsPage = () => {
     const navigate = useNavigate();
@@ -90,8 +91,9 @@ const ReplacementRequestsPage = () => {
     }
 
     return (
-        <div className="min-h-screen pt-32 pb-8 bg-[#f8f3ed]">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen flex flex-col bg-[#f8f3ed]">
+            <div className="flex-1 pt-32 pb-8">
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 {/* Header */}
                 <motion.div
                     initial={{ opacity: 0, y: -20 }}
@@ -245,6 +247,7 @@ const ReplacementRequestsPage = () => {
                         </button>
                     </motion.div>
                 )}
+                </div>
             </div>
 
             {/* Request Details Modal */}
@@ -257,6 +260,9 @@ const ReplacementRequestsPage = () => {
                 }}
                 isAdmin={false}
             />
+
+            {/* Footer */}
+            <Footer />
         </div>
     );
 };

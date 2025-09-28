@@ -4,7 +4,7 @@ export const CATEGORIES = [
     "chicken",
     "sliced",
     "processed",
-    "ground",
+    "seafood",
 ];
 
 export const PRODUCT_STATUSES = {

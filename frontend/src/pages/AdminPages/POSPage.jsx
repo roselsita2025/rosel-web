@@ -70,7 +70,7 @@ const POSPage = () => {
   const [addedToCart, setAddedToCart] = useState(null);
 
   // Categories
-  const categories = ['pork', 'beef', 'chicken', 'sliced', 'processed', 'ground'];
+  const categories = ['pork', 'beef', 'chicken', 'sliced', 'processed', 'seafood'];
 
   // Load products on component mount
   useEffect(() => {
@@ -399,6 +399,196 @@ const POSPage = () => {
     
     // Refresh products to get updated stock counts
     refreshProducts();
+  };
+
+  const handlePrintReceipt = () => {
+    if (!currentTransaction) return;
+    
+    // Create a new window for printing
+    const printWindow = window.open('', '_blank', 'width=400,height=600');
+    
+    // Generate the receipt HTML
+    const receiptHTML = generateReceiptHTML(currentTransaction);
+    
+    printWindow.document.write(receiptHTML);
+    printWindow.document.close();
+    
+    // Wait for content to load, then print
+    printWindow.onload = () => {
+      printWindow.focus();
+      printWindow.print();
+      
+      // Close the print window after printing
+      printWindow.onafterprint = () => {
+        printWindow.close();
+      };
+    };
+  };
+
+  const generateReceiptHTML = (transaction) => {
+    const formatCurrency = (amount) => `₱${amount.toFixed(2)}`;
+    const formatDate = (date) => date.toLocaleString('en-PH', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Receipt - ${transaction.id}</title>
+        <style>
+          @media print {
+            body { margin: 0; padding: 0; }
+            .no-print { display: none !important; }
+          }
+          body {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.4;
+            margin: 0;
+            padding: 10px;
+            background: white;
+            color: black;
+          }
+          .receipt {
+            max-width: 300px;
+            margin: 0 auto;
+          }
+          .header {
+            text-align: center;
+            border-bottom: 1px dashed #000;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+          }
+          .company-name {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 5px;
+          }
+          .company-address {
+            font-size: 10px;
+            margin-bottom: 5px;
+          }
+          .transaction-info {
+            margin-bottom: 15px;
+          }
+          .transaction-info div {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2px;
+          }
+          .items {
+            border-bottom: 1px dashed #000;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+          }
+          .item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 3px;
+          }
+          .item-name {
+            flex: 1;
+          }
+          .item-details {
+            text-align: right;
+            font-size: 10px;
+          }
+          .totals {
+            margin-bottom: 15px;
+          }
+          .totals div {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2px;
+          }
+          .total {
+            font-weight: bold;
+            border-top: 1px solid #000;
+            padding-top: 5px;
+            margin-top: 5px;
+          }
+          .payment-info {
+            border-top: 1px dashed #000;
+            padding-top: 10px;
+            margin-top: 10px;
+          }
+          .payment-info div {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2px;
+          }
+          .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 10px;
+          }
+          .thank-you {
+            font-weight: bold;
+            margin-bottom: 5px;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="receipt">
+          <div class="header">
+            <div class="company-name">ROSEL FROZEN MEATS</div>
+            <div class="company-address">Blk 8 Lot 4 Alagaw St., Greensite Homes Subd.</div>
+            <div class="company-address">Molino II, Bacoor City, Cavite, Philippines</div>
+            <div class="company-address">Tel: +639263203832</div>
+          </div>
+
+          <div class="transaction-info">
+            <div><strong>Transaction ID:</strong> ${transaction.id}</div>
+            <div><strong>Date & Time:</strong> ${formatDate(transaction.timestamp)}</div>
+            <div><strong>Cashier:</strong> ${transaction.cashier}</div>
+            ${transaction.customer.name ? `<div><strong>Customer:</strong> ${transaction.customer.name}</div>` : ''}
+          </div>
+
+          <div class="items">
+            <div style="font-weight: bold; margin-bottom: 5px;">ITEMS PURCHASED:</div>
+            ${transaction.items.map(item => `
+              <div class="item">
+                <div class="item-name">${item.name}</div>
+                <div class="item-details">
+                  ${formatCurrency(item.price)} × ${item.quantity}<br>
+                  ${formatCurrency(item.price * item.quantity)}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+
+          <div class="totals">
+            <div><strong>Subtotal:</strong> ${formatCurrency(transaction.payment.subtotal)}</div>
+            ${transaction.payment.tax > 0 ? `<div><strong>Tax (12%):</strong> ${formatCurrency(transaction.payment.tax)}</div>` : ''}
+            ${transaction.payment.discount > 0 ? `<div><strong>Discount:</strong> -${formatCurrency(transaction.payment.discount)}</div>` : ''}
+            <div class="total"><strong>TOTAL:</strong> ${formatCurrency(transaction.payment.total)}</div>
+          </div>
+
+          <div class="payment-info">
+            <div><strong>Payment Method:</strong> ${(transaction.payment.method || 'cash').toUpperCase()}</div>
+            ${transaction.payment.method === 'cash' ? `
+              <div><strong>Cash Received:</strong> ${formatCurrency(transaction.payment.cashReceived)}</div>
+              <div><strong>Change:</strong> ${formatCurrency(transaction.payment.change)}</div>
+            ` : ''}
+            ${(transaction.payment.method === 'online' || transaction.payment.method === 'bank') && transaction.customer.referenceNumber ? `
+              <div><strong>Reference Number:</strong> ${transaction.customer.referenceNumber}</div>
+            ` : ''}
+          </div>
+
+          <div class="footer">
+            <div class="thank-you">THANK YOU FOR YOUR PURCHASE!</div>
+            <div>Please keep this receipt for your records</div>
+            <div>Visit us again soon!</div>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
   };
 
   return (
@@ -1087,9 +1277,10 @@ const POSPage = () => {
 
               <div className="flex gap-3 mt-6">
                 <button
-                  onClick={() => setShowReceipt(false)}
-                  className="flex-1 py-2 px-4 border border-[#f7e9b8] text-[#860809] rounded-lg hover:bg-[#f7e9b8] transition-colors"
+                  onClick={handlePrintReceipt}
+                  className="flex-1 py-2 px-4 border border-[#f7e9b8] text-[#860809] rounded-lg hover:bg-[#f7e9b8] transition-colors flex items-center justify-center gap-2"
                 >
+                  <Receipt className="w-4 h-4" />
                   Print Receipt
                 </button>
                 <button

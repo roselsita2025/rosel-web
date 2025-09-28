@@ -14,7 +14,7 @@ const categories = [
 	{ href: "/chicken", name: "Chicken", imageUrl: "/bgchicken.jpg" },
 	{ href: "/sliced", name: "Sliced", imageUrl: "/bgsliced.jpg" },
 	{ href: "/processed", name: "Processed", imageUrl: "/bgprocessed.jpg" },
-	{ href: "/ground", name: "Ground", imageUrl: "/bgground.jpg" },
+	{ href: "/seafood", name: "Seafood", imageUrl: "/bgground.jpg" },
 ];
 
 const CategoryPage = () => {
@@ -243,7 +243,7 @@ const CategoryPage = () => {
 								chicken: "Enjoy our fresh chicken products, perfect for healthy and tasty dishes.",
 								sliced: "Sliced products for your convenience—ready to cook or serve.",
 								processed: "Processed products crafted for quality and taste.",
-								ground: "Ground products ideal for burgers, meatballs, and more.",
+								seafood: "Fresh seafood products perfect for any meal.",
 							};
 							const key = category.toLowerCase();
 							return details[key] || "Browse our selection of quality products.";

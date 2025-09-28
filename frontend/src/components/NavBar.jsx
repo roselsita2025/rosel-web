@@ -83,7 +83,9 @@ const Navbar = () => {
 			'/information',
 			'/shipping',
 			'/payment',
-			'/ratings'
+			'/ratings',
+			'/product/',
+			'/notifications'
 		];
 		
 		const isExcludedPage = excludedPages.some(page => location.pathname.includes(page));
@@ -445,7 +447,7 @@ const Navbar = () => {
 			) : (
 				<>
 					{/* Mobile Sidebar */}
-					<div className={`fixed inset-0 z-30 lg:hidden ${isMobileMenuOpen ? 'block' : 'hidden'}`}>
+					<div className={`fixed inset-0 z-30 xl:hidden ${isMobileMenuOpen ? 'block' : 'hidden'}`}>
 						{/* Backdrop */}
 						<div 
 							className="fixed inset-0 bg-black bg-opacity-50"
@@ -467,35 +469,6 @@ const Navbar = () => {
 								</button>
 							</div>
 							<nav className="flex flex-col px-4 py-4 space-y-2">
-								{!isAdmin && (
-									<div className='mb-2' ref={suggestionsRef}>
-										<form onSubmit={(e)=>{ handleSearchSubmit(e); setIsMobileMenuOpen(false); }}>
-											<input
-												type='text'
-												value={query}
-												onChange={(e)=> handleQueryChange(e.target.value)}
-												placeholder='Search products...'
-												className='w-full border border-[#f7e9b8] rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#a31f17]'
-											/>
-										</form>
-										{showSuggestions && suggestions?.length > 0 && (
-											<div className='mt-2 w-full bg-white border border-[#f7e9b8] rounded-md shadow max-h-64 overflow-auto'>
-												{suggestions.map((s) => (
-													<button
-														key={s._id}
-														onClick={() => { setShowSuggestions(false); setIsMobileMenuOpen(false); setQuery(""); navigate(`/product/${s._id}`); }}
-														className='w-full text-left px-3 py-2 hover:bg-[#f7e9b8] flex items-center gap-2'
-													>
-														<img src={s.image} alt={s.name} className='w-8 h-8 object-cover rounded' />
-														<span className='text-sm text-[#030105]'>{s.name}</span>
-														<span className='ml-auto text-xs text-[#860809]'>₱{s.price}</span>
-													</button>
-												))}
-												<button onClick={(e)=>{ handleSearchSubmit(e); setIsMobileMenuOpen(false); }} className='w-full text-center px-3 py-2 text-[#860809] font-medium border-t border-[#f7e9b8]'>See all results</button>
-											</div>
-										)}
-									</div>
-								)}
 								<Link
 											to={"/welcome"}
 											className='text-[#901414] font-semibold hover:text-[#810e0e] transition duration-300 ease-in-out py-2 px-3 rounded hover:bg-[#f7e9b8] font-alice'
@@ -544,44 +517,44 @@ const Navbar = () => {
 								<div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-3">
 									<button
 										onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-										className={`lg:hidden p-1 sm:p-2 rounded transition ${isAtTop ? 'hover:bg-white/20' : 'hover:bg-[#f7e9b8]'}`}
+										className={`xl:hidden p-1 sm:p-2 rounded transition ${isAtTop ? 'hover:bg-white/20' : 'hover:bg-[#f7e9b8]'}`}
 										aria-label="Toggle menu"
 									>
-										{isMobileMenuOpen ? <X className={isAtTop ? "text-white" : "text-[#901414]"} size={isAtTop ? 24 : 20} /> : <Menu className={isAtTop ? "text-white" : "text-[#901414]"} size={isAtTop ? 24 : 20} />}
+										{isMobileMenuOpen ? <X className={isAtTop ? "text-white" : "text-[#901414]"} size={isAtTop ? 20 : 20} /> : <Menu className={isAtTop ? "text-white" : "text-[#901414]"} size={isAtTop ? 20 : 20} />}
 									</button>
 									{/* Show logo and brand text only on desktop for customer/guest users */}
-									<Link to='/welcome' className={`hidden lg:flex ${isAtTop ? 'text-xl sm:text-2xl lg:text-3xl' : 'text-lg sm:text-xl lg:text-2xl'} font-bold ${isAtTop ? 'text-white' : 'text-[#901414]'} items-center space-x-2 font-nexa`}>
-										<img src="/rosellogo.png" alt="Rosel Logo" className={isAtTop ? "h-10 w-15 sm:h-12 sm:w-19" : "h-8 w-12 sm:h-10 sm:w-16"} />
+									<Link to='/welcome' className={`hidden xl:flex ${isAtTop ? 'text-lg sm:text-xl lg:text-2xl' : 'text-lg sm:text-xl lg:text-2xl'} font-bold ${isAtTop ? 'text-white' : 'text-[#901414]'} items-center space-x-2 font-nexa`}>
+										<img src="/rosellogo.png" alt="Rosel Logo" className={isAtTop ? "h-7 w-11 sm:h-9 sm:w-14" : "h-8 w-12 sm:h-10 sm:w-16"} />
 										Rosel Frozen Meats
 									</Link>
 								</div>
 
 								{/* Desktop Navigation */}
-								<nav className='hidden lg:flex flex-wrap items-center [&>*]:mx-5 gap-4 justify-center flex-grow '>
+								<nav className='hidden xl:flex flex-wrap items-center [&>*]:mx-5 gap-4 justify-center flex-grow '>
 									<Link
 												to={"/welcome"}
-												className={`${isAtTop ? 'text-lg' : 'text-base'} ${isAtTop ? 'text-white hover:text-white/80' : 'text-[#901414] hover:text-[#810e0e]'} font-semibold transition duration-300 ease-in-out hover:underline hover:underline-offset-8 ${isAtTop ? 'hover:decoration-white/80' : 'hover:decoration-[#810e0e]'} font-alice`}
+												className={`${isAtTop ? 'text-base' : 'text-base'} ${isAtTop ? 'text-white hover:text-white/80' : 'text-[#901414] hover:text-[#810e0e]'} font-semibold transition duration-300 ease-in-out hover:underline hover:underline-offset-8 ${isAtTop ? 'hover:decoration-white/80' : 'hover:decoration-[#810e0e]'} font-alice`}
 											>
 												Home
 											</Link>
 
 									<Link
 												to={"/products"} //Add Shop page later
-												className={`${isAtTop ? 'text-lg' : 'text-base'} ${isAtTop ? 'text-white hover:text-white/80' : 'text-[#901414] hover:text-[#810e0e]'} font-semibold transition duration-300 ease-in-out hover:underline hover:underline-offset-8 ${isAtTop ? 'hover:decoration-white/80' : 'hover:decoration-[#810e0e]'} font-alice`}
+												className={`${isAtTop ? 'text-base' : 'text-base'} ${isAtTop ? 'text-white hover:text-white/80' : 'text-[#901414] hover:text-[#810e0e]'} font-semibold transition duration-300 ease-in-out hover:underline hover:underline-offset-8 ${isAtTop ? 'hover:decoration-white/80' : 'hover:decoration-[#810e0e]'} font-alice`}
 											>
 												Products
 											</Link>
 
 									<Link
 												to={"/about"} //Add About page later
-												className={`${isAtTop ? 'text-lg' : 'text-base'} ${isAtTop ? 'text-white hover:text-white/80' : 'text-[#901414] hover:text-[#810e0e]'} font-semibold transition duration-300 ease-in-out hover:underline hover:underline-offset-8 ${isAtTop ? 'hover:decoration-white/80' : 'hover:decoration-[#810e0e]'} font-alice`}
+												className={`${isAtTop ? 'text-base' : 'text-base'} ${isAtTop ? 'text-white hover:text-white/80' : 'text-[#901414] hover:text-[#810e0e]'} font-semibold transition duration-300 ease-in-out hover:underline hover:underline-offset-8 ${isAtTop ? 'hover:decoration-white/80' : 'hover:decoration-[#810e0e]'} font-alice`}
 											>
 												About
 											</Link>
 									
 									<Link
 												to={"/contactus"} //Add Contact page later
-												className={`${isAtTop ? 'text-lg' : 'text-base'} ${isAtTop ? 'text-white hover:text-white/80' : 'text-[#901414] hover:text-[#810e0e]'} font-semibold transition duration-300 ease-in-out hover:underline hover:underline-offset-8 ${isAtTop ? 'hover:decoration-white/80' : 'hover:decoration-[#810e0e]'} font-alice`}
+												className={`${isAtTop ? 'text-base' : 'text-base'} ${isAtTop ? 'text-white hover:text-white/80' : 'text-[#901414] hover:text-[#810e0e]'} font-semibold transition duration-300 ease-in-out hover:underline hover:underline-offset-8 ${isAtTop ? 'hover:decoration-white/80' : 'hover:decoration-[#810e0e]'} font-alice`}
 											>
 												Contact
 											</Link>
@@ -589,17 +562,17 @@ const Navbar = () => {
 
 								<div className='flex items-center gap-1 sm:gap-2 lg:gap-6'>
 									{!isAdmin && (
-										<div className='hidden lg:block relative' ref={suggestionsRef}>
+										<div className='relative' ref={suggestionsRef}>
 											{!isSearchVisible ? (
 												<button
 													onClick={() => setIsSearchVisible(true)}
 													className={`p-2 rounded transition ${isAtTop ? 'hover:bg-white/20 text-white' : 'hover:bg-[#f7e9b8] text-[#901414]'}`}
 													aria-label="Search"
 												>
-													<Search size={isAtTop ? 24 : 20} />
+													<Search size={isAtTop ? 20 : 20} />
 												</button>
 											) : (
-												<div className='w-72'>
+												<div className='w-48 sm:w-64 lg:w-72'>
 											<form onSubmit={handleSearchSubmit}>
 												<input
 													type='text'
@@ -636,7 +609,7 @@ const Navbar = () => {
 										to={"/carts"}
 										className={`relative group transition duration-300 ease-in-out p-2 rounded ${isAtTop ? 'text-white hover:text-white/80 hover:bg-white/20' : 'text-[#901414] hover:text-[#810e0e] hover:bg-[#f7e9b8]'}`}
 									>
-										<ShoppingCart className={`${isAtTop ? 'group-hover:text-white/80' : 'group-hover:text-[#810e0e]'}`} size={isAtTop ? 24 : 20} />
+										<ShoppingCart className={`${isAtTop ? 'group-hover:text-white/80' : 'group-hover:text-[#810e0e]'}`} size={isAtTop ? 20 : 20} />
 										<span className='hidden sm:inline'>
 											{/* Cart */}
 										</span>
@@ -669,9 +642,9 @@ const Navbar = () => {
 											aria-expanded={isProfileMenuOpen}
 										>
 											{user && (user.profileImageUrl || user.avatarUrl || user.profileImage || user.photoURL || user.photo) ? (
-												<img src={user.profileImageUrl || user.avatarUrl || user.profileImage || user.photoURL || user.photo} alt='Profile' className={`${isAtTop ? 'w-6 h-6 sm:w-7 sm:h-7' : 'w-5 h-5 sm:w-6 sm:h-6'} object-cover rounded-full`} />
+												<img src={user.profileImageUrl || user.avatarUrl || user.profileImage || user.photoURL || user.photo} alt='Profile' className={`${isAtTop ? 'w-5 h-5 sm:w-6 sm:h-6' : 'w-5 h-5 sm:w-6 sm:h-6'} object-cover rounded-full`} />
 											) : (
-												<User size={isAtTop ? 24 : 20} />
+												<User size={isAtTop ? 20 : 20} />
 											)}
 										</button>
 
@@ -704,25 +677,12 @@ const Navbar = () => {
 										)}
 									</div>
 								) : (
-									<div className='relative' ref={profileMenuRef}>
-										<button
-											onClick={() => setIsProfileMenuOpen((prev) => !prev)}
-											className={`p-2 rounded transition-colors duration-200 ${isAtTop ? 'hover:bg-white/20 text-white hover:text-white/80' : 'hover:bg-[#f7e9b8] text-[#901414] hover:text-[#810e0e]'}`}
-											aria-haspopup='menu'
-											aria-expanded={isProfileMenuOpen}
-										>
-											<User size={isAtTop ? 24 : 20} />
-										</button>
-
-										{isProfileMenuOpen && (
-											<div className='absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50'>
-												<div className='py-1'>
-													<Link to='/login' className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100' onClick={() => setIsProfileMenuOpen(false)}>Login</Link>
-													<Link to='/signup' className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100' onClick={() => setIsProfileMenuOpen(false)}>Sign Up</Link>
-												</div>
-											</div>
-										)}
-									</div>
+									<Link
+										to='/login'
+										className={`p-2 rounded transition-colors duration-200 ${isAtTop ? 'hover:bg-white/20 text-white hover:text-white/80' : 'hover:bg-[#f7e9b8] text-[#901414] hover:text-[#810e0e]'}`}
+									>
+										<User size={isAtTop ? 20 : 20} />
+									</Link>
 								)
 							}
 

@@ -239,7 +239,6 @@ const RatingsPage = () => {
                     <option value="pork">Pork Products</option>
                     <option value="beef">Beef Products</option>
                     <option value="chicken">Chicken Products</option>
-                    <option value="seafood">Seafood Products</option>
                     <option value="general">General Experience</option>
                   </select>
                 </div>
@@ -351,7 +350,6 @@ const RatingsPage = () => {
                           </p>
                         </div>
                       </div>
-                      <ExternalLink size={16} className="text-[#82695b] hover:text-[#860809] cursor-pointer" />
                     </div>
                     <p className="text-[#030105] font-alice">
                       {review.feedback}

@@ -57,9 +57,9 @@ const OrderGuidelinesPage = () => {
               className="bg-[#f8f3ed] p-8 rounded-xl shadow-lg border-2 border-[#860809] mb-8"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-              viewport={{ once: true }}
-            >
+                transition={{ duration: 0.6, delay: 0.4 }}
+                viewport={{ once: true }}
+              >
               <h3 className="text-2xl font-bold text-[#860809] mb-6">Store Operating Hours</h3>
               <div className="bg-[#fffefc] p-6 rounded-lg border border-[#a31f17] mb-6">
                 <p className="text-lg font-semibold text-[#860809] mb-4">
@@ -74,13 +74,13 @@ const OrderGuidelinesPage = () => {
               </p>
             </motion.div>
 
-            <motion.div 
+              <motion.div 
               className="bg-[#f8f3ed] p-8 rounded-xl shadow-lg border-2 border-[#860809]"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.6 }}
-              viewport={{ once: true }}
-            >
+                viewport={{ once: true }}
+              >
               <h3 className="text-2xl font-bold text-[#860809] mb-6">Order Review & Verification</h3>
               <p className="text-[#030105] leading-relaxed mb-4">
                 Customers are strongly encouraged to review their orders thoroughly before finalizing checkout. This includes verifying:
@@ -89,11 +89,11 @@ const OrderGuidelinesPage = () => {
                 <li>Product type and specific cuts</li>
                 <li>Quantity and pricing</li>
                 <li>Delivery address and contact details</li>
-              </ul>
+                </ul>
               <p className="text-[#030105] leading-relaxed">
                 Any errors or omissions provided during checkout may result in processing delays, which the company shall not be held liable for. To ensure fairness, same-day delivery requests must be confirmed and paid before the designated cut-off time.
               </p>
-            </motion.div>
+              </motion.div>
           </div>
         </div>
       </motion.section>
@@ -240,13 +240,13 @@ const OrderGuidelinesPage = () => {
               Customer Agreement & Terms
             </motion.h2>
             
-            <motion.div 
+              <motion.div 
               className="bg-[#fffefc] p-8 rounded-xl shadow-lg border-2 border-[#860809] mb-8"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-              viewport={{ once: true }}
-            >
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                viewport={{ once: true }}
+              >
               <h3 className="text-2xl font-bold text-[#860809] mb-6">By placing an order with our store, the customer voluntarily acknowledges and agrees that:</h3>
               <div className="space-y-6">
                 <div className="bg-[#f8f3ed] p-6 rounded-lg border border-[#a31f17]">
@@ -282,22 +282,22 @@ const OrderGuidelinesPage = () => {
                   </div>
                 </div>
               </div>
-            </motion.div>
+              </motion.div>
 
-            <motion.div 
+              <motion.div 
               className="bg-[#fffefc] p-8 rounded-xl shadow-lg border-2 border-[#860809]"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.6 }}
-              viewport={{ once: true }}
-            >
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.6 }}
+                viewport={{ once: true }}
+              >
               <h3 className="text-2xl font-bold text-[#860809] mb-6">Company Rights & Fraud Protection</h3>
               <div className="bg-[#f8f3ed] p-6 rounded-lg border border-[#a31f17]">
                 <p className="text-[#030105] leading-relaxed">
                   The company reserves the absolute right to cancel or reject transactions suspected to involve fraudulent activity, misrepresentation, or abuse of the ordering system. These policies are designed not only to protect the integrity of our services but also to uphold fair trade practices as mandated by Philippine law.
                 </p>
               </div>
-            </motion.div>
+              </motion.div>
           </div>
         </div>
       </motion.section>

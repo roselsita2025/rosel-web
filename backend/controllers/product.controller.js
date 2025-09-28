@@ -31,15 +31,23 @@ export const getAllProductsForCustomers = async (req, res) => {
 
 export const getFeaturedProducts = async (req, res) => {
     try {
-        let cached = await redis.get("featuredProducts");
-        if (cached) {
-            return res.json(JSON.parse(cached));
+        // Check if cache should be bypassed (for testing)
+        const bypassCache = req.query.bypass === 'true';
+        
+        if (!bypassCache) {
+            let cached = await redis.get("featuredProducts");
+            if (cached) {
+                console.log("📦 Using cached featured products");
+                return res.json(JSON.parse(cached));
+            }
         }
 
+        console.log("🔄 Building fresh featured products (cache bypassed or empty)");
         const hybrid = await buildHybridFeaturedProducts();
         await redis.set("featuredProducts", JSON.stringify(hybrid));
         // Only expose available products to guests
         const filtered = Array.isArray(hybrid) ? hybrid.filter((p) => p.status === PRODUCT_STATUSES.AVAILABLE) : [];
+        console.log(`✅ Returning ${filtered.length} featured products`);
         res.json(filtered);
     } catch (error) {
         console.log("Error in getFeaturedProducts controller", error.message);
@@ -376,6 +384,30 @@ export const getProductByBarcode = async (req, res) => {
     }
 };
 
+export const getProductsBatch = async (req, res) => {
+    try {
+        const { ids } = req.query;
+        if (!ids) {
+            return res.status(400).json({ message: "Product IDs are required" });
+        }
+
+        const productIds = ids.split(',').map(id => id.trim()).filter(id => id);
+        if (productIds.length === 0) {
+            return res.status(400).json({ message: "At least one valid product ID is required" });
+        }
+
+        const products = await Product.find({ 
+            _id: { $in: productIds },
+            status: PRODUCT_STATUSES.AVAILABLE 
+        });
+
+        res.json({ products });
+    } catch (error) {
+        console.log("Error in getProductsBatch controller:", error.message);
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
+
 export const updateProduct = async (req, res) => {
     try {
         const { id } = req.params;
@@ -467,7 +499,7 @@ export const updateProduct = async (req, res) => {
         }
 
         const updated = await product.save();
-        if (typeof isFeatured === 'boolean') {
+        if (typeof isFeatured === 'boolean' || status) {
             await updateFeaturedProductsCache();
         }
 
@@ -548,6 +580,9 @@ export const updateProductQuantity = async (req, res) => {
             // Don't fail the quantity update if notification fails
         }
 
+        // Update featured products cache since quantity changed
+        await updateFeaturedProductsCache();
+        
         res.json({product: updatedProduct, message: "Quantity updated successfully"});
     } catch (error) {
         console.log("Error in updateProductQuantity controller", error.message);
@@ -607,6 +642,9 @@ export const addProductQuantity = async (req, res) => {
             // Don't fail the quantity update if notification fails
         }
 
+        // Update featured products cache since quantity changed
+        await updateFeaturedProductsCache();
+        
         res.json({product: updatedProduct, message: "Quantity added successfully"});
     } catch (error) {
         console.log("Error in addProductQuantity controller", error.message);
@@ -678,6 +716,9 @@ export const removeProductQuantity = async (req, res) => {
             ? `Quantity removed successfully (Reason: ${reason})`
             : "Quantity removed successfully";
 
+        // Update featured products cache since quantity changed
+        await updateFeaturedProductsCache();
+        
         res.json({product: updatedProduct, message});
     } catch (error) {
         console.log("Error in removeProductQuantity controller", error.message);
@@ -687,10 +728,22 @@ export const removeProductQuantity = async (req, res) => {
 
 async function updateFeaturedProductsCache() {
     try {
+        console.log("🔄 Updating featured products cache...");
         const hybrid = await buildHybridFeaturedProducts();
         await redis.set("featuredProducts", JSON.stringify(hybrid));
+        console.log("✅ Featured products cache updated successfully");
     } catch (error) {
-        console.log("error in updateFeaturedProductsCache", error);
+        console.log("❌ Error in updateFeaturedProductsCache:", error);
+    }
+};
+
+export const clearFeaturedProductsCache = async (req, res) => {
+    try {
+        await redis.del("featuredProducts");
+        res.json({ message: "Featured products cache cleared successfully" });
+    } catch (error) {
+        console.log("Error clearing featured products cache:", error.message);
+        res.status(500).json({ message: "Server error", error: error.message });
     }
 };
 
@@ -703,6 +756,11 @@ async function buildHybridFeaturedProducts() {
     const manualFeatured = await Product.find({ isFeatured: true, status: PRODUCT_STATUSES.AVAILABLE })
         .sort({ createdAt: -1 })
         .lean();
+    
+    console.log(`🔍 Found ${manualFeatured.length} manually featured products`);
+    if (manualFeatured.length > 0) {
+        console.log("📋 Manual featured products:", manualFeatured.map(p => ({ name: p.name, quantity: p.quantity, status: p.status })));
+    }
 
     const result = [];
     const usedIds = new Set();
@@ -778,5 +836,10 @@ async function buildHybridFeaturedProducts() {
         if (noMoreCandidates) break;
     }
 
+    console.log(`🎯 Final featured products result: ${result.length} products`);
+    if (result.length > 0) {
+        console.log("📋 Final products:", result.map(p => ({ name: p.name, quantity: p.quantity, status: p.status })));
+    }
+    
     return result;
 }

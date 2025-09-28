@@ -98,7 +98,7 @@ const DashboardPage = () => {
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
     } catch (e) {
-      console.error('Failed to generate CSV:', e);
+      // Error generating CSV
     }
   };
 
@@ -156,10 +156,8 @@ const DashboardPage = () => {
         
         // Note: topProducts data is fetched separately in another useEffect
         // Category sales data will be processed when topProducts state updates
-        
-        console.log(response.data);
       } catch (error) {
-        console.error("Error fetching analytics data:", error);
+        // Error fetching analytics data
       } finally {
         setIsLoading(false);
       }
@@ -171,7 +169,6 @@ const DashboardPage = () => {
   // Process category sales data when topProducts changes
   useEffect(() => {
     if (topProducts && topProducts.length > 0) {
-      console.log('Processing topProducts for category sales:', topProducts);
       const categoryMap = new Map();
       topProducts.forEach(product => {
         const category = product.productCategory || 'Uncategorized';
@@ -210,9 +207,7 @@ const DashboardPage = () => {
         }));
       
       setCategorySalesData(processedData);
-      console.log('Processed Category Sales Data:', processedData);
     } else {
-      console.log('No topProducts data available for category processing');
       setCategorySalesData([]);
     }
   }, [topProducts]);
@@ -222,11 +217,9 @@ const DashboardPage = () => {
     const fetchCustomerData = async () => {
       try {
         const response = await axios.get(`${API_URL}/analytics/customers?timeframe=${timeframe}&source=${dataSource}`);
-        console.log('Customer Analytics Response:', response.data);
         setCustomerData(response.data.customerData || []);
         setRatingDistribution(response.data.ratingDistribution || {});
       } catch (error) {
-        console.error("Error fetching customer data:", error);
         setCustomerData([]);
         setRatingDistribution({});
       }
@@ -263,7 +256,6 @@ const DashboardPage = () => {
         const response = await axios.get(`${API_URL}/analytics/new-orders-by-source`, { params });
         setNewOrders(response.data?.newOrders || 0);
       } catch (error) {
-        console.error('Error fetching new orders:', error);
         setNewOrders(0);
       }
     };
@@ -287,7 +279,6 @@ const DashboardPage = () => {
         const response = await axios.get(`${API_URL}/analytics/total-sales-by-source`, { params });
         setTotalSalesQty(response.data?.totalSalesQuantity || 0);
       } catch (error) {
-        console.error('Error fetching total sales quantity:', error);
         setTotalSalesQty(0);
       }
     };
@@ -311,7 +302,6 @@ const DashboardPage = () => {
         const response = await axios.get(`${API_URL}/analytics/revenue-by-source`, { params });
         setTimeframeRevenue(response.data?.revenue || 0);
       } catch (error) {
-        console.error('Error fetching revenue:', error);
         setTimeframeRevenue(0);
       }
     };
@@ -332,7 +322,6 @@ const DashboardPage = () => {
         const response = await axios.get(`${API_URL}/analytics/top-products-by-source`, { params });
         setTopProducts(response.data?.products || []);
       } catch (error) {
-        console.error('Error fetching top products:', error);
         setTopProducts([]);
       }
     };
@@ -381,7 +370,7 @@ const DashboardPage = () => {
                   { key: 'pos', label: 'POS' },
                   { key: 'combined', label: 'All' },
                 ].map((option) => (
-                  <button
+            <button
                     key={option.key}
                     onClick={() => setDataSource(option.key)}
                     className={`${
@@ -391,7 +380,7 @@ const DashboardPage = () => {
                     } px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 font-alice`}
                   >
                     {option.label}
-                  </button>
+            </button>
                 ))}
               </div>
             </div>
@@ -399,76 +388,76 @@ const DashboardPage = () => {
             {/* Second Column: Timeframe Selection */}
             <div className='flex-1'>
               <div className='flex gap-2 items-center justify-center'>
-                {[
-                  { key: 'today', label: 'Today' },
-                  { key: 'week', label: 'Week' },
-                  { key: 'month', label: 'Month' },
-                  { key: 'year', label: 'Year' },
-                  { key: 'custom', label: 'Custom' },
-                ].map((option) => (
-                  <button
-                    key={option.key}
-                    onClick={() => {
-                      setTimeframe(option.key);
-                      if (option.key !== 'custom') {
-                        setSelectedDate('');
-                        setRangeStart('');
-                        setRangeEnd('');
-                      }
-                    }}
-                    className={`${
-                      timeframe === option.key
-                        ? 'bg-[#860809] text-white'
-                        : 'bg-[#f8f3ed] text-[#030105]'
-                    } px-3 py-1 rounded-md text-sm font-medium transition-colors duration-200 font-alice`}
-                  >
-                    {option.label}
-                  </button>
-                ))}
+            {[
+              { key: 'today', label: 'Today' },
+              { key: 'week', label: 'Week' },
+              { key: 'month', label: 'Month' },
+              { key: 'year', label: 'Year' },
+              { key: 'custom', label: 'Custom' },
+            ].map((option) => (
+              <button
+                key={option.key}
+                onClick={() => {
+                  setTimeframe(option.key);
+                  if (option.key !== 'custom') {
+                    setSelectedDate('');
+                    setRangeStart('');
+                    setRangeEnd('');
+                  }
+                }}
+                className={`${
+                  timeframe === option.key
+                    ? 'bg-[#860809] text-white'
+                    : 'bg-[#f8f3ed] text-[#030105]'
+                } px-3 py-1 rounded-md text-sm font-medium transition-colors duration-200 font-alice`}
+              >
+                {option.label}
+              </button>
+            ))}
               </div>
-              {timeframe === 'custom' && (
+            {timeframe === 'custom' && (
                 <div className='flex items-center gap-3 mt-2 justify-center'>
-                  <div className='flex gap-2'>
-                    <button onClick={()=>setCustomMode('date')} className={`px-2 py-1 rounded-md text-sm font-alice ${customMode==='date' ? 'bg-[#860809] text-white' : 'bg-[#f8f3ed] text-[#030105]'}`}>Select Date</button>
-                    <button onClick={()=>setCustomMode('range')} className={`px-2 py-1 rounded-md text-sm font-alice ${customMode==='range' ? 'bg-[#860809] text-white' : 'bg-[#f8f3ed] text-[#030105]'}`}>Range</button>
-                  </div>
-                  {customMode === 'date' && (
-                    <div className='flex items-center gap-2'>
-                      <input
-                        type='date'
-                        value={selectedDate}
-                        onChange={(e)=>{ setSelectedDate(e.target.value); }}
-                        className='px-2 py-1 rounded-md border border-gray-300 text-[#030105] bg-[#fffefc] font-alice'
-                      />
-                      {selectedDate && (
-                        <button onClick={()=>setSelectedDate('')} className='px-2 py-1 rounded-md text-sm bg-[#f8f3ed] text-[#030105] font-alice'>Clear</button>
-                      )}
-                    </div>
-                  )}
-                  {customMode === 'range' && (
-                    <div className='flex items-center gap-2'>
-                      <input
-                        type='date'
-                        value={rangeStart}
-                        onChange={(e)=>{ setRangeStart(e.target.value); }}
-                        className='px-2 py-1 rounded-md border border-gray-300 text-[#030105] bg-[#fffefc] font-alice'
-                      />
-                      <span className='text-[#030105] text-sm font-alice'>to</span>
-                      <input
-                        type='date'
-                        value={rangeEnd}
-                        onChange={(e)=>{ setRangeEnd(e.target.value); }}
-                        className='px-2 py-1 rounded-md border border-gray-300 text-[#030105] bg-[#fffefc] font-alice'
-                      />
-                      {(rangeStart || rangeEnd) && (
-                        <button onClick={()=>{ setRangeStart(''); setRangeEnd(''); }} className='px-2 py-1 rounded-md text-sm bg-[#f8f3ed] text-[#030105] font-alice'>Clear</button>
-                      )}
-                    </div>
-                  )}
+                <div className='flex gap-2'>
+                  <button onClick={()=>setCustomMode('date')} className={`px-2 py-1 rounded-md text-sm font-alice ${customMode==='date' ? 'bg-[#860809] text-white' : 'bg-[#f8f3ed] text-[#030105]'}`}>Select Date</button>
+                  <button onClick={()=>setCustomMode('range')} className={`px-2 py-1 rounded-md text-sm font-alice ${customMode==='range' ? 'bg-[#860809] text-white' : 'bg-[#f8f3ed] text-[#030105]'}`}>Range</button>
                 </div>
-              )}
-            </div>
-
+                {customMode === 'date' && (
+                  <div className='flex items-center gap-2'>
+                    <input
+                      type='date'
+                      value={selectedDate}
+                      onChange={(e)=>{ setSelectedDate(e.target.value); }}
+                      className='px-2 py-1 rounded-md border border-gray-300 text-[#030105] bg-[#fffefc] font-alice'
+                    />
+                    {selectedDate && (
+                      <button onClick={()=>setSelectedDate('')} className='px-2 py-1 rounded-md text-sm bg-[#f8f3ed] text-[#030105] font-alice'>Clear</button>
+                    )}
+                  </div>
+                )}
+                {customMode === 'range' && (
+                  <div className='flex items-center gap-2'>
+                    <input
+                      type='date'
+                      value={rangeStart}
+                      onChange={(e)=>{ setRangeStart(e.target.value); }}
+                      className='px-2 py-1 rounded-md border border-gray-300 text-[#030105] bg-[#fffefc] font-alice'
+                    />
+                    <span className='text-[#030105] text-sm font-alice'>to</span>
+                    <input
+                      type='date'
+                      value={rangeEnd}
+                      onChange={(e)=>{ setRangeEnd(e.target.value); }}
+                      className='px-2 py-1 rounded-md border border-gray-300 text-[#030105] bg-[#fffefc] font-alice'
+                    />
+                    {(rangeStart || rangeEnd) && (
+                      <button onClick={()=>{ setRangeStart(''); setRangeEnd(''); }} className='px-2 py-1 rounded-md text-sm bg-[#f8f3ed] text-[#030105] font-alice'>Clear</button>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+        </div>
+        
             {/* Third Column: Generate Report Button */}
             <div className='flex-1 flex justify-end'>
               <button
@@ -530,7 +519,7 @@ const DashboardPage = () => {
                   { category: 'chicken', quantitySold: 0 },
                   { category: 'sliced', quantitySold: 0 },
                   { category: 'processed', quantitySold: 0 },
-                  { category: 'ground', quantitySold: 0 }
+                  { category: 'seafood', quantitySold: 0 }
                 ]} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                   <CartesianGrid strokeDasharray='3 3' stroke='black' strokeOpacity={0.2} />
                   <XAxis 
@@ -567,7 +556,7 @@ const DashboardPage = () => {
                       { category: 'chicken', quantitySold: 0 },
                       { category: 'sliced', quantitySold: 0 },
                       { category: 'processed', quantitySold: 0 },
-                      { category: 'ground', quantitySold: 0 }
+                      { category: 'seafood', quantitySold: 0 }
                     ].map((entry, index) => (
                       <Cell key={`cell-${index}`} fill='#f3f4f6' />
                     ))}

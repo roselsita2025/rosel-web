@@ -1,5 +1,5 @@
 import express from 'express';
-import { createProduct, deleteProduct, getAllProducts, getAllProductsForCustomers, getFeaturedProducts, getProductsByCategory, getRecommendedProducts, toggleFeaturedProduct, getProductById, updateProductQuantity, addProductQuantity, removeProductQuantity, searchProducts, suggestProducts, updateProduct, getProductByBarcode } from '../controllers/product.controller.js';
+import { createProduct, deleteProduct, getAllProducts, getAllProductsForCustomers, getFeaturedProducts, getProductsByCategory, getRecommendedProducts, toggleFeaturedProduct, getProductById, updateProductQuantity, addProductQuantity, removeProductQuantity, searchProducts, suggestProducts, updateProduct, getProductByBarcode, clearFeaturedProductsCache, getProductsBatch } from '../controllers/product.controller.js';
 import { verifyAdmin, verifyToken } from '../middleware/verifyToken.js';
 
 const router = express.Router();
@@ -13,9 +13,10 @@ router.get("/category/:category", getProductsByCategory);
 router.get("/recommendations", getRecommendedProducts);
 router.get("/categories", (req, res) => {
     // static categories for frontend; no auth required
-    res.json({ categories: ["pork", "beef", "chicken", "sliced", "processed", "ground"] });
+    res.json({ categories: ["pork", "beef", "chicken", "sliced", "processed", "seafood"] });
 });
 router.get("/barcode/:barcode", verifyToken, verifyAdmin, getProductByBarcode);
+router.get("/batch", getProductsBatch);
 router.get("/:id", getProductById);
 router.post("/", verifyToken, verifyAdmin, createProduct);
 router.put("/:id", verifyToken, verifyAdmin, updateProduct);
@@ -24,5 +25,6 @@ router.delete("/:id", verifyToken, verifyAdmin, deleteProduct);
 router.put("/quantity/update", verifyToken, verifyAdmin, updateProductQuantity);
 router.put("/quantity/add", verifyToken, verifyAdmin, addProductQuantity);
 router.put("/quantity/remove", verifyToken, verifyAdmin, removeProductQuantity);
+router.delete("/cache/featured", verifyToken, verifyAdmin, clearFeaturedProductsCache);
 
 export default router;

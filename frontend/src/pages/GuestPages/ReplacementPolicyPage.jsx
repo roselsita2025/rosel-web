@@ -62,13 +62,13 @@ const ReplacementPolicyPage = () => {
             </motion.h2>
             
             <div className="grid md:grid-cols-2 gap-8">
-              <motion.div 
+            <motion.div 
                 className="bg-[#f8f3ed] p-8 rounded-xl shadow-lg border-2 border-[#860809]"
-                initial={{ opacity: 0, x: -30 }}
-                whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
-                viewport={{ once: true }}
-              >
+              viewport={{ once: true }}
+            >
                 <h3 className="text-2xl font-bold text-[#860809] mb-6">1. Proof of Defect or Discrepancy</h3>
                 <div className="space-y-4">
                   <div className="bg-[#fffefc] p-4 rounded-lg border border-[#a31f17]">
@@ -78,18 +78,18 @@ const ReplacementPolicyPage = () => {
                       <li>Unaltered, time-stamped images or recordings</li>
                       <li>Capture the condition of the item as delivered</li>
                       <li>Include packaging and product labels</li>
-                    </ul>
+              </ul>
                   </div>
                 </div>
-              </motion.div>
+            </motion.div>
 
-              <motion.div 
+            <motion.div 
                 className="bg-[#f8f3ed] p-8 rounded-xl shadow-lg border-2 border-[#860809]"
-                initial={{ opacity: 0, x: 30 }}
-                whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
-                viewport={{ once: true }}
-              >
+              viewport={{ once: true }}
+            >
                 <h3 className="text-2xl font-bold text-[#860809] mb-6">2. Proof of Identity</h3>
                 <div className="space-y-4">
                   <div className="bg-[#fffefc] p-4 rounded-lg border border-[#a31f17]">
@@ -104,7 +104,7 @@ const ReplacementPolicyPage = () => {
                     <p className="text-[#030105] mt-3 font-semibold">The name on the order and the presented ID must match to protect against fraudulent claims.</p>
                   </div>
                 </div>
-              </motion.div>
+            </motion.div>
             </div>
           </div>
         </div>
@@ -126,8 +126,8 @@ const ReplacementPolicyPage = () => {
                 initial={{ opacity: 0, x: -30 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
-                viewport={{ once: true }}
-              >
+              viewport={{ once: true }}
+            >
                 <h3 className="text-2xl font-bold text-[#860809] mb-6">3. Timeframe of Reporting</h3>
                 <div className="bg-[#f8f3ed] p-6 rounded-lg border border-[#a31f17]">
                   <p className="text-[#030105] leading-relaxed mb-4">
@@ -143,9 +143,9 @@ const ReplacementPolicyPage = () => {
                 className="bg-[#fffefc] p-8 rounded-xl shadow-lg border-2 border-[#860809]"
                 initial={{ opacity: 0, x: 30 }}
                 whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
-                viewport={{ once: true }}
-              >
+              transition={{ duration: 0.6, delay: 0.4 }}
+              viewport={{ once: true }}
+            >
                 <h3 className="text-2xl font-bold text-[#860809] mb-6">4. Evaluation and Approval</h3>
                 <div className="bg-[#f8f3ed] p-6 rounded-lg border border-[#a31f17]">
                   <p className="text-[#030105] leading-relaxed mb-4">
@@ -195,7 +195,7 @@ const ReplacementPolicyPage = () => {
                     <li><strong>Items mishandled, stored improperly, or tampered with after delivery</strong></li>
                     <li><strong>Claims without sufficient evidence or filed beyond the allowable period</strong></li>
                     <li><strong>Requests for replacement due to personal preference or change of mind</strong></li>
-                  </ul>
+              </ul>
                 </div>
                 
                 <div className="bg-[#fffefc] p-6 rounded-lg border border-[#a31f17]">

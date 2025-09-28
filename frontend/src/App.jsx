@@ -170,7 +170,12 @@ function App() {
   const isAdmin = user?.role === "admin";
   const isAdminPage = ["/dashboard", "/analytics", "/profile", "/account-settings", "/coupons", "/manage-products", "/order-management", "/admin/replacement-requests", "/admin/chat-management"].includes(location.pathname) || location.pathname.startsWith("/admin/replacement-requests/");
 
-  const hideNavbar = ["/login", "/signup", "/forgot-password", "/verify-email"].includes(location.pathname);
+  const hideNavbar = ["/login", "/signup", "/forgot-password", "/verify-email", "/purchase-success", "/purchase-cancel"].includes(location.pathname);
+
+  // Scroll to top when location changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
   useEffect(()=>{
     checkAuth();
