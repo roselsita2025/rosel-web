@@ -14,7 +14,7 @@ const categories = [
 	{ href: "/chicken", name: "Chicken", imageUrl: "/bgchicken.jpg" },
 	{ href: "/sliced", name: "Sliced", imageUrl: "/bgsliced.jpg" },
 	{ href: "/processed", name: "Processed", imageUrl: "/bgprocessed.jpg" },
-	{ href: "/seafood", name: "Seafood", imageUrl: "/bgground.jpg" },
+	{ href: "/seafood", name: "Seafood", imageUrl: "/bgseafood.jpg" },
 ];
 
 const CategoryPage = () => {
