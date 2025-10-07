@@ -93,21 +93,17 @@ const InformationPage = () => {
         if (isAuthenticated && user?.role === 'customer') {
             const mapElement = document.getElementById('google-map');
             if (mapElement && !map && window.google && window.google.maps) {
-                console.log('Map element available, initializing...');
                 initializeMap();
             }
         }
     }, [isAuthenticated, user, map]);
 
     const initializeMap = () => {
-        console.log('initializeMap called, window.google:', !!window.google);
         
         if (window.google && window.google.maps) {
             const mapElement = document.getElementById('google-map');
-            console.log('Map element found:', !!mapElement);
             
             if (mapElement && !map) {
-                console.log('Creating Google Map...');
                 const googleMap = new window.google.maps.Map(mapElement, {
                     center: mapCenter,
                     zoom: 15,
@@ -148,13 +144,11 @@ const InformationPage = () => {
                 setMap(googleMap);
                 setMarker(googleMarker);
                 setIsMapLoaded(true);
-                console.log('Google Map initialized successfully');
             }
         } else {
             // Load Google Maps script if not already loaded
             if (!document.querySelector('script[src*="maps.googleapis.com"]')) {
                 const apiKey = import.meta.env.VITE_MAPS_PLATFORM_API_KEY;
-                console.log('Google Maps API Key:', apiKey); // Debug log
                 
                 if (!apiKey) {
                     console.error('VITE_MAPS_PLATFORM_API_KEY is not defined in environment variables');
@@ -162,13 +156,11 @@ const InformationPage = () => {
                     return;
                 }
                 
-                console.log('Loading Google Maps script...');
                 const script = document.createElement('script');
                 script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&loading=async`;
                 script.async = true;
                 script.defer = true;
                 script.onload = () => {
-                    console.log('Google Maps script loaded, initializing map...');
                     setTimeout(initializeMap, 100);
                 };
                 script.onerror = () => {
@@ -177,7 +169,6 @@ const InformationPage = () => {
                 };
                 document.head.appendChild(script);
             } else {
-                console.log('Google Maps script already loaded, retrying initialization...');
                 setTimeout(initializeMap, 100);
             }
         }

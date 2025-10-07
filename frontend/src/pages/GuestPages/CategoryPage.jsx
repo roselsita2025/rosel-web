@@ -167,7 +167,6 @@ const CategoryPage = () => {
         }
     };
 
-    console.log("products: ", products);
 
      return (
 		<>

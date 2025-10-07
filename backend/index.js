@@ -28,6 +28,7 @@ import contactRoutes from './routes/contact.route.js';
 import posRoutes from './routes/pos.route.js';
 import activityLogRoutes from './routes/activityLog.route.js';
 import reviewRoutes from './routes/reviews.js';
+import backupRoutes from './routes/backup.route.js';
 
 import './utils/env.js';
 
@@ -63,6 +64,7 @@ app.use("/api/contact", contactRoutes);
 app.use("/api/pos", posRoutes);
 app.use("/api/activity-logs", activityLogRoutes);
 app.use("/api/reviews", reviewRoutes);
+app.use("/api/backup", backupRoutes);
 
 // Serve static files from the React app build directory
 app.use(express.static(path.join(__dirname, '../frontend/dist')));

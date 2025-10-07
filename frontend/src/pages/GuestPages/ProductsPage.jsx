@@ -99,36 +99,22 @@ const ProductsPage = () => {
 			className='relative min-h-screen text-white overflow-hidden bg-[#901414] pt-8 w-full'
 			initial={{ opacity: 0 }}
 			animate={{ opacity: 1 }}
-			transition={{ duration: 0.6, ease: "easeOut" }}
-			style={{ willChange: "opacity" }}
+			transition={{ duration: 0.3 }}
 		>
 			{/* First Section: Our Products Title and Description */}
 			<section className='relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24'>
-				<motion.div 
-					initial={{ opacity: 0, y: 20 }}
+				<motion.div
+					initial={{ opacity: 0, y: 10 }}
 					animate={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
-					style={{ willChange: "opacity, transform" }}
+					transition={{ duration: 0.4, delay: 0.1 }}
 				>
-					<motion.h1 
-						className='text-center text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 font-libre'
-						initial={{ opacity: 0, y: 20 }}
-						animate={{ opacity: 1, y: 0 }}
-						transition={{ duration: 0.4, delay: 0.4, ease: "easeOut" }}
-						style={{ willChange: "opacity, transform" }}
-					>
+					<h1 className='text-center text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 font-libre'>
 						Our Products
-					</motion.h1>
-					<motion.p 
-						className='text-center text-sm sm:text-base md:text-lg text-white max-w-3xl mx-auto font-alice px-4'
-						initial={{ opacity: 0, y: 20 }}
-						animate={{ opacity: 1, y: 0 }}
-						transition={{ duration: 0.4, delay: 0.6, ease: "easeOut" }}
-						style={{ willChange: "opacity, transform" }}
-					>
+					</h1>
+					<p className='text-center text-sm sm:text-base md:text-lg text-white max-w-3xl mx-auto font-alice px-4'>
 						We take pride in bringing you only safe, high quality meat products.
 						Our tradition stands for consistently quality meat for consistent quality food.
-					</motion.p>
+					</p>
 				</motion.div>
 			</section>
 
@@ -141,24 +127,23 @@ const ProductsPage = () => {
 			>
 				<motion.div 
 					className='relative max-w-7xl mx-auto'
-					initial={{ opacity: 0, y: 50 }}
+					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.5, delay: 1.0, ease: "easeOut" }}
-					style={{ willChange: "opacity, transform" }}
+					transition={{ duration: 0.4, delay: 0.2 }}
 				>
 					{/* Navigation Buttons - Only show on mobile and medium screens when there are more items than can be displayed */}
 					{itemsPerView < 6 && categories.length > itemsPerView && (
 						<>
 							<button
 								onClick={prevCategory}
-								className="absolute left-2 top-1/2 -translate-y-1/2 z-20 bg-white/95 hover:bg-white text-[#901414] p-2 rounded-full shadow-lg transition-all duration-300 hover:scale-110"
+								className="absolute left-2 top-1/2 -translate-y-1/2 z-20 bg-white/95 hover:bg-white text-[#901414] p-2 rounded-full shadow-lg transition-colors duration-200"
 								aria-label="Previous categories"
 							>
 								<ChevronLeft size={20} />
 							</button>
 							<button
 								onClick={nextCategory}
-								className="absolute right-2 top-1/2 -translate-y-1/2 z-20 bg-white/95 hover:bg-white text-[#901414] p-2 rounded-full shadow-lg transition-all duration-300 hover:scale-110"
+								className="absolute right-2 top-1/2 -translate-y-1/2 z-20 bg-white/95 hover:bg-white text-[#901414] p-2 rounded-full shadow-lg transition-colors duration-200"
 								aria-label="Next categories"
 							>
 								<ChevronRight size={20} />
@@ -169,7 +154,7 @@ const ProductsPage = () => {
 					{/* Category Cards Container */}
 					<div className="overflow-hidden px-16 sm:px-20">
 						<div
-							className={`flex transition-transform duration-300 ease-out ${
+							className={`flex ${
 								itemsPerView === 6 ? 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4 md:gap-3' : 'gap-2 sm:gap-3'
 							}`}
 							style={{
@@ -181,10 +166,9 @@ const ProductsPage = () => {
 								<motion.div
 									key={category.name}
 									className={`${itemsPerView < 6 ? 'flex-shrink-0 w-1/2 sm:w-1/3' : ''} flex justify-center`}
-									initial={{ opacity: 0, y: 30 }}
+									initial={{ opacity: 0, y: 15 }}
 									animate={{ opacity: 1, y: 0 }}
-									transition={{ duration: 0.4, delay: 1.2 + (index * 0.05), ease: "easeOut" }}
-									style={{ willChange: "opacity, transform" }}
+									transition={{ duration: 0.3, delay: 0.3 + (index * 0.05) }}
 								>
 									<CategoryItem category={category} />
 								</motion.div>
@@ -197,20 +181,16 @@ const ProductsPage = () => {
 			{/* Featured Products Section */}
 			<motion.div 
 				className="w-full bg-white py-12"
-				initial={{ opacity: 0, y: 50 }}
-				whileInView={{ opacity: 1, y: 0 }}
-				transition={{ duration: 0.5, ease: "easeOut" }}
-				viewport={{ once: true }}
-				style={{ willChange: "opacity, transform" }}
+				initial={{ opacity: 0, y: 20 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={{ duration: 0.4, delay: 0.4 }}
 			>
 				<div className="max-w-7xl mx-auto px-4">
 					{!isLoading && featuredProducts.length > 0 && (
 						<motion.div
-							initial={{ opacity: 0, y: 30 }}
-							whileInView={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.4, delay: 0.2, ease: "easeOut" }}
-							viewport={{ once: true }}
-							style={{ willChange: "opacity, transform" }}
+							initial={{ opacity: 0, y: 10 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={{ duration: 0.3, delay: 0.5 }}
 						>
 							<FeaturedProducts featuredProducts={featuredProducts} />
 						</motion.div>

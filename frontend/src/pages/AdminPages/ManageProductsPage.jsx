@@ -282,7 +282,6 @@ const ManageProductsPage = () => {
 				}
 			});
 			
-			console.log('Activity logs response:', response.data);
 			
 			// Check if response.data.logs exists and is an array
 			const logs = response.data.logs || response.data || [];
@@ -295,7 +294,6 @@ const ManageProductsPage = () => {
 			
 			// If no logs found, show empty array (this is normal for new installations)
 			if (logs.length === 0) {
-				console.log('No activity logs found - this is normal for new installations');
 				setActivityLogs([]);
 				return;
 			}
@@ -428,23 +426,12 @@ const ManageProductsPage = () => {
 				if (!code) { lastTs = now; return; }
 				// route scan by active mode precedence: quantity > update search > create > monitor
 				if (qtyScanMode === 'usb' && selectedProduct) {
-					console.log('USB Scanner - Quantity Update Mode:');
-					console.log('Raw scanned code:', code);
-					console.log('Code length:', code.length);
-					console.log('Code type:', typeof code);
-					
 					// Format the scanned code to match expected barcode format (JKLjkl3456 -> JKL-jkl-3456)
 					let formattedCode = code;
 					if (code.length >= 9 && /^[A-Za-z0-9]+$/.test(code)) {
 						// Insert hyphens at positions 3 and 6 (0-indexed: after 3rd and 6th characters)
 						formattedCode = code.slice(0, 3) + '-' + code.slice(3, 6) + '-' + code.slice(6);
 					}
-					
-					console.log('Formatted code:', formattedCode);
-					console.log('Selected product barcode:', selectedProduct.barcode);
-					console.log('Selected product barcode type:', typeof selectedProduct.barcode);
-					console.log('Barcode comparison (formattedCode === selectedProduct.barcode):', formattedCode === selectedProduct.barcode);
-					console.log('Barcode comparison (formattedCode == selectedProduct.barcode):', formattedCode == selectedProduct.barcode);
 					
 					setLastScannedQty(formattedCode);
 					if (selectedProduct.barcode && formattedCode === selectedProduct.barcode) {
@@ -920,7 +907,7 @@ const ManageProductsPage = () => {
 															{isMarkedForRemoval && (
 																<div className='absolute inset-0 bg-red-500/20 flex items-center justify-center'>
 																	<span className='text-red-600 font-semibold text-sm'>Will be removed</span>
-																</div>
+													</div>
 															)}
 														</div>
 													);

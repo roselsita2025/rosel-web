@@ -239,7 +239,7 @@ const WelcomePage = () => {
           Choose your premium meat products.
         </motion.p>
         <motion.h2 
-          className="text-5xl font-bold text-[#030105] mb-4 lg:mb-8 font-libre"
+          className="text-4xl lg:text-5xl font-bold text-[#030105] mb-4 lg:mb-8 font-libre"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
@@ -254,7 +254,7 @@ const WelcomePage = () => {
               premiumProducts.map((product, index) => (
                 <motion.div
                   key={product._id}
-                  className="bg-white p-4 rounded-lg group hover:shadow-xl hover:border-2 hover:border-[#901414] hover:bg-[#f8f3ed] hover:scale-110 hover:z-10 hover:rounded-2xl relative transition-all duration-300"
+                  className="bg-white p-4 rounded-lg group hover:shadow-xl hover:border-2 hover:border-[#901414] hover:bg-[#f8f3ed] hover:scale-110 hover:z-10 hover:rounded-2xl relative transition-all duration-300 flex flex-col h-full"
                   initial={{ opacity: 0, y: 50 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
@@ -282,33 +282,35 @@ const WelcomePage = () => {
                       {product.quantity > 0 ? `${product.quantity} in stock` : 'Out of stock'}
                     </span>
                   </div>
-                  <button
-                    onClick={() => handleAddToCart(product)}
-                    disabled={product.quantity === 0}
-                    className={`w-full text-white py-2 px-4 rounded-lg transition-colors duration-300 font-semibold ${
-                      product.quantity > 0
-                        ? buttonStateById[product._id] === 'added'
-                          ? 'bg-emerald-600'
+                  <div className="mt-auto">
+                    <button
+                      onClick={() => handleAddToCart(product)}
+                      disabled={product.quantity === 0}
+                      className={`w-full text-white py-2 px-4 rounded-lg transition-colors duration-300 font-semibold ${
+                        product.quantity > 0
+                          ? buttonStateById[product._id] === 'added'
+                            ? 'bg-emerald-600'
+                            : buttonStateById[product._id] === 'maxed'
+                              ? 'bg-red-600'
+                              : 'bg-[#901414] hover:bg-[#a31f17]'
+                          : 'bg-gray-400 cursor-not-allowed'
+                      }`}
+                    >
+                      {product.quantity > 0 
+                        ? buttonStateById[product._id] === 'added' 
+                          ? 'Product Added'
                           : buttonStateById[product._id] === 'maxed'
-                            ? 'bg-red-600'
-                            : 'bg-[#901414] hover:bg-[#a31f17]'
-                        : 'bg-gray-400 cursor-not-allowed'
-                    }`}
-                  >
-                    {product.quantity > 0 
-                      ? buttonStateById[product._id] === 'added' 
-                        ? 'Product Added'
-                        : buttonStateById[product._id] === 'maxed'
-                          ? 'Maxed item'
-                          : 'Add to Cart' 
-                      : 'Out of Stock'}
-                  </button>
-                  <Link
-                    to={`/product/${product._id}`}
-                    className="block w-full text-center text-[#901414] py-2 px-4 rounded-lg hover:bg-[#f8f3ed] transition-colors duration-300 font-medium mt-2 opacity-0 group-hover:opacity-100 font-alice"
-                  >
-                    View Product
-                  </Link>
+                            ? 'Maxed item'
+                            : 'Add to Cart' 
+                        : 'Out of Stock'}
+                    </button>
+                    <Link
+                      to={`/product/${product._id}`}
+                      className="block w-full text-center text-[#901414] py-2 px-4 rounded-lg hover:bg-[#f8f3ed] transition-colors duration-300 font-medium mt-2 opacity-0 group-hover:opacity-100 font-alice"
+                    >
+                      View Product
+                    </Link>
+                  </div>
                 </motion.div>
               ))
             ) : (
@@ -332,7 +334,7 @@ const WelcomePage = () => {
             {premiumProducts.length > 0 ? (
               <>
                 <motion.div 
-                  className="bg-white p-4 rounded-lg group hover:shadow-xl hover:border-2 hover:border-[#901414] hover:bg-[#f8f3ed] hover:scale-105 hover:z-10 hover:rounded-2xl relative transition-all duration-300"
+                  className="bg-white p-4 rounded-lg group hover:shadow-xl hover:border-2 hover:border-[#901414] hover:bg-[#f8f3ed] hover:scale-105 hover:z-10 hover:rounded-2xl relative transition-all duration-300 flex flex-col h-full"
                   initial={{ opacity: 0, scale: 0.9 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.6 }}
@@ -360,33 +362,35 @@ const WelcomePage = () => {
                       {premiumProducts[currentProductIndex]?.quantity > 0 ? `${premiumProducts[currentProductIndex]?.quantity} in stock` : 'Out of stock'}
                     </span>
                   </div>
-                  <button
-                    onClick={() => handleAddToCart(premiumProducts[currentProductIndex])}
-                    disabled={premiumProducts[currentProductIndex]?.quantity === 0}
-                    className={`w-full text-white py-2 px-4 rounded-lg transition-colors duration-300 font-semibold ${
-                      (premiumProducts[currentProductIndex]?.quantity || 0) > 0
-                        ? buttonStateById[premiumProducts[currentProductIndex]?._id] === 'added'
-                          ? 'bg-emerald-600'
+                  <div className="mt-auto">
+                    <button
+                      onClick={() => handleAddToCart(premiumProducts[currentProductIndex])}
+                      disabled={premiumProducts[currentProductIndex]?.quantity === 0}
+                      className={`w-full text-white py-2 px-4 rounded-lg transition-colors duration-300 font-semibold ${
+                        (premiumProducts[currentProductIndex]?.quantity || 0) > 0
+                          ? buttonStateById[premiumProducts[currentProductIndex]?._id] === 'added'
+                            ? 'bg-emerald-600'
+                            : buttonStateById[premiumProducts[currentProductIndex]?._id] === 'maxed'
+                              ? 'bg-red-600'
+                              : 'bg-[#901414] hover:bg-[#a31f17]'
+                          : 'bg-gray-400 cursor-not-allowed'
+                      }`}
+                    >
+                      {(premiumProducts[currentProductIndex]?.quantity || 0) > 0 
+                        ? buttonStateById[premiumProducts[currentProductIndex]?._id] === 'added' 
+                          ? 'Product Added'
                           : buttonStateById[premiumProducts[currentProductIndex]?._id] === 'maxed'
-                            ? 'bg-red-600'
-                            : 'bg-[#901414] hover:bg-[#a31f17]'
-                        : 'bg-gray-400 cursor-not-allowed'
-                    }`}
-                  >
-                    {(premiumProducts[currentProductIndex]?.quantity || 0) > 0 
-                      ? buttonStateById[premiumProducts[currentProductIndex]?._id] === 'added' 
-                        ? 'Product Added'
-                        : buttonStateById[premiumProducts[currentProductIndex]?._id] === 'maxed'
-                          ? 'Maxed item'
-                          : 'Add to Cart' 
-                      : 'Out of Stock'}
-                  </button>
-                  <Link
-                    to={`/product/${premiumProducts[currentProductIndex]?._id}`}
-                    className="block w-full text-center text-[#901414] py-2 px-4 rounded-lg hover:bg-[#f8f3ed] transition-colors duration-300 font-medium mt-2 opacity-0 group-hover:opacity-100 font-alice"
-                  >
-                    View Product
-                  </Link>
+                            ? 'Maxed item'
+                            : 'Add to Cart' 
+                        : 'Out of Stock'}
+                    </button>
+                    <Link
+                      to={`/product/${premiumProducts[currentProductIndex]?._id}`}
+                      className="block w-full text-center text-[#901414] py-2 px-4 rounded-lg hover:bg-[#f8f3ed] transition-colors duration-300 font-medium mt-2 opacity-0 group-hover:opacity-100 font-alice"
+                    >
+                      View Product
+                    </Link>
+                  </div>
                 </motion.div>
                 
                 {/* Navigation Arrows */}

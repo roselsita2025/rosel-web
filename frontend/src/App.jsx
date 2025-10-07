@@ -19,6 +19,7 @@ import ReplacementRequestDetailsPage from "./pages/AdminPages/ReplacementRequest
 import ChatManagementPage from "./pages/AdminPages/ChatManagementPage.jsx";
 import POSPage from "./pages/AdminPages/POSPage.jsx";
 import POSHistoryPage from "./pages/AdminPages/POSHistoryPage.jsx";
+import BackupRestorePage from "./pages/AdminPages/BackupRestorePage.jsx";
 
 import ProfilePage from "./pages/ProfilePage";
 import AccountSettingsPage from "./pages/AccountSettingsPage";
@@ -274,6 +275,7 @@ function App() {
         <Route path = '/admin/replacement-requests/:requestId' element = { <AdminRoute> <ReplacementRequestDetailsPage /> </AdminRoute> } />
         <Route path = '/admin/chat-management' element = { <AdminRoute> <ChatManagementPage /> </AdminRoute> } />
         <Route path = '/admin/notifications' element = { <AdminRoute> <AdminNotificationCenterPage /> </AdminRoute> } />
+        <Route path = '/admin/backup-restore' element = { <AdminRoute> <BackupRestorePage /> </AdminRoute> } />
         
         {/* Customer-only routes */}
         <Route path = '/profile' element = { <ProtectedRoute> <ProfilePage /> </ProtectedRoute> } />

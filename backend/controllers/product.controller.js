@@ -37,17 +37,14 @@ export const getFeaturedProducts = async (req, res) => {
         if (!bypassCache) {
             let cached = await redis.get("featuredProducts");
             if (cached) {
-                console.log("📦 Using cached featured products");
                 return res.json(JSON.parse(cached));
             }
         }
 
-        console.log("🔄 Building fresh featured products (cache bypassed or empty)");
         const hybrid = await buildHybridFeaturedProducts();
         await redis.set("featuredProducts", JSON.stringify(hybrid));
         // Only expose available products to guests
         const filtered = Array.isArray(hybrid) ? hybrid.filter((p) => p.status === PRODUCT_STATUSES.AVAILABLE) : [];
-        console.log(`✅ Returning ${filtered.length} featured products`);
         res.json(filtered);
     } catch (error) {
         console.log("Error in getFeaturedProducts controller", error.message);
@@ -569,11 +566,8 @@ export const updateProductQuantity = async (req, res) => {
 
         // Check for low stock alert
         try {
-            console.log(`🔍 Checking low stock: quantity=${quantity}, oldQuantity=${oldQuantity}`);
             if (quantity <= 10 && oldQuantity > 10) {
-                console.log(`🚨 Triggering low stock alert for product: ${updatedProduct.name}`);
                 const result = await notificationService.sendLowStockAlert(updatedProduct, quantity, 10);
-                console.log('✅ Low stock notification sent:', result);
             }
         } catch (notificationError) {
             console.error('❌ Error sending low stock notification:', notificationError);
@@ -700,7 +694,6 @@ export const removeProductQuantity = async (req, res) => {
         }
 
         // Log the stock removal with reason
-        console.log(`Stock removed: Product "${product.name}" - Quantity: ${quantityToRemove}, Reason: ${reason || 'Not specified'}, Old: ${oldQuantity}, New: ${updatedProduct.quantity}`);
 
         // Check for low stock alert
         try {
@@ -728,10 +721,8 @@ export const removeProductQuantity = async (req, res) => {
 
 async function updateFeaturedProductsCache() {
     try {
-        console.log("🔄 Updating featured products cache...");
         const hybrid = await buildHybridFeaturedProducts();
         await redis.set("featuredProducts", JSON.stringify(hybrid));
-        console.log("✅ Featured products cache updated successfully");
     } catch (error) {
         console.log("❌ Error in updateFeaturedProductsCache:", error);
     }
@@ -756,11 +747,6 @@ async function buildHybridFeaturedProducts() {
     const manualFeatured = await Product.find({ isFeatured: true, status: PRODUCT_STATUSES.AVAILABLE })
         .sort({ createdAt: -1 })
         .lean();
-    
-    console.log(`🔍 Found ${manualFeatured.length} manually featured products`);
-    if (manualFeatured.length > 0) {
-        console.log("📋 Manual featured products:", manualFeatured.map(p => ({ name: p.name, quantity: p.quantity, status: p.status })));
-    }
 
     const result = [];
     const usedIds = new Set();
@@ -836,10 +822,6 @@ async function buildHybridFeaturedProducts() {
         if (noMoreCandidates) break;
     }
 
-    console.log(`🎯 Final featured products result: ${result.length} products`);
-    if (result.length > 0) {
-        console.log("📋 Final products:", result.map(p => ({ name: p.name, quantity: p.quantity, status: p.status })));
-    }
     
     return result;
 }

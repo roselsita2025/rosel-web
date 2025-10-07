@@ -1,0 +1,3152 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "timestamp": "2025-10-07T15:16:56.212Z",
+    "collections": [
+      "products",
+      "orders",
+      "users",
+      "reviews"
+    ],
+    "totalRecords": 81,
+    "generatedBy": "68d255a275227728ca1c0d9c",
+    "generatedByEmail": "roselsita.2025@gmail.com"
+  },
+  "data": {
+    "products": [
+      {
+        "_id": "68d2591275227728ca1c0ebf",
+        "name": "AMECO BEEF SHANK",
+        "price": 4999.99,
+        "description": "Weight: 15 kilograms",
+        "barcode": "022072770",
+        "image": "https://res.cloudinary.com/duv2elcut/image/upload/v1758615823/products/y1tzmlnzncqtqz60ki95.jpg",
+        "images": [
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1758615823/products/y1tzmlnzncqtqz60ki95.jpg",
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1758615824/products/bnv6dbjvxp7z1c0zjopc.png"
+        ],
+        "mainImageUrl": "https://res.cloudinary.com/duv2elcut/image/upload/v1758615823/products/y1tzmlnzncqtqz60ki95.jpg",
+        "category": "beef",
+        "isFeatured": false,
+        "quantity": 124,
+        "status": "available",
+        "createdAt": "2025-09-23T08:23:46.745Z",
+        "updatedAt": "2025-09-28T15:52:31.117Z",
+        "__v": 2
+      },
+      {
+        "_id": "68d25a1d75227728ca1c0f47",
+        "name": "CASSINO TRIPE",
+        "price": 5500,
+        "description": "Weight: 15 kilograms",
+        "barcode": "ZCB449",
+        "image": "https://res.cloudinary.com/duv2elcut/image/upload/v1758616091/products/zm7byaqsxnr4jfyfk3sk.png",
+        "images": [
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1758616091/products/zm7byaqsxnr4jfyfk3sk.png"
+        ],
+        "mainImageUrl": "https://res.cloudinary.com/duv2elcut/image/upload/v1758616091/products/zm7byaqsxnr4jfyfk3sk.png",
+        "category": "beef",
+        "isFeatured": false,
+        "quantity": 9,
+        "status": "available",
+        "createdAt": "2025-09-23T08:28:13.872Z",
+        "updatedAt": "2025-09-28T15:45:31.824Z",
+        "__v": 0
+      },
+      {
+        "_id": "68d25a9775227728ca1c0f80",
+        "name": "AURORA PORK HEART",
+        "price": 3500,
+        "description": "Weight: 15 kilograms",
+        "barcode": "12526",
+        "image": "https://res.cloudinary.com/duv2elcut/image/upload/v1758616212/products/ayebovczb2w7h4zmt6la.png",
+        "images": [
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1758616212/products/ayebovczb2w7h4zmt6la.png",
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1758616213/products/lpfi63yebk9bgwgujvwp.jpg"
+        ],
+        "mainImageUrl": "https://res.cloudinary.com/duv2elcut/image/upload/v1758616212/products/ayebovczb2w7h4zmt6la.png",
+        "category": "pork",
+        "isFeatured": false,
+        "quantity": 122,
+        "status": "available",
+        "createdAt": "2025-09-23T08:30:15.069Z",
+        "updatedAt": "2025-09-26T16:07:45.841Z",
+        "__v": 0
+      },
+      {
+        "_id": "68d25afc75227728ca1c0fbe",
+        "name": "SADIA SPARERIBS",
+        "price": 4000,
+        "description": "Weight: 15 kilograms",
+        "barcode": "727925",
+        "image": "https://res.cloudinary.com/duv2elcut/image/upload/v1758616313/products/vtjcqxutqynang4cyy4d.png",
+        "images": [
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1758616313/products/vtjcqxutqynang4cyy4d.png",
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1758616314/products/lyjrqamwdjezlsd6mmpw.jpg"
+        ],
+        "mainImageUrl": "https://res.cloudinary.com/duv2elcut/image/upload/v1758616313/products/vtjcqxutqynang4cyy4d.png",
+        "category": "pork",
+        "isFeatured": false,
+        "quantity": 115,
+        "status": "available",
+        "createdAt": "2025-09-23T08:31:56.085Z",
+        "updatedAt": "2025-09-26T16:07:45.884Z",
+        "__v": 0
+      },
+      {
+        "_id": "68d25b6875227728ca1c0feb",
+        "name": "COPACOL WINGS",
+        "price": 1500,
+        "description": "Weight: 15 kilograms",
+        "barcode": "97035",
+        "image": "https://res.cloudinary.com/duv2elcut/image/upload/v1758616422/products/wfrqbi9wnv1dujn5zhn2.png",
+        "images": [
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1758616422/products/wfrqbi9wnv1dujn5zhn2.png",
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1758616422/products/pfbpdmrliuf1o8e81ndv.jpg"
+        ],
+        "mainImageUrl": "https://res.cloudinary.com/duv2elcut/image/upload/v1758616422/products/wfrqbi9wnv1dujn5zhn2.png",
+        "category": "chicken",
+        "isFeatured": false,
+        "quantity": 0,
+        "status": "available",
+        "createdAt": "2025-09-23T08:33:44.452Z",
+        "updatedAt": "2025-09-28T15:45:04.589Z",
+        "__v": 0
+      },
+      {
+        "_id": "68d25be375227728ca1c1024",
+        "name": "SEARA BREAST FILLET",
+        "price": 2000,
+        "description": "Weight: 15 kilograms",
+        "barcode": "1215SIF",
+        "image": "https://res.cloudinary.com/duv2elcut/image/upload/v1758616545/products/ufkaf8l7fujg7oqzqsfd.png",
+        "images": [
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1758616545/products/ufkaf8l7fujg7oqzqsfd.png",
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1758616546/products/prkle3ofr1ge9hsqcsfe.jpg"
+        ],
+        "mainImageUrl": "https://res.cloudinary.com/duv2elcut/image/upload/v1758616545/products/ufkaf8l7fujg7oqzqsfd.png",
+        "category": "chicken",
+        "isFeatured": false,
+        "quantity": 119,
+        "status": "available",
+        "createdAt": "2025-09-23T08:35:47.797Z",
+        "updatedAt": "2025-09-26T15:37:48.211Z",
+        "__v": 0
+      },
+      {
+        "_id": "68d25c4c75227728ca1c1062",
+        "name": "LITERA PATA HOCK/CUTTED",
+        "price": 3000,
+        "description": "Weight: 15 kilograms",
+        "barcode": "3104850570",
+        "image": "https://res.cloudinary.com/duv2elcut/image/upload/v1758616649/products/xctlr2ufvatxolxvpted.png",
+        "images": [
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1758616649/products/xctlr2ufvatxolxvpted.png",
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1758616650/products/t8vovjnkujkelc4cetvo.jpg"
+        ],
+        "mainImageUrl": "https://res.cloudinary.com/duv2elcut/image/upload/v1758616649/products/xctlr2ufvatxolxvpted.png",
+        "category": "sliced",
+        "isFeatured": false,
+        "quantity": 21,
+        "status": "available",
+        "createdAt": "2025-09-23T08:37:32.186Z",
+        "updatedAt": "2025-09-24T03:11:36.326Z",
+        "__v": 0
+      },
+      {
+        "_id": "68d25cb375227728ca1c108f",
+        "name": "MONDELLI TRIMMINGS",
+        "price": 3500,
+        "description": "Weight: 15 kilograms",
+        "barcode": "0002811",
+        "image": "https://res.cloudinary.com/duv2elcut/image/upload/v1758616752/products/h9rlqkjkv5imykg0qoqe.png",
+        "images": [
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1758616752/products/h9rlqkjkv5imykg0qoqe.png",
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1758616753/products/zlqfvi1zvtvebbetn2rt.png"
+        ],
+        "mainImageUrl": "https://res.cloudinary.com/duv2elcut/image/upload/v1758616752/products/h9rlqkjkv5imykg0qoqe.png",
+        "category": "beef",
+        "isFeatured": false,
+        "quantity": 121,
+        "status": "available",
+        "createdAt": "2025-09-23T08:39:15.335Z",
+        "updatedAt": "2025-09-28T16:05:09.046Z",
+        "__v": 0
+      },
+      {
+        "_id": "68d25d8975227728ca1c10f8",
+        "name": "CHICKEN GIZZARD",
+        "price": 1499.97,
+        "description": "Weight: 15 kilograms",
+        "barcode": "6515483",
+        "image": "https://res.cloudinary.com/duv2elcut/image/upload/v1758616967/products/zddtzsk6p66dldlnbxjq.png",
+        "images": [
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1758616967/products/zddtzsk6p66dldlnbxjq.png"
+        ],
+        "mainImageUrl": "https://res.cloudinary.com/duv2elcut/image/upload/v1758616967/products/zddtzsk6p66dldlnbxjq.png",
+        "category": "processed",
+        "isFeatured": false,
+        "quantity": 20,
+        "status": "available",
+        "createdAt": "2025-09-23T08:42:49.270Z",
+        "updatedAt": "2025-09-28T16:05:09.141Z",
+        "__v": 2
+      },
+      {
+        "_id": "68d25def75227728ca1c1125",
+        "name": "PORK LAMAN GROUND",
+        "price": 3600,
+        "description": "Weight: 15 kilograms",
+        "barcode": "91416672",
+        "image": "https://res.cloudinary.com/duv2elcut/image/upload/v1758617069/products/hpkap7ktqsjso58pnzpu.png",
+        "images": [
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1758617069/products/hpkap7ktqsjso58pnzpu.png"
+        ],
+        "mainImageUrl": "https://res.cloudinary.com/duv2elcut/image/upload/v1758617069/products/hpkap7ktqsjso58pnzpu.png",
+        "category": "ground",
+        "isFeatured": false,
+        "quantity": 122,
+        "status": "available",
+        "createdAt": "2025-09-23T08:44:31.475Z",
+        "updatedAt": "2025-09-26T15:37:43.888Z",
+        "__v": 0
+      },
+      {
+        "_id": "68d961884db3d5eba9a8db38",
+        "name": "seasea",
+        "price": 1500,
+        "description": "seasea",
+        "barcode": "126543628410",
+        "image": "https://res.cloudinary.com/duv2elcut/image/upload/v1759076743/products/swbnxuutamhfcepw6pdl.png",
+        "images": [
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1759076743/products/swbnxuutamhfcepw6pdl.png"
+        ],
+        "mainImageUrl": "https://res.cloudinary.com/duv2elcut/image/upload/v1759076743/products/swbnxuutamhfcepw6pdl.png",
+        "category": "seafood",
+        "isFeatured": false,
+        "quantity": 22,
+        "status": "available",
+        "createdAt": "2025-09-28T16:25:44.342Z",
+        "updatedAt": "2025-09-28T16:26:34.514Z",
+        "__v": 0
+      }
+    ],
+    "orders": [
+      {
+        "shippingInfo": {
+          "coordinates": {
+            "lat": 14.4703494,
+            "lng": 120.9801711
+          },
+          "email": "madrgal.johnlou@gmail.com",
+          "firstName": "john",
+          "lastName": "mad",
+          "address": "Mapayapa",
+          "barangay": "Pulang Lupa Uno",
+          "postalCode": "1742",
+          "city": "Las Pinas",
+          "province": "Metro Manila",
+          "phone": "+639263203832",
+          "fullAddress": "Mapayapa, Pulang Lupa Uno, Las Pinas, Metro Manila, Philippines"
+        },
+        "lalamoveDetails": null,
+        "coupon": {
+          "code": "GIFTCODE2025",
+          "type": "percent",
+          "amount": 0,
+          "discount": 0
+        },
+        "_id": "68d2a7f3928a7a9e846d347d",
+        "user": "68d2579875227728ca1c0daa",
+        "products": [
+          {
+            "product": "68d25b6875227728ca1c0feb",
+            "quantity": 1,
+            "price": 1500,
+            "_id": "68d2a7f3928a7a9e846d347e"
+          }
+        ],
+        "totalAmount": 1425,
+        "productSubtotal": 1500,
+        "deliveryFee": 0,
+        "taxAmount": 180,
+        "shippingMethod": "pickup",
+        "status": "pending",
+        "adminStatus": "order_received",
+        "paymentStatus": "pending",
+        "createdAt": "2025-09-23T14:00:19.357Z",
+        "updatedAt": "2025-09-23T14:00:19.974Z",
+        "__v": 0,
+        "stripeSessionId": "cs_test_a1QpxNW9qIg3iz2RmfQsI58uMWwLFFdTDIwdgnyPq6crsZUr6w0rqbEKvE"
+      },
+      {
+        "shippingInfo": {
+          "coordinates": {
+            "lat": 14.4703494,
+            "lng": 120.9801711
+          },
+          "email": "madrgal.johnlou@gmail.com",
+          "firstName": "john",
+          "lastName": "mad",
+          "address": "Mapayapa",
+          "barangay": "Pulang Lupa Uno",
+          "postalCode": "1742",
+          "city": "Las Pinas",
+          "province": "Metro Manila",
+          "phone": "+639763209632",
+          "fullAddress": "Mapayapa, Pulang Lupa Uno, Las Pinas, Metro Manila, Philippines"
+        },
+        "lalamoveDetails": null,
+        "coupon": {
+          "code": "GIFTCODE2025",
+          "type": "percent",
+          "amount": 0,
+          "discount": 0
+        },
+        "_id": "68d2ad28928a7a9e846d3720",
+        "user": "68d2579875227728ca1c0daa",
+        "products": [
+          {
+            "product": "68d25a1d75227728ca1c0f47",
+            "quantity": 1,
+            "price": 5500,
+            "_id": "68d2ad28928a7a9e846d3721"
+          }
+        ],
+        "totalAmount": 5225,
+        "productSubtotal": 5500,
+        "deliveryFee": 0,
+        "taxAmount": 660,
+        "shippingMethod": "pickup",
+        "status": "pending",
+        "adminStatus": "order_received",
+        "paymentStatus": "pending",
+        "createdAt": "2025-09-23T14:22:32.371Z",
+        "updatedAt": "2025-09-23T14:22:32.939Z",
+        "__v": 0,
+        "stripeSessionId": "cs_test_a1TkpKJXHHiPsnlwTeCaESHMcOlv721d7ikLc5lFO1gChimiUEuxRMoIAc"
+      },
+      {
+        "shippingInfo": {
+          "coordinates": {
+            "lat": 14.4703494,
+            "lng": 120.9801711
+          },
+          "email": "madrgal.johnlou@gmail.com",
+          "firstName": "john",
+          "lastName": "mad",
+          "address": "Mapayapa",
+          "barangay": "Pulang Lupa Uno",
+          "postalCode": "1742",
+          "city": "Las Pinas",
+          "province": "Metro Manila",
+          "phone": "+639763209632",
+          "fullAddress": "Mapayapa, Pulang Lupa Uno, Las Pinas, Metro Manila, Philippines"
+        },
+        "lalamoveDetails": null,
+        "coupon": null,
+        "_id": "68d2ad4f928a7a9e846d378d",
+        "user": "68d2579875227728ca1c0daa",
+        "products": [
+          {
+            "product": "68d25a1d75227728ca1c0f47",
+            "quantity": 1,
+            "price": 5500,
+            "_id": "68d2ad4f928a7a9e846d378e"
+          }
+        ],
+        "totalAmount": 5500,
+        "productSubtotal": 5500,
+        "deliveryFee": 0,
+        "taxAmount": 660,
+        "shippingMethod": "pickup",
+        "status": "pending",
+        "adminStatus": "order_received",
+        "paymentStatus": "pending",
+        "createdAt": "2025-09-23T14:23:11.963Z",
+        "updatedAt": "2025-09-23T14:23:12.516Z",
+        "__v": 0,
+        "stripeSessionId": "cs_test_a11T32RpsUpiP6TjFVxtnm8ZHpn4SuHuQDjXsudPTmkmVdSm3E2I7eoC4S"
+      },
+      {
+        "shippingInfo": {
+          "coordinates": {
+            "lat": 14.4703494,
+            "lng": 120.9801711
+          },
+          "email": "madrgal.johnlou@gmail.com",
+          "firstName": "john",
+          "lastName": "mad",
+          "address": "Mapayapa",
+          "barangay": "Pulang Lupa Uno",
+          "postalCode": "1742",
+          "city": "Las Pinas",
+          "province": "Metro Manila",
+          "phone": "+639763209632",
+          "fullAddress": "Mapayapa, Pulang Lupa Uno, Las Pinas, Metro Manila, Philippines"
+        },
+        "lalamoveDetails": null,
+        "coupon": {
+          "code": "GIFTCODE2025",
+          "type": "percent",
+          "amount": 0,
+          "discount": 0
+        },
+        "_id": "68d2ad77928a7a9e846d37c2",
+        "user": "68d2579875227728ca1c0daa",
+        "products": [
+          {
+            "product": "68d25a1d75227728ca1c0f47",
+            "quantity": 1,
+            "price": 5500,
+            "_id": "68d2ad77928a7a9e846d37c3"
+          }
+        ],
+        "totalAmount": 5225,
+        "productSubtotal": 5500,
+        "deliveryFee": 0,
+        "taxAmount": 660,
+        "shippingMethod": "pickup",
+        "status": "pending",
+        "adminStatus": "order_received",
+        "paymentStatus": "pending",
+        "createdAt": "2025-09-23T14:23:51.082Z",
+        "updatedAt": "2025-09-23T14:23:51.627Z",
+        "__v": 0,
+        "stripeSessionId": "cs_test_a11nBvweeHBPEfMT3jCFHcZm1sFWxOvPlJQbUkYYsYayFkx8GZNWJ3pmcq"
+      },
+      {
+        "shippingInfo": {
+          "coordinates": {
+            "lat": 14.4703494,
+            "lng": 120.9801711
+          },
+          "email": "madrgal.johnlou@gmail.com",
+          "firstName": "john",
+          "lastName": "mad",
+          "address": "Mapayapa",
+          "barangay": "Pulang Lupa Uno",
+          "postalCode": "1742",
+          "city": "Las Pinas",
+          "province": "Metro Manila",
+          "phone": "+639763209632",
+          "fullAddress": "Mapayapa, Pulang Lupa Uno, Las Pinas, Metro Manila, Philippines"
+        },
+        "lalamoveDetails": null,
+        "coupon": null,
+        "_id": "68d2adf7928a7a9e846d3817",
+        "user": "68d2579875227728ca1c0daa",
+        "products": [
+          {
+            "product": "68d25a1d75227728ca1c0f47",
+            "quantity": 1,
+            "price": 5500,
+            "_id": "68d2adf7928a7a9e846d3818"
+          }
+        ],
+        "totalAmount": 6160,
+        "productSubtotal": 5500,
+        "deliveryFee": 0,
+        "taxAmount": 660,
+        "shippingMethod": "pickup",
+        "status": "pending",
+        "adminStatus": "order_received",
+        "paymentStatus": "pending",
+        "createdAt": "2025-09-23T14:25:59.110Z",
+        "updatedAt": "2025-09-23T14:25:59.771Z",
+        "__v": 0,
+        "stripeSessionId": "cs_test_a12kbdzfY3pCxKtDA9MtXJ24yLsTrr24h4Wyo0JVZ5yIiTdRcUEgcjYBUf"
+      },
+      {
+        "shippingInfo": {
+          "coordinates": {
+            "lat": 14.4703494,
+            "lng": 120.9801711
+          },
+          "email": "madrgal.johnlou@gmail.com",
+          "firstName": "john",
+          "lastName": "mad",
+          "address": "Mapayapa",
+          "barangay": "Pulang Lupa Uno",
+          "postalCode": "1742",
+          "city": "Las Pinas",
+          "province": "Metro Manila",
+          "phone": "+639763209632",
+          "fullAddress": "Mapayapa, Pulang Lupa Uno, Las Pinas, Metro Manila, Philippines"
+        },
+        "lalamoveDetails": null,
+        "coupon": {
+          "code": "GIFTCODE2025",
+          "type": "percent",
+          "amount": 0,
+          "discount": 0
+        },
+        "_id": "68d2ae19928a7a9e846d384c",
+        "user": "68d2579875227728ca1c0daa",
+        "products": [
+          {
+            "product": "68d25a1d75227728ca1c0f47",
+            "quantity": 1,
+            "price": 5500,
+            "_id": "68d2ae19928a7a9e846d384d"
+          }
+        ],
+        "totalAmount": 5885,
+        "productSubtotal": 5500,
+        "deliveryFee": 0,
+        "taxAmount": 660,
+        "shippingMethod": "pickup",
+        "status": "pending",
+        "adminStatus": "order_received",
+        "paymentStatus": "pending",
+        "createdAt": "2025-09-23T14:26:33.771Z",
+        "updatedAt": "2025-09-23T14:26:34.293Z",
+        "__v": 0,
+        "stripeSessionId": "cs_test_a1uXwdiXUcIqJLuKaNoSyFkCHKVKuPLekhytKKIOmQsZIBnEB9qzYTGKdQ"
+      },
+      {
+        "shippingInfo": {
+          "coordinates": {
+            "lat": 14.4703494,
+            "lng": 120.9801711
+          },
+          "email": "madrgal.johnlou@gmail.com",
+          "firstName": "john",
+          "lastName": "mad",
+          "address": "Mapayapa",
+          "barangay": "Pulang Lupa Uno",
+          "postalCode": "1742",
+          "city": "Las Pinas",
+          "province": "Metro Manila",
+          "phone": "+639763209632",
+          "fullAddress": "Mapayapa, Pulang Lupa Uno, Las Pinas, Metro Manila, Philippines"
+        },
+        "lalamoveDetails": null,
+        "coupon": null,
+        "_id": "68d2ae3c928a7a9e846d3871",
+        "user": "68d2579875227728ca1c0daa",
+        "products": [
+          {
+            "product": "68d25a1d75227728ca1c0f47",
+            "quantity": 1,
+            "price": 5500,
+            "_id": "68d2ae3c928a7a9e846d3872"
+          }
+        ],
+        "totalAmount": 6160,
+        "productSubtotal": 5500,
+        "deliveryFee": 0,
+        "taxAmount": 660,
+        "shippingMethod": "pickup",
+        "status": "pending",
+        "adminStatus": "order_received",
+        "paymentStatus": "pending",
+        "createdAt": "2025-09-23T14:27:08.011Z",
+        "updatedAt": "2025-09-23T14:27:08.547Z",
+        "__v": 0,
+        "stripeSessionId": "cs_test_a1RH9oaymUqXGI1kNpH3oN3qdxyebUNZqdepAS03gmTvqXeJKb0MuI83Lt"
+      },
+      {
+        "shippingInfo": {
+          "coordinates": {
+            "lat": 14.4703494,
+            "lng": 120.9801711
+          },
+          "email": "madrgal.johnlou@gmail.com",
+          "firstName": "john",
+          "lastName": "mad",
+          "address": "Mapayapa",
+          "barangay": "Pulang Lupa Uno",
+          "postalCode": "1742",
+          "city": "Las Pinas",
+          "province": "Metro Manila",
+          "phone": "+639763209632",
+          "fullAddress": "Mapayapa, Pulang Lupa Uno, Las Pinas, Metro Manila, Philippines"
+        },
+        "lalamoveDetails": null,
+        "coupon": null,
+        "_id": "68d2af81793e87fbdc2a139e",
+        "user": "68d2579875227728ca1c0daa",
+        "products": [
+          {
+            "product": "68d25a1d75227728ca1c0f47",
+            "quantity": 1,
+            "price": 5500,
+            "_id": "68d2af81793e87fbdc2a139f"
+          }
+        ],
+        "totalAmount": 6160,
+        "productSubtotal": 5500,
+        "deliveryFee": 0,
+        "taxAmount": 660,
+        "shippingMethod": "pickup",
+        "status": "pending",
+        "adminStatus": "order_received",
+        "paymentStatus": "pending",
+        "createdAt": "2025-09-23T14:32:33.028Z",
+        "updatedAt": "2025-09-23T14:32:33.782Z",
+        "__v": 0,
+        "stripeSessionId": "cs_test_b14Q8plnUopS1pIVamhdvDOiFOZYTNJ96u6A346thf5nVM6WpkTu9kZdUn"
+      },
+      {
+        "shippingInfo": {
+          "coordinates": {
+            "lat": 14.4703494,
+            "lng": 120.9801711
+          },
+          "email": "madrgal.johnlou@gmail.com",
+          "firstName": "john",
+          "lastName": "mad",
+          "address": "Mapayapa",
+          "barangay": "Pulang Lupa Uno",
+          "postalCode": "1742",
+          "city": "Las Pinas",
+          "province": "Metro Manila",
+          "phone": "+639763209632",
+          "fullAddress": "Mapayapa, Pulang Lupa Uno, Las Pinas, Metro Manila, Philippines"
+        },
+        "lalamoveDetails": null,
+        "coupon": {
+          "code": "GIFTCODE2025",
+          "type": "percent",
+          "amount": 0,
+          "discount": 0
+        },
+        "_id": "68d2af99793e87fbdc2a13c7",
+        "user": "68d2579875227728ca1c0daa",
+        "products": [
+          {
+            "product": "68d25a1d75227728ca1c0f47",
+            "quantity": 1,
+            "price": 5500,
+            "_id": "68d2af99793e87fbdc2a13c8"
+          }
+        ],
+        "totalAmount": 5885,
+        "productSubtotal": 5500,
+        "deliveryFee": 0,
+        "taxAmount": 660,
+        "shippingMethod": "pickup",
+        "status": "pending",
+        "adminStatus": "order_received",
+        "paymentStatus": "pending",
+        "createdAt": "2025-09-23T14:32:57.501Z",
+        "updatedAt": "2025-09-23T14:32:58.072Z",
+        "__v": 0,
+        "stripeSessionId": "cs_test_b1jEAVIwc6K6M4fHL9sMEI9GZkPEZCR6fXEfbmRLQ3OfVAe7OG4UDlroP6"
+      },
+      {
+        "shippingInfo": {
+          "coordinates": {
+            "lat": 14.4703494,
+            "lng": 120.9801711
+          },
+          "email": "madrgal.johnlou@gmail.com",
+          "firstName": "john",
+          "lastName": "mad",
+          "address": "Mapayapa",
+          "barangay": "Pulang Lupa Uno",
+          "postalCode": "1742",
+          "city": "Las Pinas",
+          "province": "Metro Manila",
+          "phone": "+639763209632",
+          "fullAddress": "Mapayapa, Pulang Lupa Uno, Las Pinas, Metro Manila, Philippines"
+        },
+        "lalamoveDetails": null,
+        "coupon": {
+          "code": "GIFTCODE2025",
+          "type": "percent",
+          "amount": 0,
+          "discount": 0
+        },
+        "_id": "68d2afca793e87fbdc2a13fc",
+        "user": "68d2579875227728ca1c0daa",
+        "products": [
+          {
+            "product": "68d25a1d75227728ca1c0f47",
+            "quantity": 1,
+            "price": 5500,
+            "_id": "68d2afca793e87fbdc2a13fd"
+          }
+        ],
+        "totalAmount": 5885,
+        "productSubtotal": 5500,
+        "deliveryFee": 0,
+        "taxAmount": 660,
+        "shippingMethod": "pickup",
+        "status": "pending",
+        "adminStatus": "order_received",
+        "paymentStatus": "pending",
+        "createdAt": "2025-09-23T14:33:46.984Z",
+        "updatedAt": "2025-09-23T14:33:47.582Z",
+        "__v": 0,
+        "stripeSessionId": "cs_test_b1HQF2HeBpgHV5aKUsTN8NW6ULCvzRj2cqVezm6NrvlkSPuIaiQlC9W2N7"
+      },
+      {
+        "shippingInfo": {
+          "coordinates": {
+            "lat": 14.4703494,
+            "lng": 120.9801711
+          },
+          "email": "madrgal.johnlou@gmail.com",
+          "firstName": "john",
+          "lastName": "mad",
+          "address": "Mapayapa",
+          "barangay": "Pulang Lupa Uno",
+          "postalCode": "1742",
+          "city": "Las Pinas",
+          "province": "Metro Manila",
+          "phone": "+639763209632",
+          "fullAddress": "Mapayapa, Pulang Lupa Uno, Las Pinas, Metro Manila, Philippines"
+        },
+        "lalamoveDetails": null,
+        "coupon": null,
+        "_id": "68d2b0890431018be4279acc",
+        "user": "68d2579875227728ca1c0daa",
+        "products": [
+          {
+            "product": "68d25a1d75227728ca1c0f47",
+            "quantity": 1,
+            "price": 5500,
+            "_id": "68d2b0890431018be4279acd"
+          }
+        ],
+        "totalAmount": 6160,
+        "productSubtotal": 5500,
+        "deliveryFee": 0,
+        "taxAmount": 660,
+        "shippingMethod": "pickup",
+        "status": "pending",
+        "adminStatus": "order_received",
+        "paymentStatus": "pending",
+        "createdAt": "2025-09-23T14:36:57.744Z",
+        "updatedAt": "2025-09-23T14:36:58.462Z",
+        "__v": 0,
+        "stripeSessionId": "cs_test_b1PU8RFHK2uMgXjXSW7AeEc6SiylSTtM0ChVrN3ezorijaIR0aYXPvhlnU"
+      },
+      {
+        "shippingInfo": {
+          "coordinates": {
+            "lat": 14.4703494,
+            "lng": 120.9801711
+          },
+          "email": "madrgal.johnlou@gmail.com",
+          "firstName": "john",
+          "lastName": "mad",
+          "address": "Mapayapa",
+          "barangay": "Pulang Lupa Uno",
+          "postalCode": "1742",
+          "city": "Las Pinas",
+          "province": "Metro Manila",
+          "phone": "+639763209632",
+          "fullAddress": "Mapayapa, Pulang Lupa Uno, Las Pinas, Metro Manila, Philippines"
+        },
+        "lalamoveDetails": null,
+        "coupon": {
+          "code": "GIFTCODE2025",
+          "type": "percent",
+          "amount": 0,
+          "discount": 0
+        },
+        "_id": "68d2b09f0431018be4279b01",
+        "user": "68d2579875227728ca1c0daa",
+        "products": [
+          {
+            "product": "68d25a1d75227728ca1c0f47",
+            "quantity": 1,
+            "price": 5500,
+            "_id": "68d2b09f0431018be4279b02"
+          }
+        ],
+        "totalAmount": 5885,
+        "productSubtotal": 5500,
+        "deliveryFee": 0,
+        "taxAmount": 660,
+        "shippingMethod": "pickup",
+        "status": "pending",
+        "adminStatus": "order_received",
+        "paymentStatus": "pending",
+        "createdAt": "2025-09-23T14:37:19.554Z",
+        "updatedAt": "2025-09-23T14:37:19.554Z",
+        "__v": 0
+      },
+      {
+        "shippingInfo": {
+          "coordinates": {
+            "lat": 14.4703494,
+            "lng": 120.9801711
+          },
+          "email": "madrgal.johnlou@gmail.com",
+          "firstName": "john",
+          "lastName": "mad",
+          "address": "Mapayapa",
+          "barangay": "Pulang Lupa Uno",
+          "postalCode": "1742",
+          "city": "Las Pinas",
+          "province": "Metro Manila",
+          "phone": "+639763209632",
+          "fullAddress": "Mapayapa, Pulang Lupa Uno, Las Pinas, Metro Manila, Philippines"
+        },
+        "lalamoveDetails": null,
+        "coupon": null,
+        "_id": "68d2b0bb0431018be4279b27",
+        "user": "68d2579875227728ca1c0daa",
+        "products": [
+          {
+            "product": "68d25a1d75227728ca1c0f47",
+            "quantity": 1,
+            "price": 5500,
+            "_id": "68d2b0bb0431018be4279b28"
+          }
+        ],
+        "totalAmount": 6160,
+        "productSubtotal": 5500,
+        "deliveryFee": 0,
+        "taxAmount": 660,
+        "shippingMethod": "pickup",
+        "status": "pending",
+        "adminStatus": "order_received",
+        "paymentStatus": "pending",
+        "createdAt": "2025-09-23T14:37:47.310Z",
+        "updatedAt": "2025-09-23T14:37:47.910Z",
+        "__v": 0,
+        "stripeSessionId": "cs_test_b1Y8o3pj3KNNesMsWlJdnLPTgdi8WO0JoRqhcFVTf5E2v7YbQk10YTJlda"
+      },
+      {
+        "shippingInfo": {
+          "coordinates": {
+            "lat": 14.4703494,
+            "lng": 120.9801711
+          },
+          "email": "madrgal.johnlou@gmail.com",
+          "firstName": "john",
+          "lastName": "mad",
+          "address": "Mapayapa",
+          "barangay": "Pulang Lupa Uno",
+          "postalCode": "1742",
+          "city": "Las Pinas",
+          "province": "Metro Manila",
+          "phone": "+639763209632",
+          "fullAddress": "Mapayapa, Pulang Lupa Uno, Las Pinas, Metro Manila, Philippines"
+        },
+        "lalamoveDetails": null,
+        "coupon": {
+          "code": "GIFTCODE2025",
+          "type": "percent",
+          "amount": 0,
+          "discount": 0
+        },
+        "_id": "68d2b0d00431018be4279b6b",
+        "user": "68d2579875227728ca1c0daa",
+        "products": [
+          {
+            "product": "68d25a1d75227728ca1c0f47",
+            "quantity": 1,
+            "price": 5500,
+            "_id": "68d2b0d00431018be4279b6c"
+          }
+        ],
+        "totalAmount": 5885,
+        "productSubtotal": 5500,
+        "deliveryFee": 0,
+        "taxAmount": 660,
+        "shippingMethod": "pickup",
+        "status": "pending",
+        "adminStatus": "order_received",
+        "paymentStatus": "pending",
+        "createdAt": "2025-09-23T14:38:08.374Z",
+        "updatedAt": "2025-09-23T14:38:08.374Z",
+        "__v": 0
+      },
+      {
+        "shippingInfo": {
+          "coordinates": {
+            "lat": 14.4703494,
+            "lng": 120.9801711
+          },
+          "email": "madrgal.johnlou@gmail.com",
+          "firstName": "john",
+          "lastName": "mad",
+          "address": "Mapayapa",
+          "barangay": "Pulang Lupa Uno",
+          "postalCode": "1742",
+          "city": "Las Pinas",
+          "province": "Metro Manila",
+          "phone": "+639763209632",
+          "fullAddress": "Mapayapa, Pulang Lupa Uno, Las Pinas, Metro Manila, Philippines"
+        },
+        "lalamoveDetails": null,
+        "coupon": {
+          "code": "GIFTCODE2025",
+          "type": "percent",
+          "amount": 0,
+          "discount": 0
+        },
+        "_id": "68d2b1bbdd19688871ed5066",
+        "user": "68d2579875227728ca1c0daa",
+        "products": [
+          {
+            "product": "68d25a1d75227728ca1c0f47",
+            "quantity": 1,
+            "price": 5500,
+            "_id": "68d2b1bbdd19688871ed5067"
+          }
+        ],
+        "totalAmount": 5885,
+        "productSubtotal": 5500,
+        "deliveryFee": 0,
+        "taxAmount": 660,
+        "shippingMethod": "pickup",
+        "status": "pending",
+        "adminStatus": "order_received",
+        "paymentStatus": "pending",
+        "createdAt": "2025-09-23T14:42:03.227Z",
+        "updatedAt": "2025-09-23T14:42:03.227Z",
+        "__v": 0
+      },
+      {
+        "shippingInfo": {
+          "coordinates": {
+            "lat": 14.4703494,
+            "lng": 120.9801711
+          },
+          "email": "madrgal.johnlou@gmail.com",
+          "firstName": "john",
+          "lastName": "mad",
+          "address": "Mapayapa",
+          "barangay": "Pulang Lupa Uno",
+          "postalCode": "1742",
+          "city": "Las Pinas",
+          "province": "Metro Manila",
+          "phone": "+639763209632",
+          "fullAddress": "Mapayapa, Pulang Lupa Uno, Las Pinas, Metro Manila, Philippines"
+        },
+        "lalamoveDetails": null,
+        "coupon": {
+          "code": "GIFTCODE2025",
+          "type": "percent",
+          "amount": 0,
+          "discount": 0
+        },
+        "_id": "68d2b31b28165ce5cb5c1d67",
+        "user": "68d2579875227728ca1c0daa",
+        "products": [
+          {
+            "product": "68d25a1d75227728ca1c0f47",
+            "quantity": 1,
+            "price": 5500,
+            "_id": "68d2b31b28165ce5cb5c1d68"
+          }
+        ],
+        "totalAmount": 5885,
+        "productSubtotal": 5500,
+        "deliveryFee": 0,
+        "taxAmount": 660,
+        "shippingMethod": "pickup",
+        "status": "pending",
+        "adminStatus": "order_received",
+        "paymentStatus": "pending",
+        "createdAt": "2025-09-23T14:47:55.770Z",
+        "updatedAt": "2025-09-23T14:47:55.770Z",
+        "__v": 0
+      },
+      {
+        "shippingInfo": {
+          "coordinates": {
+            "lat": 14.4703494,
+            "lng": 120.9801711
+          },
+          "email": "madrgal.johnlou@gmail.com",
+          "firstName": "john",
+          "lastName": "mad",
+          "address": "Mapayapa",
+          "barangay": "Pulang Lupa Uno",
+          "postalCode": "1742",
+          "city": "Las Pinas",
+          "province": "Metro Manila",
+          "phone": "+639763209632",
+          "fullAddress": "Mapayapa, Pulang Lupa Uno, Las Pinas, Metro Manila, Philippines"
+        },
+        "lalamoveDetails": null,
+        "coupon": {
+          "code": "GIFTCODE2025",
+          "type": "percent",
+          "amount": 0,
+          "discount": 0
+        },
+        "_id": "68d2b39128165ce5cb5c1dab",
+        "user": "68d2579875227728ca1c0daa",
+        "products": [
+          {
+            "product": "68d25a1d75227728ca1c0f47",
+            "quantity": 1,
+            "price": 5500,
+            "_id": "68d2b39128165ce5cb5c1dac"
+          }
+        ],
+        "totalAmount": 5885,
+        "productSubtotal": 5500,
+        "deliveryFee": 0,
+        "taxAmount": 660,
+        "shippingMethod": "pickup",
+        "status": "pending",
+        "adminStatus": "order_received",
+        "paymentStatus": "pending",
+        "createdAt": "2025-09-23T14:49:53.397Z",
+        "updatedAt": "2025-09-23T14:49:53.397Z",
+        "__v": 0
+      },
+      {
+        "shippingInfo": {
+          "coordinates": {
+            "lat": 14.4703494,
+            "lng": 120.9801711
+          },
+          "email": "madrgal.johnlou@gmail.com",
+          "firstName": "john",
+          "lastName": "mad",
+          "address": "Mapayapa",
+          "barangay": "Pulang Lupa Uno",
+          "postalCode": "1742",
+          "city": "Las Pinas",
+          "province": "Metro Manila",
+          "phone": "+639763209632",
+          "fullAddress": "Mapayapa, Pulang Lupa Uno, Las Pinas, Metro Manila, Philippines"
+        },
+        "lalamoveDetails": null,
+        "coupon": {
+          "code": "GIFTCODE2025",
+          "type": "percent",
+          "amount": 0,
+          "discount": 0
+        },
+        "_id": "68d2b3bb28165ce5cb5c1de1",
+        "user": "68d2579875227728ca1c0daa",
+        "products": [
+          {
+            "product": "68d25a1d75227728ca1c0f47",
+            "quantity": 1,
+            "price": 5500,
+            "_id": "68d2b3bb28165ce5cb5c1de2"
+          }
+        ],
+        "totalAmount": 5885,
+        "productSubtotal": 5500,
+        "deliveryFee": 0,
+        "taxAmount": 660,
+        "shippingMethod": "pickup",
+        "status": "pending",
+        "adminStatus": "order_received",
+        "paymentStatus": "pending",
+        "createdAt": "2025-09-23T14:50:35.534Z",
+        "updatedAt": "2025-09-23T14:50:35.534Z",
+        "__v": 0
+      },
+      {
+        "shippingInfo": {
+          "coordinates": {
+            "lat": 14.4703494,
+            "lng": 120.9801711
+          },
+          "email": "madrgal.johnlou@gmail.com",
+          "firstName": "john",
+          "lastName": "mad",
+          "address": "Mapayapa",
+          "barangay": "Pulang Lupa Uno",
+          "postalCode": "1742",
+          "city": "Las Pinas",
+          "province": "Metro Manila",
+          "phone": "+639763209632",
+          "fullAddress": "Mapayapa, Pulang Lupa Uno, Las Pinas, Metro Manila, Philippines"
+        },
+        "lalamoveDetails": null,
+        "coupon": {
+          "code": "GIFTCODE2025",
+          "type": "percent",
+          "amount": 0,
+          "discount": 0
+        },
+        "_id": "68d2b45f8ecb8d712ff04971",
+        "user": "68d2579875227728ca1c0daa",
+        "products": [
+          {
+            "product": "68d25a1d75227728ca1c0f47",
+            "quantity": 1,
+            "price": 5500,
+            "_id": "68d2b45f8ecb8d712ff04972"
+          }
+        ],
+        "totalAmount": 5885,
+        "productSubtotal": 5500,
+        "deliveryFee": 0,
+        "taxAmount": 660,
+        "shippingMethod": "pickup",
+        "status": "pending",
+        "adminStatus": "order_received",
+        "paymentStatus": "pending",
+        "createdAt": "2025-09-23T14:53:19.924Z",
+        "updatedAt": "2025-09-23T14:53:20.645Z",
+        "__v": 0,
+        "stripeSessionId": "cs_test_b18chCebG5M2OrmE67inOlAPDKgzmaqxoOl5oQaHdK2aNpWemZfI29emO4"
+      },
+      {
+        "shippingInfo": {
+          "coordinates": {
+            "lat": 14.4703494,
+            "lng": 120.9801711
+          },
+          "email": "madrgal.johnlou@gmail.com",
+          "firstName": "john",
+          "lastName": "mad",
+          "address": "Mapayapa",
+          "barangay": "Pulang Lupa Uno",
+          "postalCode": "1742",
+          "city": "Las Pinas",
+          "province": "Metro Manila",
+          "phone": "+639763209632",
+          "fullAddress": "Mapayapa, Pulang Lupa Uno, Las Pinas, Metro Manila, Philippines"
+        },
+        "lalamoveDetails": null,
+        "coupon": {
+          "code": "GIFTCODE2025",
+          "type": "percent",
+          "amount": 0,
+          "discount": 0
+        },
+        "_id": "68d2b47c8ecb8d712ff049b6",
+        "user": "68d2579875227728ca1c0daa",
+        "products": [
+          {
+            "product": "68d25a1d75227728ca1c0f47",
+            "quantity": 1,
+            "price": 5500,
+            "_id": "68d2b47c8ecb8d712ff049b7"
+          }
+        ],
+        "totalAmount": 5885,
+        "productSubtotal": 5500,
+        "deliveryFee": 0,
+        "taxAmount": 660,
+        "shippingMethod": "pickup",
+        "status": "pending",
+        "adminStatus": "order_received",
+        "paymentStatus": "pending",
+        "createdAt": "2025-09-23T14:53:48.229Z",
+        "updatedAt": "2025-09-23T14:53:48.793Z",
+        "__v": 0,
+        "stripeSessionId": "cs_test_b1cSaw28kYVqLvZhsCC6Zf7hneMLgnbJhiQ1hQdtqXW2VDGoC6t0cv7LCh"
+      },
+      {
+        "shippingInfo": {
+          "coordinates": {
+            "lat": 14.4703494,
+            "lng": 120.9801711
+          },
+          "email": "madrgal.johnlou@gmail.com",
+          "firstName": "john",
+          "lastName": "mad",
+          "address": "Mapayapa",
+          "barangay": "Pulang Lupa Uno",
+          "postalCode": "1742",
+          "city": "Las Pinas",
+          "province": "Metro Manila",
+          "phone": "+639763209632",
+          "fullAddress": "Mapayapa, Pulang Lupa Uno, Las Pinas, Metro Manila, Philippines"
+        },
+        "lalamoveDetails": {
+          "quotationId": "3326239562283794956",
+          "quotation": {
+            "data": {
+              "quotationId": "3326239562283794956",
+              "scheduleAt": "2025-09-23T14:54:23.00Z",
+              "expiresAt": "2025-09-23T14:54:33.00Z",
+              "serviceType": "SEDAN",
+              "language": "EN_PH",
+              "stops": [
+                {
+                  "stopId": "3326445992848838736",
+                  "coordinates": {
+                    "lat": "14.4131078",
+                    "lng": "120.9735908"
+                  },
+                  "address": "Blk 8 Lot 4 Alagaw St., Greensite Homes Subd., Molino II, Bacoor City, Cavite, Philippines"
+                },
+                {
+                  "stopId": "3326445992848838737",
+                  "coordinates": {
+                    "lat": "14.4703494",
+                    "lng": "120.9801711"
+                  },
+                  "address": "Blk 3, 9-B, 9-B Galaxy St, Mapayapa Village, Las Piñas, Metro Manila, Philippines"
+                }
+              ],
+              "isRouteOptimized": false,
+              "priceBreakdown": {
+                "base": "80",
+                "extraMileage": "121",
+                "totalBeforeOptimization": "201",
+                "totalExcludePriorityFee": "201",
+                "total": "201",
+                "currency": "PHP"
+              },
+              "distance": {
+                "value": "9056",
+                "unit": "m"
+              }
+            }
+          },
+          "serviceType": "SEDAN",
+          "distance": 9.057,
+          "duration": 25.3,
+          "totalWeight": 15,
+          "deliveryFee": 201,
+          "status": "pending",
+          "lastStatusUpdate": "2025-09-23T14:54:30.534Z"
+        },
+        "coupon": {
+          "code": "GIFTCODE2025",
+          "type": "percent",
+          "amount": 0,
+          "discount": 0
+        },
+        "_id": "68d2b4a68ecb8d712ff049ec",
+        "user": "68d2579875227728ca1c0daa",
+        "products": [
+          {
+            "product": "68d25a1d75227728ca1c0f47",
+            "quantity": 1,
+            "price": 5500,
+            "_id": "68d2b4a68ecb8d712ff049ed"
+          }
+        ],
+        "totalAmount": 6086,
+        "productSubtotal": 5500,
+        "deliveryFee": 201,
+        "taxAmount": 660,
+        "shippingMethod": "lalamove",
+        "status": "pending",
+        "adminStatus": "order_received",
+        "paymentStatus": "pending",
+        "createdAt": "2025-09-23T14:54:30.536Z",
+        "updatedAt": "2025-09-23T14:54:31.145Z",
+        "__v": 0,
+        "stripeSessionId": "cs_test_b1r4dQ5i2xr33S8GKj2XkffNfZimd27oabE5KkCqeUrOIwCAP6wfm0DA8c"
+      },
+      {
+        "shippingInfo": {
+          "coordinates": {
+            "lat": 14.4703494,
+            "lng": 120.9801711
+          },
+          "email": "madrgal.johnlou@gmail.com",
+          "firstName": "john",
+          "lastName": "mad",
+          "address": "Mapayapa",
+          "barangay": "Pulang Lupa Uno",
+          "postalCode": "1742",
+          "city": "Las Pinas",
+          "province": "Metro Manila",
+          "phone": "+639763209632",
+          "fullAddress": "Mapayapa, Pulang Lupa Uno, Las Pinas, Metro Manila, Philippines"
+        },
+        "lalamoveDetails": null,
+        "coupon": null,
+        "_id": "68d2b4dd8ecb8d712ff04a1d",
+        "user": "68d2579875227728ca1c0daa",
+        "products": [
+          {
+            "product": "68d25a1d75227728ca1c0f47",
+            "quantity": 1,
+            "price": 5500,
+            "_id": "68d2b4dd8ecb8d712ff04a1e"
+          }
+        ],
+        "totalAmount": 6160,
+        "productSubtotal": 5500,
+        "deliveryFee": 0,
+        "taxAmount": 660,
+        "shippingMethod": "pickup",
+        "status": "processing",
+        "adminStatus": "order_completed",
+        "paymentStatus": "paid",
+        "createdAt": "2025-09-23T14:55:25.570Z",
+        "updatedAt": "2025-09-23T15:05:17.856Z",
+        "__v": 0,
+        "stripeSessionId": "cs_test_b1lZmBSmNRrztskNOSrFxRa5Wg0xk7oHXEpdtFQGAeKVRajAUvujYdZvx6"
+      },
+      {
+        "shippingInfo": {
+          "coordinates": {
+            "lat": 14.4703494,
+            "lng": 120.9801711
+          },
+          "email": "madrgal.johnlou@gmail.com",
+          "firstName": "john",
+          "lastName": "mad",
+          "address": "Mapayapa",
+          "barangay": "Pulang Lupa Uno",
+          "postalCode": "1742",
+          "city": "Las Pinas",
+          "province": "Metro Manila",
+          "phone": "+639763209632",
+          "fullAddress": "Mapayapa, Pulang Lupa Uno, Las Pinas, Metro Manila, Philippines"
+        },
+        "lalamoveDetails": null,
+        "coupon": {
+          "code": "GIFTCODE2025",
+          "type": "percent",
+          "amount": 0,
+          "discount": 0
+        },
+        "_id": "68d2b8653ad31809ab4a76a5",
+        "user": "68d2579875227728ca1c0daa",
+        "products": [
+          {
+            "product": "68d2591275227728ca1c0ebf",
+            "quantity": 1,
+            "price": 5000,
+            "_id": "68d2b8653ad31809ab4a76a6"
+          }
+        ],
+        "totalAmount": 5350,
+        "productSubtotal": 5000,
+        "deliveryFee": 0,
+        "taxAmount": 600,
+        "shippingMethod": "pickup",
+        "status": "processing",
+        "adminStatus": "order_completed",
+        "paymentStatus": "paid",
+        "createdAt": "2025-09-23T15:10:29.361Z",
+        "updatedAt": "2025-09-23T15:11:18.104Z",
+        "__v": 0,
+        "stripeSessionId": "cs_test_b15a4DqryhO4DC3JfrdoYSrPbVCIGbhbNSHyPJ2DdY2SutOqmAdcWP3OLr"
+      },
+      {
+        "shippingInfo": {
+          "coordinates": {
+            "lat": 14.4703494,
+            "lng": 120.9801711
+          },
+          "email": "madrgal.johnlou@gmail.com",
+          "firstName": "john",
+          "lastName": "mad",
+          "address": "Mapayapa",
+          "barangay": "Pulang Lupa Uno",
+          "postalCode": "1742",
+          "city": "Las Pinas",
+          "province": "Metro Manila",
+          "phone": "+639763209632",
+          "fullAddress": "Mapayapa, Pulang Lupa Uno, Las Pinas, Metro Manila, Philippines"
+        },
+        "lalamoveDetails": {
+          "serviceType": "SEDAN",
+          "distance": 9.057,
+          "duration": 25.3,
+          "totalWeight": 15,
+          "deliveryFee": 201,
+          "status": "delivered",
+          "lastStatusUpdate": "2025-09-23T15:17:39.743Z",
+          "orderId": "3324267584270287621",
+          "driverId": "80557"
+        },
+        "coupon": null,
+        "_id": "68d2b9bb7c5e89d1486e707c",
+        "user": "68d2579875227728ca1c0daa",
+        "products": [
+          {
+            "product": "68d25a9775227728ca1c0f80",
+            "quantity": 1,
+            "price": 3500,
+            "_id": "68d2b9bb7c5e89d1486e707d"
+          }
+        ],
+        "totalAmount": 4121,
+        "productSubtotal": 3500,
+        "deliveryFee": 201,
+        "taxAmount": 420,
+        "shippingMethod": "lalamove",
+        "status": "delivered",
+        "adminStatus": "order_completed",
+        "paymentStatus": "paid",
+        "createdAt": "2025-09-23T15:16:11.116Z",
+        "updatedAt": "2025-09-23T15:17:39.744Z",
+        "__v": 0,
+        "stripeSessionId": "cs_test_b1ewLOUfAAqAN21vmQzzy4OacpodgM1ntQY1cUqJStWkFpVFOkvCqQZtJn"
+      },
+      {
+        "shippingInfo": {
+          "coordinates": {
+            "lat": 14.4703494,
+            "lng": 120.9801711
+          },
+          "email": "madrgal.johnlou@gmail.com",
+          "firstName": "john",
+          "lastName": "mad",
+          "address": "Mapayapa",
+          "barangay": "Pulang Lupa Uno",
+          "postalCode": "1742",
+          "city": "Las Pinas",
+          "province": "Metro Manila",
+          "phone": "+639763209632",
+          "fullAddress": "Mapayapa, Pulang Lupa Uno, Las Pinas, Metro Manila, Philippines"
+        },
+        "lalamoveDetails": {
+          "serviceType": "SEDAN",
+          "distance": 9.057,
+          "duration": 25.3,
+          "totalWeight": 30,
+          "deliveryFee": 201,
+          "status": "delivered",
+          "lastStatusUpdate": "2025-09-23T15:20:21.818Z",
+          "orderId": "3324267584270287634",
+          "driverId": "80557"
+        },
+        "coupon": {
+          "code": "ABCDEF123",
+          "type": "percent",
+          "amount": 0,
+          "discount": 0
+        },
+        "_id": "68d2ba767c5e89d1486e7251",
+        "user": "68d2579875227728ca1c0daa",
+        "products": [
+          {
+            "product": "68d25afc75227728ca1c0fbe",
+            "quantity": 1,
+            "price": 4500,
+            "_id": "68d2ba767c5e89d1486e7252"
+          },
+          {
+            "product": "68d25b6875227728ca1c0feb",
+            "quantity": 1,
+            "price": 1500,
+            "_id": "68d2ba767c5e89d1486e7253"
+          }
+        ],
+        "totalAmount": 6321,
+        "productSubtotal": 6000,
+        "deliveryFee": 201,
+        "taxAmount": 720,
+        "shippingMethod": "lalamove",
+        "status": "delivered",
+        "adminStatus": "order_completed",
+        "paymentStatus": "paid",
+        "createdAt": "2025-09-23T15:19:18.202Z",
+        "updatedAt": "2025-09-23T15:20:21.819Z",
+        "__v": 0,
+        "stripeSessionId": "cs_test_b1GIo7LxMnRTNlMZSklStMOcICxssaTG3cJk9pEfcTcDE3dSVlp3bUP1KH"
+      },
+      {
+        "shippingInfo": {
+          "coordinates": {
+            "lat": 14.461234566437996,
+            "lng": 120.9858829878662
+          },
+          "email": "scap4497@gmail.com",
+          "firstName": "John",
+          "lastName": "Paul",
+          "address": "STI Academic Center Las Pinas Campus, Alabang–Zapote Rd",
+          "barangay": "Pamplona Tres",
+          "postalCode": "1740",
+          "city": "Las Pinas",
+          "province": "Metro Manila",
+          "phone": "0912 317 4561",
+          "fullAddress": "STI Academic Center Las Pinas Campus, Alabang–Zapote Rd, Pamplona Tres, Las Pinas, Metro Manila, Philippines"
+        },
+        "lalamoveDetails": {
+          "serviceType": "SEDAN",
+          "distance": 10.258,
+          "duration": 24.2,
+          "totalWeight": 90,
+          "deliveryFee": 216,
+          "status": "delivered",
+          "lastStatusUpdate": "2025-09-23T18:59:13.053Z",
+          "orderId": "3325251370965451028",
+          "driverId": "80557"
+        },
+        "coupon": {
+          "code": "TESTCODE2025",
+          "type": "percent",
+          "amount": 0,
+          "discount": 0
+        },
+        "_id": "68d2ed0e86f6b5ea8e4e915c",
+        "user": "68d2e96a86f6b5ea8e4e8e07",
+        "products": [
+          {
+            "product": "68d25a1d75227728ca1c0f47",
+            "quantity": 1,
+            "price": 5500,
+            "_id": "68d2ed0e86f6b5ea8e4e915d"
+          },
+          {
+            "product": "68d25afc75227728ca1c0fbe",
+            "quantity": 1,
+            "price": 4000,
+            "_id": "68d2ed0e86f6b5ea8e4e915e"
+          },
+          {
+            "product": "68d25b6875227728ca1c0feb",
+            "quantity": 1,
+            "price": 1500,
+            "_id": "68d2ed0e86f6b5ea8e4e915f"
+          },
+          {
+            "product": "68d25be375227728ca1c1024",
+            "quantity": 1,
+            "price": 2000,
+            "_id": "68d2ed0e86f6b5ea8e4e9160"
+          },
+          {
+            "product": "68d25d8975227728ca1c10f8",
+            "quantity": 1,
+            "price": 1499.97,
+            "_id": "68d2ed0e86f6b5ea8e4e9161"
+          },
+          {
+            "product": "68d25def75227728ca1c1125",
+            "quantity": 1,
+            "price": 3600,
+            "_id": "68d2ed0e86f6b5ea8e4e9162"
+          }
+        ],
+        "totalAmount": 20387.96,
+        "productSubtotal": 18099.97,
+        "deliveryFee": 216,
+        "taxAmount": 2171.9964,
+        "shippingMethod": "lalamove",
+        "status": "delivered",
+        "adminStatus": "order_completed",
+        "paymentStatus": "paid",
+        "createdAt": "2025-09-23T18:55:10.328Z",
+        "updatedAt": "2025-09-23T19:01:20.341Z",
+        "__v": 0,
+        "stripeSessionId": "cs_test_b1IIA3q9CwYeFfk5Ter9cZjTqrToPbkBFuWbpnUIUNGPtBar2iiNjecDpI"
+      },
+      {
+        "shippingInfo": {
+          "coordinates": {
+            "lat": 14.4703494,
+            "lng": 120.9801711
+          },
+          "email": "madrgal.johnlou@gmail.com",
+          "firstName": "jl",
+          "lastName": "madd",
+          "address": "Mapayapa",
+          "barangay": "Pulang Lupa Uno",
+          "postalCode": "1742",
+          "city": "Las Pinas",
+          "province": "Metro Manila",
+          "phone": "+639763209632",
+          "fullAddress": "Mapayapa, Pulang Lupa Uno, Las Pinas, Metro Manila, Philippines"
+        },
+        "lalamoveDetails": {
+          "quotationId": "3326676961090524166",
+          "quotation": {
+            "data": {
+              "quotationId": "3326676961090524166",
+              "scheduleAt": "2025-09-24T03:08:26.00Z",
+              "expiresAt": "2025-09-24T03:08:37.00Z",
+              "serviceType": "SEDAN",
+              "language": "EN_PH",
+              "stops": [
+                {
+                  "stopId": "3326815459349024801",
+                  "coordinates": {
+                    "lat": "14.4131078",
+                    "lng": "120.9735908"
+                  },
+                  "address": "Blk 8 Lot 4 Alagaw St., Greensite Homes Subd., Molino II, Bacoor City, Cavite, Philippines"
+                },
+                {
+                  "stopId": "3326815459349024802",
+                  "coordinates": {
+                    "lat": "14.4703494",
+                    "lng": "120.9801711"
+                  },
+                  "address": "Blk 3, 9-B, 9-B Galaxy St, Mapayapa Village, Las Piñas, Metro Manila, Philippines"
+                }
+              ],
+              "isRouteOptimized": false,
+              "priceBreakdown": {
+                "base": "80",
+                "extraMileage": "121",
+                "totalBeforeOptimization": "201",
+                "totalExcludePriorityFee": "201",
+                "total": "201",
+                "currency": "PHP"
+              },
+              "distance": {
+                "value": "9056",
+                "unit": "m"
+              }
+            }
+          },
+          "serviceType": "SEDAN",
+          "distance": 9.057,
+          "duration": 25.3,
+          "totalWeight": 90,
+          "deliveryFee": 201,
+          "status": "pending",
+          "lastStatusUpdate": "2025-09-24T03:09:23.778Z"
+        },
+        "coupon": null,
+        "_id": "68d360e396b2d1e95fefd0c1",
+        "user": "68d2579875227728ca1c0daa",
+        "products": [
+          {
+            "product": "68d25afc75227728ca1c0fbe",
+            "quantity": 3,
+            "price": 4000,
+            "_id": "68d360e396b2d1e95fefd0c2"
+          },
+          {
+            "product": "68d25c4c75227728ca1c1062",
+            "quantity": 3,
+            "price": 3000,
+            "_id": "68d360e396b2d1e95fefd0c3"
+          }
+        ],
+        "totalAmount": 23721,
+        "productSubtotal": 21000,
+        "deliveryFee": 201,
+        "taxAmount": 2520,
+        "shippingMethod": "lalamove",
+        "status": "pending",
+        "adminStatus": "order_received",
+        "paymentStatus": "pending",
+        "createdAt": "2025-09-24T03:09:23.781Z",
+        "updatedAt": "2025-09-24T03:09:24.481Z",
+        "__v": 0,
+        "stripeSessionId": "cs_test_b1MOQ5Ycf095KLnhy8fjl8vGNI2U2wX6kXwqBKt91S42bl8oyxBdgAQEh2"
+      },
+      {
+        "shippingInfo": {
+          "coordinates": {
+            "lat": 14.4703494,
+            "lng": 120.9801711
+          },
+          "email": "madrgal.johnlou@gmail.com",
+          "firstName": "jl",
+          "lastName": "madd",
+          "address": "Mapayapa",
+          "barangay": "Pulang Lupa Uno",
+          "postalCode": "1742",
+          "city": "Las Pinas",
+          "province": "Metro Manila",
+          "phone": "+639763209632",
+          "fullAddress": "Mapayapa, Pulang Lupa Uno, Las Pinas, Metro Manila, Philippines"
+        },
+        "lalamoveDetails": {
+          "serviceType": "SEDAN",
+          "distance": 9.057,
+          "duration": 25.3,
+          "totalWeight": 90,
+          "deliveryFee": 201,
+          "status": "delivered",
+          "lastStatusUpdate": "2025-09-24T17:50:42.611Z",
+          "orderId": "3326718718255748027",
+          "driverId": "80557"
+        },
+        "coupon": null,
+        "_id": "68d3611896b2d1e95fefd0e8",
+        "user": "68d2579875227728ca1c0daa",
+        "products": [
+          {
+            "product": "68d25afc75227728ca1c0fbe",
+            "quantity": 3,
+            "price": 4000,
+            "_id": "68d3611896b2d1e95fefd0e9"
+          },
+          {
+            "product": "68d25c4c75227728ca1c1062",
+            "quantity": 3,
+            "price": 3000,
+            "_id": "68d3611896b2d1e95fefd0ea"
+          }
+        ],
+        "totalAmount": 23721,
+        "productSubtotal": 21000,
+        "deliveryFee": 201,
+        "taxAmount": 2520,
+        "shippingMethod": "lalamove",
+        "status": "delivered",
+        "adminStatus": "order_completed",
+        "paymentStatus": "paid",
+        "createdAt": "2025-09-24T03:10:16.682Z",
+        "updatedAt": "2025-09-24T17:50:42.613Z",
+        "__v": 0,
+        "stripeSessionId": "cs_test_b14W4MXic9LfaiLvYaSHWsTwbGBqNqWHFFy5Jmv4wjgCMAVTG9DAsjkkmV"
+      },
+      {
+        "shippingInfo": {
+          "coordinates": {
+            "lat": 14.4703494,
+            "lng": 120.9801711
+          },
+          "email": "madrgal.johnlou@gmail.com",
+          "firstName": "jl",
+          "lastName": "madd",
+          "address": "Mapayapa",
+          "barangay": "Pulang Lupa Uno",
+          "postalCode": "1742",
+          "city": "Las Pinas",
+          "province": "Metro Manila",
+          "phone": "+639763209632",
+          "fullAddress": "Mapayapa, Pulang Lupa Uno, Las Pinas, Metro Manila, Philippines"
+        },
+        "lalamoveDetails": null,
+        "coupon": null,
+        "_id": "68d42cdc6514eafebed988d4",
+        "user": "68d2579875227728ca1c0daa",
+        "products": [
+          {
+            "product": "68d25afc75227728ca1c0fbe",
+            "quantity": 1,
+            "price": 4000,
+            "_id": "68d42cdc6514eafebed988d5"
+          },
+          {
+            "product": "68d25cb375227728ca1c108f",
+            "quantity": 1,
+            "price": 3500,
+            "_id": "68d42cdc6514eafebed988d6"
+          },
+          {
+            "product": "68d2591275227728ca1c0ebf",
+            "quantity": 1,
+            "price": 5000,
+            "_id": "68d42cdc6514eafebed988d7"
+          }
+        ],
+        "totalAmount": 14000,
+        "productSubtotal": 12500,
+        "deliveryFee": 0,
+        "taxAmount": 1500,
+        "shippingMethod": "pickup",
+        "status": "processing",
+        "adminStatus": "order_completed",
+        "paymentStatus": "paid",
+        "createdAt": "2025-09-24T17:39:40.743Z",
+        "updatedAt": "2025-09-24T17:48:15.817Z",
+        "__v": 0,
+        "stripeSessionId": "cs_test_b1tZDZJjGBdrXi9c47Qj1B1HHk4p1QOr11i2po72bDJV12ybVuzYXIkW9w"
+      },
+      {
+        "shippingInfo": {
+          "coordinates": {
+            "lat": 14.4703494,
+            "lng": 120.9801711
+          },
+          "email": "madrgal.johnlou@gmail.com",
+          "firstName": "jl",
+          "lastName": "madd",
+          "address": "Mapayapa",
+          "barangay": "Pulang Lupa Uno",
+          "postalCode": "1742",
+          "city": "Las Pinas",
+          "province": "Metro Manila",
+          "phone": "+639763209632",
+          "fullAddress": "Mapayapa, Pulang Lupa Uno, Las Pinas, Metro Manila, Philippines"
+        },
+        "lalamoveDetails": {
+          "quotationId": "3327071793684332554",
+          "quotation": {
+            "data": {
+              "quotationId": "3327071793684332554",
+              "scheduleAt": "2025-09-24T21:33:51.00Z",
+              "expiresAt": "2025-09-24T21:34:01.00Z",
+              "serviceType": "SEDAN",
+              "language": "EN_PH",
+              "stops": [
+                {
+                  "stopId": "3327371827877433360",
+                  "coordinates": {
+                    "lat": "14.4131078",
+                    "lng": "120.9735908"
+                  },
+                  "address": "Blk 8 Lot 4 Alagaw St., Greensite Homes Subd., Molino II, Bacoor City, Cavite, Philippines"
+                },
+                {
+                  "stopId": "3327371827877433361",
+                  "coordinates": {
+                    "lat": "14.4703494",
+                    "lng": "120.9801711"
+                  },
+                  "address": "Blk 3, 9-B, 9-B Galaxy St, Mapayapa Village, Las Piñas, Metro Manila, Philippines"
+                }
+              ],
+              "isRouteOptimized": false,
+              "priceBreakdown": {
+                "base": "80",
+                "extraMileage": "121",
+                "totalBeforeOptimization": "201",
+                "totalExcludePriorityFee": "201",
+                "total": "201",
+                "currency": "PHP"
+              },
+              "distance": {
+                "value": "9056",
+                "unit": "m"
+              }
+            }
+          },
+          "serviceType": "SEDAN",
+          "distance": 9.057,
+          "duration": 25.3,
+          "totalWeight": 30,
+          "deliveryFee": 201,
+          "status": "pending",
+          "lastStatusUpdate": "2025-09-24T21:34:03.413Z"
+        },
+        "coupon": null,
+        "_id": "68d463cb35b06434db9590d6",
+        "user": "68d2579875227728ca1c0daa",
+        "products": [
+          {
+            "product": "68d25def75227728ca1c1125",
+            "quantity": 1,
+            "price": 3600,
+            "_id": "68d463cb35b06434db9590d7"
+          },
+          {
+            "product": "68d25be375227728ca1c1024",
+            "quantity": 1,
+            "price": 2000,
+            "_id": "68d463cb35b06434db9590d8"
+          }
+        ],
+        "totalAmount": 6473,
+        "productSubtotal": 5600,
+        "deliveryFee": 201,
+        "taxAmount": 672,
+        "shippingMethod": "lalamove",
+        "status": "pending",
+        "adminStatus": "order_received",
+        "paymentStatus": "pending",
+        "createdAt": "2025-09-24T21:34:03.417Z",
+        "updatedAt": "2025-09-24T21:34:07.577Z",
+        "__v": 0,
+        "stripeSessionId": "cs_test_b1BVRYTEuGjV9xQCOftojPfI52KcfPUW777CVCpgH9rtjEhcOxU7SiWIqN"
+      },
+      {
+        "shippingInfo": {
+          "coordinates": {
+            "lat": 14.4703494,
+            "lng": 120.9801711
+          },
+          "email": "madrgal.johnlou@gmail.com",
+          "firstName": "jl",
+          "lastName": "madd",
+          "address": "Mapayapa",
+          "barangay": "Pulang Lupa Uno",
+          "postalCode": "1742",
+          "city": "Las Pinas",
+          "province": "Metro Manila",
+          "phone": "+639763209632",
+          "fullAddress": "Mapayapa, Pulang Lupa Uno, Las Pinas, Metro Manila, Philippines"
+        },
+        "lalamoveDetails": null,
+        "coupon": null,
+        "_id": "68d4669a55bb197ff6554888",
+        "user": "68d2579875227728ca1c0daa",
+        "products": [
+          {
+            "product": "68d25be375227728ca1c1024",
+            "quantity": 1,
+            "price": 2000,
+            "_id": "68d4669a55bb197ff6554889"
+          },
+          {
+            "product": "68d25def75227728ca1c1125",
+            "quantity": 1,
+            "price": 3600,
+            "_id": "68d4669a55bb197ff655488a"
+          }
+        ],
+        "totalAmount": 6272,
+        "productSubtotal": 5600,
+        "deliveryFee": 0,
+        "taxAmount": 672,
+        "shippingMethod": "pickup",
+        "status": "pending",
+        "adminStatus": "order_received",
+        "paymentStatus": "pending",
+        "createdAt": "2025-09-24T21:46:02.501Z",
+        "updatedAt": "2025-09-24T21:46:03.343Z",
+        "__v": 0,
+        "stripeSessionId": "cs_test_b1uiLlrx0wzZMRjacIwVGCxeIWXelzz8BHtDZrjU3fqyVyECYJ4dEc96fY"
+      },
+      {
+        "shippingInfo": {
+          "coordinates": {
+            "lat": 14.4703494,
+            "lng": 120.9801711
+          },
+          "email": "roselsita.2025@gmail.com",
+          "firstName": "rosel",
+          "lastName": "sita",
+          "address": "Mapayapa",
+          "barangay": "Pulang Lupa Uno",
+          "postalCode": "1742",
+          "city": "Las Piñas City",
+          "province": "Metro Manila",
+          "phone": "+639763209632",
+          "fullAddress": "Mapayapa, Pulang Lupa Uno, Las Piñas City, Metro Manila, Philippines"
+        },
+        "lalamoveDetails": {
+          "quotationId": "3327239421870653585",
+          "quotation": {
+            "data": {
+              "quotationId": "3327239421870653585",
+              "scheduleAt": "2025-09-24T22:05:30.00Z",
+              "expiresAt": "2025-09-24T22:05:40.00Z",
+              "serviceType": "SEDAN",
+              "language": "EN_PH",
+              "stops": [
+                {
+                  "stopId": "3327387759765012485",
+                  "coordinates": {
+                    "lat": "14.4131078",
+                    "lng": "120.9735908"
+                  },
+                  "address": "Blk 8 Lot 4 Alagaw St., Greensite Homes Subd., Molino II, Bacoor City, Cavite, Philippines"
+                },
+                {
+                  "stopId": "3327387759765012486",
+                  "coordinates": {
+                    "lat": "14.4703494",
+                    "lng": "120.9801711"
+                  },
+                  "address": "Blk 3, 9-B, 9-B Galaxy St, Mapayapa Village, Las Piñas, Metro Manila, Philippines"
+                }
+              ],
+              "isRouteOptimized": false,
+              "priceBreakdown": {
+                "base": "80",
+                "extraMileage": "121",
+                "totalBeforeOptimization": "201",
+                "totalExcludePriorityFee": "201",
+                "total": "201",
+                "currency": "PHP"
+              },
+              "distance": {
+                "value": "9056",
+                "unit": "m"
+              }
+            }
+          },
+          "serviceType": "SEDAN",
+          "distance": 9.057,
+          "duration": 25.3,
+          "totalWeight": 30,
+          "deliveryFee": 201,
+          "status": "pending",
+          "lastStatusUpdate": "2025-09-24T22:05:36.651Z"
+        },
+        "coupon": null,
+        "_id": "68d46b30b42978edc9bb8d7c",
+        "user": "68d255a275227728ca1c0d9c",
+        "products": [
+          {
+            "product": "68d2591275227728ca1c0ebf",
+            "quantity": 1,
+            "price": 5000,
+            "_id": "68d46b30b42978edc9bb8d7d"
+          },
+          {
+            "product": "68d25a1d75227728ca1c0f47",
+            "quantity": 1,
+            "price": 5500,
+            "_id": "68d46b30b42978edc9bb8d7e"
+          }
+        ],
+        "totalAmount": 11961,
+        "productSubtotal": 10500,
+        "deliveryFee": 201,
+        "taxAmount": 1260,
+        "shippingMethod": "lalamove",
+        "status": "pending",
+        "adminStatus": "order_received",
+        "paymentStatus": "pending",
+        "createdAt": "2025-09-24T22:05:36.657Z",
+        "updatedAt": "2025-09-24T22:05:37.457Z",
+        "__v": 0,
+        "stripeSessionId": "cs_test_b1jsHNHrSCYAxAE4ZWv6g3R8hx6nWGshsxwcbzQKa0alPDY1T0BCV3uw9r"
+      },
+      {
+        "shippingInfo": {
+          "coordinates": {
+            "lat": 14.4703494,
+            "lng": 120.9801711
+          },
+          "email": "roselsita.2025@gmail.com",
+          "firstName": "rosel",
+          "lastName": "sita",
+          "address": "Mapayapa",
+          "barangay": "Pulang Lupa Uno",
+          "postalCode": "1742",
+          "city": "Las Piñas City",
+          "province": "Metro Manila",
+          "phone": "+639763209632",
+          "fullAddress": "Mapayapa, Pulang Lupa Uno, Las Piñas City, Metro Manila, Philippines"
+        },
+        "lalamoveDetails": {
+          "quotationId": "3327239421870653668",
+          "quotation": {
+            "data": {
+              "quotationId": "3327239421870653668",
+              "scheduleAt": "2025-09-24T22:10:19.00Z",
+              "expiresAt": "2025-09-24T22:10:30.00Z",
+              "serviceType": "SEDAN",
+              "language": "EN_PH",
+              "stops": [
+                {
+                  "stopId": "3327390185146466323",
+                  "coordinates": {
+                    "lat": "14.4131078",
+                    "lng": "120.9735908"
+                  },
+                  "address": "Blk 8 Lot 4 Alagaw St., Greensite Homes Subd., Molino II, Bacoor City, Cavite, Philippines"
+                },
+                {
+                  "stopId": "3327390185146466324",
+                  "coordinates": {
+                    "lat": "14.4703494",
+                    "lng": "120.9801711"
+                  },
+                  "address": "Blk 3, 9-B, 9-B Galaxy St, Mapayapa Village, Las Piñas, Metro Manila, Philippines"
+                }
+              ],
+              "isRouteOptimized": false,
+              "priceBreakdown": {
+                "base": "80",
+                "extraMileage": "121",
+                "totalBeforeOptimization": "201",
+                "totalExcludePriorityFee": "201",
+                "total": "201",
+                "currency": "PHP"
+              },
+              "distance": {
+                "value": "9056",
+                "unit": "m"
+              }
+            }
+          },
+          "serviceType": "SEDAN",
+          "distance": 9.057,
+          "duration": 25.3,
+          "totalWeight": 30,
+          "deliveryFee": 201,
+          "status": "pending",
+          "lastStatusUpdate": "2025-09-24T22:10:25.936Z"
+        },
+        "coupon": null,
+        "_id": "68d46c51c6d4f72c43ebe01e",
+        "user": "68d255a275227728ca1c0d9c",
+        "products": [
+          {
+            "product": "68d2591275227728ca1c0ebf",
+            "quantity": 1,
+            "price": 5000,
+            "_id": "68d46c51c6d4f72c43ebe01f"
+          },
+          {
+            "product": "68d25a1d75227728ca1c0f47",
+            "quantity": 1,
+            "price": 5500,
+            "_id": "68d46c51c6d4f72c43ebe020"
+          }
+        ],
+        "totalAmount": 11961,
+        "productSubtotal": 10500,
+        "deliveryFee": 201,
+        "taxAmount": 1260,
+        "shippingMethod": "lalamove",
+        "status": "pending",
+        "adminStatus": "order_received",
+        "paymentStatus": "pending",
+        "createdAt": "2025-09-24T22:10:25.956Z",
+        "updatedAt": "2025-09-24T22:10:26.993Z",
+        "__v": 0,
+        "stripeSessionId": "cs_test_b1hraJH9tkR6XdU38EzMrcZWhxNuBgyWzoehiWSXa6LZQHXW2IMIykMYef"
+      },
+      {
+        "shippingInfo": {
+          "coordinates": {
+            "lat": 14.449342,
+            "lng": 120.9818609
+          },
+          "email": "happysantera19@gmail.com",
+          "firstName": "hapipogi",
+          "lastName": "hapipogi",
+          "address": "happysantera19@gmail.com",
+          "barangay": "pamploma1",
+          "postalCode": "1740",
+          "city": "las pinas",
+          "province": "Metro Manila",
+          "phone": "+639455788366",
+          "fullAddress": "happysantera19@gmail.com, pamploma1, las pinas, Metro Manila, Philippines"
+        },
+        "lalamoveDetails": null,
+        "coupon": null,
+        "_id": "68d4f2e468a26c33d9d30aa1",
+        "user": "68d4f1ed68a26c33d9d308f8",
+        "products": [
+          {
+            "product": "68d25a9775227728ca1c0f80",
+            "quantity": 6,
+            "price": 3500,
+            "_id": "68d4f2e468a26c33d9d30aa2"
+          },
+          {
+            "product": "68d25def75227728ca1c1125",
+            "quantity": 4,
+            "price": 3600,
+            "_id": "68d4f2e468a26c33d9d30aa3"
+          }
+        ],
+        "totalAmount": 39648,
+        "productSubtotal": 35400,
+        "deliveryFee": 0,
+        "taxAmount": 4248,
+        "shippingMethod": "pickup",
+        "status": "pending",
+        "adminStatus": "order_received",
+        "paymentStatus": "pending",
+        "createdAt": "2025-09-25T07:44:36.867Z",
+        "updatedAt": "2025-09-25T07:44:37.588Z",
+        "__v": 0,
+        "stripeSessionId": "cs_test_b1IuvjwoBRW3qVYZgFLS9W4Yy20ZGxp3EaV00krABIFuGUSROD57qoed8C"
+      },
+      {
+        "shippingInfo": {
+          "coordinates": {
+            "lat": 14.438659,
+            "lng": 120.9978374
+          },
+          "email": "d.garcia4199@gmail.com",
+          "firstName": "darren",
+          "lastName": "garcia",
+          "address": "212D East 2nd Street, angela village, talon kuatro",
+          "barangay": "talon kuatro",
+          "postalCode": "1747",
+          "city": "las piñas city",
+          "province": "Metro Manila",
+          "phone": "+639919171810",
+          "fullAddress": "212D East 2nd Street, angela village, talon kuatro, talon kuatro, las piñas city, Metro Manila, Philippines"
+        },
+        "lalamoveDetails": null,
+        "coupon": {
+          "code": "TESTRUN",
+          "type": "percent",
+          "amount": 0,
+          "discount": 0
+        },
+        "_id": "68d6a5b33e06a31b32f1864b",
+        "user": "68d6a0093e06a31b32f182bb",
+        "products": [
+          {
+            "product": "68d25be375227728ca1c1024",
+            "quantity": 1,
+            "price": 2000,
+            "_id": "68d6a5b33e06a31b32f1864c"
+          },
+          {
+            "product": "68d25b6875227728ca1c0feb",
+            "quantity": 1,
+            "price": 1500,
+            "_id": "68d6a5b33e06a31b32f1864d"
+          }
+        ],
+        "totalAmount": 3570,
+        "productSubtotal": 3500,
+        "deliveryFee": 0,
+        "taxAmount": 420,
+        "shippingMethod": "pickup",
+        "status": "pending",
+        "adminStatus": "order_received",
+        "paymentStatus": "pending",
+        "createdAt": "2025-09-26T14:39:47.842Z",
+        "updatedAt": "2025-09-26T14:39:48.451Z",
+        "__v": 0,
+        "stripeSessionId": "cs_test_b1G2ELYr6aRUhVXCq5hnBhYU8VA1fBMZEHbojU6L6rN7n2CcAA6m7WDerI"
+      },
+      {
+        "shippingInfo": {
+          "coordinates": {
+            "lat": 14.438659,
+            "lng": 120.9978374
+          },
+          "email": "d.garcia4199@gmail.com",
+          "firstName": "darren",
+          "lastName": "garcia",
+          "address": "212D East 2nd Street, angela village, talon kuatro",
+          "barangay": "talon kuatro",
+          "postalCode": "1747",
+          "city": "las piñas city",
+          "province": "Metro Manila",
+          "phone": "+639919171810",
+          "fullAddress": "212D East 2nd Street, angela village, talon kuatro, talon kuatro, las piñas city, Metro Manila, Philippines"
+        },
+        "lalamoveDetails": {
+          "quotationId": "3328439666621211087",
+          "quotation": {
+            "data": {
+              "quotationId": "3328439666621211087",
+              "scheduleAt": "2025-09-26T14:41:02.00Z",
+              "expiresAt": "2025-09-26T14:41:12.00Z",
+              "serviceType": "SEDAN",
+              "language": "EN_PH",
+              "stops": [
+                {
+                  "stopId": "3328613599391694922",
+                  "coordinates": {
+                    "lat": "14.4131078",
+                    "lng": "120.9735908"
+                  },
+                  "address": "Blk 8 Lot 4 Alagaw St., Greensite Homes Subd., Molino II, Bacoor City, Cavite, Philippines"
+                },
+                {
+                  "stopId": "3328613599391694923",
+                  "coordinates": {
+                    "lat": "14.4386590",
+                    "lng": "120.9978374"
+                  },
+                  "address": "212a E 2nd St, Las Piñas, 1747 Metro Manila, Philippines"
+                }
+              ],
+              "isRouteOptimized": false,
+              "priceBreakdown": {
+                "base": "80",
+                "extraMileage": "118",
+                "totalBeforeOptimization": "198",
+                "totalExcludePriorityFee": "198",
+                "total": "198",
+                "currency": "PHP"
+              },
+              "distance": {
+                "value": "8790",
+                "unit": "m"
+              }
+            }
+          },
+          "serviceType": "SEDAN",
+          "distance": 8.791,
+          "duration": 28.633333333333333,
+          "totalWeight": 30,
+          "deliveryFee": 198,
+          "status": "pending",
+          "lastStatusUpdate": "2025-09-26T14:41:30.462Z"
+        },
+        "coupon": null,
+        "_id": "68d6a61a3e06a31b32f1869c",
+        "user": "68d6a0093e06a31b32f182bb",
+        "products": [
+          {
+            "product": "68d25b6875227728ca1c0feb",
+            "quantity": 1,
+            "price": 1500,
+            "_id": "68d6a61a3e06a31b32f1869d"
+          },
+          {
+            "product": "68d25be375227728ca1c1024",
+            "quantity": 1,
+            "price": 2000,
+            "_id": "68d6a61a3e06a31b32f1869e"
+          }
+        ],
+        "totalAmount": 4118,
+        "productSubtotal": 3500,
+        "deliveryFee": 198,
+        "taxAmount": 420,
+        "shippingMethod": "lalamove",
+        "status": "pending",
+        "adminStatus": "order_received",
+        "paymentStatus": "pending",
+        "createdAt": "2025-09-26T14:41:30.463Z",
+        "updatedAt": "2025-09-26T14:41:31.185Z",
+        "__v": 0,
+        "stripeSessionId": "cs_test_b11GCUEI2jSFA4qmPAo3nH6oPhH1DEVRtBAEtePNX0lMKtnoZ9yYNiC5An"
+      },
+      {
+        "shippingInfo": {
+          "coordinates": {
+            "lat": 14.438659,
+            "lng": 120.9978374
+          },
+          "email": "d.garcia4199@gmail.com",
+          "firstName": "darren",
+          "lastName": "garcia",
+          "address": "212D East 2nd Street, angela village, talon kuatro",
+          "barangay": "talon kuatro",
+          "postalCode": "1747",
+          "city": "las piñas city",
+          "province": "Metro Manila",
+          "phone": "+639919171810",
+          "fullAddress": "212D East 2nd Street, angela village, talon kuatro, talon kuatro, las piñas city, Metro Manila, Philippines"
+        },
+        "lalamoveDetails": null,
+        "coupon": null,
+        "_id": "68d6a6d23e06a31b32f186fd",
+        "user": "68d6a0093e06a31b32f182bb",
+        "products": [
+          {
+            "product": "68d25b6875227728ca1c0feb",
+            "quantity": 1,
+            "price": 1500,
+            "_id": "68d6a6d23e06a31b32f186fe"
+          },
+          {
+            "product": "68d25be375227728ca1c1024",
+            "quantity": 1,
+            "price": 2000,
+            "_id": "68d6a6d23e06a31b32f186ff"
+          }
+        ],
+        "totalAmount": 3920,
+        "productSubtotal": 3500,
+        "deliveryFee": 0,
+        "taxAmount": 420,
+        "shippingMethod": "pickup",
+        "status": "processing",
+        "adminStatus": "order_completed",
+        "paymentStatus": "paid",
+        "createdAt": "2025-09-26T14:44:34.684Z",
+        "updatedAt": "2025-09-26T14:48:26.821Z",
+        "__v": 0,
+        "stripeSessionId": "cs_test_b1N8zKq7mZoFS0ldmlm10f2J8QqFlWCGBclH1slrYrMNXlQcupEHZXspx4"
+      },
+      {
+        "shippingInfo": {
+          "coordinates": {
+            "lat": 14.438659,
+            "lng": 120.9978374
+          },
+          "email": "d.garcia4199@gmail.com",
+          "firstName": "darren",
+          "lastName": "garcia",
+          "address": "212D East 2nd Street, angela village, talon kuatro",
+          "barangay": "talon kuatro",
+          "postalCode": "1747",
+          "city": "las piñas city",
+          "province": "Metro Manila",
+          "phone": "+639919171810",
+          "fullAddress": "212D East 2nd Street, angela village, talon kuatro, talon kuatro, las piñas city, Metro Manila, Philippines"
+        },
+        "lalamoveDetails": null,
+        "coupon": {
+          "code": "TESTRUN",
+          "type": "percent",
+          "amount": 0,
+          "discount": 0
+        },
+        "_id": "68d6a79f3e06a31b32f187ff",
+        "user": "68d6a0093e06a31b32f182bb",
+        "products": [
+          {
+            "product": "68d25be375227728ca1c1024",
+            "quantity": 1,
+            "price": 2000,
+            "_id": "68d6a79f3e06a31b32f18800"
+          },
+          {
+            "product": "68d25b6875227728ca1c0feb",
+            "quantity": 1,
+            "price": 1500,
+            "_id": "68d6a79f3e06a31b32f18801"
+          }
+        ],
+        "totalAmount": 3570,
+        "productSubtotal": 3500,
+        "deliveryFee": 0,
+        "taxAmount": 420,
+        "shippingMethod": "pickup",
+        "status": "pending",
+        "adminStatus": "order_received",
+        "paymentStatus": "pending",
+        "createdAt": "2025-09-26T14:47:59.715Z",
+        "updatedAt": "2025-09-26T14:48:00.303Z",
+        "__v": 0,
+        "stripeSessionId": "cs_test_b1rEFYC5I3cSM6VkyKEu5E4T2Egylz92uaJRKkarDU9sO6IN7jVZpcgtBM"
+      },
+      {
+        "shippingInfo": {
+          "coordinates": {
+            "lat": 14.4499727,
+            "lng": 120.9811623
+          },
+          "email": "scap4497@gmail.com",
+          "firstName": "John",
+          "lastName": "Paul",
+          "address": "STI Academic Center Las Pinas Campus, Alabang–Zapote Rd",
+          "barangay": "Pamplona Tres",
+          "postalCode": "1740",
+          "city": "Las Pinas",
+          "province": "Metro Manila",
+          "phone": "0912 317 4561",
+          "fullAddress": "STI Academic Center Las Pinas Campus, Alabang–Zapote Rd, Pamplona Tres, Las Pinas, Metro Manila, Philippines"
+        },
+        "lalamoveDetails": {
+          "serviceType": "MPV",
+          "distance": 10.258,
+          "duration": 24.2,
+          "totalWeight": 105,
+          "deliveryFee": 257,
+          "status": "delivered",
+          "lastStatusUpdate": "2025-09-26T15:21:39.999Z",
+          "orderId": "3327825464336499565",
+          "driverId": "80557"
+        },
+        "coupon": null,
+        "_id": "68d6ae9d3e06a31b32f1916f",
+        "user": "68d2e96a86f6b5ea8e4e8e07",
+        "products": [
+          {
+            "product": "68d25a1d75227728ca1c0f47",
+            "quantity": 5,
+            "price": 5500,
+            "_id": "68d6ae9d3e06a31b32f19170"
+          },
+          {
+            "product": "68d25b6875227728ca1c0feb",
+            "quantity": 1,
+            "price": 1500,
+            "_id": "68d6ae9d3e06a31b32f19171"
+          },
+          {
+            "product": "68d25afc75227728ca1c0fbe",
+            "quantity": 1,
+            "price": 4000,
+            "_id": "68d6ae9d3e06a31b32f19172"
+          }
+        ],
+        "totalAmount": 37217,
+        "productSubtotal": 33000,
+        "deliveryFee": 257,
+        "taxAmount": 3960,
+        "shippingMethod": "lalamove",
+        "status": "delivered",
+        "adminStatus": "order_picked_up",
+        "paymentStatus": "paid",
+        "createdAt": "2025-09-26T15:17:49.829Z",
+        "updatedAt": "2025-09-26T15:21:40.001Z",
+        "__v": 0,
+        "stripeSessionId": "cs_test_b1IZrBzPNoozKEPNPBmnlFB7YkWbjOoWQ0UN2F18evL21BKDSnIXx7rn5v"
+      },
+      {
+        "shippingInfo": {
+          "coordinates": {
+            "lat": 14.4149491,
+            "lng": 121.0011867
+          },
+          "email": "gaerlanaerhiz@gmail.com",
+          "firstName": "AERHIZ KIRSTENN",
+          "lastName": " Gaerlan",
+          "address": "60 Lanete Road Pilar Village Las Pinas City",
+          "barangay": "Pilar",
+          "postalCode": "1740",
+          "city": "LAS PIÑAS CITY",
+          "province": "Metro Manila",
+          "phone": "+639762420296",
+          "fullAddress": "60 Lanete Road Pilar Village Las Pinas City, Pilar, LAS PIÑAS CITY, Metro Manila, Philippines"
+        },
+        "lalamoveDetails": null,
+        "coupon": null,
+        "_id": "68d6b1653e06a31b32f19494",
+        "user": "68d6aca13e06a31b32f18ec2",
+        "products": [
+          {
+            "product": "68d25def75227728ca1c1125",
+            "quantity": 1,
+            "price": 3600,
+            "_id": "68d6b1653e06a31b32f19495"
+          },
+          {
+            "product": "68d25be375227728ca1c1024",
+            "quantity": 1,
+            "price": 2000,
+            "_id": "68d6b1653e06a31b32f19496"
+          }
+        ],
+        "totalAmount": 6272,
+        "productSubtotal": 5600,
+        "deliveryFee": 0,
+        "taxAmount": 672,
+        "shippingMethod": "pickup",
+        "status": "processing",
+        "adminStatus": "order_completed",
+        "paymentStatus": "paid",
+        "createdAt": "2025-09-26T15:29:41.596Z",
+        "updatedAt": "2025-09-26T15:31:31.959Z",
+        "__v": 0,
+        "stripeSessionId": "cs_test_b1FaUWfYOH94NyukFiqfqWSB9GPaqkWM258TjbIr8D6wff7y7mH0r3fqou"
+      },
+      {
+        "shippingInfo": {
+          "coordinates": {
+            "lat": 14.4499727,
+            "lng": 120.9811623
+          },
+          "email": "scap4497@gmail.com",
+          "firstName": "John",
+          "lastName": "Paul",
+          "address": "STI Academic Center Las Pinas Campus, Alabang–Zapote Rd",
+          "barangay": "Pamplona Tres",
+          "postalCode": "1740",
+          "city": "Las Pinas",
+          "province": "Metro Manila",
+          "phone": "0912 317 4561",
+          "fullAddress": "STI Academic Center Las Pinas Campus, Alabang–Zapote Rd, Pamplona Tres, Las Pinas, Metro Manila, Philippines"
+        },
+        "lalamoveDetails": {
+          "serviceType": "MPV",
+          "distance": 10.258,
+          "duration": 24.2,
+          "totalWeight": 135,
+          "deliveryFee": 257,
+          "status": "expired",
+          "lastStatusUpdate": "2025-09-26T16:41:55.423Z",
+          "orderId": "3327825464336499623"
+        },
+        "coupon": null,
+        "_id": "68d6b3ad3e06a31b32f19a16",
+        "user": "68d2e96a86f6b5ea8e4e8e07",
+        "products": [
+          {
+            "product": "68d25a1d75227728ca1c0f47",
+            "quantity": 7,
+            "price": 5500,
+            "_id": "68d6b3ad3e06a31b32f19a17"
+          },
+          {
+            "product": "68d25afc75227728ca1c0fbe",
+            "quantity": 1,
+            "price": 4000,
+            "_id": "68d6b3ad3e06a31b32f19a18"
+          },
+          {
+            "product": "68d25b6875227728ca1c0feb",
+            "quantity": 1,
+            "price": 1500,
+            "_id": "68d6b3ad3e06a31b32f19a19"
+          }
+        ],
+        "totalAmount": 49537,
+        "productSubtotal": 44000,
+        "deliveryFee": 257,
+        "taxAmount": 5280,
+        "shippingMethod": "lalamove",
+        "status": "processing",
+        "adminStatus": "order_completed",
+        "paymentStatus": "paid",
+        "createdAt": "2025-09-26T15:39:25.059Z",
+        "updatedAt": "2025-09-26T16:41:55.424Z",
+        "__v": 0,
+        "stripeSessionId": "cs_test_b1TNSLFDZCq2BynlVs4mLxxKGL7psjULhXawSZyDhgSvuci5afMGdLT9I8"
+      }
+    ],
+    "users": [
+      {
+        "address": {
+          "street": "Mapayapa",
+          "barangay": "Pulang Lupa Uno",
+          "city": "Las Piñas City",
+          "province": "Metro Manila",
+          "postalCode": "1742",
+          "country": "Philippines"
+        },
+        "_id": "68d255a275227728ca1c0d9c",
+        "name": "rosel sita",
+        "email": "roselsita.2025@gmail.com",
+        "password": "$2b$10$/76phivtXdrSApCVUGwyJ.uys3cvd.mVS7Ooz4yD8sHANvR6WNcKC",
+        "isVerified": true,
+        "role": "admin",
+        "profileImage": "https://res.cloudinary.com/duv2elcut/image/upload/v1758615556/users/k7dvyh5sikq2bvtxucrh.jpg",
+        "phone": "+639763209632",
+        "lastLogin": "2025-10-07T14:26:33.880Z",
+        "cartItems": [
+          {
+            "quantity": 1,
+            "_id": "68d25a1d75227728ca1c0f47"
+          },
+          {
+            "quantity": 1,
+            "_id": "68d2591275227728ca1c0ebf"
+          }
+        ],
+        "createdAt": "2025-09-23T08:09:06.837Z",
+        "updatedAt": "2025-10-07T14:26:33.906Z",
+        "__v": 2
+      },
+      {
+        "address": {
+          "street": "Mapayapa",
+          "barangay": "Pulang Lupa Uno",
+          "city": "Las Pinas",
+          "province": "Metro Manila",
+          "postalCode": "1742",
+          "country": "Philippines"
+        },
+        "_id": "68d2579875227728ca1c0daa",
+        "name": "jl madd",
+        "email": "madrgal.johnlou@gmail.com",
+        "password": "$2b$10$IF4zFgeQWXazZpFCE3AHfuXGOXpRDsKA38ieqz1BzxhXAa6RBCJZS",
+        "isVerified": true,
+        "role": "customer",
+        "profileImage": "https://res.cloudinary.com/duv2elcut/image/upload/v1758641926/users/dy5jjawyttvkydajdngg.jpg",
+        "phone": "+639763209632",
+        "lastLogin": "2025-09-24T03:02:09.850Z",
+        "cartItems": [],
+        "createdAt": "2025-09-23T08:17:28.115Z",
+        "updatedAt": "2025-09-28T15:46:36.456Z",
+        "__v": 36
+      },
+      {
+        "address": {
+          "street": "",
+          "barangay": "",
+          "city": "",
+          "province": "",
+          "postalCode": "",
+          "country": ""
+        },
+        "_id": "68d2be3e7c5e89d1486e75bb",
+        "name": "Support Assistant",
+        "email": "support-bot@roselmeat.com",
+        "password": "bot_password_123",
+        "isVerified": true,
+        "role": "bot",
+        "profileImage": "",
+        "phone": "",
+        "lastLogin": "2025-09-23T15:35:26.681Z",
+        "cartItems": [],
+        "createdAt": "2025-09-23T15:35:26.683Z",
+        "updatedAt": "2025-09-23T15:35:26.683Z",
+        "__v": 0
+      },
+      {
+        "address": {
+          "street": "STI Academic Center Las Pinas Campus, Alabang–Zapote Rd",
+          "barangay": "Pamplona Tres",
+          "city": "Las Pinas",
+          "province": "Metro Manila",
+          "postalCode": "1740",
+          "country": "Philippines"
+        },
+        "_id": "68d2e96a86f6b5ea8e4e8e07",
+        "name": "John Paul",
+        "email": "scap4497@gmail.com",
+        "password": "$2b$10$dZwqcHCElCMpihE/k6f18.92KUqGVdcRidY73t0pLSK8R//0pT7BS",
+        "isVerified": true,
+        "role": "admin",
+        "profileImage": "https://res.cloudinary.com/duv2elcut/image/upload/v1758901381/users/my1suyqvvmxhvvufbjmr.jpg",
+        "phone": "0912 317 4561",
+        "lastLogin": "2025-09-26T15:55:08.378Z",
+        "cartItems": [],
+        "createdAt": "2025-09-23T18:39:38.434Z",
+        "updatedAt": "2025-09-26T15:55:08.379Z",
+        "__v": 23,
+        "resetPasswordExpiresAt": "2025-09-23T19:48:49.382Z",
+        "resetPasswordToken": "945f4fe0692bd262dee2a6907d765e93cd48042a"
+      },
+      {
+        "address": {
+          "street": "happysantera19@gmail.com",
+          "barangay": "pamploma1",
+          "city": "las pinas",
+          "province": "Metro Manila",
+          "postalCode": "1740",
+          "country": "Philippines"
+        },
+        "_id": "68d4f1ed68a26c33d9d308f8",
+        "name": "hapipogi",
+        "email": "happysantera19@gmail.com",
+        "password": "$2b$10$W3cfsA8IheVsvRqe.NbK6u2aH8KiZdC9OtwvQLb4RDOGfwqpkXkRG",
+        "isVerified": true,
+        "role": "customer",
+        "profileImage": "",
+        "phone": "+639455788366",
+        "lastLogin": "2025-09-25T07:40:29.220Z",
+        "cartItems": [
+          {
+            "quantity": 4,
+            "_id": "68d25def75227728ca1c1125"
+          },
+          {
+            "quantity": 6,
+            "_id": "68d25a9775227728ca1c0f80"
+          }
+        ],
+        "createdAt": "2025-09-25T07:40:29.224Z",
+        "updatedAt": "2025-09-25T07:44:15.852Z",
+        "__v": 4
+      },
+      {
+        "address": {
+          "street": "212D East 2nd Street, Angela Village",
+          "barangay": "talon kuatro",
+          "city": "las piñas city",
+          "province": "Metro Manila",
+          "postalCode": "1747",
+          "country": "Philippines"
+        },
+        "_id": "68d6a0093e06a31b32f182bb",
+        "name": "darren garcia",
+        "email": "d.garcia4199@gmail.com",
+        "password": "$2b$10$pHjQde3/TuRwFDr4AH7XDuoM7m1XZgVqEofO/u10N2td1UOjJCrFC",
+        "isVerified": true,
+        "role": "customer",
+        "profileImage": "",
+        "phone": "0991 917 1810",
+        "lastLogin": "2025-09-26T14:17:05.091Z",
+        "cartItems": [
+          {
+            "quantity": 1,
+            "_id": "68d25d8975227728ca1c10f8"
+          }
+        ],
+        "createdAt": "2025-09-26T14:15:37.934Z",
+        "updatedAt": "2025-09-26T15:14:56.487Z",
+        "__v": 10
+      },
+      {
+        "address": {
+          "street": "",
+          "barangay": "",
+          "city": "",
+          "province": "",
+          "postalCode": "",
+          "country": ""
+        },
+        "_id": "68d6aca13e06a31b32f18ec2",
+        "name": "Aerhiz Kirstenn Gaerlan",
+        "email": "gaerlanaerhiz@gmail.com",
+        "password": "$2b$10$5j.ryKrOnWVlLozBzywUPu/FvITwT8Du2.PI9efgKnslFiTZx1et2",
+        "isVerified": true,
+        "role": "customer",
+        "profileImage": "",
+        "phone": "",
+        "lastLogin": "2025-09-26T15:09:21.523Z",
+        "cartItems": [
+          {
+            "quantity": 1,
+            "_id": "68d25a1d75227728ca1c0f47"
+          }
+        ],
+        "createdAt": "2025-09-26T15:09:21.523Z",
+        "updatedAt": "2025-09-26T16:00:51.950Z",
+        "__v": 10
+      },
+      {
+        "address": {
+          "street": "",
+          "barangay": "",
+          "city": "",
+          "province": "",
+          "postalCode": "",
+          "country": ""
+        },
+        "_id": "68e1faeecb8f65933ec5098e",
+        "name": "Ma. Theresa R. Sigua",
+        "email": "trishasigua16@gmail.com",
+        "password": "$2b$10$XwkT0/gzNFxGg5yJR2f71epysCSulGf4xV0DIDeOuH4wicsAC1XLK",
+        "isVerified": true,
+        "role": "customer",
+        "profileImage": "",
+        "phone": "",
+        "lastLogin": "2025-10-05T04:58:22.911Z",
+        "cartItems": [],
+        "createdAt": "2025-10-05T04:58:23.000Z",
+        "updatedAt": "2025-10-05T04:59:37.379Z",
+        "__v": 0
+      },
+      {
+        "address": {
+          "street": "",
+          "barangay": "",
+          "city": "",
+          "province": "",
+          "postalCode": "",
+          "country": ""
+        },
+        "_id": "68e21b806a6258940122770e",
+        "name": "Jonar Bautista ",
+        "email": "buhawigames@gmail.com",
+        "password": "$2b$10$QkBe6BNJhqS3VmqEIatVh.qEylE9R7/4m9YREOmgVBowK3e8/Wxxe",
+        "isVerified": true,
+        "role": "customer",
+        "profileImage": "",
+        "phone": "",
+        "lastLogin": "2025-10-05T07:17:20.228Z",
+        "cartItems": [],
+        "createdAt": "2025-10-05T07:17:20.231Z",
+        "updatedAt": "2025-10-05T07:24:06.018Z",
+        "__v": 0
+      },
+      {
+        "address": {
+          "street": "",
+          "barangay": "",
+          "city": "",
+          "province": "",
+          "postalCode": "",
+          "country": "Philippines"
+        },
+        "_id": "68e2648da6596933795b6136",
+        "name": "Grace Porlaje",
+        "email": "gracediolasporlaje@gmail.com",
+        "password": "$2b$10$WvdKHbeGXn2cjN1XDJ2Ej.kX7oZp2vxcKLMOWIPXyrdmKgOmv5v6q",
+        "isVerified": true,
+        "role": "customer",
+        "profileImage": "https://res.cloudinary.com/duv2elcut/image/upload/v1759668296/users/bvt8bivyg7zpk1xyiokk.jpg",
+        "phone": "",
+        "lastLogin": "2025-10-05T17:31:57.551Z",
+        "cartItems": [
+          {
+            "quantity": 2,
+            "_id": "68d25def75227728ca1c1125"
+          }
+        ],
+        "createdAt": "2025-10-05T12:29:01.534Z",
+        "updatedAt": "2025-10-05T17:31:57.552Z",
+        "__v": 1
+      },
+      {
+        "address": {
+          "street": "",
+          "barangay": "",
+          "city": "",
+          "province": "",
+          "postalCode": "",
+          "country": ""
+        },
+        "_id": "68e2a2bef0b336f8b629201d",
+        "name": "Geo Hontalba",
+        "email": "mrhontalba@gmail.com",
+        "password": "$2b$10$9MYv/9koFVViBGenk1kQB.BPZRqixac6NL/7ADKhtU38CGndNxvyK",
+        "isVerified": false,
+        "role": "customer",
+        "profileImage": "",
+        "phone": "",
+        "verificationToken": "804633",
+        "verificationTokenExpiresAt": "2025-10-06T16:54:22.406Z",
+        "lastLogin": "2025-10-05T16:54:22.408Z",
+        "cartItems": [
+          {
+            "quantity": 1,
+            "_id": "68d25d8975227728ca1c10f8"
+          },
+          {
+            "quantity": 1,
+            "_id": "68d25def75227728ca1c1125"
+          },
+          {
+            "quantity": 1,
+            "_id": "68d25afc75227728ca1c0fbe"
+          }
+        ],
+        "createdAt": "2025-10-05T16:54:22.498Z",
+        "updatedAt": "2025-10-05T16:57:35.190Z",
+        "__v": 3
+      },
+      {
+        "address": {
+          "street": "",
+          "barangay": "",
+          "city": "",
+          "province": "",
+          "postalCode": "",
+          "country": ""
+        },
+        "_id": "68e2e0cdb176ac0b9081d4a8",
+        "name": "Paula Rivadelo ",
+        "email": "paurivadelo@gmail.com",
+        "password": "$2b$10$IYFEZMrvlyN3PDHaltqX7eWpEwsBOMkwsbu6jF6p2tWu8iRSJBOcO",
+        "isVerified": false,
+        "role": "customer",
+        "profileImage": "",
+        "phone": "",
+        "verificationToken": "981611",
+        "verificationTokenExpiresAt": "2025-10-06T21:19:09.951Z",
+        "lastLogin": "2025-10-05T21:19:10.038Z",
+        "cartItems": [],
+        "createdAt": "2025-10-05T21:19:10.043Z",
+        "updatedAt": "2025-10-05T21:19:10.043Z",
+        "__v": 0
+      },
+      {
+        "address": {
+          "street": "",
+          "barangay": "",
+          "city": "",
+          "province": "",
+          "postalCode": "",
+          "country": ""
+        },
+        "_id": "68e320a6f95900161dec99c7",
+        "name": "Ian Cris STO.Domingo",
+        "email": "iancris09291990@gmail.com",
+        "password": "$2b$10$EHy1rB1PAoHeV0YLlMgiXeBqWssBRK7GYrUtUx1stksl77j4fNmZe",
+        "isVerified": true,
+        "role": "customer",
+        "profileImage": "",
+        "phone": "",
+        "lastLogin": "2025-10-06T01:51:34.649Z",
+        "cartItems": [],
+        "createdAt": "2025-10-06T01:51:34.652Z",
+        "updatedAt": "2025-10-06T01:56:38.917Z",
+        "__v": 0
+      },
+      {
+        "address": {
+          "street": "",
+          "barangay": "",
+          "city": "",
+          "province": "",
+          "postalCode": "",
+          "country": ""
+        },
+        "_id": "68e37a0e377ad66f80b45f8e",
+        "name": "Judy Garcia",
+        "email": "judyanngarcia07@gmail.com",
+        "password": "$2b$10$jrSObqRVKSCaNFbpp7HbAOKOkssKyUbA0xdotNwblbGjr8gXbmSRW",
+        "isVerified": true,
+        "role": "customer",
+        "profileImage": "",
+        "phone": "",
+        "lastLogin": "2025-10-06T08:17:50.738Z",
+        "cartItems": [
+          {
+            "quantity": 1,
+            "_id": "68d25def75227728ca1c1125"
+          },
+          {
+            "quantity": 1,
+            "_id": "68d25a1d75227728ca1c0f47"
+          }
+        ],
+        "createdAt": "2025-10-06T08:13:02.207Z",
+        "updatedAt": "2025-10-06T08:17:51.246Z",
+        "__v": 2
+      },
+      {
+        "address": {
+          "street": "",
+          "barangay": "",
+          "city": "",
+          "province": "",
+          "postalCode": "",
+          "country": ""
+        },
+        "_id": "68e394d44cbafe99547b6b8b",
+        "name": "Lois Julliane Albacea",
+        "email": "loisjullianealbacea@gmail.com",
+        "password": "$2b$10$76O8MwSSjKdpydO07NJske61ya5Q8QRdM5JJH66aqNQMOE67J4h9O",
+        "isVerified": false,
+        "role": "customer",
+        "profileImage": "",
+        "phone": "",
+        "verificationToken": "936817",
+        "verificationTokenExpiresAt": "2025-10-07T10:07:16.333Z",
+        "lastLogin": "2025-10-06T10:07:16.336Z",
+        "cartItems": [],
+        "createdAt": "2025-10-06T10:07:16.340Z",
+        "updatedAt": "2025-10-06T10:07:16.340Z",
+        "__v": 0
+      },
+      {
+        "address": {
+          "street": "",
+          "barangay": "",
+          "city": "",
+          "province": "",
+          "postalCode": "",
+          "country": ""
+        },
+        "_id": "68e3b9b59be67412e65e8b05",
+        "name": "Ma. Ayessa Febie B. Pagmanoja",
+        "email": "maayessafebiepagmanoja@gmail.com",
+        "password": "$2b$10$DZBwY60Gic939Yg3eFIi2u5Lxwg61VRcQsFD5oh6bMlpzSV65wNUu",
+        "isVerified": true,
+        "role": "customer",
+        "profileImage": "",
+        "phone": "",
+        "lastLogin": "2025-10-06T12:44:37.794Z",
+        "cartItems": [],
+        "createdAt": "2025-10-06T12:44:37.797Z",
+        "updatedAt": "2025-10-06T12:45:51.171Z",
+        "__v": 0
+      },
+      {
+        "address": {
+          "street": "",
+          "barangay": "",
+          "city": "",
+          "province": "",
+          "postalCode": "",
+          "country": ""
+        },
+        "_id": "68e3cda6225e7bd7f75123fa",
+        "name": "Andrew Cabacang",
+        "email": "cabacangandrew11@gmail.com",
+        "password": "$2b$10$tVRGQFMhMeT9bWS0Y0a4Euq8VO/K6fTpkCVnzt1xcUrybgIUlap2a",
+        "isVerified": true,
+        "role": "customer",
+        "profileImage": "",
+        "phone": "",
+        "lastLogin": "2025-10-06T14:09:42.954Z",
+        "cartItems": [],
+        "createdAt": "2025-10-06T14:09:42.957Z",
+        "updatedAt": "2025-10-06T14:11:55.603Z",
+        "__v": 0
+      }
+    ],
+    "reviews": [
+      {
+        "_id": "68d44d02c04313e1609819a0",
+        "userId": "68d2579875227728ca1c0daa",
+        "userName": "jl madd",
+        "rating": 5,
+        "feedback": "good very good talaga ang good",
+        "product": "general",
+        "isVerified": true,
+        "createdAt": "2025-09-24T19:56:50.592Z",
+        "updatedAt": "2025-09-24T19:56:50.592Z",
+        "__v": 0
+      },
+      {
+        "_id": "68d44d1cc04313e1609819c2",
+        "userId": "68d2579875227728ca1c0daa",
+        "userName": "jl madd",
+        "rating": 1,
+        "feedback": "bad boy very bad boy",
+        "product": "pork",
+        "isVerified": true,
+        "createdAt": "2025-09-24T19:57:16.599Z",
+        "updatedAt": "2025-09-24T19:57:16.599Z",
+        "__v": 0
+      },
+      {
+        "_id": "68d44d34c04313e1609819d9",
+        "userId": "68d2579875227728ca1c0daa",
+        "userName": "jl madd",
+        "rating": 3,
+        "feedback": "pede na okay na to",
+        "product": "chicken",
+        "isVerified": true,
+        "createdAt": "2025-09-24T19:57:40.043Z",
+        "updatedAt": "2025-09-24T19:57:40.043Z",
+        "__v": 0
+      },
+      {
+        "_id": "68d4524cc04313e160981cb5",
+        "userId": "68d255a275227728ca1c0d9c",
+        "userName": "rosel sita",
+        "rating": 4,
+        "feedback": "hep hep hooray",
+        "product": "general",
+        "isVerified": true,
+        "createdAt": "2025-09-24T20:19:24.170Z",
+        "updatedAt": "2025-09-24T20:19:24.170Z",
+        "__v": 0
+      },
+      {
+        "_id": "68d45259c04313e160981cbd",
+        "userId": "68d255a275227728ca1c0d9c",
+        "userName": "rosel sita",
+        "rating": 2,
+        "feedback": "ang sarap ng pork",
+        "product": "pork",
+        "isVerified": true,
+        "createdAt": "2025-09-24T20:19:37.246Z",
+        "updatedAt": "2025-09-24T20:19:37.246Z",
+        "__v": 0
+      },
+      {
+        "_id": "68d45264c04313e160981cc5",
+        "userId": "68d255a275227728ca1c0d9c",
+        "userName": "rosel sita",
+        "rating": 5,
+        "feedback": "good job sa beef",
+        "product": "beef",
+        "isVerified": true,
+        "createdAt": "2025-09-24T20:19:48.961Z",
+        "updatedAt": "2025-09-24T20:19:48.961Z",
+        "__v": 0
+      },
+      {
+        "_id": "68d6a0c93e06a31b32f18319",
+        "userId": "68d6a0093e06a31b32f182bb",
+        "userName": "darren garcia",
+        "rating": 5,
+        "feedback": "okay na tohhhhhh",
+        "product": "general",
+        "isVerified": true,
+        "createdAt": "2025-09-26T14:18:49.722Z",
+        "updatedAt": "2025-09-26T14:18:49.722Z",
+        "__v": 0
+      },
+      {
+        "_id": "68d6a1a83e06a31b32f1840a",
+        "userId": "68d6a0093e06a31b32f182bb",
+        "userName": "darren garcia",
+        "rating": 5,
+        "feedback": "maganda maganda",
+        "product": "chicken",
+        "isVerified": true,
+        "createdAt": "2025-09-26T14:22:32.167Z",
+        "updatedAt": "2025-09-26T14:22:32.167Z",
+        "__v": 0
+      },
+      {
+        "_id": "68d6a1bf3e06a31b32f18426",
+        "userId": "68d6a0093e06a31b32f182bb",
+        "userName": "darren garcia",
+        "rating": 5,
+        "feedback": "good quality",
+        "product": "beef",
+        "isVerified": true,
+        "createdAt": "2025-09-26T14:22:55.088Z",
+        "updatedAt": "2025-09-26T14:22:55.088Z",
+        "__v": 0
+      },
+      {
+        "_id": "68d6afc83e06a31b32f19308",
+        "userId": "68d2e96a86f6b5ea8e4e8e07",
+        "userName": "John Paul",
+        "rating": 5,
+        "feedback": "The customer service is great.",
+        "product": "general",
+        "isVerified": true,
+        "createdAt": "2025-09-26T15:22:48.966Z",
+        "updatedAt": "2025-09-26T15:22:48.966Z",
+        "__v": 0
+      },
+      {
+        "_id": "68d6b03a3e06a31b32f19339",
+        "userId": "68d2e96a86f6b5ea8e4e8e07",
+        "userName": "John Paul",
+        "rating": 5,
+        "feedback": "@itian.urbf",
+        "product": "general",
+        "isVerified": true,
+        "createdAt": "2025-09-26T15:24:42.743Z",
+        "updatedAt": "2025-09-26T15:24:42.743Z",
+        "__v": 0
+      },
+      {
+        "_id": "68d6b0883e06a31b32f19356",
+        "userId": "68d2e96a86f6b5ea8e4e8e07",
+        "userName": "John Paul",
+        "rating": 1,
+        "feedback": "the website is lagger",
+        "product": "general",
+        "isVerified": true,
+        "createdAt": "2025-09-26T15:26:00.662Z",
+        "updatedAt": "2025-09-26T15:26:00.662Z",
+        "__v": 0
+      }
+    ]
+  }
+}

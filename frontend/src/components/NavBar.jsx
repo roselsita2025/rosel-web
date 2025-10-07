@@ -7,7 +7,7 @@ import NotificationBell from "./NotificationBell.jsx";
 import { useSidebar } from "../contexts/SidebarContext.jsx";
 
 
-import { PlusCircle, ShoppingBasket, LayoutDashboard, Package, RefreshCw, MessageCircle, Ticket, CreditCard, ClipboardList } from "lucide-react";
+import { PlusCircle, ShoppingBasket, LayoutDashboard, Package, RefreshCw, MessageCircle, Ticket, CreditCard, ClipboardList, Database } from "lucide-react";
 import { productStore } from "../store/productStore.js";
 import { useAdminOrderStore } from "../store/adminOrderStore.js";
 import { useReplacementRequestStore } from "../store/replacementRequestStore.js";
@@ -376,6 +376,16 @@ const Navbar = () => {
 									</div>
 								</>
 							)}
+						</Link>
+						<Link
+							to="/admin/backup-restore"
+							className={`flex items-center rounded-md font-medium transition-colors duration-200 bg-transparent text-[#030105] hover:bg-[#860809] hover:text-white font-alice ${
+								isSidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-2'
+							}`}
+							title={isSidebarCollapsed ? "Backup & Restore" : ""}
+						>
+							<Database className={`h-5 w-5 ${!isSidebarCollapsed ? 'mr-3' : ''}`} />
+							{!isSidebarCollapsed && "Backup & Restore"}
 						</Link>
 					</nav>
 				</aside>

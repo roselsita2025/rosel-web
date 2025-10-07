@@ -392,7 +392,6 @@ const POSPage = () => {
 
   const completeTransaction = () => {
     // Here you would typically save to backend
-    console.log('Transaction completed:', currentTransaction);
     clearCart();
     setShowReceipt(false);
     setCurrentTransaction(null);
