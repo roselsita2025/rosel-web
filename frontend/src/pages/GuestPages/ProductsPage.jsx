@@ -95,18 +95,13 @@ const ProductsPage = () => {
 	};
 
   return (
-   		<motion.div 
-			className='relative min-h-screen text-white overflow-hidden bg-[#901414] pt-8 w-full'
-			initial={{ opacity: 0 }}
-			animate={{ opacity: 1 }}
-			transition={{ duration: 0.3 }}
-		>
+    		<div className='relative min-h-screen text-white overflow-hidden bg-[#901414] pt-8 w-full'>
 			{/* First Section: Our Products Title and Description */}
 			<section className='relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24'>
-				<motion.div
-					initial={{ opacity: 0, y: 10 }}
+				<motion.div 
+					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.4, delay: 0.1 }}
+					transition={{ duration: 0.8, delay: 0.2 }}
 				>
 					<h1 className='text-center text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 font-libre'>
 						Our Products
@@ -125,12 +120,6 @@ const ProductsPage = () => {
 					background: "linear-gradient(to bottom, #901414 0%, #901414 50%, #fff 50%, #fff 100%)"
 				}}
 			>
-				<motion.div 
-					className='relative max-w-7xl mx-auto'
-					initial={{ opacity: 0, y: 20 }}
-					animate={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.4, delay: 0.2 }}
-				>
 					{/* Navigation Buttons - Only show on mobile and medium screens when there are more items than can be displayed */}
 					{itemsPerView < 6 && categories.length > itemsPerView && (
 						<>
@@ -166,42 +155,35 @@ const ProductsPage = () => {
 								<motion.div
 									key={category.name}
 									className={`${itemsPerView < 6 ? 'flex-shrink-0 w-1/2 sm:w-1/3' : ''} flex justify-center`}
-									initial={{ opacity: 0, y: 15 }}
+									initial={{ opacity: 0, y: 30 }}
 									animate={{ opacity: 1, y: 0 }}
-									transition={{ duration: 0.3, delay: 0.3 + (index * 0.05) }}
+									transition={{ duration: 0.6, delay: 1.2 + (index * 0.1) }}
 								>
 									<CategoryItem category={category} />
 								</motion.div>
 							))}
 						</div>
 					</div>
-
-				</motion.div>
 			</section>
 			{/* Featured Products Section */}
-			<motion.div 
-				className="w-full bg-white py-12"
-				initial={{ opacity: 0, y: 20 }}
-				animate={{ opacity: 1, y: 0 }}
-				transition={{ duration: 0.4, delay: 0.4 }}
-			>
+			<div className="w-full bg-white py-12">
 				<div className="max-w-7xl mx-auto px-4">
-					{!isLoading && featuredProducts.length > 0 && (
-						<motion.div
-							initial={{ opacity: 0, y: 10 }}
-							animate={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.3, delay: 0.5 }}
-						>
-							<FeaturedProducts featuredProducts={featuredProducts} />
-						</motion.div>
-					)}
+						{!isLoading && featuredProducts.length > 0 && (
+							<motion.div
+								initial={{ opacity: 0, y: 10 }}
+								animate={{ opacity: 1, y: 0 }}
+								transition={{ duration: 0.6, delay: 0.5 }}
+							>
+								<FeaturedProducts featuredProducts={featuredProducts} />
+							</motion.div>
+						)}
 				</div>
-			</motion.div>
+			</div>
 
 			
 
 			<Footer />
-		</motion.div>
+		</div>
 		
   )
 }

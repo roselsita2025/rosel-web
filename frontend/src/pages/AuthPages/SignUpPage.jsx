@@ -5,6 +5,7 @@ import Input from "../../components/Input";
 import { Link, useNavigate } from "react-router-dom";
 import PasswordStrengthMeter from "../../components/PasswordStrengthMeter";
 import { useAuthStore } from "../../store/authStore";
+import { useEffect } from "react";
 
 const SignUpPage = () => {
 
@@ -16,7 +17,18 @@ const SignUpPage = () => {
 	const [agreed, setAgreed] = useState(false);
 	const navigate = useNavigate();
 
-	const {signup,error,isLoading} = useAuthStore();
+    const {signup,error,isLoading, clearAuthState} = useAuthStore();
+
+    // Clear any leftover auth errors/messages when mounting signup page
+    useEffect(() => {
+        clearAuthState?.();
+        // also clear local error on mount
+        setLocalError("");
+        return () => {
+            // optional: clear on unmount too to avoid leaking into other pages
+            clearAuthState?.();
+        };
+    }, [clearAuthState]);
 
     const handleSignUp = async (e) => {
         e.preventDefault();

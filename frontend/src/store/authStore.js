@@ -15,6 +15,9 @@ export const useAuthStore = create((set, get) => ({
     message: null,
     otpRequired: false,
     pendingEmail: null,
+    // Utility: clear transient auth UI state (errors/messages/otp flags)
+    clearAuthState: () => set({ error: null, message: null, otpRequired: false, pendingEmail: null }),
+
 
 
     signup: async(email, password, name) => {
