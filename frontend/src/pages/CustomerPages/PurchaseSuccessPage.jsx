@@ -34,9 +34,9 @@ const PurchaseSuccessPage = () => {
 				});
 				clearCart();
 				// Store order details if available
-				if (response.data.orderId) {
-					// Fetch complete order details including shipping method and Lalamove details
-					const orderResponse = await axios.get(`${API_URL}/orders/tracking/${response.data.orderId}`);
+                if (response.data.orderId) {
+                    // Fetch complete order details including shipping method and Lalamove details
+                    const orderResponse = await axios.get(`${API_URL}/orders/${response.data.orderId}/tracking`);
 					if (orderResponse.data.success) {
 						setOrderDetails(orderResponse.data.data);
 					} else {
@@ -243,23 +243,7 @@ const PurchaseSuccessPage = () => {
                                         Processing
                                     </span>
                                 </div>
-                                {/* Only show estimated delivery for Lalamove orders */}
-                                {orderDetails?.shippingMethod === 'lalamove' && orderDetails?.lalamoveDetails?.duration && (
-                                    <div className='flex items-center justify-between'>
-                                        <span 
-                                            className='text-sm'
-                                            style={{ color: '#82695b' }}
-                                        >
-                                            Estimated Delivery:
-                                        </span>
-                                        <span 
-                                            className='text-sm font-semibold'
-                                            style={{ color: '#901414' }}
-                                        >
-                                            {Math.ceil(orderDetails.lalamoveDetails.duration / 60)} minutes
-                                        </span>
-                                    </div>
-                                )}
+                                
                             </div>
                         </div>
                     </div>

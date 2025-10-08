@@ -221,21 +221,64 @@ const handleOrderStatusChanged = async (webhookData) => {
             order.status = 'delivered';
         } else if (mappedStatus === 'cancelled') {
             order.status = 'cancelled';
+            // allow rebooking flow
+            order.adminStatus = 'order_prepared';
+        } else if (['failed', 'expired'].includes(mappedStatus)) {
+            // rejection/failed/expired – return to prepared so admin can rebook
+            order.adminStatus = 'order_prepared';
         }
         
         await order.save();
         
         console.log(`✅ Updated order ${order._id} status to ${mappedStatus}`);
         
-        // Send notification to customer about order status update
-        if (order.adminStatus !== oldAdminStatus || order.status !== oldStatus) {
-            try {
+        // Notifications
+        try {
+            if (mappedStatus === 'failed') {
+                // customer notification: delivery rejected
+                await notificationService.createNotification({
+                    recipientId: order.user.toString(),
+                    type: 'order_notification',
+                    category: 'orders',
+                    subcategory: 'delivery_rejected',
+                    title: 'Delivery Rejected',
+                    message: `Order #${order._id.toString().slice(-8).toUpperCase()}: Lalamove rejected the booking. Our staff will contact you about shipping options.`,
+                    relatedEntity: { type: 'order', id: order._id },
+                    data: { orderId: order._id.toString().slice(-8).toUpperCase(), lalamoveStatus: 'REJECTED' },
+                    priority: 'high',
+                    actionUrl: `/track-orders?order=${order._id}`
+                });
+                // admin notification: action needed rebooking
+                await notificationService.notifyAdmins({
+                    type: 'order_alert',
+                    category: 'orders',
+                    subcategory: 'delivery_rejected',
+                    title: 'Lalamove Delivery Rejected',
+                    message: `Order #${order._id.toString().slice(-8).toUpperCase()} was rejected by Lalamove. Please rebook the delivery.`,
+                    relatedEntity: { type: 'order', id: order._id },
+                    data: { orderId: order._id.toString().slice(-8).toUpperCase(), customerName: `${order.shippingInfo?.firstName || ''} ${order.shippingInfo?.lastName || ''}`.trim() },
+                    priority: 'high',
+                    actionUrl: `/admin/orders?order=${order._id}`
+                });
+            } else if (['cancelled', 'expired'].includes(mappedStatus)) {
+                // Inform admins for visibility
+                await notificationService.notifyAdmins({
+                    type: 'order_alert',
+                    category: 'orders',
+                    subcategory: mappedStatus === 'cancelled' ? 'delivery_cancelled' : 'delivery_expired',
+                    title: mappedStatus === 'cancelled' ? 'Lalamove Delivery Cancelled' : 'Lalamove Delivery Expired',
+                    message: `Order #${order._id.toString().slice(-8).toUpperCase()} ${mappedStatus}. Rebooking may be required.`,
+                    relatedEntity: { type: 'order', id: order._id },
+                    data: { orderId: order._id.toString().slice(-8).toUpperCase() },
+                    priority: 'medium',
+                    actionUrl: `/admin/orders?order=${order._id}`
+                });
+            } else if (order.adminStatus !== oldAdminStatus || order.status !== oldStatus) {
                 await notificationService.sendOrderStatusUpdateNotification(order, order.adminStatus || order.status);
                 console.log(`📢 Sent notification for order ${order._id} status change to ${order.adminStatus || order.status}`);
-            } catch (notificationError) {
-                console.error('Error sending order status update notification:', notificationError);
-                // Don't fail the webhook if notification fails
             }
+        } catch (notificationError) {
+            console.error('Error sending notifications for webhook update:', notificationError);
         }
         
     } catch (error) {
@@ -503,23 +546,34 @@ const handleOrderCancelled = async (webhookData) => {
             return;
         }
         
-        // Update order status to cancelled
+        // Update order status to cancelled and reset adminStatus for rebooking
         const oldStatus = order.status;
         order.lalamoveDetails.status = 'cancelled';
         order.lalamoveDetails.lastStatusUpdate = new Date();
         order.status = 'cancelled';
+        order.adminStatus = 'order_prepared';
         await order.save();
         
         console.log(`❌ Updated order ${order._id} status to cancelled`);
         
-        // Send notification to customer about order cancellation
-        if (oldStatus !== 'cancelled') {
-            try {
+        // Send notifications
+        try {
+            if (oldStatus !== 'cancelled') {
                 await notificationService.sendOrderStatusUpdateNotification(order, 'cancelled');
-                console.log(`📢 Sent cancellation notification for order ${order._id}`);
-            } catch (notificationError) {
-                console.error('Error sending cancellation notification:', notificationError);
             }
+            await notificationService.notifyAdmins({
+                type: 'order_alert',
+                category: 'orders',
+                subcategory: 'delivery_cancelled',
+                title: 'Lalamove Delivery Cancelled',
+                message: `Order #${order._id.toString().slice(-8).toUpperCase()} was cancelled by Lalamove. Rebooking may be required.`,
+                relatedEntity: { type: 'order', id: order._id },
+                data: { orderId: order._id.toString().slice(-8).toUpperCase() },
+                priority: 'high',
+                actionUrl: `/admin/orders?order=${order._id}`
+            });
+        } catch (notificationError) {
+            console.error('Error sending cancellation notifications:', notificationError);
         }
         
     } catch (error) {
@@ -549,12 +603,42 @@ const handleOrderFailed = async (webhookData) => {
             return;
         }
         
-        // Update order status to failed
+        // Update order status to failed and set adminStatus to prepared for rebooking
         order.lalamoveDetails.status = 'failed';
         order.lalamoveDetails.lastStatusUpdate = new Date();
+        order.adminStatus = 'order_prepared';
         await order.save();
         
         console.log(`❌ Updated order ${order._id} status to failed`);
+        
+        // Notify customer and admins
+        try {
+            await notificationService.createNotification({
+                recipientId: order.user.toString(),
+                type: 'order_notification',
+                category: 'orders',
+                subcategory: 'delivery_rejected',
+                title: 'Delivery Rejected',
+                message: `Order #${order._id.toString().slice(-8).toUpperCase()}: Lalamove rejected the booking. Our staff will contact you.`,
+                relatedEntity: { type: 'order', id: order._id },
+                data: { orderId: order._id.toString().slice(-8).toUpperCase(), lalamoveStatus: 'REJECTED' },
+                priority: 'high',
+                actionUrl: `/track-orders?order=${order._id}`
+            });
+            await notificationService.notifyAdmins({
+                type: 'order_alert',
+                category: 'orders',
+                subcategory: 'delivery_rejected',
+                title: 'Lalamove Delivery Rejected',
+                message: `Order #${order._id.toString().slice(-8).toUpperCase()} was rejected by Lalamove. Please rebook.`,
+                relatedEntity: { type: 'order', id: order._id },
+                data: { orderId: order._id.toString().slice(-8).toUpperCase() },
+                priority: 'high',
+                actionUrl: `/admin/orders?order=${order._id}`
+            });
+        } catch (notificationError) {
+            console.error('Error sending failed notifications:', notificationError);
+        }
         
     } catch (error) {
         console.error('❌ Error handling order failed webhook:', error.message);
@@ -583,12 +667,30 @@ const handleOrderExpired = async (webhookData) => {
             return;
         }
         
-        // Update order status to expired
+        // Update order status to expired and set adminStatus to prepared for rebooking
         order.lalamoveDetails.status = 'expired';
         order.lalamoveDetails.lastStatusUpdate = new Date();
+        order.adminStatus = 'order_prepared';
         await order.save();
         
         console.log(`⏰ Updated order ${order._id} status to expired`);
+        
+        // notify admins for visibility
+        try {
+            await notificationService.notifyAdmins({
+                type: 'order_alert',
+                category: 'orders',
+                subcategory: 'delivery_expired',
+                title: 'Lalamove Delivery Expired',
+                message: `Order #${order._id.toString().slice(-8).toUpperCase()} expired. Rebooking may be required.`,
+                relatedEntity: { type: 'order', id: order._id },
+                data: { orderId: order._id.toString().slice(-8).toUpperCase() },
+                priority: 'medium',
+                actionUrl: `/admin/orders?order=${order._id}`
+            });
+        } catch (notificationError) {
+            console.error('Error sending expired notifications:', notificationError);
+        }
         
     } catch (error) {
         console.error('❌ Error handling order expired webhook:', error.message);

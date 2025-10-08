@@ -246,10 +246,12 @@ export const placeLalamoveOrder = async (req, res) => {
             });
         }
         
-        if (order.lalamoveDetails.status !== 'pending_placement') {
+        // Soft gate: block only if obviously completed; otherwise allow admin to rebook
+        const nonRebookableHardStops = ['delivered'];
+        if (nonRebookableHardStops.includes((order.lalamoveDetails.status || '').toLowerCase()) || order.adminStatus === 'order_completed') {
             return res.status(400).json({
                 success: false,
-                message: 'Order is not ready for Lalamove placement'
+                message: 'Order is already completed/delivered and cannot be rebooked'
             });
         }
         
@@ -269,8 +271,8 @@ export const placeLalamoveOrder = async (req, res) => {
             const stops = [
                 {
                     coordinates: {
-                        lat: process.env.LALAMOVE_PICKUP_LAT,
-                        lng: process.env.LALAMOVE_PICKUP_LNG
+                        lat: (process.env.LALAMOVE_PICKUP_LAT || '').toString(),
+                        lng: (process.env.LALAMOVE_PICKUP_LNG || '').toString()
                     },
                     address: process.env.LALAMOVE_PICKUP_ADDRESS
                 },
@@ -360,9 +362,9 @@ export const placeLalamoveOrder = async (req, res) => {
             // If upstream returned a structured error (e.g., 422), surface it
             const upstreamStatus = lalamoveError?.response?.status;
             const upstreamErrors = lalamoveError?.response?.data?.errors;
-            const upstreamMessage = Array.isArray(upstreamErrors) && upstreamErrors[0]?.message
-                ? upstreamErrors[0].message
-                : lalamoveError.message;
+            const upstreamMessage = (Array.isArray(upstreamErrors) && (upstreamErrors[0]?.message || upstreamErrors[0]?.detail))
+                ? (upstreamErrors[0]?.message || upstreamErrors[0]?.detail)
+                : (lalamoveError.response?.data?.message || lalamoveError.message);
 
             res.status(upstreamStatus || 500).json({
                 success: false,
@@ -397,7 +399,7 @@ export const getOrdersPendingActions = async (req, res) => {
                 { adminStatus: 'order_received' },
                 { adminStatus: 'order_preparing' },
                 { adminStatus: 'order_prepared' },
-                { 'lalamoveDetails.status': 'pending_placement' }
+                { 'lalamoveDetails.status': { $in: ['pending_placement','failed','cancelled','expired','REJECTED','CANCELED','EXPIRED'] } }
             ]
         };
         
@@ -555,7 +557,8 @@ function getOrderNeedsAction(order) {
     }
     
     if (order.shippingMethod === 'lalamove') {
-        if (order.lalamoveDetails?.status === 'pending_placement') {
+        const status = order.lalamoveDetails?.status;
+        if (['pending_placement', 'failed', 'cancelled', 'expired', 'REJECTED', 'CANCELED', 'EXPIRED'].includes(status)) {
             return ['order_received', 'order_preparing', 'order_prepared'].includes(order.adminStatus);
         }
         return false;

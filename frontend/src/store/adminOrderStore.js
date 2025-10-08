@@ -89,8 +89,10 @@ const useAdminOrderStore = create((set, get) => ({
             return response.data.data;
         } catch (error) {
             console.error('Error placing Lalamove order:', error);
+            const msg = error?.response?.data?.error || error?.response?.data?.message || error.message || 'Failed to place Lalamove order';
+            console.error('Place Lalamove order details:', error?.response?.data || {});
             set({ 
-                error: error.response?.data?.message || 'Failed to place Lalamove order',
+                error: msg,
                 isLoading: false 
             });
             throw error;
@@ -187,7 +189,7 @@ const useAdminOrderStore = create((set, get) => ({
         }
         
         if (order.shippingMethod === 'lalamove') {
-            if (order.lalamoveDetails?.status === 'pending_placement') {
+            if (['pending_placement', 'failed', 'cancelled', 'expired','REJECTED','CANCELED','EXPIRED'].includes(order.lalamoveDetails?.status)) {
                 return ['order_received', 'order_preparing', 'order_prepared'].includes(order.adminStatus);
             }
             return false;

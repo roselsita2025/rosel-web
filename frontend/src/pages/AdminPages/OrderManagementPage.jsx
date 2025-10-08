@@ -8,7 +8,6 @@ import {
     RefreshCw,
     Filter,
     Search,
-    Eye,
     Truck,
     User,
     MapPin,
@@ -548,10 +547,10 @@ const OrderManagementPage = () => {
     const getActionButton = (order) => {
         const nextStatus = getNextStatus(order.adminStatus);
         const isLalamoveOrder = order.shippingMethod === 'lalamove';
-        const isReadyForPlacement = order.adminStatus === 'order_prepared' && 
-                                   isLalamoveOrder && 
-                                   order.lalamoveDetails?.status === 'pending_placement';
+        const isRebookable = isLalamoveOrder && ['pending_placement','failed','cancelled','expired','REJECTED','CANCELED','EXPIRED'].includes(order.lalamoveDetails?.status);
+        const isReadyForPlacement = isRebookable && ['order_prepared','order_placed'].includes(order.adminStatus);
 
+        // Only allow placement when admin has set status to prepared
         if (isReadyForPlacement) {
             return (
                 <button
@@ -873,13 +872,6 @@ const OrderManagementPage = () => {
                                                     <div className="col-span-2">
                                                         <div className="flex items-center gap-2">
                                                             {getActionButton(order)}
-                                                            <button
-                                                                onClick={() => setSelectedOrder(order)}
-                                                                className="p-1 rounded hover:bg-[#f7e9b8] transition-colors duration-200"
-                                                                title="View Details"
-                                                            >
-                                                                <Eye className="h-4 w-4 text-[#860809]" />
-                                                            </button>
                                                         </div>
                                                     </div>
                                                 </div>
