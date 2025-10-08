@@ -70,49 +70,42 @@ const Navbar = () => {
 		return () => document.removeEventListener("mousedown", handleClickOutside);
 	}, []);
 
-	// Scroll detection effect
+	// Scroll detection effect (enabled only on welcome, products, about, contact, and category pages)
 	useEffect(() => {
-		// Pages where scroll-based styling should be disabled
-		const excludedPages = [
-			'/track-orders',
-			'/profile', 
-			'/account-settings',
-			'/my-replacement-request',
-			'/replacement-request',
-			'/cart',
-			'/information',
-			'/shipping',
-			'/payment',
-			'/ratings',
-			'/product/',
-			'/notifications'
-		];
-		
-		const isExcludedPage = excludedPages.some(page => location.pathname.includes(page));
-		
+		const path = location.pathname || '';
+		const isScrollPage = (
+			path === '/' ||
+			path === '/welcome' ||
+			path === '/products' ||
+			path === '/about' ||
+			path === '/contactus' ||
+			path.startsWith('/category/')
+		);
+
 		const handleScroll = () => {
 			const currentScrollY = window.scrollY;
-			
-			// Check if at the very top of the page (only apply scroll styling if not on excluded pages)
-			// On excluded pages, always use normal navbar styling (isAtTop = false)
-			setIsAtTop(isExcludedPage ? false : currentScrollY === 0);
-			
+			setIsAtTop(currentScrollY === 0);
 			// Show navbar when at top or scrolling up
 			if (currentScrollY < 10) {
 				setIsNavbarVisible(true);
 			} else if (currentScrollY < lastScrollY) {
-				// Scrolling up - show navbar
 				setIsNavbarVisible(true);
 			} else if (currentScrollY > lastScrollY && currentScrollY > 100) {
-				// Scrolling down and past 100px - hide navbar
 				setIsNavbarVisible(false);
 			}
-			
 			setLastScrollY(currentScrollY);
 		};
 
-		window.addEventListener('scroll', handleScroll, { passive: true });
-		return () => window.removeEventListener('scroll', handleScroll);
+		if (isScrollPage) {
+			setIsAtTop(window.scrollY === 0);
+			window.addEventListener('scroll', handleScroll, { passive: true });
+			return () => window.removeEventListener('scroll', handleScroll);
+		} else {
+			// For all other pages, use normal/solid navbar and keep it visible
+			setIsAtTop(false);
+			setIsNavbarVisible(true);
+			return () => {};
+		}
 	}, [lastScrollY, location.pathname]);
 
 	// Fetch pending orders count for admin
@@ -521,7 +514,7 @@ const Navbar = () => {
 					</div>
 
 					<header className={`fixed top-0 left-0 w-full ${isAtTop ? 'bg-transparent' : 'bg-[#f8f3ed]'} z-20 transition-all duration-300 ${isNavbarVisible ? 'translate-y-0' : '-translate-y-full'}`} style={{ boxShadow: isAtTop ? 'none' : '0 1px 3px rgba(0,0,0,0.1)' }}>
-						<div className='container mx-auto px-4 sm:px-8 lg:px-12 py-3 sm:py-4 lg:py-6'>
+						<div className='container mx-auto px-3 sm:px-7 lg:px-11 py-3 sm:py-4 lg:py-6'>
 							<div className='flex flex-wrap justify-between items-center '>
 								{/* Mobile menu button and logo */}
 								<div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-3">
