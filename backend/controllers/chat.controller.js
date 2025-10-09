@@ -85,7 +85,7 @@ export const createChat = async (req, res) => {
             let chatbotUser = await User.findOne({ role: 'chatbot' });
             if (!chatbotUser) {
                 chatbotUser = new User({
-                    name: 'AI Assistant',
+                    name: 'Chat Assistant',
                     email: 'chatbot@roselmeat.com',
                     password: 'chatbot_password_123',
                     role: 'chatbot',
@@ -100,7 +100,7 @@ export const createChat = async (req, res) => {
                 chat: newChat._id,
                 sender: chatbotUser._id,
                 senderType: 'bot',
-                content: "Hello! I'm your AI assistant. How can I help you today?",
+                content: "Hello! I'm your Chat assistant. How can I help you today?",
                 messageType: 'bot_response'
             });
 

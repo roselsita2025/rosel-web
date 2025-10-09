@@ -49,7 +49,7 @@ const Chatbot = () => {
             const welcomeMessage = {
                 id: Date.now(),
                 senderType: 'bot',
-                content: "Hello! I'm your AI assistant. How can I help you today?",
+                content: "Hello! I'm your Chat assistant. How can I help you today?",
                 createdAt: new Date(),
                 options: [
                     { id: 'browse-products', text: 'Browse Products', icon: Package },
@@ -291,7 +291,7 @@ const Chatbot = () => {
                         <ArrowLeft className="w-4 h-4 text-[#fffefc]" />
                     </button>
                     <div>
-                        <h3 className="font-bold text-[#030105]">Chatbot Assistant</h3>
+                        <h3 className="font-bold text-[#030105]">Chat Assistant</h3>
                         <p className="text-sm text-[#030105] opacity-70">
                             Your helpful shopping companion
                         </p>

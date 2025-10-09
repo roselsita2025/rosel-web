@@ -69,7 +69,7 @@ const ChatModal = () => {
                                 </div>
                                 <div className="text-left flex-1">
                                     <h4 className="font-semibold text-[#030105] mb-1">
-                                        Chatbot Assistant
+                                        Chat Assistant
                                     </h4>
                                     <p className="text-sm text-[#030105] opacity-70">
                                         Get help with products, orders, and more
@@ -105,7 +105,7 @@ const ChatModal = () => {
 
                         <div className="mt-6 p-4 bg-[#fffefc] rounded-lg border border-[#f7e9b8]">
                             <p className="text-sm text-[#030105] opacity-70 text-center">
-                                💡 <strong>Tip:</strong> Try our Chatbot Assistant first for quick help, 
+                                💡 <strong>Tip:</strong> Try our Chat Assistant first for quick help, 
                                 or contact support for personalized assistance.
                             </p>
                         </div>
@@ -130,7 +130,7 @@ const ChatModal = () => {
                         <div className="flex items-center space-x-2">
                             <MessageCircle className="w-4 h-4" />
                             <span className="text-sm font-medium">
-                                {chatType === 'chatbot' ? 'Chatbot Assistant' : 
+                                {chatType === 'chatbot' ? 'Chat Assistant' : 
                                  chatType === 'support' ? 'Support Chat' : 
                                  'Customer Support'}
                             </span>
@@ -191,7 +191,7 @@ const ChatModal = () => {
                             </div>
                             <div>
                                 <h2 className="font-bold text-lg">
-                                    {chatType === 'chatbot' ? 'Chatbot Assistant' :
+                                    {chatType === 'chatbot' ? 'Chat Assistant' :
                                      chatType === 'support' ? 'Customer Support' :
                                      'Customer Support'}
                                 </h2>
