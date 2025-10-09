@@ -456,16 +456,16 @@ const CategoryPage = () => {
 							) : (
 								<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6 md:gap-8 max-w-6xl mx-auto">
 									{currentProducts?.map((product) => (
-										<div key={product._id} className='w-full'>
-											<div className='bg-white rounded-lg overflow-visible h-full transition-all duration-300 hover:bg-[#f8f3ed] hover:scale-110 hover:z-50 hover:border-2 hover:border-[#901414] group'>
-												<div className='overflow-hidden'>
+									<div key={product._id} className='w-full'>
+										<div className='bg-white rounded-lg overflow-visible h-full transition-all duration-300 hover:bg-[#f8f3ed] hover:scale-110 hover:z-50 hover:border-2 hover:border-[#901414] group flex flex-col'>
+											<div className='overflow-hidden'>
 													<img
 											src={product.image}
 											alt={product.name}
 														className='w-full h-32 object-contain transition-transform duration-300 ease-in-out hover:scale-110'
 											/>
 										</div>
-												<div className='p-3'>
+										<div className='p-3 flex flex-col flex-1'>
 													<h3 className='text-base font-semibold mb-1 text-[#82695b]'>{product.name}</h3>
 													<p className='text-black font-bold mb-1'>
 														₱{product.price.toFixed(2)}
@@ -480,8 +480,8 @@ const CategoryPage = () => {
 														}`}>
 															{product.quantity > 0 ? `${product.quantity} in stock` : 'Out of stock'}
 														</span>
-										</div>
-													<div className="space-y-1.5">
+												</div>
+												<div className="space-y-1.5 mt-auto">
                                                     <button
 															onClick={() => handleAddToCart(product)}
 															disabled={product.quantity === 0}
@@ -513,11 +513,11 @@ const CategoryPage = () => {
 														>
 															<Eye className='w-4 h-4 mr-1.5' />
 															View Product
-										</Link>
+														</Link>
 													</div>
 												</div>
-											</div>
 										</div>
+									</div>
 									))}
 								</div>
 

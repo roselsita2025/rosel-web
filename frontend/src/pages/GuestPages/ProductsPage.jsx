@@ -5,7 +5,10 @@ import FeaturedProducts from "../../components/GuestComponents/FeaturedProducts.
 import Footer from "../../components/Footer.jsx";
 import axios from "axios";
 import { motion } from "framer-motion";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, ShoppingCart, Eye } from "lucide-react";
+import { cartStore } from "../../store/cartStore.js";
+import { useAuthStore } from "../../store/authStore.js";
+import { Link } from "react-router-dom";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
@@ -21,6 +24,10 @@ const categories = [
 const ProductsPage = () => {
 	const [featuredProducts, setFeaturedProducts] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
+	const { products, fetchAllProducts } = productStore();
+	const { addToCart } = cartStore();
+	const { user } = useAuthStore();
+	const [buttonStateById, setButtonStateById] = useState({});
 	
 	// Carousel state for category cards
 	const [currentCategoryIndex, setCurrentCategoryIndex] = useState(0);
@@ -63,6 +70,20 @@ const ProductsPage = () => {
 		};
 		loadFeaturedProducts();
 	}, []);
+
+    // Load all products for the new section (force refresh to avoid stale category list)
+    useEffect(() => {
+        fetchAllProducts(true);
+    }, [fetchAllProducts]);
+
+	const handleAddToCart = async (product) => {
+		if (user?.role === 'admin') return;
+		const result = await addToCart(product);
+		setButtonStateById((prev) => ({ ...prev, [product._id]: result?.status === 'success' ? 'added' : (result?.status === 'maxed' || result?.status === 'out_of_stock') ? 'maxed' : 'idle' }));
+		setTimeout(() => {
+			setButtonStateById((prev) => ({ ...prev, [product._id]: 'idle' }));
+		}, 1500);
+	};
 
 	// Responsive carousel effect
 	useEffect(() => {
@@ -112,6 +133,7 @@ const ProductsPage = () => {
 					</p>
 				</motion.div>
 			</section>
+
 
 			{/* Second Section: Product Category Cards */}
 			<section
@@ -165,6 +187,64 @@ const ProductsPage = () => {
 						</div>
 					</div>
 			</section>
+
+			{/* All Products Section */}
+			<div className="w-full bg-white py-12">
+				<div className="max-w-7xl mx-auto px-4">
+					<motion.h2
+						initial={{ opacity: 0, y: 10 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ duration: 0.6 }}
+						className="text-2xl font-bold text-[#860809] mb-6 font-libre"
+					>
+						All Products
+					</motion.h2>
+					{(products && products.length > 0) || (featuredProducts && featuredProducts.length > 0) ? (
+						<motion.div
+							initial={{ opacity: 0, y: 10 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={{ duration: 0.6, delay: 0.1 }}
+							className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6 md:gap-8"
+						>
+							{((products && products.length > 0) ? products : featuredProducts).map((product) => (
+								<div key={product._id} className='w-full'>
+									<div className='bg-white rounded-lg overflow-visible h-full transition-all duration-300 hover:bg-[#f8f3ed] hover:scale-110 hover:z-50 hover:border-2 hover:border-[#901414] group flex flex-col'>
+										<div className='overflow-hidden'>
+											<img src={product.image} alt={product.name} className='w-full h-32 object-contain transition-transform duration-300 ease-in-out hover:scale-110' />
+										</div>
+										<div className='p-3 flex flex-col flex-1'>
+											<h3 className='text-base font-semibold mb-1 text-[#82695b]'>{product.name}</h3>
+											<p className='text-black font-bold mb-1'>₱{product.price.toFixed(2)}</p>
+											<div className='mb-2'>
+												<span className={`text-xs font-medium px-2 py-1 rounded-full ${
+													product.quantity > 10 ? 'bg-green-100 text-green-800' : product.quantity > 0 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'
+												}`}>{product.quantity > 0 ? `${product.quantity} in stock` : 'Out of stock'}</span>
+											</div>
+											<div className="space-y-1.5 mt-auto">
+												<button
+													onClick={() => handleAddToCart(product)}
+													disabled={product.quantity === 0}
+													className={`w-full text-white font-semibold py-1.5 px-3 rounded transition-colors duration-300 flex items-center justify-center text-sm ${
+														product.quantity > 0 ? (buttonStateById[product._id] === 'added' ? 'bg-emerald-600' : buttonStateById[product._id] === 'maxed' ? 'bg-red-600' : 'bg-[#901414] hover:bg-[#a31f17]') : 'bg-gray-400 cursor-not-allowed'
+													}`}
+												>
+													<ShoppingCart className='w-4 h-4 mr-1.5' />
+													{product.quantity > 0 ? (buttonStateById[product._id] === 'added' ? 'Product Added' : buttonStateById[product._id] === 'maxed' ? 'Maxed item' : 'Add to Cart') : 'Out of Stock'}
+												</button>
+												<Link to={`/product/${product._id}`} className="w-full text-[#901414] font-semibold py-1.5 px-3 rounded transition-all duration-300 flex items-center justify-center border-2 border-[#901414] hover:bg-[#901414] hover:text-white text-sm opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0">
+													<Eye className='w-4 h-4 mr-1.5' />
+													View Product
+												</Link>
+											</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+						</motion.div>
+					) : null}
+				</div>
+			</div>
+
 			{/* Featured Products Section */}
 			<div className="w-full bg-white py-12">
 				<div className="max-w-7xl mx-auto px-4">
