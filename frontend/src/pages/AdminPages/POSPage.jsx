@@ -96,17 +96,13 @@ const POSPage = () => {
           return; 
         }
         
-        // Format the scanned code to match expected barcode format (ABCabc1234 -> ABC-abc-1234)
-        let formattedCode = code;
-        if (code.length >= 9 && /^[A-Za-z0-9]+$/.test(code)) {
-          formattedCode = code.slice(0, 3) + '-' + code.slice(3, 6) + '-' + code.slice(6);
-        }
-        
-        setLastScannedCode(formattedCode);
+        // Normalize to digits only for lookup and display
+        const digitsOnly = code.replace(/\D/g, '');
+        setLastScannedCode(digitsOnly);
         setScanError('');
         
         // Find and add product to cart
-        const product = await productStore.getState().fetchProductByBarcode(formattedCode);
+        const product = await productStore.getState().fetchProductByBarcode(digitsOnly);
         if (product) {
           addToCart(product);
         } else {
