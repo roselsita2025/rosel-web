@@ -312,6 +312,14 @@ function getComputedOrderStatus(order) {
     
     // For Lalamove delivery orders
     if (order.shippingMethod === 'lalamove' && order.lalamoveDetails) {
+        // Honor admin workflow completion even if the Lalamove status is delayed
+        if (order.adminStatus === 'order_completed') {
+            return 'COMPLETED';
+        }
+        // If admin has marked picked up, reflect that status defensively
+        if (order.adminStatus === 'order_picked_up') {
+            return 'PICKED_UP';
+        }
         const lalamoveStatus = order.lalamoveDetails.status;
         
         // If order hasn't been placed in Lalamove yet
