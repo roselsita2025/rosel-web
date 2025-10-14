@@ -891,26 +891,29 @@ const OrderManagementPage = () => {
                                                         <div>
                                                             <h4 className="text-sm font-medium text-[#030105] mb-3">Products Ordered:</h4>
                                                             <div className="space-y-3">
-                                                                {order.products.map((item, index) => (
-                                                                    <div key={index} className="flex items-center gap-4 p-3 bg-white rounded-lg border border-[#f7e9b8]">
-                                                                        <img
-                                                                            src={item.product?.image || '/placeholder-product.jpg'}
-                                                                            alt={item.product?.name || 'Product'}
-                                                                            className="h-12 w-12 rounded-lg object-cover"
-                                                                        />
-                                                                        <div className="flex-1">
+                                                                {order.products.map((item, index) => {
+                                                                    const weightInfo = item.weightKg ? ` (${item.weightKg}kg)` : '';
+                                                                    return (
+                                                                        <div key={index} className="flex items-center gap-4 p-3 bg-white rounded-lg border border-[#f7e9b8]">
+                                                                            <img
+                                                                                src={item.product?.image || '/placeholder-product.jpg'}
+                                                                                alt={item.product?.name || 'Product'}
+                                                                                className="h-12 w-12 rounded-lg object-cover"
+                                                                            />
+                                                                            <div className="flex-1">
+                                                                                <div className="text-sm font-medium text-[#030105]">
+                                                                                    {item.product?.name || 'Unknown Product'}{weightInfo}
+                                                                                </div>
+                                                                                <div className="text-xs text-gray-500">
+                                                                                    Qty: {item.quantity} × ₱{(item.price || 0).toFixed(2)}
+                                                                                </div>
+                                                                            </div>
                                                                             <div className="text-sm font-medium text-[#030105]">
-                                                                                {item.product?.name || 'Unknown Product'}
-                                                                            </div>
-                                                                            <div className="text-xs text-gray-500">
-                                                                                Qty: {item.quantity} × ₱{(item.price || 0).toFixed(2)}
+                                                                                ₱{((item.quantity || 0) * (item.price || 0)).toFixed(2)}
                                                                             </div>
                                                                         </div>
-                                                                        <div className="text-sm font-medium text-[#030105]">
-                                                                            ₱{((item.quantity || 0) * (item.price || 0)).toFixed(2)}
-                                                                        </div>
-                                                                    </div>
-                                                                ))}
+                                                                    );
+                                                                })}
                                                             </div>
                                                         </div>
 
@@ -1301,26 +1304,29 @@ const OrderManagementPage = () => {
                                                         <div>
                                                             <h4 className="text-sm font-medium text-[#030105] mb-3">Products Ordered:</h4>
                                                             <div className="space-y-3">
-                                                                {order.products.map((item, index) => (
-                                                                    <div key={index} className="flex items-center gap-4 p-3 bg-white rounded-lg border border-[#f7e9b8]">
-                                                                        <img
-                                                                            src={item.product?.image || '/placeholder-product.jpg'}
-                                                                            alt={item.product?.name || 'Product'}
-                                                                            className="h-12 w-12 rounded-lg object-cover"
-                                                                        />
-                                                                        <div className="flex-1">
+                                                                {order.products.map((item, index) => {
+                                                                    const weightInfo = item.weightKg ? ` (${item.weightKg}kg)` : '';
+                                                                    return (
+                                                                        <div key={index} className="flex items-center gap-4 p-3 bg-white rounded-lg border border-[#f7e9b8]">
+                                                                            <img
+                                                                                src={item.product?.image || '/placeholder-product.jpg'}
+                                                                                alt={item.product?.name || 'Product'}
+                                                                                className="h-12 w-12 rounded-lg object-cover"
+                                                                            />
+                                                                            <div className="flex-1">
+                                                                                <div className="text-sm font-medium text-[#030105]">
+                                                                                    {item.product?.name || 'Unknown Product'}{weightInfo}
+                                                                                </div>
+                                                                                <div className="text-xs text-gray-500">
+                                                                                    Qty: {item.quantity} × ₱{(item.price || 0).toFixed(2)}
+                                                                                </div>
+                                                                            </div>
                                                                             <div className="text-sm font-medium text-[#030105]">
-                                                                                {item.product?.name || 'Unknown Product'}
-                                                                            </div>
-                                                                            <div className="text-xs text-gray-500">
-                                                                                Qty: {item.quantity} × ₱{(item.price || 0).toFixed(2)}
+                                                                                ₱{((item.quantity || 0) * (item.price || 0)).toFixed(2)}
                                                                             </div>
                                                                         </div>
-                                                                        <div className="text-sm font-medium text-[#030105]">
-                                                                            ₱{((item.quantity || 0) * (item.price || 0)).toFixed(2)}
-                                                                        </div>
-                                                                    </div>
-                                                                ))}
+                                                                    );
+                                                                })}
                                                             </div>
                                                         </div>
 

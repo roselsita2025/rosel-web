@@ -52,7 +52,26 @@ const SearchResultsPage = () => {
 
     const handleAddToCart = async (product) => {
         if (user?.role === 'admin') return;
-        const result = await addToCart(product);
+        
+        // For products with weight options, automatically select the lowest weight
+        let weightOptionId = null;
+        if (product.hasWeightOptions && product.weightOptions && product.weightOptions.length > 0) {
+            console.log('SearchResultsPage: Original weight options:', product.weightOptions);
+            const sortedOptions = [...product.weightOptions].sort((a, b) => a.weightKg - b.weightKg);
+            console.log('SearchResultsPage: Sorted weight options (lowest first):', sortedOptions);
+            weightOptionId = sortedOptions[0]._id;
+            console.log('SearchResultsPage: Selected weight option:', sortedOptions[0]);
+            console.log('SearchResultsPage: Selected weightOptionId:', weightOptionId);
+        } else if (product.basePricePerKg && product.basePricePerKg > 0) {
+            console.log('SearchResultsPage: No weight options found, but has basePricePerKg. Using legacy mode.');
+        } else {
+            console.log('SearchResultsPage: No weight options and no basePricePerKg. Using legacy mode.');
+        }
+        
+        console.log('SearchResultsPage: Final weightOptionId:', weightOptionId);
+        const result = await addToCart(product, weightOptionId);
+        console.log('SearchResultsPage: Add to cart result:', result);
+        
         setButtonStateById((prev) => ({ ...prev, [product._id]: result?.status === 'success' ? 'added' : (result?.status === 'maxed' || result?.status === 'out_of_stock') ? 'maxed' : 'idle' }));
         setTimeout(() => {
             setButtonStateById((prev) => ({ ...prev, [product._id]: 'idle' }));
@@ -148,23 +167,23 @@ const SearchResultsPage = () => {
                                         <div className='p-3'>
                                             <h3 className='text-base font-semibold mb-1 text-[#82695b]'>{product.name}</h3>
                                             <p className='text-black font-bold mb-1'>
-                                                ₱{product.price.toFixed(2)}
+                                                ₱{(product.priceMin || product.price || 0).toFixed(2)}
                                             </p>
                                             <div className='mb-2'>
                                                 <span className={`text-xs font-medium px-2 py-1 rounded-full ${
-                                                    product.quantity > 10 
+                                                    (product.totalStockUnits || product.quantity) > 10 
                                                         ? 'bg-green-100 text-green-800' 
-                                                        : product.quantity > 0 
+                                                        : (product.totalStockUnits || product.quantity) > 0 
                                                             ? 'bg-yellow-100 text-yellow-800' 
                                                             : 'bg-red-100 text-red-800'
                                                 }`}>
-                                                    {product.quantity > 0 ? `${product.quantity} in stock` : 'Out of stock'}
+                                                    {(product.totalStockUnits || product.quantity) > 0 ? `${product.totalStockUnits || product.quantity} in stock` : 'Out of stock'}
                                                 </span>
                                             </div>
                                             <div className="space-y-1.5">
                                                 <button
                                                     onClick={() => handleAddToCart(product)}
-                                                    disabled={product.quantity === 0}
+                                                    disabled={(product.totalStockUnits || product.quantity) === 0}
                                                     className={`w-full text-white font-semibold py-1.5 px-3 rounded transition-colors duration-300 
                                                     flex items-center justify-center text-sm ${
                                                         product.quantity > 0 

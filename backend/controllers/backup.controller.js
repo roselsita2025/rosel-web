@@ -5,6 +5,15 @@ import Product from '../models/product.model.js';
 import Order from '../models/order.model.js';
 import { User } from '../models/user.model.js';
 import Review from '../models/Review.js';
+import Transaction from '../models/transaction.model.js';
+import Coupon from '../models/coupon.model.js';
+import Notification from '../models/notification.model.js';
+import ActivityLog from '../models/activityLog.model.js';
+import ReplacementRequest from '../models/replacementRequest.model.js';
+import { Chat } from '../models/chat.model.js';
+import { Message } from '../models/message.model.js';
+import { FAQ } from '../models/faq.model.js';
+import WriteOff from '../models/writeOff.model.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -27,21 +36,46 @@ export const generateBackup = async (req, res) => {
       products,
       orders,
       users,
-      reviews
+      reviews,
+      transactions,
+      coupons,
+      notifications,
+      activityLogs,
+      replacementRequests,
+      chats,
+      messages,
+      faqs,
+      writeOffs
     ] = await Promise.all([
       Product.find({}),
       Order.find({}),
       User.find({}),
-      Review.find({})
+      Review.find({}),
+      Transaction.find({}),
+      Coupon.find({}),
+      Notification.find({}),
+      ActivityLog.find({}),
+      ReplacementRequest.find({}),
+      Chat.find({}),
+      Message.find({}),
+      FAQ.find({}),
+      WriteOff.find({})
     ]);
 
     // Create backup object
     const backup = {
       metadata: {
-        version: '1.0',
+        version: '2.1',
         timestamp: new Date().toISOString(),
-        collections: ['products', 'orders', 'users', 'reviews'],
-        totalRecords: products.length + orders.length + users.length + reviews.length,
+        collections: [
+          'products', 'orders', 'users', 'reviews', 'transactions', 
+          'coupons', 'notifications', 'activityLogs', 'replacementRequests', 
+          'chats', 'messages', 'faqs', 'writeOffs'
+        ],
+        totalRecords: products.length + orders.length + users.length + reviews.length + 
+                     transactions.length + coupons.length + notifications.length + 
+                     activityLogs.length + replacementRequests.length + chats.length + 
+                     messages.length + faqs.length + writeOffs.length,
         generatedBy: req.user._id,
         generatedByEmail: req.user.email
       },
@@ -49,7 +83,16 @@ export const generateBackup = async (req, res) => {
         products,
         orders,
         users,
-        reviews
+        reviews,
+        transactions,
+        coupons,
+        notifications,
+        activityLogs,
+        replacementRequests,
+        chats,
+        messages,
+        faqs,
+        writeOffs
       }
     };
 
@@ -351,6 +394,77 @@ export const executeRestore = async (req, res) => {
       restoreResults.reviews = backupData.data.reviews.length;
     }
 
+    // Restore Transactions
+    if (backupData.data.transactions && backupData.data.transactions.length > 0) {
+      console.log(`💳 Restoring ${backupData.data.transactions.length} transactions...`);
+      await Transaction.deleteMany({});
+      await Transaction.insertMany(backupData.data.transactions);
+      restoreResults.transactions = backupData.data.transactions.length;
+    }
+
+    // Restore Coupons
+    if (backupData.data.coupons && backupData.data.coupons.length > 0) {
+      console.log(`🎫 Restoring ${backupData.data.coupons.length} coupons...`);
+      await Coupon.deleteMany({});
+      await Coupon.insertMany(backupData.data.coupons);
+      restoreResults.coupons = backupData.data.coupons.length;
+    }
+
+    // Restore Notifications
+    if (backupData.data.notifications && backupData.data.notifications.length > 0) {
+      console.log(`🔔 Restoring ${backupData.data.notifications.length} notifications...`);
+      await Notification.deleteMany({});
+      await Notification.insertMany(backupData.data.notifications);
+      restoreResults.notifications = backupData.data.notifications.length;
+    }
+
+    // Restore Activity Logs
+    if (backupData.data.activityLogs && backupData.data.activityLogs.length > 0) {
+      console.log(`📊 Restoring ${backupData.data.activityLogs.length} activity logs...`);
+      await ActivityLog.deleteMany({});
+      await ActivityLog.insertMany(backupData.data.activityLogs);
+      restoreResults.activityLogs = backupData.data.activityLogs.length;
+    }
+
+    // Restore Replacement Requests
+    if (backupData.data.replacementRequests && backupData.data.replacementRequests.length > 0) {
+      console.log(`🔄 Restoring ${backupData.data.replacementRequests.length} replacement requests...`);
+      await ReplacementRequest.deleteMany({});
+      await ReplacementRequest.insertMany(backupData.data.replacementRequests);
+      restoreResults.replacementRequests = backupData.data.replacementRequests.length;
+    }
+
+    // Restore Chats
+    if (backupData.data.chats && backupData.data.chats.length > 0) {
+      console.log(`💬 Restoring ${backupData.data.chats.length} chats...`);
+      await Chat.deleteMany({});
+      await Chat.insertMany(backupData.data.chats);
+      restoreResults.chats = backupData.data.chats.length;
+    }
+
+    // Restore Messages
+    if (backupData.data.messages && backupData.data.messages.length > 0) {
+      console.log(`📨 Restoring ${backupData.data.messages.length} messages...`);
+      await Message.deleteMany({});
+      await Message.insertMany(backupData.data.messages);
+      restoreResults.messages = backupData.data.messages.length;
+    }
+
+    // Restore FAQs
+    if (backupData.data.faqs && backupData.data.faqs.length > 0) {
+      console.log(`❓ Restoring ${backupData.data.faqs.length} FAQs...`);
+      await FAQ.deleteMany({});
+      await FAQ.insertMany(backupData.data.faqs);
+      restoreResults.faqs = backupData.data.faqs.length;
+    }
+
+    // Restore Write-offs
+    if (backupData.data.writeOffs && backupData.data.writeOffs.length > 0) {
+      console.log(`📝 Restoring ${backupData.data.writeOffs.length} write-offs...`);
+      await WriteOff.deleteMany({});
+      await WriteOff.insertMany(backupData.data.writeOffs);
+      restoreResults.writeOffs = backupData.data.writeOffs.length;
+    }
 
     console.log('✅ Restore completed successfully');
 
@@ -394,7 +508,11 @@ export const uploadRestore = async (req, res) => {
     }
 
     // Validate required collections
-    const requiredCollections = ['products', 'orders', 'users', 'reviews'];
+    const requiredCollections = [
+      'products', 'orders', 'users', 'reviews', 'transactions', 
+      'coupons', 'notifications', 'activityLogs', 'replacementRequests', 
+      'chats', 'messages', 'faqs', 'writeOffs'
+    ];
     const missingCollections = requiredCollections.filter(
       collection => !backupData.data[collection]
     );
@@ -464,7 +582,11 @@ export const validateBackup = async (req, res) => {
     );
 
     // Check data structure
-    const requiredCollections = ['products', 'orders', 'users', 'reviews'];
+    const requiredCollections = [
+      'products', 'orders', 'users', 'reviews', 'transactions', 
+      'coupons', 'notifications', 'activityLogs', 'replacementRequests', 
+      'chats', 'messages', 'faqs'
+    ];
     checks.dataStructureValid = requiredCollections.every(collection => 
       Array.isArray(backupData.data[collection])
     );
@@ -511,7 +633,11 @@ const validateBackupIntegrity = (backupData) => {
     }
 
     // Check if data collections exist and are arrays
-    const requiredCollections = ['products', 'orders', 'users', 'reviews'];
+    const requiredCollections = [
+      'products', 'orders', 'users', 'reviews', 'transactions', 
+      'coupons', 'notifications', 'activityLogs', 'replacementRequests', 
+      'chats', 'messages', 'faqs'
+    ];
     for (const collection of requiredCollections) {
       if (!Array.isArray(backupData.data[collection])) {
         return { valid: false, error: `Invalid data structure for ${collection}` };

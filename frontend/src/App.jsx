@@ -11,6 +11,7 @@ import ForgotPasswordPage from "./pages/AuthPages/ForgotPasswordPage.jsx";
 import ResetPasswordPage from "./pages/AuthPages/ResetPasswordPage.jsx";
 
 import DashboardPage from "./pages/AdminPages/DashboardPage.jsx";
+import DiscrepancyReportPage from "./pages/AdminPages/DiscrepancyReportPage.jsx";
 import ManageProductsPage from "./pages/AdminPages/ManageProductsPage.jsx";
 import OrderManagementPage from "./pages/AdminPages/OrderManagementPage.jsx";
 import CouponsPage from "./pages/AdminPages/CouponsPage.jsx";
@@ -169,7 +170,7 @@ function App() {
 
   const location = useLocation();
   const isAdmin = user?.role === "admin";
-  const isAdminPage = ["/dashboard", "/analytics", "/profile", "/account-settings", "/coupons", "/manage-products", "/order-management", "/admin/replacement-requests", "/admin/chat-management"].includes(location.pathname) || location.pathname.startsWith("/admin/replacement-requests/");
+  const isAdminPage = ["/dashboard", "/discrepancy-report", "/analytics", "/profile", "/account-settings", "/coupons", "/manage-products", "/order-management", "/admin/replacement-requests", "/admin/chat-management"].includes(location.pathname) || location.pathname.startsWith("/admin/replacement-requests/");
 
   const hideNavbar = ["/login", "/signup", "/forgot-password", "/verify-email", "/purchase-success", "/purchase-cancel"].includes(location.pathname);
 
@@ -266,6 +267,7 @@ function App() {
 
         {/* Admin-only routes */}
         <Route path = '/dashboard' element = { <AdminRoute> <DashboardPage /> </AdminRoute> } />
+        <Route path = '/discrepancy-report' element = { <AdminRoute> <DiscrepancyReportPage /> </AdminRoute> } />
         <Route path = '/manage-products' element = { <AdminRoute> <ManageProductsPage /> </AdminRoute> } />
         <Route path = '/order-management' element = { <AdminRoute> <OrderManagementPage /> </AdminRoute> } />
         <Route path = '/coupons' element = { <AdminRoute> <CouponsPage /> </AdminRoute> } />

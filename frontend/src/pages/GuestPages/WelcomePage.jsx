@@ -26,7 +26,26 @@ const WelcomePage = () => {
   const handleAddToCart = async (product) => {
     if (!product) return;
     if (user?.role === 'admin') return;
-    const result = await addToCart(product);
+    
+    // For products with weight options, automatically select the lowest weight
+    let weightOptionId = null;
+    if (product.hasWeightOptions && product.weightOptions && product.weightOptions.length > 0) {
+      console.log('WelcomePage: Original weight options:', product.weightOptions);
+      const sortedOptions = [...product.weightOptions].sort((a, b) => a.weightKg - b.weightKg);
+      console.log('WelcomePage: Sorted weight options (lowest first):', sortedOptions);
+      weightOptionId = sortedOptions[0]._id;
+      console.log('WelcomePage: Selected weight option:', sortedOptions[0]);
+      console.log('WelcomePage: Selected weightOptionId:', weightOptionId);
+    } else if (product.basePricePerKg && product.basePricePerKg > 0) {
+      console.log('WelcomePage: No weight options found, but has basePricePerKg. Using legacy mode.');
+    } else {
+      console.log('WelcomePage: No weight options and no basePricePerKg. Using legacy mode.');
+    }
+    
+    console.log('WelcomePage: Final weightOptionId:', weightOptionId);
+    const result = await addToCart(product, weightOptionId);
+    console.log('WelcomePage: Add to cart result:', result);
+    
     setButtonStateById((prev) => ({ ...prev, [product._id]: result?.status === 'success' ? 'added' : (result?.status === 'maxed' || result?.status === 'out_of_stock') ? 'maxed' : 'idle' }));
     setTimeout(() => {
       setButtonStateById((prev) => ({ ...prev, [product._id]: 'idle' }));
@@ -146,12 +165,12 @@ const WelcomePage = () => {
         <div className="w-full max-w-8xl px-4 mx-auto flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12 ">
           {/* Left Side - Content */}
           <motion.div 
-            className="flex-1 flex flex-col justify-end items-center lg:items-start text-center lg:text-left h-full pb-0 lg:pb-2"
+            className="flex-1 flex flex-col justify-end lg:justify-center items-center lg:items-start text-center lg:text-left h-full pb-0 lg:pb-0"
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
           >
-            <div className="mt-auto">
+            <div className="mt-auto lg:mt-0">
               <motion.h2 
                 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold text-[#ffd901] mb-4 font-magnolia"
                 initial={{ opacity: 0, y: 20 }}
@@ -269,23 +288,23 @@ const WelcomePage = () => {
                   </div>
                   <h3 className="text-lg font-bold text-[#030105] mb-2 line-clamp-2 font-alice">{product.name}</h3>
                   <div className="flex justify-center items-center mb-2">
-                    <span className="text-xl text-[#901414] font-libre">₱{product.price.toFixed(2)}</span>
+                    <span className="text-xl text-[#901414] font-libre">₱{(product.priceMin || product.price || 0).toFixed(2)}</span>
                   </div>
                   <div className="flex justify-center items-center mb-3">
                     <span className={`text-xs font-medium px-2 py-1 rounded-full ${
-                      product.quantity > 10 
+                      (product.totalStockUnits || product.quantity) > 10 
                         ? 'bg-green-100 text-green-800' 
-                        : product.quantity > 0 
+                        : (product.totalStockUnits || product.quantity) > 0 
                           ? 'bg-yellow-100 text-yellow-800' 
                           : 'bg-red-100 text-red-800'
                     }`}>
-                      {product.quantity > 0 ? `${product.quantity} in stock` : 'Out of stock'}
+                      {(product.totalStockUnits || product.quantity) > 0 ? `${product.totalStockUnits || product.quantity} in stock` : 'Out of stock'}
                     </span>
                   </div>
                   <div className="mt-auto">
                     <button
                       onClick={() => handleAddToCart(product)}
-                      disabled={product.quantity === 0}
+                      disabled={(product.totalStockUnits || product.quantity) === 0}
                       className={`w-full text-white py-2 px-4 rounded-lg transition-colors duration-300 font-semibold ${
                         product.quantity > 0
                           ? buttonStateById[product._id] === 'added'

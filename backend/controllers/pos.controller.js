@@ -54,18 +54,62 @@ export const createTransaction = async (req, res) => {
         });
       }
 
-      if (product.quantity < item.quantity) {
-        return res.status(400).json({
-          success: false,
-          message: `Insufficient stock for ${item.name}. Available: ${product.quantity}, Requested: ${item.quantity}`
+      // Check if this is a weight-based product (either by weightOptionId or by having weight options and no legacy quantity)
+      // Use direct property access instead of virtual property
+      const hasWeightOptions = product.weightOptions && product.weightOptions.length > 0;
+      const isWeightBased = Boolean(
+        (item.weightOptionId && hasWeightOptions) || 
+        (hasWeightOptions && product.quantity === 0)
+      );
+      
+      if (isWeightBased) {
+        let weightOption;
+        
+        if (item.weightOptionId) {
+          // Find by weightOptionId
+          weightOption = product.weightOptions.find(opt => String(opt._id) === String(item.weightOptionId));
+        } else {
+          // If no weightOptionId provided, use the first available weight option with stock
+          weightOption = product.weightOptions.find(opt => opt.stockUnits > 0);
+        }
+        
+        if (!weightOption) {
+          return res.status(400).json({
+            success: false,
+            message: `No available weight option found for ${item.name}`
+          });
+        }
+
+        if (weightOption.stockUnits < item.quantity) {
+          return res.status(400).json({
+            success: false,
+            message: `Insufficient stock for ${item.name} (${item.weightKg}kg). Available: ${weightOption.stockUnits}, Requested: ${item.quantity}`
+          });
+        }
+
+        stockUpdates.push({
+          productId: product._id,
+          weightOptionId: weightOption._id,
+          currentStock: weightOption.stockUnits,
+          requestedQuantity: item.quantity,
+          isWeightBased: true
+        });
+      } else {
+        // Handle legacy products
+        if (product.quantity < item.quantity) {
+          return res.status(400).json({
+            success: false,
+            message: `Insufficient stock for ${item.name}. Available: ${product.quantity}, Requested: ${item.quantity}`
+          });
+        }
+
+        stockUpdates.push({
+          productId: product._id,
+          currentStock: product.quantity,
+          requestedQuantity: item.quantity,
+          isWeightBased: false
         });
       }
-
-      stockUpdates.push({
-        productId: product._id,
-        currentStock: product.quantity,
-        requestedQuantity: item.quantity
-      });
     }
 
     // Calculate product subtotal (actual revenue)
@@ -86,11 +130,24 @@ export const createTransaction = async (req, res) => {
 
     // Update product quantities
     for (const update of stockUpdates) {
-      await Product.findByIdAndUpdate(
-        update.productId,
-        { $inc: { quantity: -update.requestedQuantity } },
-        { new: true }
-      );
+      if (update.isWeightBased) {
+        // Update weight option stock
+        await Product.findByIdAndUpdate(
+          update.productId,
+          { $inc: { 'weightOptions.$[elem].stockUnits': -update.requestedQuantity } },
+          { 
+            arrayFilters: [{ 'elem._id': update.weightOptionId }],
+            new: true 
+          }
+        );
+      } else {
+        // Update legacy quantity
+        await Product.findByIdAndUpdate(
+          update.productId,
+          { $inc: { quantity: -update.requestedQuantity } },
+          { new: true }
+        );
+      }
     }
 
     res.status(201).json({
@@ -195,7 +252,7 @@ export const getRecentTransactions = async (req, res) => {
     const transactions = await Transaction.find(filter)
       .sort({ createdAt: -1 })
       .limit(parseInt(limit))
-      .populate('items.productId', 'name image')
+      .populate('items.productId', 'name image basePricePerKg weightOptions')
       .populate('cashier.id', 'name');
 
     res.status(200).json({

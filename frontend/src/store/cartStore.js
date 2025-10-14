@@ -79,45 +79,86 @@ export const cartStore = create((set, get) => ({
 		}
 	},
 
-    addToCart: async (product) => {
+    addToCart: async (product, weightOptionId = null) => {
+        console.log('Adding to cart:', { product: product.name, weightOptionId, productData: product });
         
         // Check if product is in stock
-        if (product.quantity <= 0) {
+        const effectiveStock = weightOptionId
+            ? (product?.weightOptions?.find(o => String(o._id) === String(weightOptionId))?.stockUnits || 0)
+            : (product.quantity || 0);
+        if (effectiveStock <= 0) {
             return { status: 'out_of_stock' };
         }
 
         // Check if adding this item would exceed available stock
-        const existingItem = get().cart.find((item) => item._id === product._id);
+        const existingItem = get().cart.find((item) => item._id === product._id && String(item.weightOptionId || '') === String(weightOptionId || ''));
         const currentCartQuantity = existingItem ? (existingItem.cartQuantity || existingItem.quantity) : 0;
         
-        if (currentCartQuantity >= product.quantity) {
+        if (currentCartQuantity >= effectiveStock) {
             return { status: 'maxed' };
         }
 
         try {
-            await axios.post(`${API_URL}/carts`, { productId: product._id });
+            console.log('Sending to backend:', { productId: product._id, weightOptionId });
+            await axios.post(`${API_URL}/carts`, { productId: product._id, weightOptionId });
+            console.log('Backend response successful');
             set((prevState) => {
-                const existingItem = prevState.cart.find((item) => item._id === product._id);
+                const existingItem = prevState.cart.find((item) => item._id === product._id && String(item.weightOptionId || '') === String(weightOptionId || ''));
                 const newCart = existingItem
                     ? prevState.cart.map((item) =>
-                            item._id === product._id ? { ...item, cartQuantity: (item.cartQuantity || item.quantity) + 1 } : item
+                            (item._id === product._id && String(item.weightOptionId || '') === String(weightOptionId || '')) ? { ...item, cartQuantity: (item.cartQuantity || item.quantity) + 1 } : item
                       )
-                    : [...prevState.cart, { ...product, cartQuantity: 1, stockQuantity: product.quantity }];
+                    : [...prevState.cart, { 
+                        ...product, 
+                        cartQuantity: 1, 
+                        stockQuantity: effectiveStock, 
+                        weightOptionId,
+                        weightKg: weightOptionId ? product.weightOptions.find(o => String(o._id) === String(weightOptionId))?.weightKg : null,
+                        unitPrice: (() => {
+                            if (weightOptionId) {
+                                const selectedOption = product.weightOptions.find(o => String(o._id) === String(weightOptionId));
+                                return selectedOption?.price || (product.basePricePerKg * selectedOption?.weightKg);
+                            } else if (product.basePricePerKg && product.basePricePerKg > 0) {
+                                // Fallback: Use basePricePerKg with default 15kg weight
+                                return product.basePricePerKg * 15;
+                            }
+                            return product.price;
+                        })()
+                    }];
+                console.log('New cart item:', newCart[newCart.length - 1]);
                 return { cart: newCart };
             });
 
             get().calculateTotals();
             return { status: 'success' };
         } catch (error) {
+            console.log('Backend error, using guest cart fallback:', error);
             // Unauthorized or server not available -> guest cart fallback
             if (error?.response?.status === 401 || error?.response?.status === 403 || error?.response?.status === 404) {
                 set((prevState) => {
-                    const existingItemLocal = prevState.cart.find((item) => item._id === product._id);
+                    const existingItemLocal = prevState.cart.find((item) => item._id === product._id && String(item.weightOptionId || '') === String(weightOptionId || ''));
                     const newCart = existingItemLocal
                         ? prevState.cart.map((item) =>
-                        item._id === product._id ? { ...item, cartQuantity: (item.cartQuantity || item.quantity) + 1 } : item
+                        (item._id === product._id && String(item.weightOptionId || '') === String(weightOptionId || '')) ? { ...item, cartQuantity: (item.cartQuantity || item.quantity) + 1 } : item
                           )
-                        : [...prevState.cart, { ...product, cartQuantity: 1, stockQuantity: product.quantity }];
+                        : [...prevState.cart, { 
+                            ...product, 
+                            cartQuantity: 1, 
+                            stockQuantity: effectiveStock, 
+                            weightOptionId,
+                            weightKg: weightOptionId ? product.weightOptions.find(o => String(o._id) === String(weightOptionId))?.weightKg : null,
+                            unitPrice: (() => {
+                                if (weightOptionId) {
+                                    const selectedOption = product.weightOptions.find(o => String(o._id) === String(weightOptionId));
+                                    return selectedOption?.price || (product.basePricePerKg * selectedOption?.weightKg);
+                                } else if (product.basePricePerKg && product.basePricePerKg > 0) {
+                                    // Fallback: Use basePricePerKg with default 15kg weight
+                                    return product.basePricePerKg * 15;
+                                }
+                                return product.price;
+                            })()
+                        }];
+                    console.log('Guest cart item:', newCart[newCart.length - 1]);
                     writeGuestCart(newCart);
                     return { cart: newCart };
                 });
@@ -135,15 +176,21 @@ export const cartStore = create((set, get) => ({
 		writeGuestCart([]);
 	},
 
-	removeFromCart: async (productId) => {
+	removeFromCart: async (productId, weightOptionId = null) => {
 		try {
-			await axios.delete(`${API_URL}/carts`, { data: { productId } });
-			set((prevState) => ({ cart: prevState.cart.filter((item) => item._id !== productId) }));
+			await axios.delete(`${API_URL}/carts`, { data: { productId, weightOptionId } });
+			set((prevState) => ({ 
+				cart: prevState.cart.filter((item) => 
+					!(item._id === productId && (weightOptionId ? item.weightOptionId === weightOptionId : !item.weightOptionId))
+				) 
+			}));
 			get().calculateTotals();
 		} catch (error) {
 			if (error?.response?.status === 401 || error?.response?.status === 403 || error?.response?.status === 404) {
 				set((prevState) => {
-					const newCart = prevState.cart.filter((item) => item._id !== productId);
+					const newCart = prevState.cart.filter((item) => 
+						!(item._id === productId && (weightOptionId ? item.weightOptionId === weightOptionId : !item.weightOptionId))
+					);
 					writeGuestCart(newCart);
 					return { cart: newCart };
 				});
@@ -154,29 +201,30 @@ export const cartStore = create((set, get) => ({
 		}
 	},
 
-	updateQuantity: async (productId, quantity) => {
+	updateQuantity: async (productId, quantity, weightOptionId = null) => {
 			if (quantity === 0) {
-				get().removeFromCart(productId);
+				get().removeFromCart(productId, weightOptionId);
 				return;
 			}
 
 			// Find the product to check stock
-			const product = get().cart.find((item) => item._id === productId);
+			const findCondition = item => item._id === productId && (weightOptionId ? item.weightOptionId === weightOptionId : !item.weightOptionId);
+			const product = get().cart.find(findCondition);
 			if (product && quantity > (product.stockQuantity || product.quantity)) {
 				toast.error("Cannot add more items. Not enough stock available");
 				return;
 			}
 
 			try {
-				await axios.put(`${API_URL}/carts/${productId}`, { quantity });
+				await axios.put(`${API_URL}/carts/${productId}`, { quantity, weightOptionId });
 				set((prevState) => ({
-					cart: prevState.cart.map((item) => (item._id === productId ? { ...item, cartQuantity: quantity } : item)),
+					cart: prevState.cart.map((item) => (findCondition(item) ? { ...item, cartQuantity: quantity } : item)),
 				}));
 				get().calculateTotals();
 			} catch (error) {
 				if (error?.response?.status === 401 || error?.response?.status === 403 || error?.response?.status === 404) {
 					set((prevState) => {
-						const newCart = prevState.cart.map((item) => (item._id === productId ? { ...item, cartQuantity: quantity } : item));
+						const newCart = prevState.cart.map((item) => (findCondition(item) ? { ...item, cartQuantity: quantity } : item));
 						writeGuestCart(newCart);
 						return { cart: newCart };
 					});
@@ -189,7 +237,7 @@ export const cartStore = create((set, get) => ({
 
 		calculateTotals: () => {
 			const { cart, coupon } = get();
-			const subtotal = cart.reduce((sum, item) => sum + item.price * (item.cartQuantity || item.quantity), 0);
+			const subtotal = cart.reduce((sum, item) => sum + (item.unitPrice || item.price) * (item.cartQuantity || item.quantity), 0);
 			let total = subtotal;
 			
 			if (coupon && get().isCouponApplied) {

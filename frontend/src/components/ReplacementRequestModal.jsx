@@ -68,12 +68,39 @@ const ReplacementRequestModal = ({ request, isOpen, onClose, isAdmin = false }) 
                                             <div className="flex-1">
                                                 <h4 className="font-medium text-gray-900">
                                                     {request.product?.name}
+                                                    {(() => {
+                                                        // Try to get weight info from product data
+                                                        if (request.product?.weightOptions && request.product.weightOptions.length > 0) {
+                                                            const firstWeight = request.product.weightOptions[0];
+                                                            if (firstWeight && firstWeight.weightKg) {
+                                                                return ` (${firstWeight.weightKg}kg)`;
+                                                            }
+                                                        }
+                                                        return '';
+                                                    })()}
                                                 </h4>
                                                 <p className="text-sm text-gray-600">
                                                     Category: {request.product?.category}
                                                 </p>
                                                 <p className="text-sm text-gray-600">
-                                                    Price: ₱{request.product?.price?.toFixed(2)}
+                                                    Price: ₱{(() => {
+                                                        // Use the historical price from the order if available
+                                                        if (request.order && request.order.products) {
+                                                            const orderProduct = request.order.products.find(p => p.product._id === request.product._id);
+                                                            if (orderProduct && orderProduct.price) {
+                                                                return orderProduct.price.toFixed(2);
+                                                            }
+                                                        }
+                                                        // Fallback to current product price calculation
+                                                        if (request.product?.basePricePerKg && request.product?.weightOptions && request.product.weightOptions.length > 0) {
+                                                            const firstWeight = request.product.weightOptions[0];
+                                                            if (firstWeight && firstWeight.weightKg) {
+                                                                return (request.product.basePricePerKg * firstWeight.weightKg).toFixed(2);
+                                                            }
+                                                        }
+                                                        // Final fallback to regular price
+                                                        return request.product?.price?.toFixed(2) || '0.00';
+                                                    })()}
                                                 </p>
                                                 <p className="text-sm text-gray-600">
                                                     Quantity: {request.quantity}
@@ -156,7 +183,7 @@ const ReplacementRequestModal = ({ request, isOpen, onClose, isAdmin = false }) 
                                                 </div>
                                                 <div className="flex justify-between">
                                                     <span className="text-gray-600">Total Amount:</span>
-                                                    <span className="font-medium">${request.order.totalAmount?.toFixed(2)}</span>
+                                                    <span className="font-medium">₱{request.order.totalAmount?.toFixed(2)}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -256,7 +283,17 @@ const ReplacementRequestModal = ({ request, isOpen, onClose, isAdmin = false }) 
                                                             Quantity: {request.replacementQuantity || request.quantity}
                                                         </p>
                                                         <p className="text-sm text-gray-600">
-                                                            Price: ${request.replacementProduct.price?.toFixed(2)}
+                                                            Price: ₱{(() => {
+                                                                // Calculate price for weight-based products
+                                                                if (request.replacementProduct?.basePricePerKg && request.replacementProduct?.weightOptions && request.replacementProduct.weightOptions.length > 0) {
+                                                                    const firstWeight = request.replacementProduct.weightOptions[0];
+                                                                    if (firstWeight && firstWeight.weightKg) {
+                                                                        return (request.replacementProduct.basePricePerKg * firstWeight.weightKg).toFixed(2);
+                                                                    }
+                                                                }
+                                                                // Fallback to regular price
+                                                                return request.replacementProduct?.price?.toFixed(2) || '0.00';
+                                                            })()}
                                                         </p>
                                                     </div>
                                                 </div>

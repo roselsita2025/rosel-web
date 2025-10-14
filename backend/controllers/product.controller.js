@@ -54,7 +54,7 @@ export const getFeaturedProducts = async (req, res) => {
 
 export const createProduct = async (req, res) => {
     try {
-        const {name, description, price, image, images = [], category, quantity, barcode} = req.body;
+        const {name, description, basePricePerKg, image, images = [], category, quantity, barcode, weightKg, supplier} = req.body;
 
         // Validate category against fixed list
         if (!CATEGORIES.includes(String(category))) {
@@ -82,33 +82,54 @@ export const createProduct = async (req, res) => {
         const product = await Product.create({
             name,
             description,
-            price,
+            basePricePerKg,
             image: mainImageUrl, // keep legacy field for compatibility
             images: uploadedUrls,
             mainImageUrl,
             category,
-            quantity: quantity || 0,
+            quantity: weightKg ? 0 : (quantity || 0), // Only set quantity for legacy products without weight options
             status: PRODUCT_STATUSES.AVAILABLE,
             barcode: typeof barcode === 'string' && barcode.trim() ? barcode.trim() : undefined,
+            supplier: supplier || "",
+            // If weightKg is provided, create an initial weight option
+            ...(weightKg && { weightOptions: [{ weightKg: Number(weightKg), stockUnits: quantity || 0 }] })
         });
 
         // Log the activity
         try {
+            let activityDetails;
+            let quantityChange = 0;
+            let newQuantity = 0;
+
+            if (weightKg && product.weightOptions && product.weightOptions.length > 0) {
+                // Product created with weight options
+                const weightOption = product.weightOptions[0];
+                activityDetails = `Product created with a weight of ${weightOption.weightKg}kg with a stock of ${weightOption.stockUnits} units`;
+                quantityChange = weightOption.stockUnits;
+                newQuantity = weightOption.stockUnits;
+            } else {
+                // Legacy product without weight options
+                activityDetails = `Product created with initial stock of ${product.quantity} units`;
+                quantityChange = product.quantity;
+                newQuantity = product.quantity;
+            }
+
             await createActivityLog({
                 productId: product._id,
                 productName: product.name,
                 action: 'created',
-                details: `Product created with initial stock of ${product.quantity} units`,
+                details: activityDetails,
                 adminId: req.user.id,
                 adminName: req.user.name,
                 changes: {
-                    price: product.price,
-                    quantity: product.quantity,
+                    basePricePerKg: product.basePricePerKg,
+                    quantity: weightKg ? (product.weightOptions?.[0]?.stockUnits || 0) : product.quantity,
                     status: product.status,
-                    category: product.category
+                    category: product.category,
+                    ...(weightKg && { weightKg: Number(weightKg) })
                 },
-                quantityChange: product.quantity,
-                newQuantity: product.quantity
+                quantityChange: quantityChange,
+                newQuantity: newQuantity
             });
         } catch (logError) {
             console.error('Error logging product creation:', logError);
@@ -413,24 +434,28 @@ export const updateProduct = async (req, res) => {
             return res.status(404).json({ message: "Product not found" });
         }
 
-        // Enforce immutability for name, category, barcode
-        const { name, category, barcode } = req.body;
-        if (name && name !== product.name) {
-            return res.status(400).json({ message: "Product name cannot be changed" });
-        }
-        if (category && category !== product.category) {
-            return res.status(400).json({ message: "Category cannot be changed" });
-        }
-        if (typeof barcode === 'string' && barcode.trim() && barcode.trim() !== (product.barcode || '')) {
-            return res.status(400).json({ message: "Barcode cannot be changed" });
-        }
-
         // Updatable fields
-        const { price, description, status, isFeatured, addImages = [], removeImageUrls = [], mainImageUrl } = req.body;
+        const { name, category, barcode, basePricePerKg, description, status, isFeatured, supplier, addImages = [], removeImageUrls = [], mainImageUrl } = req.body;
 
-        if (typeof price === 'number') product.price = price;
+        // Store original values for change detection
+        const originalValues = {
+            name: product.name,
+            category: product.category,
+            barcode: product.barcode,
+            basePricePerKg: product.basePricePerKg,
+            description: product.description,
+            isFeatured: product.isFeatured,
+            supplier: product.supplier,
+            status: product.status
+        };
+
+        if (typeof name === 'string' && name.trim()) product.name = name.trim();
+        if (typeof category === 'string' && category.trim()) product.category = category.trim();
+        if (typeof barcode === 'string') product.barcode = barcode.trim() || undefined;
+        if (typeof basePricePerKg === 'number') product.basePricePerKg = basePricePerKg;
         if (typeof description === 'string') product.description = description;
         if (typeof isFeatured === 'boolean') product.isFeatured = isFeatured;
+        if (typeof supplier === 'string') product.supplier = supplier.trim();
 
         if (status) {
             if (!Object.values(PRODUCT_STATUSES).includes(status)) {
@@ -503,17 +528,63 @@ export const updateProduct = async (req, res) => {
         // Log the activity if there were changes
         try {
             const changes = {};
-            if (typeof price === 'number' && price !== product.price) changes.price = { from: product.price, to: price };
-            if (typeof description === 'string' && description !== product.description) changes.description = 'updated';
-            if (typeof isFeatured === 'boolean' && isFeatured !== product.isFeatured) changes.isFeatured = { from: product.isFeatured, to: isFeatured };
-            if (status && status !== product.status) changes.status = { from: product.status, to: status };
+            
+            // Check for changes in all updatable fields
+            if (typeof name === 'string' && name.trim() && name.trim() !== originalValues.name) {
+                changes.name = { from: originalValues.name, to: name.trim() };
+            }
+            if (typeof category === 'string' && category.trim() && category.trim() !== originalValues.category) {
+                changes.category = { from: originalValues.category, to: category.trim() };
+            }
+            if (typeof barcode === 'string') {
+                const newBarcode = barcode.trim() || undefined;
+                if (newBarcode !== originalValues.barcode) {
+                    changes.barcode = { from: originalValues.barcode || 'none', to: newBarcode || 'none' };
+                }
+            }
+            if (typeof basePricePerKg === 'number' && basePricePerKg !== originalValues.basePricePerKg) {
+                changes.basePricePerKg = { from: originalValues.basePricePerKg, to: basePricePerKg };
+            }
+            if (typeof description === 'string' && description !== originalValues.description) {
+                changes.description = { from: originalValues.description, to: description };
+            }
+            if (typeof isFeatured === 'boolean' && isFeatured !== originalValues.isFeatured) {
+                changes.isFeatured = { from: originalValues.isFeatured, to: isFeatured };
+            }
+            if (status && status !== originalValues.status) {
+                changes.status = { from: originalValues.status, to: status };
+            }
+            if (typeof supplier === 'string' && supplier.trim() !== originalValues.supplier) {
+                changes.supplier = { from: originalValues.supplier || 'none', to: supplier.trim() || 'none' };
+            }
+            
+            // Check for image changes
+            if (Array.isArray(addImages) && addImages.length > 0) {
+                changes.images = { action: 'added', count: addImages.length };
+            }
+            if (Array.isArray(removeImageUrls) && removeImageUrls.length > 0) {
+                changes.images = { action: 'removed', count: removeImageUrls.length };
+            }
+            if (typeof mainImageUrl === 'string' && mainImageUrl && mainImageUrl !== product.mainImageUrl) {
+                changes.mainImage = { action: 'updated' };
+            }
             
             if (Object.keys(changes).length > 0) {
+                const changeDescriptions = Object.keys(changes).map(key => {
+                    const change = changes[key];
+                    if (change.action) {
+                        return `${key} ${change.action}`;
+                    } else if (change.from !== undefined && change.to !== undefined) {
+                        return `${key}: ${change.from} → ${change.to}`;
+                    }
+                    return key;
+                });
+                
                 await createActivityLog({
                     productId: updated._id,
                     productName: updated.name,
                     action: 'updated',
-                    details: `Product updated: ${Object.keys(changes).join(', ')}`,
+                    details: `Product updated: ${changeDescriptions.join(', ')}`,
                     adminId: req.user.id,
                     adminName: req.user.name,
                     changes: changes
@@ -526,14 +597,30 @@ export const updateProduct = async (req, res) => {
 
         // Send notification to admins about product update
         try {
-            const changes = {};
-            if (typeof price === 'number' && price !== product.price) changes.price = { from: product.price, to: price };
-            if (typeof description === 'string' && description !== product.description) changes.description = 'updated';
-            if (typeof isFeatured === 'boolean' && isFeatured !== product.isFeatured) changes.isFeatured = { from: product.isFeatured, to: isFeatured };
-            if (status && status !== product.status) changes.status = { from: product.status, to: status };
+            const notificationChanges = {};
             
-            if (Object.keys(changes).length > 0) {
-                await notificationService.sendProductUpdatedNotification(updated, changes);
+            // Check for changes in key fields for notifications
+            if (typeof name === 'string' && name.trim() && name.trim() !== originalValues.name) {
+                notificationChanges.name = { from: originalValues.name, to: name.trim() };
+            }
+            if (typeof category === 'string' && category.trim() && category.trim() !== originalValues.category) {
+                notificationChanges.category = { from: originalValues.category, to: category.trim() };
+            }
+            if (typeof basePricePerKg === 'number' && basePricePerKg !== originalValues.basePricePerKg) {
+                notificationChanges.basePricePerKg = { from: originalValues.basePricePerKg, to: basePricePerKg };
+            }
+            if (typeof description === 'string' && description !== originalValues.description) {
+                notificationChanges.description = 'updated';
+            }
+            if (typeof isFeatured === 'boolean' && isFeatured !== originalValues.isFeatured) {
+                notificationChanges.isFeatured = { from: originalValues.isFeatured, to: isFeatured };
+            }
+            if (status && status !== originalValues.status) {
+                notificationChanges.status = { from: originalValues.status, to: status };
+            }
+            
+            if (Object.keys(notificationChanges).length > 0) {
+                await notificationService.sendProductUpdatedNotification(updated, notificationChanges);
             }
         } catch (notificationError) {
             console.error('Error sending product updated notification:', notificationError);
@@ -825,3 +912,187 @@ async function buildHybridFeaturedProducts() {
     
     return result;
 }
+
+// ==================== WEIGHT-BASED ADMIN ENDPOINTS ====================
+
+export const addWeightOption = async (req, res) => {
+    try {
+        const { id } = req.params;
+        let { weightKg, stockUnits } = req.body || {};
+
+        if (typeof weightKg !== 'number' || weightKg <= 0) {
+            return res.status(400).json({ message: "weightKg must be a positive number" });
+        }
+        if (!Number.isFinite(weightKg)) {
+            return res.status(400).json({ message: "weightKg must be finite" });
+        }
+        // normalize to 2 decimals
+        weightKg = Math.round(weightKg * 100) / 100;
+
+        if (typeof stockUnits !== 'number' || !Number.isInteger(stockUnits) || stockUnits < 0) {
+            return res.status(400).json({ message: "stockUnits must be an integer >= 0" });
+        }
+
+        const product = await Product.findById(id);
+        if (!product) return res.status(404).json({ message: "Product not found" });
+
+        product.weightOptions = Array.isArray(product.weightOptions) ? product.weightOptions : [];
+        product.weightOptions.push({ weightKg, stockUnits });
+        const updated = await product.save();
+
+        // Invalidate featured cache if needed
+        try { await redis.del("featuredProducts"); } catch {}
+
+        res.json({ product: updated });
+    } catch (error) {
+        console.log("Error in addWeightOption:", error.message);
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
+
+export const updateWeightOption = async (req, res) => {
+    try {
+        const { id, weightOptionId } = req.params;
+        const { weightKg, stockUnits } = req.body || {};
+
+        const product = await Product.findById(id);
+        if (!product) return res.status(404).json({ message: "Product not found" });
+        const opt = product.weightOptions?.id(weightOptionId);
+        if (!opt) return res.status(404).json({ message: "Weight option not found" });
+
+        if (typeof weightKg !== 'undefined') {
+            if (typeof weightKg !== 'number' || weightKg <= 0 || !Number.isFinite(weightKg)) {
+                return res.status(400).json({ message: "weightKg must be a positive finite number" });
+            }
+            opt.weightKg = Math.round(weightKg * 100) / 100;
+        }
+        if (typeof stockUnits !== 'undefined') {
+            if (typeof stockUnits !== 'number' || !Number.isInteger(stockUnits) || stockUnits < 0) {
+                return res.status(400).json({ message: "stockUnits must be an integer >= 0" });
+            }
+            // Store old stock before updating
+            const oldStock = opt.stockUnits;
+            opt.stockUnits = stockUnits;
+            
+            const updated = await product.save();
+            try { await redis.del("featuredProducts"); } catch {}
+            
+            // Log the activity if stock was updated
+            try {
+                const newStock = stockUnits;
+                const stockChange = newStock - oldStock;
+                
+                if (stockChange > 0) {
+                    // Stock in
+                    await createActivityLog({
+                        productId: updated._id,
+                        productName: updated.name,
+                        action: 'stock_in',
+                        details: `Stock increased by ${stockChange} units for ${opt.weightKg}kg option`,
+                        adminId: req.user.id,
+                        adminName: req.user.name,
+                        changes: {
+                            stockUnits: { from: oldStock, to: newStock },
+                            weightKg: opt.weightKg
+                        },
+                        quantityChange: stockChange,
+                        oldQuantity: oldStock,
+                        newQuantity: newStock
+                    });
+                } else if (stockChange < 0) {
+                    // Stock out
+                    await createActivityLog({
+                        productId: updated._id,
+                        productName: updated.name,
+                        action: 'stock_out',
+                        details: `Stock decreased by ${Math.abs(stockChange)} units for ${opt.weightKg}kg option`,
+                        adminId: req.user.id,
+                        adminName: req.user.name,
+                        changes: {
+                            stockUnits: { from: oldStock, to: newStock },
+                            weightKg: opt.weightKg
+                        },
+                        quantityChange: stockChange,
+                        oldQuantity: oldStock,
+                        newQuantity: newStock
+                    });
+                }
+            } catch (logError) {
+                console.error('Error logging weight option stock update:', logError);
+                // Don't fail the update if logging fails
+            }
+            
+            res.json({ product: updated });
+        } else {
+            // No stock update, just save and return
+            const updated = await product.save();
+            try { await redis.del("featuredProducts"); } catch {}
+            res.json({ product: updated });
+        }
+    } catch (error) {
+        console.log("Error in updateWeightOption:", error.message);
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
+
+export const deleteWeightOption = async (req, res) => {
+    try {
+        const { id, weightOptionId } = req.params;
+        const product = await Product.findById(id);
+        if (!product) return res.status(404).json({ message: "Product not found" });
+        const opt = product.weightOptions?.id(weightOptionId);
+        if (!opt) return res.status(404).json({ message: "Weight option not found" });
+
+        opt.deleteOne();
+        const updated = await product.save();
+        try { await redis.del("featuredProducts"); } catch {}
+        res.json({ product: updated });
+    } catch (error) {
+        console.log("Error in deleteWeightOption:", error.message);
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
+
+export const updateBasePricePerKg = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { basePricePerKg } = req.body || {};
+        if (typeof basePricePerKg !== 'number' || basePricePerKg < 0 || !Number.isFinite(basePricePerKg)) {
+            return res.status(400).json({ message: "basePricePerKg must be a finite number >= 0" });
+        }
+
+        const product = await Product.findById(id);
+        if (!product) return res.status(404).json({ message: "Product not found" });
+        
+        // Store original price for change detection
+        const originalPrice = product.basePricePerKg;
+        product.basePricePerKg = basePricePerKg;
+        const updated = await product.save();
+        try { await redis.del("featuredProducts"); } catch {}
+        
+        // Log the activity if price was actually changed
+        if (originalPrice !== basePricePerKg) {
+            try {
+                await createActivityLog({
+                    productId: updated._id,
+                    productName: updated.name,
+                    action: 'updated',
+                    details: `Base price per kilogram updated from ₱${originalPrice} to ₱${basePricePerKg}`,
+                    adminId: req.user.id,
+                    adminName: req.user.name,
+                    changes: {
+                        basePricePerKg: { from: originalPrice, to: basePricePerKg }
+                    }
+                });
+            } catch (logError) {
+                console.error('Error logging base price update:', logError);
+                // Don't fail the price update if logging fails
+            }
+        }
+        
+        res.json({ product: updated });
+    } catch (error) {
+        console.log("Error in updateBasePricePerKg:", error.message);
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+};

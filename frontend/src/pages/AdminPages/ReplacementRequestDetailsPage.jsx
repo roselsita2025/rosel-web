@@ -272,12 +272,39 @@ const ReplacementRequestDetailsPage = () => {
                                 <div className="flex-1">
                                     <h4 className="font-medium text-[#030105]">
                                         {currentRequest.product?.name}
+                                        {(() => {
+                                            // Try to get weight info from product data
+                                            if (currentRequest.product?.weightOptions && currentRequest.product.weightOptions.length > 0) {
+                                                const firstWeight = currentRequest.product.weightOptions[0];
+                                                if (firstWeight && firstWeight.weightKg) {
+                                                    return ` (${firstWeight.weightKg}kg)`;
+                                                }
+                                            }
+                                            return '';
+                                        })()}
                                     </h4>
                                     <p className="text-sm text-[#030105] opacity-80">
                                         Category: {currentRequest.product?.category}
                                     </p>
                                     <p className="text-sm text-[#030105] opacity-80">
-                                        Price: ₱{currentRequest.product?.price?.toFixed(2)}
+                                        Price: ₱{(() => {
+                                            // Use the historical price from the order if available
+                                            if (currentRequest.order && currentRequest.order.products) {
+                                                const orderProduct = currentRequest.order.products.find(p => p.product._id === currentRequest.product._id);
+                                                if (orderProduct && orderProduct.price) {
+                                                    return orderProduct.price.toFixed(2);
+                                                }
+                                            }
+                                            // Fallback to current product price calculation
+                                            if (currentRequest.product?.basePricePerKg && currentRequest.product?.weightOptions && currentRequest.product.weightOptions.length > 0) {
+                                                const firstWeight = currentRequest.product.weightOptions[0];
+                                                if (firstWeight && firstWeight.weightKg) {
+                                                    return (currentRequest.product.basePricePerKg * firstWeight.weightKg).toFixed(2);
+                                                }
+                                            }
+                                            // Final fallback to regular price
+                                            return currentRequest.product?.price?.toFixed(2) || '0.00';
+                                        })()}
                                     </p>
                                     <p className="text-sm text-[#030105] opacity-80">
                                         Quantity: {currentRequest.quantity}

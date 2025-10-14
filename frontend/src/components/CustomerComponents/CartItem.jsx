@@ -27,6 +27,12 @@ const CartItem = ({ item }) => {
 					<p className='text-sm text-[#a31f17]'>
 						{item.category || 'General'}
 					</p>
+					{/* Weight Information */}
+					{item.weightOptionId && item.weightKg && (
+						<p className='text-sm text-[#860809] font-medium'>
+							Weight: {item.weightKg} kg
+						</p>
+					)}
 					
 					{/* Stock Status */}
 					<div className='mb-2'>
@@ -45,7 +51,7 @@ const CartItem = ({ item }) => {
 					<div className='flex items-center gap-2'>
 						<button
 							className='inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border-2 border-[#860809] bg-[#f8f3ed] transition-colors hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-[#a31f17]'
-							onClick={() => updateQuantity(item._id, (item.cartQuantity || item.quantity) - 1)}
+							onClick={() => updateQuantity(item._id, (item.cartQuantity || item.quantity) - 1, item.weightOptionId)}
 						>
 							<Minus size={14} className='text-[#030105]' />
 						</button>
@@ -54,7 +60,7 @@ const CartItem = ({ item }) => {
 						</span>
 						<button
 							className='inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border-2 border-[#860809] bg-[#f8f3ed] transition-colors hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-[#a31f17]'
-							onClick={() => updateQuantity(item._id, (item.cartQuantity || item.quantity) + 1)}
+							onClick={() => updateQuantity(item._id, (item.cartQuantity || item.quantity) + 1, item.weightOptionId)}
 						>
 							<Plus size={14} className='text-[#030105]' />
 						</button>
@@ -65,11 +71,11 @@ const CartItem = ({ item }) => {
 			{/* Right Side - Price and Trash */}
 			<div className='flex flex-col items-end gap-2'>
 				<p className='text-lg font-bold text-[#860809]'>
-					₱{item.price}
+					₱{item.unitPrice || item.price}
 				</p>
 				<button
 					className='inline-flex items-center p-2 rounded-md transition-colors hover:opacity-80 text-[#a31f17]'
-					onClick={() => removeFromCart(item._id)}
+					onClick={() => removeFromCart(item._id, item.weightOptionId)}
 				>
 					<Trash size={16} />
 				</button>

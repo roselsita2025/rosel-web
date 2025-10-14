@@ -57,32 +57,63 @@ export const createCheckoutSession = async (req, res) => {
 
         // Build Stripe line items and compute subtotal (in cents)
         let subtotalCents = 0;
-        const lineItems = products.map((product) => {
-            const cartQuantity = product.cartQuantity || product.quantity || 1;
-            // Processing product
-            
-            // Calculate discounted price per unit
-            const originalPrice = product.price;
-            const totalProductValue = originalPrice * cartQuantity;
-            const discountPerUnit = discountAmount > 0 ? (discountAmount * (totalProductValue / products.reduce((sum, p) => sum + (p.price * (p.cartQuantity || p.quantity || 1)), 0))) / cartQuantity : 0;
-            const discountedPrice = Math.max(0, originalPrice - discountPerUnit);
-            
-            const unitAmount = Math.round(discountedPrice * 100);
-            const quantity = cartQuantity;
-            subtotalCents += unitAmount * quantity;
-            
-            return {
+        const lineItems = [];
+
+        // To validate real-time prices and stock, load products from DB
+        const productDocsById = new Map();
+        const productIds = Array.from(new Set(products.map(p => String(p._id))));
+        const productDocs = await Product.find({ _id: { $in: productIds } });
+        for (const doc of productDocs) productDocsById.set(String(doc._id), doc);
+
+        // Helper to compute unit price either legacy or weight-based
+        const computeUnitPrice = (doc, incoming) => {
+            const hasWeightOptions = Array.isArray(doc.weightOptions) && doc.weightOptions.length > 0;
+            if (hasWeightOptions && incoming.weightOptionId) {
+                const opt = doc.weightOptions.id(incoming.weightOptionId);
+                if (!opt) throw new Error("Invalid weight option");
+                const unit = Number((Number(doc.basePricePerKg || 0) * Number(opt.weightKg || 0)).toFixed(2));
+                return { unitPrice: unit, weightKg: Number(opt.weightKg || 0), weightOptionId: String(opt._id), stockUnits: Number(opt.stockUnits || 0) };
+            }
+            // Legacy fallback: use provided price field as unit price, validated against DB if desired
+            const unit = Number(incoming.price);
+            return { unitPrice: unit, weightKg: undefined, weightOptionId: undefined, stockUnits: Number(doc.quantity || 0) };
+        };
+
+        // Precompute total product sum for proportional coupon discount
+        const totalCartValue = products.reduce((sum, p) => sum + (Number(p.price) * (p.cartQuantity || p.quantity || 1)), 0) || 0;
+
+        for (const p of products) {
+            const cartQuantity = p.cartQuantity || p.quantity || 1;
+            const doc = productDocsById.get(String(p._id));
+            if (!doc) throw new Error("Product not found");
+            if (doc.status !== 'available') throw new Error("Product unavailable");
+
+            const { unitPrice: originalUnitPrice, weightKg, weightOptionId, stockUnits } = computeUnitPrice(doc, p);
+            if (stockUnits < cartQuantity) {
+                throw new Error("Insufficient stock for selected option");
+            }
+
+            // Calculate per-unit discount proportionally
+            const productTotal = Number(p.price) * cartQuantity;
+            const discountTotalForItem = discountAmount > 0 && totalCartValue > 0 ? (discountAmount * (productTotal / totalCartValue)) : 0;
+            const discountPerUnit = discountTotalForItem / cartQuantity;
+            const discountedUnitPrice = Math.max(0, Number((originalUnitPrice - discountPerUnit).toFixed(2)));
+
+            const unitAmount = Math.round(discountedUnitPrice * 100);
+            subtotalCents += unitAmount * cartQuantity;
+
+            lineItems.push({
                 price_data: {
                     currency: "php",
                     product_data: {
-                        name: product.name,
-                        images: [product.image],
+                        name: doc.name + (weightKg ? ` (${weightKg} kg)` : ""),
+                        images: [doc.image],
                     },
                     unit_amount: unitAmount,
                 },
-                quantity,
-            };
-        });
+                quantity: cartQuantity,
+            });
+        }
 
         // Line items created successfully
 
@@ -147,11 +178,27 @@ export const createCheckoutSession = async (req, res) => {
         // Create a temporary order record to store full data
         const tempOrderData = {
             user: req.user._id, // Use 'user' instead of 'userId'
-            products: products.map(p => ({
-                product: p._id, // Use 'product' instead of 'productId'
-                quantity: p.cartQuantity || p.quantity,
-                price: p.price
-            })),
+            products: products.map((p) => {
+                const doc = productDocsById.get(String(p._id));
+                const hasWeight = Array.isArray(doc?.weightOptions) && doc.weightOptions.length > 0 && p.weightOptionId;
+                let unitPrice, weightKg, weightOptionId;
+                if (hasWeight) {
+                    const opt = doc.weightOptions.id(p.weightOptionId);
+                    weightKg = Number(opt?.weightKg || 0);
+                    weightOptionId = opt?._id;
+                    unitPrice = Number((Number(doc.basePricePerKg || 0) * weightKg).toFixed(2));
+                } else {
+                    unitPrice = Number(p.price);
+                }
+                return {
+                    product: p._id,
+                    weightOptionId: weightOptionId,
+                    weightKg: weightKg,
+                    unitPrice: unitPrice,
+                    quantity: p.cartQuantity || p.quantity,
+                    price: unitPrice
+                };
+            }),
             totalAmount: finalTotal, // Add required totalAmount
             productSubtotal: productSubtotal,
             deliveryFee: deliveryFee,
@@ -384,11 +431,20 @@ export const checkoutSuccess = async (req, res) => {
             
             // Update product quantities
             for (const product of orderToProcess.products) {
-                await Product.findByIdAndUpdate(
-                    product.product, // Use 'product' instead of 'productId'
-                    { $inc: { quantity: -product.quantity } },
-                    { new: true }
-                );
+                const prodDoc = await Product.findById(product.product);
+                if (!prodDoc) continue;
+                const hasWeightOption = product.weightOptionId && prodDoc.weightOptions?.id(product.weightOptionId);
+                if (hasWeightOption) {
+                    const opt = prodDoc.weightOptions.id(product.weightOptionId);
+                    opt.stockUnits = Math.max(0, Number(opt.stockUnits || 0) - Number(product.quantity || 0));
+                    await prodDoc.save();
+                } else {
+                    await Product.findByIdAndUpdate(
+                        product.product,
+                        { $inc: { quantity: -product.quantity } },
+                        { new: true }
+                    );
+                }
             }
             
             // Calculate correct subtotals for accurate revenue tracking

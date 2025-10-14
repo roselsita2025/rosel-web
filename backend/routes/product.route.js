@@ -1,5 +1,5 @@
 import express from 'express';
-import { createProduct, deleteProduct, getAllProducts, getAllProductsForCustomers, getFeaturedProducts, getProductsByCategory, getRecommendedProducts, toggleFeaturedProduct, getProductById, updateProductQuantity, addProductQuantity, removeProductQuantity, searchProducts, suggestProducts, updateProduct, getProductByBarcode, clearFeaturedProductsCache, getProductsBatch } from '../controllers/product.controller.js';
+import { createProduct, deleteProduct, getAllProducts, getAllProductsForCustomers, getFeaturedProducts, getProductsByCategory, getRecommendedProducts, toggleFeaturedProduct, getProductById, updateProductQuantity, addProductQuantity, removeProductQuantity, searchProducts, suggestProducts, updateProduct, getProductByBarcode, clearFeaturedProductsCache, getProductsBatch, addWeightOption, updateWeightOption, deleteWeightOption, updateBasePricePerKg } from '../controllers/product.controller.js';
 import { verifyAdmin, verifyToken } from '../middleware/verifyToken.js';
 
 const router = express.Router();
@@ -26,5 +26,11 @@ router.put("/quantity/update", verifyToken, verifyAdmin, updateProductQuantity);
 router.put("/quantity/add", verifyToken, verifyAdmin, addProductQuantity);
 router.put("/quantity/remove", verifyToken, verifyAdmin, removeProductQuantity);
 router.delete("/cache/featured", verifyToken, verifyAdmin, clearFeaturedProductsCache);
+
+// Weight-based admin management
+router.post("/:id/weights", verifyToken, verifyAdmin, addWeightOption);
+router.patch("/:id/weights/:weightOptionId", verifyToken, verifyAdmin, updateWeightOption);
+router.delete("/:id/weights/:weightOptionId", verifyToken, verifyAdmin, deleteWeightOption);
+router.patch("/:id/base-price", verifyToken, verifyAdmin, updateBasePricePerKg);
 
 export default router;

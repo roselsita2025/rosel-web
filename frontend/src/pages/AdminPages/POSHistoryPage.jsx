@@ -270,15 +270,31 @@ const POSHistoryPage = () => {
 
           <div class="items">
             <div style="font-weight: bold; margin-bottom: 5px;">ITEMS PURCHASED:</div>
-            ${transaction.items.map(item => `
-              <div class="item">
-                <div class="item-name">${item.name}</div>
-                <div class="item-details">
-                  ${formatCurrency(item.price)} × ${item.quantity}<br>
-                  ${formatCurrency(item.total || (item.price * item.quantity))}
+            ${transaction.items.map(item => {
+              const itemPrice = item.unitPrice || item.price;
+              
+              // Try to get weight info from stored data first, then from product data
+              let weightInfo = '';
+              if (item.weightKg) {
+                weightInfo = ` (${item.weightKg}kg)`;
+              } else if (item.productId && item.productId.weightOptions && item.productId.weightOptions.length > 0) {
+                // If no stored weight info, try to get it from the product's weight options
+                const firstWeight = item.productId.weightOptions[0];
+                if (firstWeight && firstWeight.weightKg) {
+                  weightInfo = ` (${firstWeight.weightKg}kg)`;
+                }
+              }
+              
+              return `
+                <div class="item">
+                  <div class="item-name">${item.name}${weightInfo}</div>
+                  <div class="item-details">
+                    ${formatCurrency(itemPrice)} × ${item.quantity}<br>
+                    ${formatCurrency(item.total || (itemPrice * item.quantity))}
+                  </div>
                 </div>
-              </div>
-            `).join('')}
+              `;
+            }).join('')}
           </div>
 
           <div class="totals">
@@ -671,19 +687,36 @@ const POSHistoryPage = () => {
                 <div>
                   <h4 className="text-lg font-semibold text-[#860809] mb-3 font-libre">Items Purchased</h4>
                   <div className="space-y-2">
-                    {selectedTransaction.items.map((item, index) => (
-                      <div key={index} className="flex justify-between items-center p-3 bg-[#f8f3ed] rounded-lg">
-                        <div>
-                          <p className="font-medium text-[#030105] font-alice">{item.name}</p>
-                          <p className="text-sm text-[#a31f17] font-libre">
-                            {formatCurrency(item.price)} × {item.quantity}
-                          </p>
+                    {selectedTransaction.items.map((item, index) => {
+                      const itemPrice = item.unitPrice || item.price;
+                      
+                      // Try to get weight info from stored data first, then from product data
+                      let weightInfo = '';
+                      if (item.weightKg) {
+                        weightInfo = ` (${item.weightKg}kg)`;
+                      } else if (item.productId && item.productId.weightOptions && item.productId.weightOptions.length > 0) {
+                        // If no stored weight info, try to get it from the product's weight options
+                        // For now, we'll show the first weight option as a fallback
+                        const firstWeight = item.productId.weightOptions[0];
+                        if (firstWeight && firstWeight.weightKg) {
+                          weightInfo = ` (${firstWeight.weightKg}kg)`;
+                        }
+                      }
+                      
+                      return (
+                        <div key={index} className="flex justify-between items-center p-3 bg-[#f8f3ed] rounded-lg">
+                          <div>
+                            <p className="font-medium text-[#030105] font-alice">{item.name}{weightInfo}</p>
+                            <p className="text-sm text-[#a31f17] font-libre">
+                              {formatCurrency(itemPrice)} × {item.quantity}
+                            </p>
+                          </div>
+                            <p className="font-semibold text-[#860809] font-libre">
+                              {formatCurrency(item.total)}
+                            </p>
                         </div>
-                          <p className="font-semibold text-[#860809] font-libre">
-                            {formatCurrency(item.total)}
-                          </p>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
 

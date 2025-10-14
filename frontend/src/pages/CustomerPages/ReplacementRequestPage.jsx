@@ -242,6 +242,19 @@ const ReplacementRequestPage = () => {
                                         <div className="flex-1">
                                             <h3 className="font-medium text-[#030105] font-alice">
                                                 {item.product.name}
+                                                {(() => {
+                                                    // Try to get weight info from stored data first, then from product data
+                                                    if (item.weightKg) {
+                                                        return ` (${item.weightKg}kg)`;
+                                                    } else if (item.product?.weightOptions && item.product.weightOptions.length > 0) {
+                                                        // If no stored weight info, try to get it from the product's weight options
+                                                        const firstWeight = item.product.weightOptions[0];
+                                                        if (firstWeight && firstWeight.weightKg) {
+                                                            return ` (${firstWeight.weightKg}kg)`;
+                                                        }
+                                                    }
+                                                    return '';
+                                                })()}
                                             </h3>
                                             <p className="text-sm text-[#a31f17] font-libre">
                                                 Quantity: {item.quantity} • ₱{item.price.toFixed(2)} each

@@ -141,7 +141,7 @@ const PaymentPage = () => {
         finalCoupon: coupon, 
         finalIsCouponApplied: isCouponApplied 
     });
-    const subtotal = cartItems.reduce((sum, item) => sum + (item.price * (item.cartQuantity || item.quantity)), 0);
+    const subtotal = cartItems.reduce((sum, item) => sum + ((item.unitPrice || item.price) * (item.cartQuantity || item.quantity)), 0);
     const taxRate = 0.12; // 12% tax
     const taxAmount = subtotal * taxRate;
     const deliveryFee = selectedShipping === 'lalamove' && lalamoveQuote 
@@ -268,26 +268,31 @@ const PaymentPage = () => {
                             </h2>
                             
                             <div className='space-y-4'>
-                                {cartItems.map((item) => (
-                                    <div key={item._id} className='flex items-center gap-4 p-3 rounded-lg bg-[#f8f3ed]'>
-                                        <img 
-                                            src={item.image} 
-                                            alt={item.name}
-                                            className='w-16 h-16 rounded-lg object-cover'
-                                        />
-                                        <div className='flex-1'>
-                                            <h3 className='font-medium text-[#030105] font-alice'>{item.name}</h3>
-                                            <p className='text-sm text-[#a31f17] font-libre'>
-                                                Quantity: {item.cartQuantity || item.quantity} • ₱{item.price} each
-                                            </p>
-                                        </div>
-                                        <div className='text-right'>
-                                            <div className='font-semibold text-[#860809] font-libre'>
-                                                ₱{(item.price * (item.cartQuantity || item.quantity)).toFixed(2)}
+                                {cartItems.map((item) => {
+                                    const itemPrice = item.unitPrice || item.price;
+                                    const weightInfo = item.weightKg ? ` (${item.weightKg}kg)` : '';
+                                    
+                                    return (
+                                        <div key={`${item._id}-${item.weightOptionId || 'default'}`} className='flex items-center gap-4 p-3 rounded-lg bg-[#f8f3ed]'>
+                                            <img 
+                                                src={item.image} 
+                                                alt={item.name}
+                                                className='w-16 h-16 rounded-lg object-cover'
+                                            />
+                                            <div className='flex-1'>
+                                                <h3 className='font-medium text-[#030105] font-alice'>{item.name}{weightInfo}</h3>
+                                                <p className='text-sm text-[#a31f17] font-libre'>
+                                                    Quantity: {item.cartQuantity || item.quantity} • ₱{itemPrice} each
+                                                </p>
+                                            </div>
+                                            <div className='text-right'>
+                                                <div className='font-semibold text-[#860809] font-libre'>
+                                                    ₱{(itemPrice * (item.cartQuantity || item.quantity)).toFixed(2)}
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                         </div>
                     </motion.div>
@@ -309,11 +314,14 @@ const PaymentPage = () => {
                                 <div className='space-y-2'>
                                     <h3 className='text-sm font-medium text-[#a31f17] font-alice'>Products</h3>
                                     {cartItems.map((item) => {
-                                        const itemTotal = item.price * (item.cartQuantity || item.quantity);
+                                        const itemPrice = item.unitPrice || item.price; // Use unitPrice for weight-based products
+                                        const itemTotal = itemPrice * (item.cartQuantity || item.quantity);
+                                        const weightInfo = item.weightKg ? ` (${item.weightKg}kg)` : '';
+                                        
                                         return (
-                                            <div key={item._id} className='flex justify-between text-sm'>
+                                            <div key={`${item._id}-${item.weightOptionId || 'default'}`} className='flex justify-between text-sm'>
                                                 <span className='text-[#030105] font-alice'>
-                                                    {item.name} × {item.cartQuantity || item.quantity}
+                                                    {item.name}{weightInfo} × {item.cartQuantity || item.quantity}
                                                 </span>
                                                 <span className='text-[#030105] font-libre'>₱{itemTotal.toFixed(2)}</span>
                                             </div>

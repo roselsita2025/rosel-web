@@ -20,6 +20,7 @@ const ProductDetailPage = () => {
     const [buttonState, setButtonState] = useState('idle'); // idle | added | maxed
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [quantity, setQuantity] = useState(1);
+    const [selectedWeightOptionId, setSelectedWeightOptionId] = useState(null);
 
     useEffect(() => {
         const loadProduct = async () => {
@@ -29,9 +30,22 @@ const ProductDetailPage = () => {
                 const existingProduct = products.find(p => p._id === productId);
                 if (existingProduct) {
                     setProduct(existingProduct);
+                    // Auto-select the lowest weight option if available
+                    if (existingProduct.hasWeightOptions && existingProduct.weightOptions && existingProduct.weightOptions.length > 0) {
+                        const sortedOptions = [...existingProduct.weightOptions].sort((a, b) => a.weightKg - b.weightKg);
+                        if (sortedOptions.length > 0) {
+                            setSelectedWeightOptionId(sortedOptions[0]._id);
+                        }
+                    }
                 } else {
                     // If not found, fetch from API
-                    await fetchProductById(productId);
+                    const fetchedProduct = await fetchProductById(productId);
+                    if (fetchedProduct && fetchedProduct.hasWeightOptions && fetchedProduct.weightOptions && fetchedProduct.weightOptions.length > 0) {
+                        const sortedOptions = [...fetchedProduct.weightOptions].sort((a, b) => a.weightKg - b.weightKg);
+                        if (sortedOptions.length > 0) {
+                            setSelectedWeightOptionId(sortedOptions[0]._id);
+                        }
+                    }
                 }
             } catch (error) {
                 console.error('Error loading product:', error);
@@ -51,6 +65,13 @@ const ProductDetailPage = () => {
             const foundProduct = products.find(p => p._id === productId);
             if (foundProduct) {
                 setProduct(foundProduct);
+                // Auto-select the lowest weight option if available
+                if (foundProduct.hasWeightOptions && foundProduct.weightOptions && foundProduct.weightOptions.length > 0) {
+                    const sortedOptions = [...foundProduct.weightOptions].sort((a, b) => a.weightKg - b.weightKg);
+                    if (sortedOptions.length > 0) {
+                        setSelectedWeightOptionId(sortedOptions[0]._id);
+                    }
+                }
             }
         }
     }, [products, productId]);
@@ -80,6 +101,36 @@ const ProductDetailPage = () => {
     const images = getAllImages();
     const hasMultipleImages = images.length > 1;
 
+    // Derived total stocks considering weight options
+    const getTotalStocks = (p) => {
+        if (!p) return 0;
+        if (typeof p.totalStockUnits === 'number') return p.totalStockUnits;
+        if (Array.isArray(p.weightOptions) && p.weightOptions.length > 0) {
+            return p.weightOptions.reduce((sum, o) => sum + (o?.stockUnits || 0), 0);
+        }
+        return p.quantity || 0;
+    };
+
+    const totalStocks = getTotalStocks(product);
+
+    // Available weight options (if any)
+    const weightOptions = Array.isArray(product?.weightOptions) ? product.weightOptions : [];
+    const selectedWeightOption = weightOptions.find(o => String(o._id) === String(selectedWeightOptionId)) || null;
+    const selectedStock = selectedWeightOption ? (selectedWeightOption.stockUnits || 0) : (product?.quantity || 0);
+    
+    // Calculate display price - use selected option price, or lowest price if no selection
+    const displayPrice = (() => {
+        if (selectedWeightOption && typeof selectedWeightOption.price === 'number') {
+            return selectedWeightOption.price;
+        }
+        if (product?.hasWeightOptions && weightOptions.length > 0) {
+            // If no weight selected but has weight options, show lowest price
+            const sortedOptions = [...weightOptions].sort((a, b) => a.weightKg - b.weightKg);
+            return sortedOptions[0]?.price || 0;
+        }
+        return product?.price || 0;
+    })();
+
     // Navigation functions
     const goToPreviousImage = () => {
         setCurrentImageIndex((prev) => 
@@ -107,7 +158,7 @@ const ProductDetailPage = () => {
             // Add the product with the specified quantity
             let failureStatus = null;
             for (let i = 0; i < quantity; i++) {
-                const result = await addToCart(product);
+                const result = await addToCart(product, selectedWeightOptionId);
                 if (result?.status !== 'success') {
                     failureStatus = result?.status || 'error';
                     break;
@@ -281,7 +332,7 @@ const ProductDetailPage = () => {
                                 transition={{ duration: 0.8, delay: 0.6 }}
                                 className='text-3xl font-bold text-[#860809]'
                             >
-                                ₱{product.price}
+                                ₱{displayPrice}
                             </motion.div>
 
                             {/* Stock Status */}
@@ -292,15 +343,38 @@ const ProductDetailPage = () => {
                                 className='flex items-center space-x-2'
                             >
                                 <span className={`text-sm font-medium px-3 py-1 rounded-full ${
-                                    product.quantity > 10 
+                                    totalStocks > 10 
                                         ? 'bg-green-100 text-green-800' 
-                                        : product.quantity > 0 
+                                        : totalStocks > 0 
                                             ? 'bg-yellow-100 text-yellow-800' 
                                             : 'bg-red-100 text-red-800'
                                 }`}>
-                                    {product.quantity > 0 ? `${product.quantity} in stock` : 'Out of stock'}
+                                    {totalStocks > 0 ? `${totalStocks} in stock` : 'Out of stock'}
                                 </span>
                             </motion.div>
+
+                            {/* Weight options list (sorted from lowest to highest weight) */}
+                            {weightOptions.length > 0 && (
+                                <div className='flex flex-wrap gap-2'>
+                                    {[...weightOptions].sort((a, b) => a.weightKg - b.weightKg).map((opt) => {
+                                        const isSelected = String(opt._id) === String(selectedWeightOptionId);
+                                        const label = `${typeof opt.weightKg === 'number' ? opt.weightKg.toFixed(2) : opt.weightKg} kg • ${opt.stockUnits} in stock`;
+                                        return (
+                                            <button
+                                                key={String(opt._id)}
+                                                type='button'
+                                                onClick={() => { setSelectedWeightOptionId(String(opt._id)); setQuantity(1); }}
+                                                disabled={(opt.stockUnits || 0) <= 0}
+                                                className={`inline-flex items-center px-3 py-1 rounded-full border text-sm transition-colors ${
+                                                    isSelected ? 'border-[#860809] text-[#860809] bg-[#f8f3ed]' : 'border-gray-300 text-[#030105]'
+                                                } ${ (opt.stockUnits||0) <= 0 ? 'opacity-50 cursor-not-allowed' : 'hover:border-[#860809]'}`}
+                                            >
+                                                {label}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            )}
 
                             {/* Quantity Controls and Add to Cart Button */}
                             <motion.div
@@ -320,8 +394,8 @@ const ProductDetailPage = () => {
                                     </button>
                                     <span className='px-4 py-2 text-lg font-semibold min-w-[3rem] text-center'>{quantity}</span>
                                     <button
-                                        onClick={() => setQuantity(Math.min(product.quantity, quantity + 1))}
-                                        disabled={quantity >= product.quantity}
+                                        onClick={() => setQuantity(Math.min(selectedStock || totalStocks, quantity + 1))}
+                                        disabled={quantity >= (selectedStock || totalStocks)}
                                         className='p-2 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200'
                                     >
                                         <Plus className='w-4 h-4' />
@@ -331,9 +405,9 @@ const ProductDetailPage = () => {
                                 {/* Add to Cart Button */}
                                 <button
                                     onClick={handleAddToCart}
-                                    disabled={addingToCart || product.quantity === 0 || user?.role === 'admin'}
+                                    disabled={addingToCart || (selectedStock || totalStocks) === 0 || user?.role === 'admin'}
                                     className={`flex-1 px-8 py-4 text-white text-lg font-semibold rounded-lg transition-colors duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${
-                                        product.quantity > 0 
+                                        (selectedStock || totalStocks) > 0 
                                             ? buttonState === 'added'
                                                 ? 'bg-emerald-600'
                                                 : buttonState === 'maxed'
@@ -350,7 +424,7 @@ const ProductDetailPage = () => {
                                     ) : (
                                         <>
                                             <ShoppingCart className='w-5 h-5' />
-                                            {product.quantity > 0 
+                                            {(selectedStock || totalStocks) > 0 
                                                 ? buttonState === 'added'
                                                     ? 'Product Added'
                                                     : buttonState === 'maxed'

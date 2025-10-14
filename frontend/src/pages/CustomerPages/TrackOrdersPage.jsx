@@ -14,7 +14,8 @@ import {
     RefreshCw,
     Search,
     ArrowLeft,
-    ExternalLink
+    ExternalLink,
+    Printer
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import LoadingSpinner from '../../components/LoadingSpinner';
@@ -349,6 +350,254 @@ const TrackOrdersPage = () => {
 
 // Order Details Modal Component
 const OrderDetailsModal = ({ order, onClose, getStatusColor, getStatusIcon, getStatusDescription }) => {
+    const handlePrintReceipt = () => {
+        const printWindow = window.open('', '_blank');
+        const orderDate = new Date(order.createdAt).toLocaleDateString();
+        const orderTime = new Date(order.createdAt).toLocaleTimeString();
+        
+        printWindow.document.write(`
+            <html>
+                <head>
+                    <title>Order Receipt - #${order._id.slice(-8).toUpperCase()}</title>
+                    <style>
+                        body { 
+                            font-family: Arial, sans-serif; 
+                            margin: 20px;
+                            color: #333;
+                        }
+                        .receipt-container { 
+                            max-width: 400px;
+                            margin: 0 auto;
+                            border: 1px solid #ccc;
+                            padding: 20px;
+                        }
+                        .header {
+                            text-align: center;
+                            border-bottom: 2px solid #860809;
+                            padding-bottom: 15px;
+                            margin-bottom: 20px;
+                        }
+                        .company-name {
+                            font-size: 24px;
+                            font-weight: bold;
+                            color: #860809;
+                            margin-bottom: 5px;
+                        }
+                        .receipt-title {
+                            font-size: 18px;
+                            color: #333;
+                            margin-bottom: 10px;
+                        }
+                        .order-info {
+                            margin-bottom: 20px;
+                        }
+                        .order-info h3 {
+                            color: #860809;
+                            font-size: 16px;
+                            margin-bottom: 10px;
+                            border-bottom: 1px solid #eee;
+                            padding-bottom: 5px;
+                        }
+                        .info-row {
+                            display: flex;
+                            justify-content: space-between;
+                            margin-bottom: 5px;
+                            font-size: 14px;
+                        }
+                        .info-label {
+                            font-weight: bold;
+                            color: #666;
+                        }
+                        .products-section {
+                            margin-bottom: 20px;
+                        }
+                        .product-item {
+                            display: flex;
+                            justify-content: space-between;
+                            margin-bottom: 8px;
+                            padding: 5px 0;
+                            border-bottom: 1px solid #f0f0f0;
+                        }
+                        .product-name {
+                            font-weight: bold;
+                        }
+                        .product-details {
+                            font-size: 12px;
+                            color: #666;
+                        }
+                        .totals {
+                            border-top: 2px solid #860809;
+                            padding-top: 15px;
+                        }
+                        .total-row {
+                            display: flex;
+                            justify-content: space-between;
+                            margin-bottom: 5px;
+                        }
+                        .final-total {
+                            font-size: 18px;
+                            font-weight: bold;
+                            color: #860809;
+                            border-top: 1px solid #ccc;
+                            padding-top: 10px;
+                        }
+                        .status-badge {
+                            display: inline-block;
+                            padding: 4px 8px;
+                            border-radius: 4px;
+                            font-size: 12px;
+                            font-weight: bold;
+                            margin-top: 5px;
+                        }
+                        .status-completed {
+                            background-color: #d4edda;
+                            color: #155724;
+                        }
+                        .status-pending {
+                            background-color: #fff3cd;
+                            color: #856404;
+                        }
+                        .status-processing {
+                            background-color: #cce5ff;
+                            color: #004085;
+                        }
+                        .footer {
+                            text-align: center;
+                            margin-top: 20px;
+                            font-size: 12px;
+                            color: #666;
+                        }
+                        @media print {
+                            body { margin: 0; }
+                            .receipt-container { border: none; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="receipt-container">
+                        <div class="header">
+                            <div class="company-name">Rosel Meat Shop</div>
+                            <div class="receipt-title">Order Receipt</div>
+                        </div>
+                        
+                        <div class="order-info">
+                            <h3>Order Information</h3>
+                            <div class="info-row">
+                                <span class="info-label">Order #:</span>
+                                <span>#${order._id.slice(-8).toUpperCase()}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Date:</span>
+                                <span>${orderDate}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Time:</span>
+                                <span>${orderTime}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Status:</span>
+                                <span class="status-badge status-${order.computedStatus}">${order.computedStatus.replace('_', ' ').toUpperCase()}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Payment:</span>
+                                <span>${order.paymentStatus.charAt(0).toUpperCase() + order.paymentStatus.slice(1)}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Shipping:</span>
+                                <span>${order.shippingMethod === 'lalamove' ? 'Delivery' : 'Pickup'}</span>
+                            </div>
+                        </div>
+
+                        <div class="order-info">
+                            <h3>Customer Information</h3>
+                            <div class="info-row">
+                                <span class="info-label">Name:</span>
+                                <span>${order.shippingInfo ? 
+                                    `${order.shippingInfo.firstName || ''} ${order.shippingInfo.lastName || ''}`.trim() || 'N/A' : 
+                                    'N/A'
+                                }</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Phone:</span>
+                                <span>${order.shippingInfo?.phone || 'N/A'}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Address:</span>
+                                <span>${order.shippingInfo?.fullAddress || 'N/A'}</span>
+                            </div>
+                        </div>
+
+                        <div class="products-section">
+                            <h3>Products</h3>
+                            ${order.products.map(item => `
+                                <div class="product-item">
+                                    <div>
+                                        <div class="product-name">${item.product?.name || 'Product'}</div>
+                                        <div class="product-details">
+                                            ${(() => {
+                                                if (item.weightKg) {
+                                                    return `${item.weightKg}kg`;
+                                                } else if (item.product?.weightOptions && item.product.weightOptions.length > 0) {
+                                                    const firstWeight = item.product.weightOptions[0];
+                                                    if (firstWeight && firstWeight.weightKg) {
+                                                        return `${firstWeight.weightKg}kg`;
+                                                    }
+                                                }
+                                                return '';
+                                            })()} • Qty: ${item.quantity}
+                                        </div>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <div>₱${(item.price * item.quantity).toFixed(2)}</div>
+                                        <div style="font-size: 12px; color: #666;">₱${item.price.toFixed(2)} each</div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        <div class="totals">
+                            <div class="total-row">
+                                <span>Subtotal:</span>
+                                <span>₱${order.productSubtotal?.toFixed(2) || order.products.reduce((sum, item) => sum + (item.price * item.quantity), 0).toFixed(2)}</span>
+                            </div>
+                            ${order.taxAmount && typeof order.taxAmount === 'number' && order.taxAmount > 0 ? `
+                                <div class="total-row">
+                                    <span>Tax (12%):</span>
+                                    <span>₱${order.taxAmount.toFixed(2)}</span>
+                                </div>
+                            ` : ''}
+                            ${order.coupon && order.coupon.code && order.coupon.discount ? `
+                                <div class="total-row" style="color: green;">
+                                    <span>Coupon (${order.coupon.code}):</span>
+                                    <span>-₱${order.coupon.discount.toFixed(2)}</span>
+                                </div>
+                            ` : ''}
+                            ${order.deliveryFee && typeof order.deliveryFee === 'number' && order.deliveryFee > 0 ? `
+                                <div class="total-row">
+                                    <span>Delivery Fee:</span>
+                                    <span>₱${order.deliveryFee.toFixed(2)}</span>
+                                </div>
+                            ` : ''}
+                            <div class="total-row final-total">
+                                <span>Total Amount:</span>
+                                <span>₱${order.totalAmount.toFixed(2)}</span>
+                            </div>
+                        </div>
+
+                        <div class="footer">
+                            <p>Thank you for your order!</p>
+                            <p>For inquiries, contact us at your registered phone number.</p>
+                        </div>
+                    </div>
+                </body>
+            </html>
+        `);
+        
+        printWindow.document.close();
+        printWindow.print();
+        printWindow.close();
+    };
+
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
             <motion.div
@@ -362,12 +611,22 @@ const OrderDetailsModal = ({ order, onClose, getStatusColor, getStatusIcon, getS
                         <h2 className="text-2xl font-bold text-[#860809] font-libre">
                             Order Details
                         </h2>
-                        <button
-                            onClick={onClose}
-                            className="text-gray-400 hover:text-gray-600"
-                        >
-                            <XCircle size={24} />
-                        </button>
+                        <div className="flex items-center gap-3">
+                            <button
+                                onClick={handlePrintReceipt}
+                                className="inline-flex items-center gap-2 px-4 py-2 bg-[#860809] text-white rounded-lg hover:bg-[#a31f17] transition-colors font-alice"
+                                title="Print Receipt"
+                            >
+                                <Printer size={16} />
+                                Print Receipt
+                            </button>
+                            <button
+                                onClick={onClose}
+                                className="text-gray-400 hover:text-gray-600"
+                            >
+                                <XCircle size={24} />
+                            </button>
+                        </div>
                     </div>
 
                     {/* Order Status */}
@@ -460,7 +719,22 @@ const OrderDetailsModal = ({ order, onClose, getStatusColor, getStatusIcon, getS
                                         />
                                     )}
                                     <div className="flex-1">
-                                        <h4 className="font-medium text-[#030105] font-alice">{item.product?.name || 'Product'}</h4>
+                                        <h4 className="font-medium text-[#030105] font-alice">
+                                            {item.product?.name || 'Product'}
+                                            {(() => {
+                                                // Try to get weight info from stored data first, then from product data
+                                                if (item.weightKg) {
+                                                    return ` (${item.weightKg}kg)`;
+                                                } else if (item.product?.weightOptions && item.product.weightOptions.length > 0) {
+                                                    // If no stored weight info, try to get it from the product's weight options
+                                                    const firstWeight = item.product.weightOptions[0];
+                                                    if (firstWeight && firstWeight.weightKg) {
+                                                        return ` (${firstWeight.weightKg}kg)`;
+                                                    }
+                                                }
+                                                return '';
+                                            })()}
+                                        </h4>
                                         <p className="text-sm text-[#a31f17] font-libre">Quantity: {item.quantity}</p>
                                     </div>
                                     <div className="text-right">

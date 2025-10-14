@@ -153,7 +153,19 @@ const ReplacementRequestForm = ({ order, product, onSuccess, onCancel }) => {
                             />
                         )}
                         <div>
-                            <p className="font-medium text-[#030105] font-alice">{product?.name}</p>
+                            <p className="font-medium text-[#030105] font-alice">
+                                {product?.name}
+                                {(() => {
+                                    // Try to get weight info from product data
+                                    if (product?.weightOptions && product.weightOptions.length > 0) {
+                                        const firstWeight = product.weightOptions[0];
+                                        if (firstWeight && firstWeight.weightKg) {
+                                            return ` (${firstWeight.weightKg}kg)`;
+                                        }
+                                    }
+                                    return '';
+                                })()}
+                            </p>
                             <p className="text-sm text-[#a31f17] font-libre">Order #{order?._id?.slice(-8).toUpperCase()}</p>
                         </div>
                     </div>

@@ -78,7 +78,26 @@ const ProductsPage = () => {
 
 	const handleAddToCart = async (product) => {
 		if (user?.role === 'admin') return;
-		const result = await addToCart(product);
+		
+		// For products with weight options, automatically select the lowest weight
+		let weightOptionId = null;
+		if (product.hasWeightOptions && product.weightOptions && product.weightOptions.length > 0) {
+			console.log('ProductsPage: Original weight options:', product.weightOptions);
+			const sortedOptions = [...product.weightOptions].sort((a, b) => a.weightKg - b.weightKg);
+			console.log('ProductsPage: Sorted weight options (lowest first):', sortedOptions);
+			weightOptionId = sortedOptions[0]._id;
+			console.log('ProductsPage: Selected weight option:', sortedOptions[0]);
+			console.log('ProductsPage: Selected weightOptionId:', weightOptionId);
+		} else if (product.basePricePerKg && product.basePricePerKg > 0) {
+			console.log('ProductsPage: No weight options found, but has basePricePerKg. Using legacy mode.');
+		} else {
+			console.log('ProductsPage: No weight options and no basePricePerKg. Using legacy mode.');
+		}
+		
+		console.log('ProductsPage: Final weightOptionId:', weightOptionId);
+		const result = await addToCart(product, weightOptionId);
+		console.log('ProductsPage: Add to cart result:', result);
+		
 		setButtonStateById((prev) => ({ ...prev, [product._id]: result?.status === 'success' ? 'added' : (result?.status === 'maxed' || result?.status === 'out_of_stock') ? 'maxed' : 'idle' }));
 		setTimeout(() => {
 			setButtonStateById((prev) => ({ ...prev, [product._id]: 'idle' }));
@@ -214,22 +233,22 @@ const ProductsPage = () => {
 										</div>
 										<div className='p-3 flex flex-col flex-1'>
 											<h3 className='text-base font-semibold mb-1 text-[#82695b]'>{product.name}</h3>
-											<p className='text-black font-bold mb-1'>₱{product.price.toFixed(2)}</p>
+											<p className='text-black font-bold mb-1'>₱{(product.priceMin || product.price || 0).toFixed(2)}</p>
 											<div className='mb-2'>
 												<span className={`text-xs font-medium px-2 py-1 rounded-full ${
-													product.quantity > 10 ? 'bg-green-100 text-green-800' : product.quantity > 0 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'
-												}`}>{product.quantity > 0 ? `${product.quantity} in stock` : 'Out of stock'}</span>
+													(product.totalStockUnits || product.quantity) > 10 ? 'bg-green-100 text-green-800' : (product.totalStockUnits || product.quantity) > 0 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'
+												}`}>{(product.totalStockUnits || product.quantity) > 0 ? `${product.totalStockUnits || product.quantity} in stock` : 'Out of stock'}</span>
 											</div>
 											<div className="space-y-1.5 mt-auto">
 												<button
 													onClick={() => handleAddToCart(product)}
-													disabled={product.quantity === 0}
+													disabled={(product.totalStockUnits || product.quantity) === 0}
 													className={`w-full text-white font-semibold py-1.5 px-3 rounded transition-colors duration-300 flex items-center justify-center text-sm ${
-														product.quantity > 0 ? (buttonStateById[product._id] === 'added' ? 'bg-emerald-600' : buttonStateById[product._id] === 'maxed' ? 'bg-red-600' : 'bg-[#901414] hover:bg-[#a31f17]') : 'bg-gray-400 cursor-not-allowed'
+														(product.totalStockUnits || product.quantity) > 0 ? (buttonStateById[product._id] === 'added' ? 'bg-emerald-600' : buttonStateById[product._id] === 'maxed' ? 'bg-red-600' : 'bg-[#901414] hover:bg-[#a31f17]') : 'bg-gray-400 cursor-not-allowed'
 													}`}
 												>
 													<ShoppingCart className='w-4 h-4 mr-1.5' />
-													{product.quantity > 0 ? (buttonStateById[product._id] === 'added' ? 'Product Added' : buttonStateById[product._id] === 'maxed' ? 'Maxed item' : 'Add to Cart') : 'Out of Stock'}
+													{(product.totalStockUnits || product.quantity) > 0 ? (buttonStateById[product._id] === 'added' ? 'Product Added' : buttonStateById[product._id] === 'maxed' ? 'Maxed item' : 'Add to Cart') : 'Out of Stock'}
 												</button>
 												<Link to={`/product/${product._id}`} className="w-full text-[#901414] font-semibold py-1.5 px-3 rounded transition-all duration-300 flex items-center justify-center border-2 border-[#901414] hover:bg-[#901414] hover:text-white text-sm opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0">
 													<Eye className='w-4 h-4 mr-1.5' />

@@ -25,7 +25,7 @@ export const getCustomerOrders = async (req, res) => {
         
         // Get orders with populated product details
         const orders = await Order.find(filter)
-            .populate('products.product', 'name image price')
+            .populate('products.product', 'name image price basePricePerKg weightOptions')
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(parseInt(limit));
@@ -84,7 +84,7 @@ export const getOrderDetails = async (req, res) => {
         
         // Find order and verify ownership
         const order = await Order.findOne({ _id: orderId, user: userId })
-            .populate('products.product', 'name image price description category');
+            .populate('products.product', 'name image price description category basePricePerKg weightOptions');
         
         if (!order) {
             return res.status(404).json({
@@ -460,7 +460,7 @@ export const getAllOrders = async (req, res) => {
         // Get orders with populated product and user details
         const orders = await Order.find(filter)
             .populate('user', 'name email')
-            .populate('products.product', 'name image price category')
+            .populate('products.product', 'name image price category basePricePerKg weightOptions')
             .sort(sort)
             .skip(skip)
             .limit(parseInt(limit));

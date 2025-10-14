@@ -86,7 +86,7 @@ export const getOrders = async (req, res) => {
 
         // Execute query
         const orders = await Order.find(filter)
-            .populate('products.product', 'name image price')
+            .populate('products.product', 'name image price category basePricePerKg weightOptions')
             .populate('user', 'name email')
             .sort(sort)
             .skip(skip)
@@ -413,7 +413,7 @@ export const getOrdersPendingActions = async (req, res) => {
         // Get orders with populated details
         const orders = await Order.find(filter)
             .populate('user', 'name email')
-            .populate('products.product', 'name image price category')
+            .populate('products.product', 'name image price category basePricePerKg weightOptions')
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(parseInt(limit));

@@ -64,23 +64,42 @@ const PeopleAlsoBought = () => {
 						</div>
 						<h3 className="text-sm font-bold text-[#030105] mb-1 line-clamp-2">{product.name}</h3>
 						<div className="flex justify-center items-center mb-1">
-							<span className="text-base text-[#901414]">₱{product.price.toFixed(2)}</span>
+							<span className="text-base text-[#901414]">₱{(product.priceMin || product.price || 0).toFixed(2)}</span>
 						</div>
 						<div className="flex justify-center items-center mb-2">
 							<span className={`text-xs font-medium px-1.5 py-0.5 rounded-full ${
-								product.quantity > 10 
+								(product.totalStockUnits || product.quantity) > 10 
 									? 'bg-green-100 text-green-800' 
-									: product.quantity > 0 
+									: (product.totalStockUnits || product.quantity) > 0 
 										? 'bg-yellow-100 text-yellow-800' 
 										: 'bg-red-100 text-red-800'
 							}`}>
-								{product.quantity > 0 ? `${product.quantity} in stock` : 'Out of stock'}
+								{(product.totalStockUnits || product.quantity) > 0 ? `${product.totalStockUnits || product.quantity} in stock` : 'Out of stock'}
 							</span>
 						</div>
 						<button
 							onClick={async () => {
 								if (user?.role === 'admin') return;
-								const result = await addToCart(product);
+								
+								// For products with weight options, automatically select the lowest weight
+								let weightOptionId = null;
+								if (product.hasWeightOptions && product.weightOptions && product.weightOptions.length > 0) {
+									console.log('PeopleAlsoBought: Original weight options:', product.weightOptions);
+									const sortedOptions = [...product.weightOptions].sort((a, b) => a.weightKg - b.weightKg);
+									console.log('PeopleAlsoBought: Sorted weight options (lowest first):', sortedOptions);
+									weightOptionId = sortedOptions[0]._id;
+									console.log('PeopleAlsoBought: Selected weight option:', sortedOptions[0]);
+									console.log('PeopleAlsoBought: Selected weightOptionId:', weightOptionId);
+								} else if (product.basePricePerKg && product.basePricePerKg > 0) {
+									console.log('PeopleAlsoBought: No weight options found, but has basePricePerKg. Using legacy mode.');
+								} else {
+									console.log('PeopleAlsoBought: No weight options and no basePricePerKg. Using legacy mode.');
+								}
+								
+								console.log('PeopleAlsoBought: Final weightOptionId:', weightOptionId);
+								const result = await addToCart(product, weightOptionId);
+								console.log('PeopleAlsoBought: Add to cart result:', result);
+								
 								setButtonStateById((prev) => ({
 									...prev,
 									[product._id]: result?.status === 'success' ? 'added' : (result?.status === 'maxed' || result?.status === 'out_of_stock') ? 'maxed' : 'idle'
@@ -89,7 +108,7 @@ const PeopleAlsoBought = () => {
 									setButtonStateById((prev) => ({ ...prev, [product._id]: 'idle' }));
 								}, 1500);
 							}}
-							disabled={product.quantity === 0}
+							disabled={(product.totalStockUnits || product.quantity) === 0}
 							className={`w-full text-white py-1 px-2 rounded-lg transition-colors duration-300 font-semibold text-xs ${
 								product.quantity > 0
 									? buttonStateById[product._id] === 'added'

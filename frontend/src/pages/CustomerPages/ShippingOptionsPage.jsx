@@ -385,11 +385,14 @@ const ShippingOptionsPage = () => {
                                 <div className='space-y-2'>
                                     <h3 className='text-sm font-medium text-[#a31f17] font-alice'>Products</h3>
                                     {cart.map((item) => {
-                                        const itemTotal = item.price * (item.cartQuantity || item.quantity);
+                                        const itemPrice = item.unitPrice || item.price; // Use unitPrice for weight-based products
+                                        const itemTotal = itemPrice * (item.cartQuantity || item.quantity);
+                                        const weightInfo = item.weightKg ? ` (${item.weightKg}kg)` : '';
+                                        
                                         return (
-                                            <div key={item._id} className='flex justify-between text-sm'>
+                                            <div key={`${item._id}-${item.weightOptionId || 'default'}`} className='flex justify-between text-sm'>
                                                 <span className='text-[#030105] font-alice'>
-                                                    {item.name} × {item.cartQuantity || item.quantity}
+                                                    {item.name}{weightInfo} × {item.cartQuantity || item.quantity}
                                                 </span>
                                                 <span className='text-[#030105] font-libre'>₱{itemTotal.toFixed(2)}</span>
                                             </div>

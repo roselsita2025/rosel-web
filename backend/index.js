@@ -29,6 +29,7 @@ import posRoutes from './routes/pos.route.js';
 import activityLogRoutes from './routes/activityLog.route.js';
 import reviewRoutes from './routes/reviews.js';
 import backupRoutes from './routes/backup.route.js';
+import writeOffRoutes from './routes/writeOff.route.js';
 
 import './utils/env.js';
 
@@ -55,8 +56,8 @@ app.use("/api/maps", mapsRoutes);
 app.use("/api/webhooks", webhookRoutes);
 app.use("/api/lalamove", lalamoveRoutes);
 app.use("/api/orders", orderRoutes);
-app.use("/api/admin", adminRoutes);
 app.use("/api/admin/orders", adminOrderRoutes);
+app.use("/api/admin", adminRoutes);
 app.use("/api/replacement-requests", replacementRequestRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/notifications", notificationRoutes);
@@ -65,6 +66,7 @@ app.use("/api/pos", posRoutes);
 app.use("/api/activity-logs", activityLogRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/backup", backupRoutes);
+app.use("/api/write-offs", writeOffRoutes);
 
 // Serve static files from the React app build directory
 app.use(express.static(path.join(__dirname, '../frontend/dist')));

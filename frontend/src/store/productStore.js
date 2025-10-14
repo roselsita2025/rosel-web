@@ -306,4 +306,65 @@ export const productStore = create((set, get) => ({
 		}
 	},
 
+    // ==================== Weight Options (Admin) ====================
+    addWeightOption: async (productId, { weightKg, stockUnits }) => {
+        set({ loading: true });
+        try {
+            const response = await axios.post(`${API_URL}/products/${productId}/weights`, { weightKg, stockUnits });
+            const updated = response.data?.product;
+            if (updated) {
+                set((prevState) => ({
+                    products: prevState.products.map((p) => (p._id === productId ? updated : p)),
+                    loading: false,
+                }));
+                toast.success("Weight option added");
+            } else {
+                set({ loading: false });
+            }
+        } catch (error) {
+            set({ loading: false });
+            toast.error(error.response?.data?.message || "Failed to add weight option");
+        }
+    },
+
+    // ==================== Base Price Per Kg (Admin) ====================
+    updateBasePricePerKg: async (productId, basePricePerKg) => {
+        set({ loading: true });
+        try {
+            const response = await axios.patch(`${API_URL}/products/${productId}/base-price`, { basePricePerKg });
+            const updated = response.data?.product;
+            if (updated) {
+                set((prevState) => ({
+                    products: prevState.products.map((p) => (p._id === productId ? updated : p)),
+                    loading: false,
+                }));
+            } else {
+                set({ loading: false });
+            }
+        } catch (error) {
+            set({ loading: false });
+            throw error;
+        }
+    },
+
+    updateWeightOptionStock: async (productId, weightOptionId, newStockUnits) => {
+        set({ loading: true });
+        try {
+            const response = await axios.patch(`${API_URL}/products/${productId}/weights/${weightOptionId}`, { stockUnits: newStockUnits });
+            const updated = response.data?.product;
+            if (updated) {
+                set((prevState) => ({
+                    products: prevState.products.map((p) => (p._id === productId ? updated : p)),
+                    loading: false,
+                }));
+                toast.success("Stock updated");
+            } else {
+                set({ loading: false });
+            }
+        } catch (error) {
+            set({ loading: false });
+            toast.error(error.response?.data?.message || "Failed to update stock");
+        }
+    },
+
     }));

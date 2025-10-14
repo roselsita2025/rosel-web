@@ -68,6 +68,12 @@ const POSPage = () => {
   
   // Added to cart feedback state
   const [addedToCart, setAddedToCart] = useState(null);
+  
+  // Weight selection modal state
+  const [showWeightModal, setShowWeightModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedWeightOption, setSelectedWeightOption] = useState(null);
+  const [quantityInput, setQuantityInput] = useState(1);
 
   // Categories
   const categories = ['pork', 'beef', 'chicken', 'sliced', 'processed', 'seafood'];
@@ -194,7 +200,7 @@ const POSPage = () => {
 
   // Calculate totals whenever cart changes
   useEffect(() => {
-    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const subtotal = cart.reduce((sum, item) => sum + ((item.unitPrice || item.price) * item.quantity), 0);
     const tax = subtotal * 0.12; // 12% VAT
     let discount = 0;
     
@@ -222,24 +228,45 @@ const POSPage = () => {
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          product.barcode?.includes(searchQuery);
     const matchesCategory = !selectedCategory || product.category === selectedCategory;
-    return matchesSearch && matchesCategory && product.status === 'available' && product.quantity > 0;
+    
+    // Check if product has stock (either legacy quantity or weight options with stock)
+    const hasStock = product.quantity > 0 || (product.hasWeightOptions && product.weightOptions && product.weightOptions.some(opt => opt.stockUnits > 0));
+    
+    return matchesSearch && matchesCategory && product.status === 'available' && hasStock;
   }) || [];
 
   // Cart functions
   const addToCart = (product) => {
     setCartError(''); // Clear any previous errors
     
+    // Check if product has weight options
+    if (product.hasWeightOptions && product.weightOptions && product.weightOptions.length > 0) {
+      // Show weight selection modal
+      setSelectedProduct(product);
+      setShowWeightModal(true);
+      return;
+    }
+    
+    // For products without weight options, add directly to cart
+    addProductToCart(product);
+  };
+
+  const addProductToCart = (product, selectedWeightOption = null) => {
     setCart(prev => {
-      const existingItem = prev.find(item => item._id === product._id);
+      const existingItem = prev.find(item => 
+        item._id === product._id && 
+        (!selectedWeightOption || String(item.weightOptionId) === String(selectedWeightOption._id))
+      );
+      
       if (existingItem) {
-        const maxStock = existingItem.stockQuantity || product.quantity;
+        const maxStock = selectedWeightOption ? selectedWeightOption.stockUnits : (existingItem.stockQuantity || product.quantity);
         if (existingItem.quantity < maxStock) {
           // Show added to cart feedback
           setAddedToCart(product._id);
           setTimeout(() => setAddedToCart(null), 1000);
           
           return prev.map(item =>
-            item._id === product._id
+            (item._id === product._id && (!selectedWeightOption || String(item.weightOptionId) === String(selectedWeightOption._id)))
               ? { ...item, quantity: item.quantity + 1 }
               : item
           );
@@ -249,12 +276,22 @@ const POSPage = () => {
           return prev;
         }
       } else {
-        if (product.quantity > 0) {
+        const stockQuantity = selectedWeightOption ? selectedWeightOption.stockUnits : product.quantity;
+        if (stockQuantity > 0) {
           // Show added to cart feedback
           setAddedToCart(product._id);
           setTimeout(() => setAddedToCart(null), 1000);
           
-          return [...prev, { ...product, quantity: 1, stockQuantity: product.quantity }];
+          const cartItem = {
+            ...product,
+            quantity: 1,
+            stockQuantity,
+            weightOptionId: selectedWeightOption ? selectedWeightOption._id : null,
+            weightKg: selectedWeightOption ? selectedWeightOption.weightKg : null,
+            unitPrice: selectedWeightOption ? (selectedWeightOption.price || (product.basePricePerKg * selectedWeightOption.weightKg)) : product.price
+          };
+          
+          return [...prev, cartItem];
         } else {
           // Show error when product is out of stock
           setCartError(`${product.name} is out of stock.`);
@@ -264,16 +301,16 @@ const POSPage = () => {
     });
   };
 
-  const updateQuantity = (productId, newQuantity) => {
+  const updateQuantity = (productId, newQuantity, weightOptionId = null) => {
     setCartError(''); // Clear any previous errors
     
     if (newQuantity <= 0) {
-      removeFromCart(productId);
+      removeFromCart(productId, weightOptionId);
       return;
     }
     
     setCart(prev => prev.map(item => {
-      if (item._id === productId) {
+      if (item._id === productId && (!weightOptionId || String(item.weightOptionId) === String(weightOptionId))) {
         const maxQuantity = item.stockQuantity || item.quantity;
         if (newQuantity > maxQuantity) {
           setCartError(`Cannot add more ${item.name}. Only ${maxQuantity} items available in stock.`);
@@ -285,8 +322,10 @@ const POSPage = () => {
     }));
   };
 
-  const removeFromCart = (productId) => {
-    setCart(prev => prev.filter(item => item._id !== productId));
+  const removeFromCart = (productId, weightOptionId = null) => {
+    setCart(prev => prev.filter(item => 
+      !(item._id === productId && (!weightOptionId || String(item.weightOptionId) === String(weightOptionId)))
+    ));
   };
 
   const clearCart = () => {
@@ -345,9 +384,11 @@ const POSPage = () => {
       items: cart.map(item => ({
         productId: item._id,
         name: item.name,
-        price: item.price,
+        price: item.unitPrice || item.price,
         quantity: item.quantity,
-        total: item.price * item.quantity
+        total: (item.unitPrice || item.price) * item.quantity,
+        weightOptionId: item.weightOptionId || null,
+        weightKg: item.weightKg || null
       })),
       customer: customerInfo,
       payment: {
@@ -359,6 +400,7 @@ const POSPage = () => {
         name: user.name || 'Admin'
       }
     };
+
 
     // Save transaction to backend
     const result = await createTransaction(transactionData);
@@ -546,15 +588,19 @@ const POSPage = () => {
 
           <div class="items">
             <div style="font-weight: bold; margin-bottom: 5px;">ITEMS PURCHASED:</div>
-            ${transaction.items.map(item => `
-              <div class="item">
-                <div class="item-name">${item.name}</div>
-                <div class="item-details">
-                  ${formatCurrency(item.price)} × ${item.quantity}<br>
-                  ${formatCurrency(item.price * item.quantity)}
+            ${transaction.items.map(item => {
+              const itemPrice = item.unitPrice || item.price;
+              const weightInfo = item.weightKg ? ` (${item.weightKg}kg)` : '';
+              return `
+                <div class="item">
+                  <div class="item-name">${item.name}${weightInfo}</div>
+                  <div class="item-details">
+                    ${formatCurrency(itemPrice)} × ${item.quantity}<br>
+                    ${formatCurrency(itemPrice * item.quantity)}
+                  </div>
                 </div>
-              </div>
-            `).join('')}
+              `;
+            }).join('')}
           </div>
 
           <div class="totals">
@@ -807,12 +853,9 @@ const POSPage = () => {
                       <p className="text-xs text-[#a31f17] capitalize mb-2 font-libre">
                         {product.category}
                       </p>
-                      <div className="flex justify-between items-center">
-                        <span className="font-bold text-[#860809] font-libre">
-                          ₱{product.price.toFixed(2)}
-                        </span>
-                        <span className="text-xs text-[#a31f17] font-alice">
-                          Stock: {product.quantity}
+                      <div className="flex justify-center items-center">
+                        <span className="text-sm font-semibold text-[#860809] font-alice">
+                          Total Stock: {product.totalStockUnits || product.quantity}
                         </span>
                       </div>
                     </motion.div>
@@ -872,51 +915,55 @@ const POSPage = () => {
                 </div>
               ) : (
                 <div className="space-y-3 max-h-64 overflow-y-auto">
-                  {cart.map(item => (
-                    <div key={item._id} className="flex items-center gap-3 p-2 border border-gray-300 rounded-lg">
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="w-12 h-12 object-cover rounded"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-medium text-sm text-[#030105] line-clamp-1 font-alice">
-                          {item.name}
-                        </h4>
-                        <p className="text-xs text-[#a31f17] font-libre">
-                          ₱{item.price.toFixed(2)} each
-                        </p>
+                  {cart.map(item => {
+                    const itemPrice = item.unitPrice || item.price;
+                    const weightInfo = item.weightKg ? ` (${item.weightKg}kg)` : '';
+                    return (
+                      <div key={`${item._id}-${item.weightOptionId || 'default'}`} className="flex items-center gap-3 p-2 border border-gray-300 rounded-lg">
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          className="w-12 h-12 object-cover rounded"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-medium text-sm text-[#030105] line-clamp-1 font-alice">
+                            {item.name}{weightInfo}
+                          </h4>
+                          <p className="text-xs text-[#a31f17] font-libre">
+                            ₱{itemPrice.toFixed(2)} each
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => updateQuantity(item._id, item.quantity - 1, item.weightOptionId)}
+                            className="w-6 h-6 rounded-full bg-[#f8f3ed] flex items-center justify-center hover:bg-[#860809] hover:text-white transition-colors"
+                          >
+                            <Minus className="w-3 h-3" />
+                          </button>
+                          <span className="w-8 text-center text-sm font-medium font-alice">
+                            {item.quantity}
+                          </span>
+                          <button
+                            onClick={() => updateQuantity(item._id, item.quantity + 1, item.weightOptionId)}
+                            className="w-6 h-6 rounded-full bg-[#f8f3ed] flex items-center justify-center hover:bg-[#860809] hover:text-white transition-colors"
+                          >
+                            <Plus className="w-3 h-3" />
+                          </button>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-semibold text-[#860809]">
+                            ₱{(itemPrice * item.quantity).toFixed(2)}
+                          </p>
+                          <button
+                            onClick={() => removeFromCart(item._id, item.weightOptionId)}
+                            className="text-red-500 hover:text-red-700 text-xs"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => updateQuantity(item._id, item.quantity - 1)}
-                          className="w-6 h-6 rounded-full bg-[#f8f3ed] flex items-center justify-center hover:bg-[#860809] hover:text-white transition-colors"
-                        >
-                          <Minus className="w-3 h-3" />
-                        </button>
-                        <span className="w-8 text-center text-sm font-medium font-alice">
-                          {item.quantity}
-                        </span>
-                        <button
-                          onClick={() => updateQuantity(item._id, item.quantity + 1)}
-                          className="w-6 h-6 rounded-full bg-[#f8f3ed] flex items-center justify-center hover:bg-[#860809] hover:text-white transition-colors"
-                        >
-                          <Plus className="w-3 h-3" />
-                        </button>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-semibold text-[#860809]">
-                          ₱{(item.price * item.quantity).toFixed(2)}
-                        </p>
-                        <button
-                          onClick={() => removeFromCart(item._id)}
-                          className="text-red-500 hover:text-red-700 text-xs"
-                        >
-                          <X className="w-3 h-3" />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -1284,6 +1331,192 @@ const POSPage = () => {
                 >
                   <Check className="w-4 h-4" />
                   New Sale
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Weight Selection Modal */}
+        {showWeightModal && selectedProduct && !selectedWeightOption && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="bg-white rounded-lg p-6 w-full max-w-md mx-4"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-[#860809]">Select Weight Option</h3>
+                <button
+                  onClick={() => {
+                    setShowWeightModal(false);
+                    setSelectedProduct(null);
+                    setSelectedWeightOption(null);
+                    setQuantityInput(1);
+                  }}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+              
+              <div className="mb-4">
+                <p className="text-sm text-gray-600 mb-2">Product: <span className="font-medium">{selectedProduct.name}</span></p>
+                <p className="text-sm text-gray-600">Base Price: ₱{selectedProduct.basePricePerKg?.toFixed(2) || '0.00'} per kg</p>
+              </div>
+              
+              <div className="space-y-3 mb-6">
+                {selectedProduct.weightOptions?.map((option) => {
+                  const price = option.price || (selectedProduct.basePricePerKg * option.weightKg);
+                  return (
+                    <button
+                      key={option._id}
+                      onClick={() => {
+                        setSelectedWeightOption(option);
+                        setQuantityInput(1);
+                      }}
+                      disabled={option.stockUnits <= 0}
+                      className={`w-full p-4 rounded-lg border-2 text-left transition-colors ${
+                        option.stockUnits <= 0
+                          ? 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed'
+                          : 'border-[#f7e9b8] hover:border-[#860809] hover:bg-[#f8f3ed]'
+                      }`}
+                    >
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <div className="font-medium text-[#030105]">
+                            {option.weightKg} kg
+                          </div>
+                          <div className="text-sm text-gray-600">
+                            Stock: {option.stockUnits} units
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="font-semibold text-[#860809]">
+                            ₱{price.toFixed(2)}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            per unit
+                          </div>
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+              
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setShowWeightModal(false);
+                    setSelectedProduct(null);
+                    setSelectedWeightOption(null);
+                    setQuantityInput(1);
+                  }}
+                  className="flex-1 py-2 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Quantity Input Modal */}
+        {showWeightModal && selectedProduct && selectedWeightOption && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="bg-white rounded-lg p-6 w-full max-w-md mx-4"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-[#860809]">Enter Quantity</h3>
+                <button
+                  onClick={() => {
+                    setShowWeightModal(false);
+                    setSelectedProduct(null);
+                    setSelectedWeightOption(null);
+                    setQuantityInput(1);
+                  }}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+              
+              <div className="mb-4">
+                <p className="text-sm text-gray-600 mb-2">Product: <span className="font-medium">{selectedProduct.name}</span></p>
+                <p className="text-sm text-gray-600">Weight: <span className="font-medium">{selectedWeightOption.weightKg} kg</span></p>
+                <p className="text-sm text-gray-600">Available Stock: <span className="font-medium">{selectedWeightOption.stockUnits} units</span></p>
+                <p className="text-sm text-gray-600">Price: <span className="font-medium">₱{(selectedWeightOption.price || (selectedProduct.basePricePerKg * selectedWeightOption.weightKg)).toFixed(2)} per unit</span></p>
+              </div>
+              
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Quantity to Add:
+                </label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="number"
+                    min="1"
+                    max={selectedWeightOption.stockUnits}
+                    value={quantityInput}
+                    onChange={(e) => setQuantityInput(Math.max(1, Math.min(selectedWeightOption.stockUnits, parseInt(e.target.value) || 1)))}
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#860809] focus:border-transparent"
+                  />
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setQuantityInput(Math.min(selectedWeightOption.stockUnits, quantityInput + 1))}
+                      className="px-3 py-2 bg-[#860809] text-white rounded-lg hover:bg-[#a31f17] transition-colors text-sm"
+                    >
+                      +1
+                    </button>
+                    <button
+                      onClick={() => setQuantityInput(Math.min(selectedWeightOption.stockUnits, quantityInput + 2))}
+                      className="px-3 py-2 bg-[#860809] text-white rounded-lg hover:bg-[#a31f17] transition-colors text-sm"
+                    >
+                      +2
+                    </button>
+                    <button
+                      onClick={() => setQuantityInput(Math.min(selectedWeightOption.stockUnits, quantityInput + 5))}
+                      className="px-3 py-2 bg-[#860809] text-white rounded-lg hover:bg-[#a31f17] transition-colors text-sm"
+                    >
+                      +5
+                    </button>
+                  </div>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Total: ₱{((selectedWeightOption.price || (selectedProduct.basePricePerKg * selectedWeightOption.weightKg)) * quantityInput).toFixed(2)}
+                </p>
+              </div>
+              
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setSelectedWeightOption(null);
+                    setQuantityInput(1);
+                  }}
+                  className="flex-1 py-2 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Back
+                </button>
+                <button
+                  onClick={() => {
+                    // Add multiple quantities to cart
+                    for (let i = 0; i < quantityInput; i++) {
+                      addProductToCart(selectedProduct, selectedWeightOption);
+                    }
+                    setShowWeightModal(false);
+                    setSelectedProduct(null);
+                    setSelectedWeightOption(null);
+                    setQuantityInput(1);
+                  }}
+                  className="flex-1 py-2 px-4 bg-[#860809] text-white rounded-lg hover:bg-[#a31f17] transition-colors"
+                >
+                  Add to Cart
                 </button>
               </div>
             </motion.div>

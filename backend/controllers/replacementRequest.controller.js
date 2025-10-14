@@ -105,7 +105,7 @@ export const createReplacementRequest = async (req, res) => {
         await replacementRequest.populate([
             { path: 'user', select: 'name email' },
             { path: 'order', select: '_id totalAmount createdAt' },
-            { path: 'product', select: 'name image price category' }
+            { path: 'product', select: 'name image price category basePricePerKg weightOptions' }
         ]);
 
         // Send notification to admins about new replacement request
@@ -188,8 +188,15 @@ export const getCustomerReplacementRequests = async (req, res) => {
         // Get replacement requests with populated data
         const requests = await ReplacementRequest.find(filter)
             .populate('order', '_id totalAmount createdAt')
-            .populate('product', 'name image price category')
-            .populate('replacementProduct', 'name image price category')
+            .populate({
+                path: 'order',
+                populate: {
+                    path: 'products.product',
+                    select: 'name image price category basePricePerKg weightOptions'
+                }
+            })
+            .populate('product', 'name image price category basePricePerKg weightOptions')
+            .populate('replacementProduct', 'name image price category basePricePerKg weightOptions')
             .sort(sort)
             .skip(skip)
             .limit(parseInt(limit));
@@ -248,9 +255,15 @@ export const getReplacementRequestDetails = async (req, res) => {
 
         // Find request and verify ownership
         const request = await ReplacementRequest.findOne({ _id: requestId, user: userId })
-            .populate('order', '_id totalAmount createdAt shippingInfo')
-            .populate('product', 'name image price category description')
-            .populate('replacementProduct', 'name image price category description')
+            .populate({
+                path: 'order',
+                populate: {
+                    path: 'products.product',
+                    select: 'name image price category basePricePerKg weightOptions'
+                }
+            })
+            .populate('product', 'name image price category description basePricePerKg weightOptions')
+            .populate('replacementProduct', 'name image price category description basePricePerKg weightOptions')
             .populate('handledBy', 'name email');
 
         if (!request) {
@@ -320,9 +333,15 @@ export const getAllReplacementRequests = async (req, res) => {
         // Get replacement requests with populated data
         const requests = await ReplacementRequest.find(filter)
             .populate('user', 'name email phone')
-            .populate('order', '_id totalAmount createdAt')
-            .populate('product', 'name image price category')
-            .populate('replacementProduct', 'name image price category')
+            .populate({
+                path: 'order',
+                populate: {
+                    path: 'products.product',
+                    select: 'name image price category basePricePerKg weightOptions'
+                }
+            })
+            .populate('product', 'name image price category basePricePerKg weightOptions')
+            .populate('replacementProduct', 'name image price category basePricePerKg weightOptions')
             .populate('handledBy', 'name email')
             .sort(sort)
             .skip(skip)
@@ -687,9 +706,15 @@ export const getAdminReplacementRequestDetails = async (req, res) => {
         // Find request
         const request = await ReplacementRequest.findById(requestId)
             .populate('user', 'name email phone address')
-            .populate('order', '_id totalAmount createdAt shippingInfo')
-            .populate('product', 'name image price category description')
-            .populate('replacementProduct', 'name image price category description')
+            .populate({
+                path: 'order',
+                populate: {
+                    path: 'products.product',
+                    select: 'name image price category basePricePerKg weightOptions'
+                }
+            })
+            .populate('product', 'name image price category description basePricePerKg weightOptions')
+            .populate('replacementProduct', 'name image price category description basePricePerKg weightOptions')
             .populate('handledBy', 'name email');
 
         if (!request) {

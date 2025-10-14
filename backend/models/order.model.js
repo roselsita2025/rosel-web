@@ -14,6 +14,19 @@ const orderSchema = new mongoose.Schema(
 					ref: "Product",
 					required: true,
 				},
+				// Weight-based fields (optional for backward compatibility)
+				weightOptionId: {
+					type: mongoose.Schema.Types.ObjectId,
+					default: undefined
+				},
+				weightKg: {
+					type: Number,
+					default: undefined
+				},
+				unitPrice: {
+					type: Number,
+					default: undefined
+				},
 				quantity: {
 					type: Number,
 					required: true,

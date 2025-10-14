@@ -66,16 +66,38 @@ const OrderSummary = ({ hideActions = false }) => {
 
 				const cartQuantity = cartItem.cartQuantity || cartItem.quantity;
 				
-				if (product.quantity <= 0) {
-					stockIssues.push({
-						name: cartItem.name,
-						issue: 'Out of stock'
-					});
-				} else if (cartQuantity > product.quantity) {
-					stockIssues.push({
-						name: cartItem.name,
-						issue: `Only ${product.quantity} available (you have ${cartQuantity} in cart)`
-					});
+				// Handle weight-based products
+				if (cartItem.weightOptionId && product.hasWeightOptions) {
+					const selectedOption = product.weightOptions.find(opt => String(opt._id) === String(cartItem.weightOptionId));
+					if (!selectedOption) {
+						stockIssues.push({
+							name: cartItem.name,
+							issue: 'Selected weight option no longer available'
+						});
+					} else if (selectedOption.stockUnits <= 0) {
+						stockIssues.push({
+							name: `${cartItem.name} (${cartItem.weightKg}kg)`,
+							issue: 'Out of stock'
+						});
+					} else if (cartQuantity > selectedOption.stockUnits) {
+						stockIssues.push({
+							name: `${cartItem.name} (${cartItem.weightKg}kg)`,
+							issue: `Only ${selectedOption.stockUnits} available (you have ${cartQuantity} in cart)`
+						});
+					}
+				} else {
+					// Handle legacy products
+					if (product.quantity <= 0) {
+						stockIssues.push({
+							name: cartItem.name,
+							issue: 'Out of stock'
+						});
+					} else if (cartQuantity > product.quantity) {
+						stockIssues.push({
+							name: cartItem.name,
+							issue: `Only ${product.quantity} available (you have ${cartQuantity} in cart)`
+						});
+					}
 				}
 			}
 
@@ -109,16 +131,38 @@ const OrderSummary = ({ hideActions = false }) => {
 
 				const cartQuantity = cartItem.cartQuantity || cartItem.quantity;
 				
-				if (product.quantity <= 0) {
-					stockIssues.push({
-						name: cartItem.name,
-						issue: 'Out of stock'
-					});
-				} else if (cartQuantity > product.quantity) {
-					stockIssues.push({
-						name: cartItem.name,
-						issue: `Only ${product.quantity} available (you have ${cartQuantity} in cart)`
-					});
+				// Handle weight-based products
+				if (cartItem.weightOptionId && product.hasWeightOptions) {
+					const selectedOption = product.weightOptions.find(opt => String(opt._id) === String(cartItem.weightOptionId));
+					if (!selectedOption) {
+						stockIssues.push({
+							name: cartItem.name,
+							issue: 'Selected weight option no longer available'
+						});
+					} else if (selectedOption.stockUnits <= 0) {
+						stockIssues.push({
+							name: `${cartItem.name} (${cartItem.weightKg}kg)`,
+							issue: 'Out of stock'
+						});
+					} else if (cartQuantity > selectedOption.stockUnits) {
+						stockIssues.push({
+							name: `${cartItem.name} (${cartItem.weightKg}kg)`,
+							issue: `Only ${selectedOption.stockUnits} available (you have ${cartQuantity} in cart)`
+						});
+					}
+				} else {
+					// Handle legacy products
+					if (product.quantity <= 0) {
+						stockIssues.push({
+							name: cartItem.name,
+							issue: 'Out of stock'
+						});
+					} else if (cartQuantity > product.quantity) {
+						stockIssues.push({
+							name: cartItem.name,
+							issue: `Only ${product.quantity} available (you have ${cartQuantity} in cart)`
+						});
+					}
 				}
 			} catch (error) {
 				stockIssues.push({
@@ -154,15 +198,20 @@ const OrderSummary = ({ hideActions = false }) => {
                     <div className='space-y-2 max-h-48 overflow-y-auto'>
                         {cart.map((item) => {
                             const itemQuantity = item.cartQuantity || item.quantity;
-                            const itemTotal = item.price * itemQuantity;
+                            const itemPrice = item.unitPrice || item.price; // Use unitPrice for weight-based products
+                            const itemTotal = itemPrice * itemQuantity;
+                            
+                            // Display weight information for weight-based products
+                            const weightInfo = item.weightKg ? ` (${item.weightKg}kg)` : '';
+                            
                             return (
-                                <div key={item._id} className='flex items-center justify-between text-sm'>
+                                <div key={`${item._id}-${item.weightOptionId || 'default'}`} className='flex items-center justify-between text-sm'>
                                     <div className='flex-1 min-w-0'>
                                         <p className='font-medium truncate text-[#030105] font-alice'>
-                                            {item.name}
+                                            {item.name}{weightInfo}
                                         </p>
                                         <p className='text-xs text-[#a31f17] font-libre'>
-                                            {itemQuantity} × ₱{item.price.toFixed(2)}
+                                            {itemQuantity} × ₱{itemPrice.toFixed(2)}
                                         </p>
                                     </div>
                                     <div className='ml-2 font-medium text-[#030105] font-libre'>

@@ -2,6 +2,8 @@ import Order from "../models/order.model.js";
 import Transaction from "../models/transaction.model.js";
 import Product from "../models/product.model.js";
 import { User } from "../models/user.model.js";
+import WriteOff from "../models/writeOff.model.js";
+import ReplacementRequest from "../models/replacementRequest.model.js";
 
 export const getAnalyticsData = async () => {
     const totalUsers = await User.countDocuments();
@@ -848,6 +850,476 @@ export const getCustomerAnalytics = async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Error fetching customer analytics',
+            error: error.message
+        });
+    }
+};
+
+// ===== DISCREPANCY ANALYTICS FUNCTIONS =====
+
+/**
+ * Get discrepancy analytics data (write-offs, replacement requests, or combined)
+ * GET /api/analytics/discrepancy
+ */
+export const getDiscrepancyAnalytics = async (req, res) => {
+    try {
+        const {
+            dataSource = 'combined',
+            timeframe = 'today',
+            startDate,
+            endDate
+        } = req.query;
+
+
+        // Calculate date range
+        let dateFilter = {};
+        const now = new Date();
+        
+        switch (timeframe) {
+            case 'today':
+                const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                dateFilter = { createdAt: { $gte: today } };
+                break;
+            case 'week':
+                const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                dateFilter = { createdAt: { $gte: weekAgo } };
+                break;
+            case 'month':
+                const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                dateFilter = { createdAt: { $gte: monthAgo } };
+                break;
+            case 'year':
+                const yearAgo = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+                dateFilter = { createdAt: { $gte: yearAgo } };
+                break;
+            case 'custom':
+                if (startDate || endDate) {
+                    dateFilter = {};
+                    if (startDate) dateFilter.createdAt = { ...dateFilter.createdAt, $gte: new Date(startDate) };
+                    if (endDate) dateFilter.createdAt = { ...dateFilter.createdAt, $lte: new Date(endDate) };
+                }
+                break;
+        }
+        
+
+        let totalStocks = 0;
+        let totalCost = 0;
+        let categoryBreakdown = [];
+        let trendsData = [];
+
+        // Get write-offs data
+        if (dataSource === 'writeoffs' || dataSource === 'combined') {
+            const writeOffData = await WriteOff.aggregate([
+                { $match: {} }, // Remove date filter to get all write-offs
+                {
+                    $group: {
+                        _id: null,
+                        totalStocks: { $sum: '$quantity' },
+                        totalCost: { $sum: '$cost' }
+                    }
+                }
+            ]);
+
+            if (writeOffData.length > 0) {
+                totalStocks += writeOffData[0].totalStocks || 0;
+                totalCost += writeOffData[0].totalCost || 0;
+            }
+
+            // Get write-off category breakdown
+            const writeOffCategories = await WriteOff.aggregate([
+                { $match: {} }, // Remove date filter to get all write-offs
+                {
+                    $group: {
+                        _id: '$productCategory',
+                        quantity: { $sum: '$quantity' },
+                        cost: { $sum: '$cost' }
+                    }
+                },
+                { $sort: { quantity: -1 } }
+            ]);
+
+            categoryBreakdown = [...categoryBreakdown, ...writeOffCategories];
+
+            // Get write-off trends
+            const writeOffTrends = await WriteOff.aggregate([
+                { $match: {} }, // Remove date filter to get all write-offs
+                {
+                    $group: {
+                        _id: {
+                            year: { $year: '$createdAt' },
+                            month: { $month: '$createdAt' },
+                            day: { $dayOfMonth: '$createdAt' }
+                        },
+                        quantity: { $sum: '$quantity' },
+                        cost: { $sum: '$cost' }
+                    }
+                },
+                { $sort: { '_id.year': 1, '_id.month': 1, '_id.day': 1 } }
+            ]);
+            
+            trendsData = [...trendsData, ...writeOffTrends];
+        }
+
+        // Get replacement requests data
+        if (dataSource === 'replacements' || dataSource === 'combined') {
+            const replacementData = await ReplacementRequest.aggregate([
+                { $match: { ...dateFilter, status: 'approved' } },
+                {
+                    $lookup: {
+                        from: 'products',
+                        localField: 'product',
+                        foreignField: '_id',
+                        as: 'productDoc'
+                    }
+                },
+                { $unwind: '$productDoc' },
+                {
+                    $lookup: {
+                        from: 'orders',
+                        localField: 'order',
+                        foreignField: '_id',
+                        as: 'orderDoc'
+                    }
+                },
+                { $unwind: '$orderDoc' },
+                {
+                    $group: {
+                        _id: null,
+                        totalStocks: { $sum: '$quantity' },
+                        totalCost: { $sum: { $ifNull: ['$orderDoc.totalAmount', { $multiply: ['$quantity', { $ifNull: ['$productDoc.price', { $ifNull: ['$productDoc.basePricePerKg', 0] }] }] }] } }
+                    }
+                }
+            ]);
+
+
+            if (replacementData.length > 0) {
+                totalStocks += replacementData[0].totalStocks || 0;
+                totalCost += replacementData[0].totalCost || 0;
+            }
+
+            // Get replacement category breakdown
+            const replacementCategories = await ReplacementRequest.aggregate([
+                { $match: { ...dateFilter, status: 'approved' } },
+                {
+                    $lookup: {
+                        from: 'products',
+                        localField: 'product',
+                        foreignField: '_id',
+                        as: 'productDoc'
+                    }
+                },
+                { $unwind: '$productDoc' },
+                {
+                    $lookup: {
+                        from: 'orders',
+                        localField: 'order',
+                        foreignField: '_id',
+                        as: 'orderDoc'
+                    }
+                },
+                { $unwind: '$orderDoc' },
+                {
+                    $group: {
+                        _id: '$productDoc.category',
+                        quantity: { $sum: '$quantity' },
+                        cost: { $sum: { $ifNull: ['$orderDoc.totalAmount', { $multiply: ['$quantity', { $ifNull: ['$productDoc.price', { $ifNull: ['$productDoc.basePricePerKg', 0] }] }] }] } }
+                    }
+                },
+                { $sort: { quantity: -1 } }
+            ]);
+
+            categoryBreakdown = [...categoryBreakdown, ...replacementCategories];
+
+            // Get replacement trends
+            const replacementTrends = await ReplacementRequest.aggregate([
+                { $match: { ...dateFilter, status: 'approved' } },
+                {
+                    $lookup: {
+                        from: 'products',
+                        localField: 'product',
+                        foreignField: '_id',
+                        as: 'productDoc'
+                    }
+                },
+                { $unwind: '$productDoc' },
+                {
+                    $lookup: {
+                        from: 'orders',
+                        localField: 'order',
+                        foreignField: '_id',
+                        as: 'orderDoc'
+                    }
+                },
+                { $unwind: '$orderDoc' },
+                {
+                    $group: {
+                        _id: {
+                            year: { $year: '$createdAt' },
+                            month: { $month: '$createdAt' },
+                            day: { $dayOfMonth: '$createdAt' }
+                        },
+                        quantity: { $sum: '$quantity' },
+                        cost: { $sum: { $ifNull: ['$orderDoc.totalAmount', { $multiply: ['$quantity', { $ifNull: ['$productDoc.price', { $ifNull: ['$productDoc.basePricePerKg', 0] }] }] }] } }
+                    }
+                },
+                { $sort: { '_id.year': 1, '_id.month': 1, '_id.day': 1 } }
+            ]);
+
+            trendsData = [...trendsData, ...replacementTrends];
+        }
+
+        // Sort and combine trends data by date
+        trendsData.sort((a, b) => {
+            const dateA = new Date(a._id.year, a._id.month - 1, a._id.day);
+            const dateB = new Date(b._id.year, b._id.month - 1, b._id.day);
+            return dateA - dateB;
+        });
+
+        // Combine trends data by date (in case there are multiple entries for the same date)
+        const combinedTrends = {};
+        trendsData.forEach(trend => {
+            const dateKey = `${trend._id.year}-${trend._id.month.toString().padStart(2, '0')}-${trend._id.day.toString().padStart(2, '0')}`;
+            if (combinedTrends[dateKey]) {
+                combinedTrends[dateKey].quantity += trend.quantity;
+                combinedTrends[dateKey].cost += trend.cost;
+            } else {
+                combinedTrends[dateKey] = {
+                    _id: trend._id,
+                    quantity: trend.quantity,
+                    cost: trend.cost
+                };
+            }
+        });
+
+        // Convert back to array and format for frontend
+        const rawTrendsData = Object.values(combinedTrends).map(trend => ({
+            date: `${trend._id.year}-${trend._id.month.toString().padStart(2, '0')}-${trend._id.day.toString().padStart(2, '0')}`,
+            quantity: trend.quantity,
+            cost: trend.cost
+        }));
+
+        // Generate 7 days of data (including days with 0 values)
+        // Find the latest date from the actual data
+        let latestDataDate = null;
+        if (rawTrendsData.length > 0) {
+            const dataDates = rawTrendsData.map(item => new Date(item.date));
+            latestDataDate = new Date(Math.max(...dataDates));
+        } else {
+            latestDataDate = new Date(); // Use today if no data
+        }
+        
+        // Generate 7 days ending on the latest data date
+        const sevenDaysAgo = new Date(latestDataDate.getTime() - 6 * 24 * 60 * 60 * 1000);
+        
+        trendsData = [];
+        for (let i = 0; i < 7; i++) {
+            const currentDate = new Date(sevenDaysAgo.getTime() + i * 24 * 60 * 60 * 1000);
+            const dateString = currentDate.toISOString().split('T')[0]; // YYYY-MM-DD format
+            
+            // Find data for this date
+            const existingData = rawTrendsData.find(item => item.date === dateString);
+            
+            trendsData.push({
+                date: dateString,
+                quantity: existingData ? existingData.quantity : 0,
+                cost: existingData ? existingData.cost : 0
+            });
+        }
+
+
+        // Combine category data
+        const combinedCategories = {};
+        categoryBreakdown.forEach(item => {
+            if (combinedCategories[item._id]) {
+                combinedCategories[item._id].quantity += item.quantity;
+                combinedCategories[item._id].cost += item.cost;
+            } else {
+                combinedCategories[item._id] = {
+                    category: item._id,
+                    quantity: item.quantity,
+                    cost: item.cost
+                };
+            }
+        });
+
+        const finalCategoryBreakdown = Object.values(combinedCategories)
+            .sort((a, b) => b.quantity - a.quantity);
+
+        // Final trends data is already processed above
+        const finalTrendsData = trendsData;
+
+        res.status(200).json({
+            success: true,
+            data: {
+                totalStocks,
+                totalCost,
+                categoryBreakdown: finalCategoryBreakdown,
+                trendsData: finalTrendsData
+            },
+            message: 'Discrepancy analytics retrieved successfully'
+        });
+
+    } catch (error) {
+        console.error('Error fetching discrepancy analytics:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to retrieve discrepancy analytics',
+            error: error.message
+        });
+    }
+};
+
+/**
+ * Get discrepancy details table data
+ * GET /api/analytics/discrepancy/details
+ */
+export const getDiscrepancyDetails = async (req, res) => {
+    try {
+        const {
+            dataSource = 'combined',
+            timeframe = 'today',
+            startDate,
+            endDate,
+            page = 1,
+            limit = 20,
+            sortBy = 'createdAt',
+            sortOrder = 'desc'
+        } = req.query;
+        
+
+        // Calculate date range
+        let dateFilter = {};
+        const now = new Date();
+        
+        switch (timeframe) {
+            case 'today':
+                const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                dateFilter = { createdAt: { $gte: today } };
+                break;
+            case 'week':
+                const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                dateFilter = { createdAt: { $gte: weekAgo } };
+                break;
+            case 'month':
+                const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                dateFilter = { createdAt: { $gte: monthAgo } };
+                break;
+            case 'year':
+                const yearAgo = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+                dateFilter = { createdAt: { $gte: yearAgo } };
+                break;
+            case 'custom':
+                if (startDate || endDate) {
+                    dateFilter = {};
+                    if (startDate) dateFilter.createdAt = { ...dateFilter.createdAt, $gte: new Date(startDate) };
+                    if (endDate) dateFilter.createdAt = { ...dateFilter.createdAt, $lte: new Date(endDate) };
+                }
+                break;
+        }
+
+        let allDetails = [];
+
+        // Get write-offs details
+        if (dataSource === 'writeoffs' || dataSource === 'combined') {
+            const writeOffDetails = await WriteOff.find(dateFilter)
+                .populate('product', 'name image category weightOptions')
+                .populate('adminId', 'name email')
+                .sort({ [sortBy]: sortOrder === 'desc' ? -1 : 1 })
+                .lean();
+
+            const formattedWriteOffs = writeOffDetails.map(item => ({
+                _id: item._id,
+                type: 'writeoff',
+                productName: item.productName,
+                productCategory: item.productCategory,
+                product: item.product, // Include the full product object
+                weightKg: item.weightKg, // Include the weight
+                quantity: item.quantity,
+                cost: item.cost,
+                reason: item.reason,
+                description: item.description,
+                adminName: item.adminName,
+                createdAt: item.createdAt
+            }));
+
+            allDetails = [...allDetails, ...formattedWriteOffs];
+        }
+
+        // Get replacement requests details
+        if (dataSource === 'replacements' || dataSource === 'combined') {
+            const replacementDetails = await ReplacementRequest.find({ 
+                ...dateFilter, 
+                status: 'approved' 
+            })
+                .populate('product', 'name image category price basePricePerKg weightOptions')
+                .populate('order', 'totalAmount')
+                .populate('user', 'name email')
+                .sort({ [sortBy]: sortOrder === 'desc' ? -1 : 1 })
+                .lean();
+
+            
+            const formattedReplacements = replacementDetails.map(item => {
+                // Try order totalAmount first, then product price fields
+                const costFromOrder = item.order?.totalAmount || 0;
+                const costFromPrice = item.quantity * (item.product?.price || 0);
+                const costFromBasePrice = item.quantity * (item.product?.basePricePerKg || 0);
+                
+                // Use order totalAmount first, then fallback to product calculations
+                const cost = costFromOrder > 0 ? costFromOrder : (costFromPrice > 0 ? costFromPrice : costFromBasePrice);
+                
+                return {
+                    _id: item._id,
+                    type: 'replacement',
+                    productName: item.product.name,
+                    productCategory: item.product.category,
+                    product: item.product, // Include the full product object
+                    quantity: item.quantity,
+                    cost: cost,
+                    reason: item.reason,
+                    description: item.description,
+                    adminName: item.user.name,
+                    createdAt: item.createdAt
+                };
+            });
+
+            allDetails = [...allDetails, ...formattedReplacements];
+        }
+
+        // Sort combined data
+        allDetails.sort((a, b) => {
+            const aValue = a[sortBy];
+            const bValue = b[sortBy];
+            if (sortOrder === 'desc') {
+                return new Date(bValue) - new Date(aValue);
+            } else {
+                return new Date(aValue) - new Date(bValue);
+            }
+        });
+
+        // Pagination
+        const skip = (parseInt(page) - 1) * parseInt(limit);
+        const paginatedDetails = allDetails.slice(skip, skip + parseInt(limit));
+
+        res.status(200).json({
+            success: true,
+            data: {
+                details: paginatedDetails,
+                pagination: {
+                    currentPage: parseInt(page),
+                    totalPages: Math.ceil(allDetails.length / parseInt(limit)),
+                    totalItems: allDetails.length,
+                    hasNextPage: skip + paginatedDetails.length < allDetails.length,
+                    hasPrevPage: parseInt(page) > 1
+                }
+            },
+            message: 'Discrepancy details retrieved successfully'
+        });
+
+    } catch (error) {
+        console.error('Error fetching discrepancy details:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to retrieve discrepancy details',
             error: error.message
         });
     }

@@ -26,6 +26,14 @@ const transactionSchema = new mongoose.Schema({
     total: {
       type: Number,
       required: true
+    },
+    weightOptionId: {
+      type: mongoose.Schema.Types.ObjectId,
+      default: null
+    },
+    weightKg: {
+      type: Number,
+      default: null
     }
   }],
   customer: {

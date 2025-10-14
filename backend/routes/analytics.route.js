@@ -18,7 +18,9 @@ import {
     getTotalSalesQuantityBySource,
     getRevenueBySource,
     getTopProductsBySource,
-    getCustomerAnalytics
+    getCustomerAnalytics,
+    getDiscrepancyAnalytics,
+    getDiscrepancyDetails
 } from "../controllers/analytics.controller.js";
 
 
@@ -406,5 +408,13 @@ router.get("/top-products-by-source", verifyToken, verifyAdmin, async (req, res)
 
 // Get customer analytics
 router.get("/customers", verifyToken, verifyAdmin, getCustomerAnalytics);
+
+// ===== DISCREPANCY ANALYTICS ROUTES =====
+
+// Get discrepancy analytics data
+router.get("/discrepancy", verifyToken, verifyAdmin, getDiscrepancyAnalytics);
+
+// Get discrepancy details table data
+router.get("/discrepancy/details", verifyToken, verifyAdmin, getDiscrepancyDetails);
 
 export default router;

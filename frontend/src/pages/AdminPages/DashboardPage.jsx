@@ -2,13 +2,14 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
-import { Package, ShoppingCart, Calculator, ArrowUpDown, ChevronUp, ChevronDown, PhilippinePeso } from "lucide-react";
+import { Package, ShoppingCart, Calculator, ArrowUpDown, ChevronUp, ChevronDown, PhilippinePeso, DollarSign, TrendingUp } from "lucide-react";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell, PieChart, Pie, Sector } from "recharts";
 import { productStore } from "../../store/productStore.js";
 import { useAuthStore } from "../../store/authStore.js";
 import AdminLayout from "../../components/AdminLayout.jsx";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const PRODUCT_MARKUP = parseFloat(import.meta.env.VITE_PRODUCT_MARKUP || "0.10");
 
 axios.defaults.withCredentials = true;
 
@@ -470,31 +471,47 @@ const DashboardPage = () => {
             </div>
           </div>
         </div>
-        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6'>
-          <AnalyticsCard
-            title={dataSource === 'orders' ? 'New Orders' : dataSource === 'pos' ? 'New Transactions' : 'New Orders & Transactions'}
-            value={newOrders.toLocaleString()}
-            icon={Package}
-            color='from-[#860809] to-[#a31f17]'
-          />
-          <AnalyticsCard
-            title='Total Sales'
-            value={totalSalesQty.toLocaleString()}
-            icon={ShoppingCart}
-            color='from-[#860809] to-[#a31f17]'
-          />
-          <AnalyticsCard
-            title='Total Revenue'
-            value={`₱${timeframeRevenue.toLocaleString()}`}
-            icon={PhilippinePeso}
-            color='from-[#860809] to-[#a31f17]'
-          />
-          <AnalyticsCard
-            title={dataSource === 'orders' ? 'Average Order Value' : dataSource === 'pos' ? 'Average Transaction Value' : 'Average Value'}
-            value={`₱${(newOrders > 0 ? (timeframeRevenue / newOrders) : 0).toFixed(2)}`}
-            icon={Calculator}
-            color='from-[#860809] to-[#a31f17]'
-          />
+        <div className='grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-wrap lg:justify-between gap-4 mb-6'>
+          <div className='lg:w-[calc((100%-64px)*0.155)]'>
+            <AnalyticsCard
+              title='New Orders'
+              value={newOrders.toLocaleString()}
+              icon={Package}
+              color='from-[#860809] to-[#a31f17]'
+            />
+          </div>
+          <div className='lg:w-[calc((100%-64px)*0.155)]'>
+            <AnalyticsCard
+              title='Total Sales'
+              value={totalSalesQty.toLocaleString()}
+              icon={ShoppingCart}
+              color='from-[#860809] to-[#a31f17]'
+            />
+          </div>
+          <div className='lg:w-[calc((100%-64px)*0.23)]'>
+            <AnalyticsCard
+              title='Total Revenue'
+              value={`₱${timeframeRevenue.toLocaleString()}`}
+              icon={PhilippinePeso}
+              color='from-[#860809] to-[#a31f17]'
+            />
+          </div>
+          <div className='lg:w-[calc((100%-64px)*0.23)]'>
+            <AnalyticsCard
+              title='Total Cost'
+              value={`₱${(timeframeRevenue - (timeframeRevenue * PRODUCT_MARKUP)).toLocaleString()}`}
+              icon={DollarSign}
+              color='from-[#860809] to-[#a31f17]'
+            />
+          </div>
+          <div className='lg:w-[calc((100%-64px)*0.23)]'>
+            <AnalyticsCard
+              title='Total Profit'
+              value={`₱${(timeframeRevenue * PRODUCT_MARKUP).toLocaleString()}`}
+              icon={TrendingUp}
+              color='from-[#860809] to-[#a31f17]'
+            />
+          </div>
         </div>
 
 
