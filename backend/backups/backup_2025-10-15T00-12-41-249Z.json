@@ -1,0 +1,2902 @@
+{
+  "metadata": {
+    "version": "2.1",
+    "timestamp": "2025-10-15T00:12:41.249Z",
+    "collections": [
+      "products",
+      "orders",
+      "users",
+      "reviews",
+      "transactions",
+      "coupons",
+      "notifications",
+      "activityLogs",
+      "replacementRequests",
+      "chats",
+      "messages",
+      "faqs",
+      "writeOffs"
+    ],
+    "totalRecords": 101,
+    "generatedBy": "68eedcd788f43b0810c4f468",
+    "generatedByEmail": "roselsita.2025@gmail.com"
+  },
+  "data": {
+    "products": [
+      {
+        "_id": "68eedda888f43b0810c4f503",
+        "name": "AURORA PORK HEART",
+        "price": 0,
+        "description": "Premium frozen pork heart, rich red color and firm texture. Commonly used for stews, barbecue, and pulutan dishes. Store at -18 °C.",
+        "barcode": "880000000101",
+        "image": "https://res.cloudinary.com/duv2elcut/image/upload/v1760484775/products/i7u9qbapcillbzxkzfy7.png",
+        "images": [
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1760484775/products/i7u9qbapcillbzxkzfy7.png",
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1760484776/products/p68em3vpuu1cezhebroa.png"
+        ],
+        "mainImageUrl": "https://res.cloudinary.com/duv2elcut/image/upload/v1760484775/products/i7u9qbapcillbzxkzfy7.png",
+        "category": "pork",
+        "isFeatured": false,
+        "quantity": 0,
+        "basePricePerKg": 350,
+        "weightOptions": [
+          {
+            "_id": "68eedda888f43b0810c4f504",
+            "weightKg": 10,
+            "stockUnits": 20,
+            "id": "68eedda888f43b0810c4f504",
+            "price": 3500
+          }
+        ],
+        "status": "available",
+        "supplier": "AURORA",
+        "createdAt": "2025-10-14T23:32:57.016Z",
+        "updatedAt": "2025-10-14T23:32:57.016Z",
+        "__v": 0,
+        "id": "68eedda888f43b0810c4f503",
+        "hasWeightOptions": true,
+        "priceMin": 3500,
+        "priceMax": 3500,
+        "totalStockUnits": 20
+      },
+      {
+        "_id": "68eeddee88f43b0810c4f536",
+        "name": "FRIBOI PATA",
+        "price": 0,
+        "description": "High-quality pork hind leg (pata), ideal for crispy pata and braised dishes. Frozen and vacuum-packed for freshness.",
+        "barcode": "880000000102",
+        "image": "https://res.cloudinary.com/duv2elcut/image/upload/v1760484844/products/fshyt8tlxo6fr53vumro.png",
+        "images": [
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1760484844/products/fshyt8tlxo6fr53vumro.png",
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1760484845/products/f61xtvzhrsajssq1ulyg.png"
+        ],
+        "mainImageUrl": "https://res.cloudinary.com/duv2elcut/image/upload/v1760484844/products/fshyt8tlxo6fr53vumro.png",
+        "category": "pork",
+        "isFeatured": false,
+        "quantity": 0,
+        "basePricePerKg": 385,
+        "weightOptions": [
+          {
+            "_id": "68eeddee88f43b0810c4f537",
+            "weightKg": 10,
+            "stockUnits": 20,
+            "id": "68eeddee88f43b0810c4f537",
+            "price": 3850
+          }
+        ],
+        "status": "available",
+        "supplier": "FRIBOI",
+        "createdAt": "2025-10-14T23:34:06.020Z",
+        "updatedAt": "2025-10-14T23:34:06.020Z",
+        "__v": 0,
+        "id": "68eeddee88f43b0810c4f536",
+        "hasWeightOptions": true,
+        "priceMin": 3850,
+        "priceMax": 3850,
+        "totalStockUnits": 20
+      },
+      {
+        "_id": "68eede2d88f43b0810c4f558",
+        "name": "HATFIELD EARS",
+        "price": 0,
+        "description": "Cleaned and trimmed pork ears, excellent for sisig, grilled specialties, and snacks. Delivered frozen in food-grade sealed packaging.",
+        "barcode": "880000000103",
+        "image": "https://res.cloudinary.com/duv2elcut/image/upload/v1760484907/products/wujqwkrkwcug75lrufrk.png",
+        "images": [
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1760484907/products/wujqwkrkwcug75lrufrk.png",
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1760484908/products/ychfwjhi9cvm8ynullvo.png"
+        ],
+        "mainImageUrl": "https://res.cloudinary.com/duv2elcut/image/upload/v1760484907/products/wujqwkrkwcug75lrufrk.png",
+        "category": "pork",
+        "isFeatured": false,
+        "quantity": 0,
+        "basePricePerKg": 315,
+        "weightOptions": [
+          {
+            "_id": "68eede2d88f43b0810c4f559",
+            "weightKg": 10,
+            "stockUnits": 20,
+            "id": "68eede2d88f43b0810c4f559",
+            "price": 3150
+          }
+        ],
+        "status": "available",
+        "supplier": "HATFIELD",
+        "createdAt": "2025-10-14T23:35:09.305Z",
+        "updatedAt": "2025-10-14T23:35:09.305Z",
+        "__v": 0,
+        "id": "68eede2d88f43b0810c4f558",
+        "hasWeightOptions": true,
+        "priceMin": 3150,
+        "priceMax": 3150,
+        "totalStockUnits": 20
+      },
+      {
+        "_id": "68eede6788f43b0810c4f57a",
+        "name": "SEARA BELLY BISO",
+        "price": 0,
+        "description": "Premium pork belly “biso cut,” featuring balanced layers of lean meat and fat. Perfect for liempo, roasting, or frying.",
+        "barcode": "880000000104",
+        "image": "https://res.cloudinary.com/duv2elcut/image/upload/v1760484967/products/oooo2l3qtnpvoxbhordl.png",
+        "images": [
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1760484967/products/oooo2l3qtnpvoxbhordl.png"
+        ],
+        "mainImageUrl": "https://res.cloudinary.com/duv2elcut/image/upload/v1760484967/products/oooo2l3qtnpvoxbhordl.png",
+        "category": "pork",
+        "isFeatured": false,
+        "quantity": 0,
+        "basePricePerKg": 420,
+        "weightOptions": [
+          {
+            "_id": "68eede6788f43b0810c4f57b",
+            "weightKg": 10,
+            "stockUnits": 20,
+            "id": "68eede6788f43b0810c4f57b",
+            "price": 4200
+          }
+        ],
+        "status": "available",
+        "supplier": "SEARA",
+        "createdAt": "2025-10-14T23:36:07.852Z",
+        "updatedAt": "2025-10-14T23:36:07.852Z",
+        "__v": 0,
+        "id": "68eede6788f43b0810c4f57a",
+        "hasWeightOptions": true,
+        "priceMin": 4200,
+        "priceMax": 4200,
+        "totalStockUnits": 20
+      },
+      {
+        "_id": "68eede9488f43b0810c4f590",
+        "name": "PERDIGAO LACONE",
+        "price": 0,
+        "description": "Frozen pork neck/shoulder cut (“lacone”) suitable for stews and braised recipes. Frozen to preserve quality. Ideal for restaurants and bulk buyers.",
+        "barcode": "880000000105",
+        "image": "https://res.cloudinary.com/duv2elcut/image/upload/v1760485011/products/cwnt7soskeiogwdp54iw.png",
+        "images": [
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1760485011/products/cwnt7soskeiogwdp54iw.png"
+        ],
+        "mainImageUrl": "https://res.cloudinary.com/duv2elcut/image/upload/v1760485011/products/cwnt7soskeiogwdp54iw.png",
+        "category": "pork",
+        "isFeatured": false,
+        "quantity": 0,
+        "basePricePerKg": 360,
+        "weightOptions": [
+          {
+            "_id": "68eede9488f43b0810c4f591",
+            "weightKg": 10,
+            "stockUnits": 20,
+            "id": "68eede9488f43b0810c4f591",
+            "price": 3600
+          }
+        ],
+        "status": "available",
+        "supplier": "PERDIGAO",
+        "createdAt": "2025-10-14T23:36:52.245Z",
+        "updatedAt": "2025-10-14T23:36:52.245Z",
+        "__v": 0,
+        "id": "68eede9488f43b0810c4f590",
+        "hasWeightOptions": true,
+        "priceMin": 3600,
+        "priceMax": 3600,
+        "totalStockUnits": 20
+      },
+      {
+        "_id": "68eedec188f43b0810c4f5b2",
+        "name": "COOPER JOWLS",
+        "price": 0,
+        "description": "Pork jowls (cheek meat) with good marbling and tenderness. Commonly used for smoked, grilled, or cured pork dishes. Supplied frozen for consistent quality.",
+        "barcode": "880000000106",
+        "image": "https://res.cloudinary.com/duv2elcut/image/upload/v1760485055/products/gkzawymcta68mn7nzrfg.png",
+        "images": [
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1760485055/products/gkzawymcta68mn7nzrfg.png",
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1760485056/products/bz4uykdozemc4ggc6eap.png"
+        ],
+        "mainImageUrl": "https://res.cloudinary.com/duv2elcut/image/upload/v1760485055/products/gkzawymcta68mn7nzrfg.png",
+        "category": "pork",
+        "isFeatured": false,
+        "quantity": 0,
+        "basePricePerKg": 330,
+        "weightOptions": [
+          {
+            "_id": "68eedec188f43b0810c4f5b3",
+            "weightKg": 9.99,
+            "stockUnits": 20,
+            "id": "68eedec188f43b0810c4f5b3",
+            "price": 3296.7
+          }
+        ],
+        "status": "available",
+        "supplier": "COOPER",
+        "createdAt": "2025-10-14T23:37:37.253Z",
+        "updatedAt": "2025-10-14T23:37:37.253Z",
+        "__v": 0,
+        "id": "68eedec188f43b0810c4f5b2",
+        "hasWeightOptions": true,
+        "priceMin": 3296.7,
+        "priceMax": 3296.7,
+        "totalStockUnits": 20
+      },
+      {
+        "_id": "68eedf4d88f43b0810c4f5f1",
+        "name": "ALLIANCE BEEF TENDER LOIN",
+        "price": 0,
+        "description": "Premium-grade beef tenderloin, boneless and lean, ideal for steaks and roasts. Imported and vacuum-sealed for maximum freshness.",
+        "barcode": "880000000201",
+        "image": "https://res.cloudinary.com/duv2elcut/image/upload/v1760485195/products/mqag40t0cb6v7ammvls3.png",
+        "images": [
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1760485195/products/mqag40t0cb6v7ammvls3.png",
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1760485196/products/neqs9qjmjoorcyaqlx5w.png"
+        ],
+        "mainImageUrl": "https://res.cloudinary.com/duv2elcut/image/upload/v1760485195/products/mqag40t0cb6v7ammvls3.png",
+        "category": "beef",
+        "isFeatured": false,
+        "quantity": 0,
+        "basePricePerKg": 550,
+        "weightOptions": [
+          {
+            "_id": "68eedf4d88f43b0810c4f5f2",
+            "weightKg": 10,
+            "stockUnits": 20,
+            "id": "68eedf4d88f43b0810c4f5f2",
+            "price": 5500
+          }
+        ],
+        "status": "available",
+        "supplier": "ALLIANCE",
+        "createdAt": "2025-10-14T23:39:57.472Z",
+        "updatedAt": "2025-10-14T23:39:57.472Z",
+        "__v": 0,
+        "id": "68eedf4d88f43b0810c4f5f1",
+        "hasWeightOptions": true,
+        "priceMin": 5500,
+        "priceMax": 5500,
+        "totalStockUnits": 20
+      },
+      {
+        "_id": "68eedf8488f43b0810c4f613",
+        "name": "AMECO BEEF SHANK",
+        "price": 0,
+        "description": "Beef shank with bone and rich marrow, perfect for bulalo, soups, and stews. Packed frozen to ensure consistent quality.",
+        "barcode": "880000000202",
+        "image": "https://res.cloudinary.com/duv2elcut/image/upload/v1760485250/products/ceycwe9yvvtqu1vqtchk.png",
+        "images": [
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1760485250/products/ceycwe9yvvtqu1vqtchk.png",
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1760485252/products/phppy4bdzhftxlmxwxu2.png"
+        ],
+        "mainImageUrl": "https://res.cloudinary.com/duv2elcut/image/upload/v1760485250/products/ceycwe9yvvtqu1vqtchk.png",
+        "category": "beef",
+        "isFeatured": false,
+        "quantity": 0,
+        "basePricePerKg": 390,
+        "weightOptions": [
+          {
+            "_id": "68eedf8488f43b0810c4f614",
+            "weightKg": 10,
+            "stockUnits": 20,
+            "id": "68eedf8488f43b0810c4f614",
+            "price": 3900
+          }
+        ],
+        "status": "available",
+        "supplier": "AMECO",
+        "createdAt": "2025-10-14T23:40:52.715Z",
+        "updatedAt": "2025-10-14T23:40:52.715Z",
+        "__v": 0,
+        "id": "68eedf8488f43b0810c4f613",
+        "hasWeightOptions": true,
+        "priceMin": 3900,
+        "priceMax": 3900,
+        "totalStockUnits": 20
+      },
+      {
+        "_id": "68eedfc988f43b0810c4f641",
+        "name": "INGHAMS BONE MARROW",
+        "price": 0,
+        "description": "Frozen beef bone marrow cuts, ideal for roasting or making flavorful broth. Vacuum-packed for freshness.",
+        "barcode": "880000000203",
+        "image": "https://res.cloudinary.com/duv2elcut/image/upload/v1760485320/products/zu9dgtdr51fzbf4vxfbh.png",
+        "images": [
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1760485320/products/zu9dgtdr51fzbf4vxfbh.png",
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1760485321/products/kc22dyjx5rk30pvqfdjh.png"
+        ],
+        "mainImageUrl": "https://res.cloudinary.com/duv2elcut/image/upload/v1760485320/products/zu9dgtdr51fzbf4vxfbh.png",
+        "category": "beef",
+        "isFeatured": false,
+        "quantity": 0,
+        "basePricePerKg": 450,
+        "weightOptions": [
+          {
+            "_id": "68eedfc988f43b0810c4f642",
+            "weightKg": 10,
+            "stockUnits": 20,
+            "id": "68eedfc988f43b0810c4f642",
+            "price": 4500
+          }
+        ],
+        "status": "available",
+        "supplier": "INGHAMS",
+        "createdAt": "2025-10-14T23:42:01.986Z",
+        "updatedAt": "2025-10-14T23:42:01.986Z",
+        "__v": 0,
+        "id": "68eedfc988f43b0810c4f641",
+        "hasWeightOptions": true,
+        "priceMin": 4500,
+        "priceMax": 4500,
+        "totalStockUnits": 20
+      },
+      {
+        "_id": "68eee01a88f43b0810c4f663",
+        "name": "BEEF BONE BRISKET",
+        "price": 0,
+        "description": "Premium beef brisket with bone, perfect for smoking, braising, or stewing. Frozen and packed for consistent cut quality.",
+        "barcode": "880000000204",
+        "image": "https://res.cloudinary.com/duv2elcut/image/upload/v1760485402/products/imymrmyioyxvsnihpgjp.png",
+        "images": [
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1760485402/products/imymrmyioyxvsnihpgjp.png"
+        ],
+        "mainImageUrl": "https://res.cloudinary.com/duv2elcut/image/upload/v1760485402/products/imymrmyioyxvsnihpgjp.png",
+        "category": "beef",
+        "isFeatured": false,
+        "quantity": 0,
+        "basePricePerKg": 420,
+        "weightOptions": [
+          {
+            "_id": "68eee01a88f43b0810c4f664",
+            "weightKg": 10,
+            "stockUnits": 20,
+            "id": "68eee01a88f43b0810c4f664",
+            "price": 4200
+          }
+        ],
+        "status": "available",
+        "supplier": "RFMPT",
+        "createdAt": "2025-10-14T23:43:22.570Z",
+        "updatedAt": "2025-10-14T23:43:22.570Z",
+        "__v": 0,
+        "id": "68eee01a88f43b0810c4f663",
+        "hasWeightOptions": true,
+        "priceMin": 4200,
+        "priceMax": 4200,
+        "totalStockUnits": 20
+      },
+      {
+        "_id": "68eee05188f43b0810c4f685",
+        "name": "FRIBOI FOREQUARTER",
+        "price": 0,
+        "description": "Frozen beef forequarter cut including chuck and rib portions. Used for ground beef, stews, or braised dishes. Supplied frozen, ideal for bulk buyers.",
+        "barcode": "880000000205",
+        "image": "https://res.cloudinary.com/duv2elcut/image/upload/v1760485456/products/zbspaj3hkrwj3zmkzqvi.png",
+        "images": [
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1760485456/products/zbspaj3hkrwj3zmkzqvi.png"
+        ],
+        "mainImageUrl": "https://res.cloudinary.com/duv2elcut/image/upload/v1760485456/products/zbspaj3hkrwj3zmkzqvi.png",
+        "category": "beef",
+        "isFeatured": false,
+        "quantity": 0,
+        "basePricePerKg": 370,
+        "weightOptions": [
+          {
+            "_id": "68eee05188f43b0810c4f686",
+            "weightKg": 10,
+            "stockUnits": 20,
+            "id": "68eee05188f43b0810c4f686",
+            "price": 3700
+          }
+        ],
+        "status": "available",
+        "supplier": "FRIBOI",
+        "createdAt": "2025-10-14T23:44:17.741Z",
+        "updatedAt": "2025-10-14T23:44:17.741Z",
+        "__v": 0,
+        "id": "68eee05188f43b0810c4f685",
+        "hasWeightOptions": true,
+        "priceMin": 3700,
+        "priceMax": 3700,
+        "totalStockUnits": 20
+      },
+      {
+        "_id": "68eee0a188f43b0810c4f6b3",
+        "name": "AURORA WINGS",
+        "price": 0,
+        "description": "Fresh-frozen chicken wings, trimmed and portioned for easy preparation. Great for frying or glazing. Blast-frozen for quality.",
+        "barcode": "880000000301",
+        "image": "https://res.cloudinary.com/duv2elcut/image/upload/v1760485535/products/ltu7fuargij773u2ugai.png",
+        "images": [
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1760485535/products/ltu7fuargij773u2ugai.png",
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1760485536/products/kz7mxhjxgljt4kdzngup.png",
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1760485537/products/hhouwrrxpdnjg4boqiqf.png"
+        ],
+        "mainImageUrl": "https://res.cloudinary.com/duv2elcut/image/upload/v1760485535/products/ltu7fuargij773u2ugai.png",
+        "category": "chicken",
+        "isFeatured": false,
+        "quantity": 0,
+        "basePricePerKg": 210,
+        "weightOptions": [
+          {
+            "_id": "68eee0a188f43b0810c4f6b4",
+            "weightKg": 10,
+            "stockUnits": 20,
+            "id": "68eee0a188f43b0810c4f6b4",
+            "price": 2100
+          }
+        ],
+        "status": "available",
+        "supplier": "AURORA",
+        "createdAt": "2025-10-14T23:45:37.904Z",
+        "updatedAt": "2025-10-14T23:45:37.904Z",
+        "__v": 0,
+        "id": "68eee0a188f43b0810c4f6b3",
+        "hasWeightOptions": true,
+        "priceMin": 2100,
+        "priceMax": 2100,
+        "totalStockUnits": 20
+      },
+      {
+        "_id": "68eee0e388f43b0810c4f6d5",
+        "name": "INGHAM CHICKEN FEET",
+        "price": 0,
+        "description": "Cleaned chicken feet, perfect for dim sum or soup base. Frozen immediately after processing to ensure safety.",
+        "barcode": "880000000302",
+        "image": "https://res.cloudinary.com/duv2elcut/image/upload/v1760485603/products/a3xtjmwgqundllfega3e.png",
+        "images": [
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1760485603/products/a3xtjmwgqundllfega3e.png"
+        ],
+        "mainImageUrl": "https://res.cloudinary.com/duv2elcut/image/upload/v1760485603/products/a3xtjmwgqundllfega3e.png",
+        "category": "chicken",
+        "isFeatured": false,
+        "quantity": 0,
+        "basePricePerKg": 120,
+        "weightOptions": [
+          {
+            "_id": "68eee0e388f43b0810c4f6d6",
+            "weightKg": 10,
+            "stockUnits": 20,
+            "id": "68eee0e388f43b0810c4f6d6",
+            "price": 1200
+          }
+        ],
+        "status": "available",
+        "supplier": "INGHAM",
+        "createdAt": "2025-10-14T23:46:43.648Z",
+        "updatedAt": "2025-10-14T23:46:43.648Z",
+        "__v": 0,
+        "id": "68eee0e388f43b0810c4f6d5",
+        "hasWeightOptions": true,
+        "priceMin": 1200,
+        "priceMax": 1200,
+        "totalStockUnits": 20
+      },
+      {
+        "_id": "68eee16d88f43b0810c4f720",
+        "name": "AJC CHICKEN LIVER",
+        "price": 0,
+        "description": "Fresh-frozen chicken liver, rich in flavor and iron. Excellent for adobo, spreads, or pâté.",
+        "barcode": "880000000303",
+        "image": "https://res.cloudinary.com/duv2elcut/image/upload/v1760485741/products/aevgbgmewwndjbccwe8t.png",
+        "images": [
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1760485741/products/aevgbgmewwndjbccwe8t.png"
+        ],
+        "mainImageUrl": "https://res.cloudinary.com/duv2elcut/image/upload/v1760485741/products/aevgbgmewwndjbccwe8t.png",
+        "category": "chicken",
+        "isFeatured": false,
+        "quantity": 0,
+        "basePricePerKg": 170,
+        "weightOptions": [
+          {
+            "_id": "68eee16d88f43b0810c4f721",
+            "weightKg": 10,
+            "stockUnits": 20,
+            "id": "68eee16d88f43b0810c4f721",
+            "price": 1700
+          }
+        ],
+        "status": "available",
+        "supplier": "AJC",
+        "createdAt": "2025-10-14T23:49:01.751Z",
+        "updatedAt": "2025-10-14T23:49:01.751Z",
+        "__v": 0,
+        "id": "68eee16d88f43b0810c4f720",
+        "hasWeightOptions": true,
+        "priceMin": 1700,
+        "priceMax": 1700,
+        "totalStockUnits": 20
+      },
+      {
+        "_id": "68eee19f88f43b0810c4f73b",
+        "name": "MONTAIRE GIZZARD",
+        "price": 0,
+        "description": "Frozen chicken gizzard, trimmed and cleaned for convenience. Great for adobo or stir-fry dishes.",
+        "barcode": "880000000304",
+        "image": "https://res.cloudinary.com/duv2elcut/image/upload/v1760485790/products/ntzum0ubikvtfhe8v1xd.png",
+        "images": [
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1760485790/products/ntzum0ubikvtfhe8v1xd.png"
+        ],
+        "mainImageUrl": "https://res.cloudinary.com/duv2elcut/image/upload/v1760485790/products/ntzum0ubikvtfhe8v1xd.png",
+        "category": "chicken",
+        "isFeatured": false,
+        "quantity": 0,
+        "basePricePerKg": 150,
+        "weightOptions": [
+          {
+            "_id": "68eee19f88f43b0810c4f73c",
+            "weightKg": 10,
+            "stockUnits": 20,
+            "id": "68eee19f88f43b0810c4f73c",
+            "price": 1500
+          }
+        ],
+        "status": "available",
+        "supplier": "MONTAIRE",
+        "createdAt": "2025-10-14T23:49:51.137Z",
+        "updatedAt": "2025-10-14T23:49:51.137Z",
+        "__v": 0,
+        "id": "68eee19f88f43b0810c4f73b",
+        "hasWeightOptions": true,
+        "priceMin": 1500,
+        "priceMax": 1500,
+        "totalStockUnits": 20
+      },
+      {
+        "_id": "68eee1f488f43b0810c4f769",
+        "name": "AJC CLQ",
+        "price": 0,
+        "description": "Whole dressed chicken (CLQ grade), frozen and vacuum-sealed to preserve freshness. Ideal for roasting or portioning.",
+        "barcode": "880000000305",
+        "image": "https://res.cloudinary.com/duv2elcut/image/upload/v1760485875/products/tl1ciu97oycv7vdaoccw.png",
+        "images": [
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1760485875/products/tl1ciu97oycv7vdaoccw.png",
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1760485876/products/ymhvhomh5m6xllbdepym.png"
+        ],
+        "mainImageUrl": "https://res.cloudinary.com/duv2elcut/image/upload/v1760485875/products/tl1ciu97oycv7vdaoccw.png",
+        "category": "chicken",
+        "isFeatured": false,
+        "quantity": 0,
+        "basePricePerKg": 210,
+        "weightOptions": [
+          {
+            "_id": "68eee1f488f43b0810c4f76a",
+            "weightKg": 10,
+            "stockUnits": 20,
+            "id": "68eee1f488f43b0810c4f76a",
+            "price": 2100
+          }
+        ],
+        "status": "available",
+        "supplier": "AJC",
+        "createdAt": "2025-10-14T23:51:16.709Z",
+        "updatedAt": "2025-10-14T23:51:16.709Z",
+        "__v": 0,
+        "id": "68eee1f488f43b0810c4f769",
+        "hasWeightOptions": true,
+        "priceMin": 2100,
+        "priceMax": 2100,
+        "totalStockUnits": 20
+      },
+      {
+        "_id": "68eee24488f43b0810c4f79c",
+        "name": "BEEF SHANK CUTTED",
+        "price": 0,
+        "description": "Sliced beef shank portions with bone and tendon, ready for soup or stew preparation. Great for bulalo or nilaga.",
+        "barcode": "880000000401",
+        "image": "https://res.cloudinary.com/duv2elcut/image/upload/v1760485955/products/eyuumvm3hhh7woeguiqv.png",
+        "images": [
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1760485955/products/eyuumvm3hhh7woeguiqv.png"
+        ],
+        "mainImageUrl": "https://res.cloudinary.com/duv2elcut/image/upload/v1760485955/products/eyuumvm3hhh7woeguiqv.png",
+        "category": "sliced",
+        "isFeatured": false,
+        "quantity": 0,
+        "basePricePerKg": 390,
+        "weightOptions": [
+          {
+            "_id": "68eee24488f43b0810c4f79d",
+            "weightKg": 10,
+            "stockUnits": 20,
+            "id": "68eee24488f43b0810c4f79d",
+            "price": 3900
+          }
+        ],
+        "status": "available",
+        "supplier": "RFMPT",
+        "createdAt": "2025-10-14T23:52:36.236Z",
+        "updatedAt": "2025-10-14T23:52:36.236Z",
+        "__v": 0,
+        "id": "68eee24488f43b0810c4f79c",
+        "hasWeightOptions": true,
+        "priceMin": 3900,
+        "priceMax": 3900,
+        "totalStockUnits": 20
+      },
+      {
+        "_id": "68eee26688f43b0810c4f7b2",
+        "name": "MONDELLI BEEF TRIMMINGS",
+        "price": 0,
+        "description": "Frozen beef trimmings ideal for ground beef or burger processing. Uniform quality and texture.",
+        "barcode": "880000000402",
+        "image": "https://res.cloudinary.com/duv2elcut/image/upload/v1760485989/products/ehxrxk03qpehzt6f25zk.png",
+        "images": [
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1760485989/products/ehxrxk03qpehzt6f25zk.png"
+        ],
+        "mainImageUrl": "https://res.cloudinary.com/duv2elcut/image/upload/v1760485989/products/ehxrxk03qpehzt6f25zk.png",
+        "category": "sliced",
+        "isFeatured": false,
+        "quantity": 0,
+        "basePricePerKg": 360,
+        "weightOptions": [
+          {
+            "_id": "68eee26688f43b0810c4f7b3",
+            "weightKg": 10,
+            "stockUnits": 20,
+            "id": "68eee26688f43b0810c4f7b3",
+            "price": 3600
+          }
+        ],
+        "status": "available",
+        "supplier": "MONDELLI",
+        "createdAt": "2025-10-14T23:53:10.566Z",
+        "updatedAt": "2025-10-14T23:53:10.566Z",
+        "__v": 0,
+        "id": "68eee26688f43b0810c4f7b2",
+        "hasWeightOptions": true,
+        "priceMin": 3600,
+        "priceMax": 3600,
+        "totalStockUnits": 20
+      },
+      {
+        "_id": "68eee2a988f43b0810c4f7d4",
+        "name": "PATA FRONT CUTTED",
+        "price": 0,
+        "description": "Front leg pork slices (pata cut), trimmed and portioned. Great for crispy pata or sinigang.",
+        "barcode": "880000000403",
+        "image": "https://res.cloudinary.com/duv2elcut/image/upload/v1760486056/products/rlnjmh8kqfkvdnrhybxt.png",
+        "images": [
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1760486056/products/rlnjmh8kqfkvdnrhybxt.png"
+        ],
+        "mainImageUrl": "https://res.cloudinary.com/duv2elcut/image/upload/v1760486056/products/rlnjmh8kqfkvdnrhybxt.png",
+        "category": "sliced",
+        "isFeatured": false,
+        "quantity": 0,
+        "basePricePerKg": 385,
+        "weightOptions": [
+          {
+            "_id": "68eee2a988f43b0810c4f7d5",
+            "weightKg": 10,
+            "stockUnits": 20,
+            "id": "68eee2a988f43b0810c4f7d5",
+            "price": 3850
+          }
+        ],
+        "status": "available",
+        "supplier": "RFMPT",
+        "createdAt": "2025-10-14T23:54:17.387Z",
+        "updatedAt": "2025-10-14T23:54:17.387Z",
+        "__v": 0,
+        "id": "68eee2a988f43b0810c4f7d4",
+        "hasWeightOptions": true,
+        "priceMin": 3850,
+        "priceMax": 3850,
+        "totalStockUnits": 20
+      },
+      {
+        "_id": "68eee2f088f43b0810c4f7ff",
+        "name": "LITERA PORK HEAD CUTTED",
+        "price": 0,
+        "description": "Pork head meat, cut into manageable portions for sisig or other Filipino dishes. Frozen and vacuum-sealed for freshness.",
+        "barcode": "880000000404",
+        "image": "https://res.cloudinary.com/duv2elcut/image/upload/v1760486128/products/fsxegrn24cxhlz5oxngt.png",
+        "images": [
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1760486128/products/fsxegrn24cxhlz5oxngt.png"
+        ],
+        "mainImageUrl": "https://res.cloudinary.com/duv2elcut/image/upload/v1760486128/products/fsxegrn24cxhlz5oxngt.png",
+        "category": "sliced",
+        "isFeatured": false,
+        "quantity": 0,
+        "basePricePerKg": 360,
+        "weightOptions": [
+          {
+            "_id": "68eee2f088f43b0810c4f800",
+            "weightKg": 10,
+            "stockUnits": 20,
+            "id": "68eee2f088f43b0810c4f800",
+            "price": 3600
+          }
+        ],
+        "status": "available",
+        "supplier": "LITERA",
+        "createdAt": "2025-10-14T23:55:28.594Z",
+        "updatedAt": "2025-10-14T23:55:28.594Z",
+        "__v": 0,
+        "id": "68eee2f088f43b0810c4f7ff",
+        "hasWeightOptions": true,
+        "priceMin": 3600,
+        "priceMax": 3600,
+        "totalStockUnits": 20
+      },
+      {
+        "_id": "68eee32e88f43b0810c4f824",
+        "name": "PORK CHOP BISO",
+        "price": 0,
+        "description": "Pork chop “biso” slices, well-trimmed and evenly cut. Ideal for frying or grilling.",
+        "barcode": "880000000405",
+        "image": "https://res.cloudinary.com/duv2elcut/image/upload/v1760486190/products/b5gihjfjjm8bvjoee9a0.png",
+        "images": [
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1760486190/products/b5gihjfjjm8bvjoee9a0.png"
+        ],
+        "mainImageUrl": "https://res.cloudinary.com/duv2elcut/image/upload/v1760486190/products/b5gihjfjjm8bvjoee9a0.png",
+        "category": "sliced",
+        "isFeatured": false,
+        "quantity": 0,
+        "basePricePerKg": 380,
+        "weightOptions": [
+          {
+            "_id": "68eee32e88f43b0810c4f825",
+            "weightKg": 10,
+            "stockUnits": 20,
+            "id": "68eee32e88f43b0810c4f825",
+            "price": 3800
+          }
+        ],
+        "status": "available",
+        "supplier": "RFMPT",
+        "createdAt": "2025-10-14T23:56:30.941Z",
+        "updatedAt": "2025-10-14T23:56:30.941Z",
+        "__v": 0,
+        "id": "68eee32e88f43b0810c4f824",
+        "hasWeightOptions": true,
+        "priceMin": 3800,
+        "priceMax": 3800,
+        "totalStockUnits": 20
+      },
+      {
+        "_id": "68eee35c88f43b0810c4f83a",
+        "name": "FRENCH FRIES",
+        "price": 0,
+        "description": "Pre-cut frozen French fries, ready to fry. Made from high-quality potatoes, individually quick-frozen (IQF) for crispness.",
+        "barcode": "880000000501",
+        "image": "https://res.cloudinary.com/duv2elcut/image/upload/v1760486235/products/a3b8gcm5qz64xklpvirq.png",
+        "images": [
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1760486235/products/a3b8gcm5qz64xklpvirq.png"
+        ],
+        "mainImageUrl": "https://res.cloudinary.com/duv2elcut/image/upload/v1760486235/products/a3b8gcm5qz64xklpvirq.png",
+        "category": "processed",
+        "isFeatured": false,
+        "quantity": 0,
+        "basePricePerKg": 220,
+        "weightOptions": [
+          {
+            "_id": "68eee35c88f43b0810c4f83b",
+            "weightKg": 10,
+            "stockUnits": 20,
+            "id": "68eee35c88f43b0810c4f83b",
+            "price": 2200
+          }
+        ],
+        "status": "available",
+        "supplier": "RFMPT",
+        "createdAt": "2025-10-14T23:57:16.252Z",
+        "updatedAt": "2025-10-14T23:57:16.252Z",
+        "__v": 0,
+        "id": "68eee35c88f43b0810c4f83a",
+        "hasWeightOptions": true,
+        "priceMin": 2200,
+        "priceMax": 2200,
+        "totalStockUnits": 20
+      },
+      {
+        "_id": "68eee3a288f43b0810c4f85c",
+        "name": "TJ HOTDOG CLASSIC",
+        "price": 0,
+        "description": "Classic pork and beef hotdog, juicy and flavorful. Fully cooked and frozen for convenience.",
+        "barcode": "880000000502",
+        "image": "https://res.cloudinary.com/duv2elcut/image/upload/v1760486305/products/ppzlaxn7fz03p4gmbbjv.png",
+        "images": [
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1760486305/products/ppzlaxn7fz03p4gmbbjv.png"
+        ],
+        "mainImageUrl": "https://res.cloudinary.com/duv2elcut/image/upload/v1760486305/products/ppzlaxn7fz03p4gmbbjv.png",
+        "category": "processed",
+        "isFeatured": false,
+        "quantity": 0,
+        "basePricePerKg": 300,
+        "weightOptions": [
+          {
+            "_id": "68eee3a288f43b0810c4f85d",
+            "weightKg": 10,
+            "stockUnits": 20,
+            "id": "68eee3a288f43b0810c4f85d",
+            "price": 3000
+          }
+        ],
+        "status": "available",
+        "supplier": "RFMPT",
+        "createdAt": "2025-10-14T23:58:26.520Z",
+        "updatedAt": "2025-10-14T23:58:26.520Z",
+        "__v": 0,
+        "id": "68eee3a288f43b0810c4f85c",
+        "hasWeightOptions": true,
+        "priceMin": 3000,
+        "priceMax": 3000,
+        "totalStockUnits": 20
+      },
+      {
+        "_id": "68eee3d988f43b0810c4f87e",
+        "name": "PORK SIOMAI",
+        "price": 0,
+        "description": "Ready-to-cook pork siomai dumplings made from seasoned pork filling wrapped in thin dough. Ideal for restaurants or canteens.",
+        "barcode": "880000000503",
+        "image": "https://res.cloudinary.com/duv2elcut/image/upload/v1760486360/products/kfejjkvpgz9objwsoloa.png",
+        "images": [
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1760486360/products/kfejjkvpgz9objwsoloa.png"
+        ],
+        "mainImageUrl": "https://res.cloudinary.com/duv2elcut/image/upload/v1760486360/products/kfejjkvpgz9objwsoloa.png",
+        "category": "processed",
+        "isFeatured": false,
+        "quantity": 0,
+        "basePricePerKg": 270,
+        "weightOptions": [
+          {
+            "_id": "68eee3d988f43b0810c4f87f",
+            "weightKg": 10,
+            "stockUnits": 20,
+            "id": "68eee3d988f43b0810c4f87f",
+            "price": 2700
+          }
+        ],
+        "status": "available",
+        "supplier": "RFMPT",
+        "createdAt": "2025-10-14T23:59:21.257Z",
+        "updatedAt": "2025-10-14T23:59:21.257Z",
+        "__v": 0,
+        "id": "68eee3d988f43b0810c4f87e",
+        "hasWeightOptions": true,
+        "priceMin": 2700,
+        "priceMax": 2700,
+        "totalStockUnits": 20
+      },
+      {
+        "_id": "68eee41f88f43b0810c4f8ac",
+        "name": "BEEF SIOMAI",
+        "price": 0,
+        "description": "Premium beef siomai with rich flavor and tender texture. Ready for steaming or frying.",
+        "barcode": "880000000504",
+        "image": "https://res.cloudinary.com/duv2elcut/image/upload/v1760486430/products/brpzkoukwrhv46447ulz.png",
+        "images": [
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1760486430/products/brpzkoukwrhv46447ulz.png"
+        ],
+        "mainImageUrl": "https://res.cloudinary.com/duv2elcut/image/upload/v1760486430/products/brpzkoukwrhv46447ulz.png",
+        "category": "processed",
+        "isFeatured": false,
+        "quantity": 0,
+        "basePricePerKg": 360,
+        "weightOptions": [
+          {
+            "_id": "68eee41f88f43b0810c4f8ad",
+            "weightKg": 10,
+            "stockUnits": 20,
+            "id": "68eee41f88f43b0810c4f8ad",
+            "price": 3600
+          }
+        ],
+        "status": "available",
+        "supplier": "RFMPT",
+        "createdAt": "2025-10-15T00:00:31.007Z",
+        "updatedAt": "2025-10-15T00:00:31.007Z",
+        "__v": 0,
+        "id": "68eee41f88f43b0810c4f8ac",
+        "hasWeightOptions": true,
+        "priceMin": 3600,
+        "priceMax": 3600,
+        "totalStockUnits": 20
+      },
+      {
+        "_id": "68eee49788f43b0810c4f8f5",
+        "name": "CHICKEN SIOMAI",
+        "price": 0,
+        "description": "Light and tasty chicken siomai, fully seasoned and ready to cook. Ideal for bulk sale or food stalls.",
+        "barcode": "880000000505",
+        "image": "https://res.cloudinary.com/duv2elcut/image/upload/v1760486550/products/mvwzmvcbgbwppjk7huj7.png",
+        "images": [
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1760486550/products/mvwzmvcbgbwppjk7huj7.png"
+        ],
+        "mainImageUrl": "https://res.cloudinary.com/duv2elcut/image/upload/v1760486550/products/mvwzmvcbgbwppjk7huj7.png",
+        "category": "processed",
+        "isFeatured": false,
+        "quantity": 0,
+        "basePricePerKg": 270,
+        "weightOptions": [
+          {
+            "_id": "68eee49788f43b0810c4f8f6",
+            "weightKg": 10,
+            "stockUnits": 20,
+            "id": "68eee49788f43b0810c4f8f6",
+            "price": 2700
+          }
+        ],
+        "status": "available",
+        "supplier": "RFMPT",
+        "createdAt": "2025-10-15T00:02:31.221Z",
+        "updatedAt": "2025-10-15T00:02:31.221Z",
+        "__v": 0,
+        "id": "68eee49788f43b0810c4f8f5",
+        "hasWeightOptions": true,
+        "priceMin": 2700,
+        "priceMax": 2700,
+        "totalStockUnits": 20
+      },
+      {
+        "_id": "68eee4ce88f43b0810c4f90b",
+        "name": "OLYMEL CREAM DORY FILLET",
+        "price": 0,
+        "description": "Premium frozen cream dory (Pangasius) fillets, skinless and boneless. Mild flavor and delicate flaky texture, ideal for grilling, pan-searing, baking, or steaming.",
+        "barcode": "880000000601",
+        "image": "https://res.cloudinary.com/duv2elcut/image/upload/v1760486606/products/ym9slqzlfv55ohzthy3q.png",
+        "images": [
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1760486606/products/ym9slqzlfv55ohzthy3q.png"
+        ],
+        "mainImageUrl": "https://res.cloudinary.com/duv2elcut/image/upload/v1760486606/products/ym9slqzlfv55ohzthy3q.png",
+        "category": "seafood",
+        "isFeatured": false,
+        "quantity": 0,
+        "basePricePerKg": 150,
+        "weightOptions": [
+          {
+            "_id": "68eee4ce88f43b0810c4f90c",
+            "weightKg": 10,
+            "stockUnits": 20,
+            "id": "68eee4ce88f43b0810c4f90c",
+            "price": 1500
+          }
+        ],
+        "status": "available",
+        "supplier": "OLYMEL",
+        "createdAt": "2025-10-15T00:03:26.970Z",
+        "updatedAt": "2025-10-15T00:03:26.970Z",
+        "__v": 0,
+        "id": "68eee4ce88f43b0810c4f90b",
+        "hasWeightOptions": true,
+        "priceMin": 1500,
+        "priceMax": 1500,
+        "totalStockUnits": 20
+      },
+      {
+        "_id": "68eee4f188f43b0810c4f92d",
+        "name": "SEARA SQUID RINGS",
+        "price": 0,
+        "description": "Frozen squid rings (calamari), cleaned and portioned uniformly. Ideal for deep frying, sautéing, breading, or tempura.",
+        "barcode": "880000000602",
+        "image": "https://res.cloudinary.com/duv2elcut/image/upload/v1760486641/products/lkg8xbrkf91idfmjgr94.png",
+        "images": [
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1760486641/products/lkg8xbrkf91idfmjgr94.png"
+        ],
+        "mainImageUrl": "https://res.cloudinary.com/duv2elcut/image/upload/v1760486641/products/lkg8xbrkf91idfmjgr94.png",
+        "category": "seafood",
+        "isFeatured": false,
+        "quantity": 0,
+        "basePricePerKg": 169,
+        "weightOptions": [
+          {
+            "_id": "68eee4f188f43b0810c4f92e",
+            "weightKg": 10,
+            "stockUnits": 20,
+            "id": "68eee4f188f43b0810c4f92e",
+            "price": 1690
+          }
+        ],
+        "status": "available",
+        "supplier": "SEARA",
+        "createdAt": "2025-10-15T00:04:01.887Z",
+        "updatedAt": "2025-10-15T00:04:01.887Z",
+        "__v": 0,
+        "id": "68eee4f188f43b0810c4f92d",
+        "hasWeightOptions": true,
+        "priceMin": 1690,
+        "priceMax": 1690,
+        "totalStockUnits": 20
+      },
+      {
+        "_id": "68eee57188f43b0810c4f96c",
+        "name": "OLYMEL SCALLOPS",
+        "price": 0,
+        "description": "Premium sea scallop meat, creamy white flesh. Suitable for sashimi, searing, grilling, or buttery sauce preparations. Vacuum-sealed and blast frozen for freshness.",
+        "barcode": "880000000603",
+        "image": "https://res.cloudinary.com/duv2elcut/image/upload/v1760486768/products/cvlc7r2gvjctoi88cfbh.png",
+        "images": [
+          "https://res.cloudinary.com/duv2elcut/image/upload/v1760486768/products/cvlc7r2gvjctoi88cfbh.png"
+        ],
+        "mainImageUrl": "https://res.cloudinary.com/duv2elcut/image/upload/v1760486768/products/cvlc7r2gvjctoi88cfbh.png",
+        "category": "seafood",
+        "isFeatured": false,
+        "quantity": 0,
+        "basePricePerKg": 500,
+        "weightOptions": [
+          {
+            "_id": "68eee57188f43b0810c4f96d",
+            "weightKg": 10,
+            "stockUnits": 20,
+            "id": "68eee57188f43b0810c4f96d",
+            "price": 5000
+          }
+        ],
+        "status": "available",
+        "supplier": "OLYMEL",
+        "createdAt": "2025-10-15T00:06:09.284Z",
+        "updatedAt": "2025-10-15T00:06:09.284Z",
+        "__v": 0,
+        "id": "68eee57188f43b0810c4f96c",
+        "hasWeightOptions": true,
+        "priceMin": 5000,
+        "priceMax": 5000,
+        "totalStockUnits": 20
+      }
+    ],
+    "orders": [],
+    "users": [
+      {
+        "address": {
+          "street": "",
+          "barangay": "",
+          "city": "",
+          "province": "",
+          "postalCode": "",
+          "country": ""
+        },
+        "_id": "68eedcd788f43b0810c4f468",
+        "name": "Rosel Sita",
+        "email": "roselsita.2025@gmail.com",
+        "password": "$2b$10$G5HHYO6iSsfI.UUI6JBa9e4LmRh64cN/Qe5KarUwYxucqBEO5WLm.",
+        "isVerified": true,
+        "role": "admin",
+        "profileImage": "",
+        "phone": "",
+        "lastLogin": "2025-10-14T23:29:27.391Z",
+        "cartItems": [],
+        "createdAt": "2025-10-14T23:29:27.416Z",
+        "updatedAt": "2025-10-14T23:29:51.084Z",
+        "__v": 0
+      }
+    ],
+    "reviews": [],
+    "transactions": [],
+    "coupons": [
+      {
+        "usage": {
+          "totalUses": 0,
+          "users": []
+        },
+        "_id": "68eee63088f43b0810c4f9c3",
+        "code": "ROSELONLINE",
+        "type": "percent",
+        "amount": 5,
+        "minOrderAmount": 5000,
+        "expirationDate": "2025-10-31T00:09:00.000Z",
+        "userLimit": 1,
+        "useLimit": 1,
+        "perUserUseLimit": 1,
+        "manualStatus": "Active",
+        "createdAt": "2025-10-15T00:09:21.011Z",
+        "updatedAt": "2025-10-15T00:09:21.011Z",
+        "__v": 0
+      },
+      {
+        "usage": {
+          "totalUses": 0,
+          "users": []
+        },
+        "_id": "68eee69088f43b0810c4f9ed",
+        "code": "TESTCODE2025",
+        "type": "fixed",
+        "amount": 200,
+        "minOrderAmount": 2000,
+        "expirationDate": "2025-10-31T00:10:00.000Z",
+        "userLimit": 1,
+        "useLimit": 1,
+        "perUserUseLimit": 1,
+        "manualStatus": "Active",
+        "createdAt": "2025-10-15T00:10:56.449Z",
+        "updatedAt": "2025-10-15T00:10:56.449Z",
+        "__v": 0
+      },
+      {
+        "usage": {
+          "totalUses": 0,
+          "users": []
+        },
+        "_id": "68eee6da88f43b0810c4fa17",
+        "code": "RFMPTweb2025",
+        "type": "fixed",
+        "amount": 100,
+        "minOrderAmount": 100,
+        "expirationDate": "2025-10-31T00:12:00.000Z",
+        "userLimit": 2,
+        "useLimit": 2,
+        "perUserUseLimit": 1,
+        "manualStatus": "Active",
+        "createdAt": "2025-10-15T00:12:10.853Z",
+        "updatedAt": "2025-10-15T00:12:10.853Z",
+        "__v": 0
+      }
+    ],
+    "notifications": [
+      {
+        "relatedEntity": {
+          "type": "product",
+          "id": "68eedda888f43b0810c4f503"
+        },
+        "_id": "68eedda988f43b0810c4f509",
+        "notificationId": "4764469c-ee0c-4513-ae34-79e317b06292",
+        "recipient": "68eedcd788f43b0810c4f468",
+        "type": "inventory_alert",
+        "category": "inventory",
+        "subcategory": "product_created",
+        "title": "New Product Added",
+        "message": "New product \"AURORA PORK HEART\" has been added to inventory",
+        "data": {
+          "productName": "AURORA PORK HEART",
+          "productCategory": "pork",
+          "productPrice": 0,
+          "productImage": "https://res.cloudinary.com/duv2elcut/image/upload/v1760484775/products/i7u9qbapcillbzxkzfy7.png"
+        },
+        "isRead": false,
+        "readAt": null,
+        "priority": "medium",
+        "expiresAt": null,
+        "actionUrl": "/manage-products?product=68eedda888f43b0810c4f503",
+        "createdAt": "2025-10-14T23:32:57.745Z",
+        "updatedAt": "2025-10-14T23:32:57.745Z",
+        "__v": 0,
+        "timeAgo": "39m ago",
+        "id": "68eedda988f43b0810c4f509"
+      },
+      {
+        "relatedEntity": {
+          "type": "product",
+          "id": "68eeddee88f43b0810c4f536"
+        },
+        "_id": "68eeddee88f43b0810c4f53c",
+        "notificationId": "5673fd16-7c26-4c03-9f73-e6be7f501d95",
+        "recipient": "68eedcd788f43b0810c4f468",
+        "type": "inventory_alert",
+        "category": "inventory",
+        "subcategory": "product_created",
+        "title": "New Product Added",
+        "message": "New product \"FRIBOI PATA\" has been added to inventory",
+        "data": {
+          "productName": "FRIBOI PATA",
+          "productCategory": "pork",
+          "productPrice": 0,
+          "productImage": "https://res.cloudinary.com/duv2elcut/image/upload/v1760484844/products/fshyt8tlxo6fr53vumro.png"
+        },
+        "isRead": false,
+        "readAt": null,
+        "priority": "medium",
+        "expiresAt": null,
+        "actionUrl": "/manage-products?product=68eeddee88f43b0810c4f536",
+        "createdAt": "2025-10-14T23:34:06.225Z",
+        "updatedAt": "2025-10-14T23:34:06.225Z",
+        "__v": 0,
+        "timeAgo": "38m ago",
+        "id": "68eeddee88f43b0810c4f53c"
+      },
+      {
+        "relatedEntity": {
+          "type": "product",
+          "id": "68eede2d88f43b0810c4f558"
+        },
+        "_id": "68eede2d88f43b0810c4f55e",
+        "notificationId": "5df7e65c-dc95-4cd3-92e7-f4a10806d767",
+        "recipient": "68eedcd788f43b0810c4f468",
+        "type": "inventory_alert",
+        "category": "inventory",
+        "subcategory": "product_created",
+        "title": "New Product Added",
+        "message": "New product \"HATFIELD EARS\" has been added to inventory",
+        "data": {
+          "productName": "HATFIELD EARS",
+          "productCategory": "pork",
+          "productPrice": 0,
+          "productImage": "https://res.cloudinary.com/duv2elcut/image/upload/v1760484907/products/wujqwkrkwcug75lrufrk.png"
+        },
+        "isRead": false,
+        "readAt": null,
+        "priority": "medium",
+        "expiresAt": null,
+        "actionUrl": "/manage-products?product=68eede2d88f43b0810c4f558",
+        "createdAt": "2025-10-14T23:35:09.512Z",
+        "updatedAt": "2025-10-14T23:35:09.512Z",
+        "__v": 0,
+        "timeAgo": "37m ago",
+        "id": "68eede2d88f43b0810c4f55e"
+      },
+      {
+        "relatedEntity": {
+          "type": "product",
+          "id": "68eede6788f43b0810c4f57a"
+        },
+        "_id": "68eede6888f43b0810c4f580",
+        "notificationId": "e5eec30f-a76a-49da-bfd1-080b3f6d0965",
+        "recipient": "68eedcd788f43b0810c4f468",
+        "type": "inventory_alert",
+        "category": "inventory",
+        "subcategory": "product_created",
+        "title": "New Product Added",
+        "message": "New product \"SEARA BELLY BISO\" has been added to inventory",
+        "data": {
+          "productName": "SEARA BELLY BISO",
+          "productCategory": "pork",
+          "productPrice": 0,
+          "productImage": "https://res.cloudinary.com/duv2elcut/image/upload/v1760484967/products/oooo2l3qtnpvoxbhordl.png"
+        },
+        "isRead": false,
+        "readAt": null,
+        "priority": "medium",
+        "expiresAt": null,
+        "actionUrl": "/manage-products?product=68eede6788f43b0810c4f57a",
+        "createdAt": "2025-10-14T23:36:08.066Z",
+        "updatedAt": "2025-10-14T23:36:08.066Z",
+        "__v": 0,
+        "timeAgo": "36m ago",
+        "id": "68eede6888f43b0810c4f580"
+      },
+      {
+        "relatedEntity": {
+          "type": "product",
+          "id": "68eede9488f43b0810c4f590"
+        },
+        "_id": "68eede9488f43b0810c4f596",
+        "notificationId": "12291bf6-8cfc-436d-b666-1e4be2a4fb8a",
+        "recipient": "68eedcd788f43b0810c4f468",
+        "type": "inventory_alert",
+        "category": "inventory",
+        "subcategory": "product_created",
+        "title": "New Product Added",
+        "message": "New product \"PERDIGAO LACONE\" has been added to inventory",
+        "data": {
+          "productName": "PERDIGAO LACONE",
+          "productCategory": "pork",
+          "productPrice": 0,
+          "productImage": "https://res.cloudinary.com/duv2elcut/image/upload/v1760485011/products/cwnt7soskeiogwdp54iw.png"
+        },
+        "isRead": false,
+        "readAt": null,
+        "priority": "medium",
+        "expiresAt": null,
+        "actionUrl": "/manage-products?product=68eede9488f43b0810c4f590",
+        "createdAt": "2025-10-14T23:36:52.434Z",
+        "updatedAt": "2025-10-14T23:36:52.434Z",
+        "__v": 0,
+        "timeAgo": "35m ago",
+        "id": "68eede9488f43b0810c4f596"
+      },
+      {
+        "relatedEntity": {
+          "type": "product",
+          "id": "68eedec188f43b0810c4f5b2"
+        },
+        "_id": "68eedec188f43b0810c4f5b8",
+        "notificationId": "4e5c9109-2cfd-4c51-ae86-6057146fe5f9",
+        "recipient": "68eedcd788f43b0810c4f468",
+        "type": "inventory_alert",
+        "category": "inventory",
+        "subcategory": "product_created",
+        "title": "New Product Added",
+        "message": "New product \"COOPER JOWLS\" has been added to inventory",
+        "data": {
+          "productName": "COOPER JOWLS",
+          "productCategory": "pork",
+          "productPrice": 0,
+          "productImage": "https://res.cloudinary.com/duv2elcut/image/upload/v1760485055/products/gkzawymcta68mn7nzrfg.png"
+        },
+        "isRead": false,
+        "readAt": null,
+        "priority": "medium",
+        "expiresAt": null,
+        "actionUrl": "/manage-products?product=68eedec188f43b0810c4f5b2",
+        "createdAt": "2025-10-14T23:37:37.438Z",
+        "updatedAt": "2025-10-14T23:37:37.438Z",
+        "__v": 0,
+        "timeAgo": "35m ago",
+        "id": "68eedec188f43b0810c4f5b8"
+      },
+      {
+        "relatedEntity": {
+          "type": "product",
+          "id": "68eedf4d88f43b0810c4f5f1"
+        },
+        "_id": "68eedf4d88f43b0810c4f5f7",
+        "notificationId": "ffd82ae3-b66f-411d-a332-8952c94c487c",
+        "recipient": "68eedcd788f43b0810c4f468",
+        "type": "inventory_alert",
+        "category": "inventory",
+        "subcategory": "product_created",
+        "title": "New Product Added",
+        "message": "New product \"ALLIANCE BEEF TENDER LOIN\" has been added to inventory",
+        "data": {
+          "productName": "ALLIANCE BEEF TENDER LOIN",
+          "productCategory": "beef",
+          "productPrice": 0,
+          "productImage": "https://res.cloudinary.com/duv2elcut/image/upload/v1760485195/products/mqag40t0cb6v7ammvls3.png"
+        },
+        "isRead": false,
+        "readAt": null,
+        "priority": "medium",
+        "expiresAt": null,
+        "actionUrl": "/manage-products?product=68eedf4d88f43b0810c4f5f1",
+        "createdAt": "2025-10-14T23:39:57.655Z",
+        "updatedAt": "2025-10-14T23:39:57.655Z",
+        "__v": 0,
+        "timeAgo": "32m ago",
+        "id": "68eedf4d88f43b0810c4f5f7"
+      },
+      {
+        "relatedEntity": {
+          "type": "product",
+          "id": "68eedf8488f43b0810c4f613"
+        },
+        "_id": "68eedf8488f43b0810c4f619",
+        "notificationId": "1d33eca3-3f8e-421c-91da-831a2f47a5e2",
+        "recipient": "68eedcd788f43b0810c4f468",
+        "type": "inventory_alert",
+        "category": "inventory",
+        "subcategory": "product_created",
+        "title": "New Product Added",
+        "message": "New product \"AMECO BEEF SHANK\" has been added to inventory",
+        "data": {
+          "productName": "AMECO BEEF SHANK",
+          "productCategory": "beef",
+          "productPrice": 0,
+          "productImage": "https://res.cloudinary.com/duv2elcut/image/upload/v1760485250/products/ceycwe9yvvtqu1vqtchk.png"
+        },
+        "isRead": false,
+        "readAt": null,
+        "priority": "medium",
+        "expiresAt": null,
+        "actionUrl": "/manage-products?product=68eedf8488f43b0810c4f613",
+        "createdAt": "2025-10-14T23:40:52.901Z",
+        "updatedAt": "2025-10-14T23:40:52.901Z",
+        "__v": 0,
+        "timeAgo": "31m ago",
+        "id": "68eedf8488f43b0810c4f619"
+      },
+      {
+        "relatedEntity": {
+          "type": "product",
+          "id": "68eedfc988f43b0810c4f641"
+        },
+        "_id": "68eedfca88f43b0810c4f647",
+        "notificationId": "5f08c49b-ce7e-46ee-9a73-7820619f1097",
+        "recipient": "68eedcd788f43b0810c4f468",
+        "type": "inventory_alert",
+        "category": "inventory",
+        "subcategory": "product_created",
+        "title": "New Product Added",
+        "message": "New product \"INGHAMS BONE MARROW\" has been added to inventory",
+        "data": {
+          "productName": "INGHAMS BONE MARROW",
+          "productCategory": "beef",
+          "productPrice": 0,
+          "productImage": "https://res.cloudinary.com/duv2elcut/image/upload/v1760485320/products/zu9dgtdr51fzbf4vxfbh.png"
+        },
+        "isRead": false,
+        "readAt": null,
+        "priority": "medium",
+        "expiresAt": null,
+        "actionUrl": "/manage-products?product=68eedfc988f43b0810c4f641",
+        "createdAt": "2025-10-14T23:42:02.184Z",
+        "updatedAt": "2025-10-14T23:42:02.184Z",
+        "__v": 0,
+        "timeAgo": "30m ago",
+        "id": "68eedfca88f43b0810c4f647"
+      },
+      {
+        "relatedEntity": {
+          "type": "product",
+          "id": "68eee01a88f43b0810c4f663"
+        },
+        "_id": "68eee01a88f43b0810c4f669",
+        "notificationId": "271ca55f-f9ff-4441-8d9e-c777d7d94b45",
+        "recipient": "68eedcd788f43b0810c4f468",
+        "type": "inventory_alert",
+        "category": "inventory",
+        "subcategory": "product_created",
+        "title": "New Product Added",
+        "message": "New product \"BEEF BONE BRISKET\" has been added to inventory",
+        "data": {
+          "productName": "BEEF BONE BRISKET",
+          "productCategory": "beef",
+          "productPrice": 0,
+          "productImage": "https://res.cloudinary.com/duv2elcut/image/upload/v1760485402/products/imymrmyioyxvsnihpgjp.png"
+        },
+        "isRead": false,
+        "readAt": null,
+        "priority": "medium",
+        "expiresAt": null,
+        "actionUrl": "/manage-products?product=68eee01a88f43b0810c4f663",
+        "createdAt": "2025-10-14T23:43:22.768Z",
+        "updatedAt": "2025-10-14T23:43:22.768Z",
+        "__v": 0,
+        "timeAgo": "29m ago",
+        "id": "68eee01a88f43b0810c4f669"
+      },
+      {
+        "relatedEntity": {
+          "type": "product",
+          "id": "68eee05188f43b0810c4f685"
+        },
+        "_id": "68eee05188f43b0810c4f68b",
+        "notificationId": "8e91ac25-4939-45d1-a76d-a9e36e281781",
+        "recipient": "68eedcd788f43b0810c4f468",
+        "type": "inventory_alert",
+        "category": "inventory",
+        "subcategory": "product_created",
+        "title": "New Product Added",
+        "message": "New product \"FRIBOI FOREQUARTER\" has been added to inventory",
+        "data": {
+          "productName": "FRIBOI FOREQUARTER",
+          "productCategory": "beef",
+          "productPrice": 0,
+          "productImage": "https://res.cloudinary.com/duv2elcut/image/upload/v1760485456/products/zbspaj3hkrwj3zmkzqvi.png"
+        },
+        "isRead": false,
+        "readAt": null,
+        "priority": "medium",
+        "expiresAt": null,
+        "actionUrl": "/manage-products?product=68eee05188f43b0810c4f685",
+        "createdAt": "2025-10-14T23:44:17.967Z",
+        "updatedAt": "2025-10-14T23:44:17.967Z",
+        "__v": 0,
+        "timeAgo": "28m ago",
+        "id": "68eee05188f43b0810c4f68b"
+      },
+      {
+        "relatedEntity": {
+          "type": "product",
+          "id": "68eee0a188f43b0810c4f6b3"
+        },
+        "_id": "68eee0a288f43b0810c4f6b9",
+        "notificationId": "0c830eeb-d486-4f69-8524-cf573e128c95",
+        "recipient": "68eedcd788f43b0810c4f468",
+        "type": "inventory_alert",
+        "category": "inventory",
+        "subcategory": "product_created",
+        "title": "New Product Added",
+        "message": "New product \"AURORA WINGS\" has been added to inventory",
+        "data": {
+          "productName": "AURORA WINGS",
+          "productCategory": "chicken",
+          "productPrice": 0,
+          "productImage": "https://res.cloudinary.com/duv2elcut/image/upload/v1760485535/products/ltu7fuargij773u2ugai.png"
+        },
+        "isRead": false,
+        "readAt": null,
+        "priority": "medium",
+        "expiresAt": null,
+        "actionUrl": "/manage-products?product=68eee0a188f43b0810c4f6b3",
+        "createdAt": "2025-10-14T23:45:38.142Z",
+        "updatedAt": "2025-10-14T23:45:38.142Z",
+        "__v": 0,
+        "timeAgo": "27m ago",
+        "id": "68eee0a288f43b0810c4f6b9"
+      },
+      {
+        "relatedEntity": {
+          "type": "product",
+          "id": "68eee0e388f43b0810c4f6d5"
+        },
+        "_id": "68eee0e388f43b0810c4f6db",
+        "notificationId": "da8e4c9c-d4c4-481c-934e-b894a02e315b",
+        "recipient": "68eedcd788f43b0810c4f468",
+        "type": "inventory_alert",
+        "category": "inventory",
+        "subcategory": "product_created",
+        "title": "New Product Added",
+        "message": "New product \"INGHAM CHICKEN FEET\" has been added to inventory",
+        "data": {
+          "productName": "INGHAM CHICKEN FEET",
+          "productCategory": "chicken",
+          "productPrice": 0,
+          "productImage": "https://res.cloudinary.com/duv2elcut/image/upload/v1760485603/products/a3xtjmwgqundllfega3e.png"
+        },
+        "isRead": false,
+        "readAt": null,
+        "priority": "medium",
+        "expiresAt": null,
+        "actionUrl": "/manage-products?product=68eee0e388f43b0810c4f6d5",
+        "createdAt": "2025-10-14T23:46:43.881Z",
+        "updatedAt": "2025-10-14T23:46:43.881Z",
+        "__v": 0,
+        "timeAgo": "25m ago",
+        "id": "68eee0e388f43b0810c4f6db"
+      },
+      {
+        "relatedEntity": {
+          "type": "product",
+          "id": "68eee16d88f43b0810c4f720"
+        },
+        "_id": "68eee16d88f43b0810c4f726",
+        "notificationId": "3220ed75-b729-43fc-a27f-8ce1a0ac9fb4",
+        "recipient": "68eedcd788f43b0810c4f468",
+        "type": "inventory_alert",
+        "category": "inventory",
+        "subcategory": "product_created",
+        "title": "New Product Added",
+        "message": "New product \"AJC CHICKEN LIVER\" has been added to inventory",
+        "data": {
+          "productName": "AJC CHICKEN LIVER",
+          "productCategory": "chicken",
+          "productPrice": 0,
+          "productImage": "https://res.cloudinary.com/duv2elcut/image/upload/v1760485741/products/aevgbgmewwndjbccwe8t.png"
+        },
+        "isRead": false,
+        "readAt": null,
+        "priority": "medium",
+        "expiresAt": null,
+        "actionUrl": "/manage-products?product=68eee16d88f43b0810c4f720",
+        "createdAt": "2025-10-14T23:49:01.948Z",
+        "updatedAt": "2025-10-14T23:49:01.948Z",
+        "__v": 0,
+        "timeAgo": "23m ago",
+        "id": "68eee16d88f43b0810c4f726"
+      },
+      {
+        "relatedEntity": {
+          "type": "product",
+          "id": "68eee19f88f43b0810c4f73b"
+        },
+        "_id": "68eee19f88f43b0810c4f741",
+        "notificationId": "68f4132b-95ff-4dc4-846f-fc437ab0e1af",
+        "recipient": "68eedcd788f43b0810c4f468",
+        "type": "inventory_alert",
+        "category": "inventory",
+        "subcategory": "product_created",
+        "title": "New Product Added",
+        "message": "New product \"MONTAIRE GIZZARD\" has been added to inventory",
+        "data": {
+          "productName": "MONTAIRE GIZZARD",
+          "productCategory": "chicken",
+          "productPrice": 0,
+          "productImage": "https://res.cloudinary.com/duv2elcut/image/upload/v1760485790/products/ntzum0ubikvtfhe8v1xd.png"
+        },
+        "isRead": false,
+        "readAt": null,
+        "priority": "medium",
+        "expiresAt": null,
+        "actionUrl": "/manage-products?product=68eee19f88f43b0810c4f73b",
+        "createdAt": "2025-10-14T23:49:51.311Z",
+        "updatedAt": "2025-10-14T23:49:51.311Z",
+        "__v": 0,
+        "timeAgo": "22m ago",
+        "id": "68eee19f88f43b0810c4f741"
+      },
+      {
+        "relatedEntity": {
+          "type": "product",
+          "id": "68eee1f488f43b0810c4f769"
+        },
+        "_id": "68eee1f488f43b0810c4f76f",
+        "notificationId": "72af5393-e062-425b-b410-cadd7c7dd0b1",
+        "recipient": "68eedcd788f43b0810c4f468",
+        "type": "inventory_alert",
+        "category": "inventory",
+        "subcategory": "product_created",
+        "title": "New Product Added",
+        "message": "New product \"AJC CLQ\" has been added to inventory",
+        "data": {
+          "productName": "AJC CLQ",
+          "productCategory": "chicken",
+          "productPrice": 0,
+          "productImage": "https://res.cloudinary.com/duv2elcut/image/upload/v1760485875/products/tl1ciu97oycv7vdaoccw.png"
+        },
+        "isRead": false,
+        "readAt": null,
+        "priority": "medium",
+        "expiresAt": null,
+        "actionUrl": "/manage-products?product=68eee1f488f43b0810c4f769",
+        "createdAt": "2025-10-14T23:51:16.945Z",
+        "updatedAt": "2025-10-14T23:51:16.945Z",
+        "__v": 0,
+        "timeAgo": "21m ago",
+        "id": "68eee1f488f43b0810c4f76f"
+      },
+      {
+        "relatedEntity": {
+          "type": "product",
+          "id": "68eee24488f43b0810c4f79c"
+        },
+        "_id": "68eee24488f43b0810c4f7a2",
+        "notificationId": "7c3fb4bf-9efd-4913-bcc8-7fb180ec5b9b",
+        "recipient": "68eedcd788f43b0810c4f468",
+        "type": "inventory_alert",
+        "category": "inventory",
+        "subcategory": "product_created",
+        "title": "New Product Added",
+        "message": "New product \"BEEF SHANK CUTTED\" has been added to inventory",
+        "data": {
+          "productName": "BEEF SHANK CUTTED",
+          "productCategory": "sliced",
+          "productPrice": 0,
+          "productImage": "https://res.cloudinary.com/duv2elcut/image/upload/v1760485955/products/eyuumvm3hhh7woeguiqv.png"
+        },
+        "isRead": false,
+        "readAt": null,
+        "priority": "medium",
+        "expiresAt": null,
+        "actionUrl": "/manage-products?product=68eee24488f43b0810c4f79c",
+        "createdAt": "2025-10-14T23:52:36.438Z",
+        "updatedAt": "2025-10-14T23:52:36.438Z",
+        "__v": 0,
+        "timeAgo": "20m ago",
+        "id": "68eee24488f43b0810c4f7a2"
+      },
+      {
+        "relatedEntity": {
+          "type": "product",
+          "id": "68eee26688f43b0810c4f7b2"
+        },
+        "_id": "68eee26688f43b0810c4f7b8",
+        "notificationId": "fc608b9a-e2bc-406d-a3eb-d59321a5eb4f",
+        "recipient": "68eedcd788f43b0810c4f468",
+        "type": "inventory_alert",
+        "category": "inventory",
+        "subcategory": "product_created",
+        "title": "New Product Added",
+        "message": "New product \"MONDELLI BEEF TRIMMINGS\" has been added to inventory",
+        "data": {
+          "productName": "MONDELLI BEEF TRIMMINGS",
+          "productCategory": "sliced",
+          "productPrice": 0,
+          "productImage": "https://res.cloudinary.com/duv2elcut/image/upload/v1760485989/products/ehxrxk03qpehzt6f25zk.png"
+        },
+        "isRead": false,
+        "readAt": null,
+        "priority": "medium",
+        "expiresAt": null,
+        "actionUrl": "/manage-products?product=68eee26688f43b0810c4f7b2",
+        "createdAt": "2025-10-14T23:53:10.776Z",
+        "updatedAt": "2025-10-14T23:53:10.776Z",
+        "__v": 0,
+        "timeAgo": "19m ago",
+        "id": "68eee26688f43b0810c4f7b8"
+      },
+      {
+        "relatedEntity": {
+          "type": "product",
+          "id": "68eee2a988f43b0810c4f7d4"
+        },
+        "_id": "68eee2a988f43b0810c4f7da",
+        "notificationId": "3bfd27dc-7c2f-4e31-9a01-8ee74e8f7d78",
+        "recipient": "68eedcd788f43b0810c4f468",
+        "type": "inventory_alert",
+        "category": "inventory",
+        "subcategory": "product_created",
+        "title": "New Product Added",
+        "message": "New product \"PATA FRONT CUTTED\" has been added to inventory",
+        "data": {
+          "productName": "PATA FRONT CUTTED",
+          "productCategory": "sliced",
+          "productPrice": 0,
+          "productImage": "https://res.cloudinary.com/duv2elcut/image/upload/v1760486056/products/rlnjmh8kqfkvdnrhybxt.png"
+        },
+        "isRead": false,
+        "readAt": null,
+        "priority": "medium",
+        "expiresAt": null,
+        "actionUrl": "/manage-products?product=68eee2a988f43b0810c4f7d4",
+        "createdAt": "2025-10-14T23:54:17.573Z",
+        "updatedAt": "2025-10-14T23:54:17.573Z",
+        "__v": 0,
+        "timeAgo": "18m ago",
+        "id": "68eee2a988f43b0810c4f7da"
+      },
+      {
+        "relatedEntity": {
+          "type": "product",
+          "id": "68eee2f088f43b0810c4f7ff"
+        },
+        "_id": "68eee2f088f43b0810c4f808",
+        "notificationId": "248e1508-9a5f-4412-896e-2bc63f3a3e8f",
+        "recipient": "68eedcd788f43b0810c4f468",
+        "type": "inventory_alert",
+        "category": "inventory",
+        "subcategory": "product_created",
+        "title": "New Product Added",
+        "message": "New product \"LITERA PORK HEAD CUTTED\" has been added to inventory",
+        "data": {
+          "productName": "LITERA PORK HEAD CUTTED",
+          "productCategory": "sliced",
+          "productPrice": 0,
+          "productImage": "https://res.cloudinary.com/duv2elcut/image/upload/v1760486128/products/fsxegrn24cxhlz5oxngt.png"
+        },
+        "isRead": false,
+        "readAt": null,
+        "priority": "medium",
+        "expiresAt": null,
+        "actionUrl": "/manage-products?product=68eee2f088f43b0810c4f7ff",
+        "createdAt": "2025-10-14T23:55:28.777Z",
+        "updatedAt": "2025-10-14T23:55:28.777Z",
+        "__v": 0,
+        "timeAgo": "17m ago",
+        "id": "68eee2f088f43b0810c4f808"
+      },
+      {
+        "relatedEntity": {
+          "type": "product",
+          "id": "68eee32e88f43b0810c4f824"
+        },
+        "_id": "68eee32f88f43b0810c4f82a",
+        "notificationId": "ffea5b9e-e861-4035-a9f1-6be203a0f292",
+        "recipient": "68eedcd788f43b0810c4f468",
+        "type": "inventory_alert",
+        "category": "inventory",
+        "subcategory": "product_created",
+        "title": "New Product Added",
+        "message": "New product \"PORK CHOP BISO\" has been added to inventory",
+        "data": {
+          "productName": "PORK CHOP BISO",
+          "productCategory": "sliced",
+          "productPrice": 0,
+          "productImage": "https://res.cloudinary.com/duv2elcut/image/upload/v1760486190/products/b5gihjfjjm8bvjoee9a0.png"
+        },
+        "isRead": false,
+        "readAt": null,
+        "priority": "medium",
+        "expiresAt": null,
+        "actionUrl": "/manage-products?product=68eee32e88f43b0810c4f824",
+        "createdAt": "2025-10-14T23:56:31.140Z",
+        "updatedAt": "2025-10-14T23:56:31.140Z",
+        "__v": 0,
+        "timeAgo": "16m ago",
+        "id": "68eee32f88f43b0810c4f82a"
+      },
+      {
+        "relatedEntity": {
+          "type": "product",
+          "id": "68eee35c88f43b0810c4f83a"
+        },
+        "_id": "68eee35c88f43b0810c4f840",
+        "notificationId": "a7c5cb71-fe5e-493e-89b7-3d9ca36b3cbc",
+        "recipient": "68eedcd788f43b0810c4f468",
+        "type": "inventory_alert",
+        "category": "inventory",
+        "subcategory": "product_created",
+        "title": "New Product Added",
+        "message": "New product \"FRENCH FRIES\" has been added to inventory",
+        "data": {
+          "productName": "FRENCH FRIES",
+          "productCategory": "processed",
+          "productPrice": 0,
+          "productImage": "https://res.cloudinary.com/duv2elcut/image/upload/v1760486235/products/a3b8gcm5qz64xklpvirq.png"
+        },
+        "isRead": false,
+        "readAt": null,
+        "priority": "medium",
+        "expiresAt": null,
+        "actionUrl": "/manage-products?product=68eee35c88f43b0810c4f83a",
+        "createdAt": "2025-10-14T23:57:16.471Z",
+        "updatedAt": "2025-10-14T23:57:16.471Z",
+        "__v": 0,
+        "timeAgo": "15m ago",
+        "id": "68eee35c88f43b0810c4f840"
+      },
+      {
+        "relatedEntity": {
+          "type": "product",
+          "id": "68eee3a288f43b0810c4f85c"
+        },
+        "_id": "68eee3a288f43b0810c4f862",
+        "notificationId": "2f2bc5f4-c428-4850-89cc-4668c7e25737",
+        "recipient": "68eedcd788f43b0810c4f468",
+        "type": "inventory_alert",
+        "category": "inventory",
+        "subcategory": "product_created",
+        "title": "New Product Added",
+        "message": "New product \"TJ HOTDOG CLASSIC\" has been added to inventory",
+        "data": {
+          "productName": "TJ HOTDOG CLASSIC",
+          "productCategory": "processed",
+          "productPrice": 0,
+          "productImage": "https://res.cloudinary.com/duv2elcut/image/upload/v1760486305/products/ppzlaxn7fz03p4gmbbjv.png"
+        },
+        "isRead": false,
+        "readAt": null,
+        "priority": "medium",
+        "expiresAt": null,
+        "actionUrl": "/manage-products?product=68eee3a288f43b0810c4f85c",
+        "createdAt": "2025-10-14T23:58:26.724Z",
+        "updatedAt": "2025-10-14T23:58:26.724Z",
+        "__v": 0,
+        "timeAgo": "14m ago",
+        "id": "68eee3a288f43b0810c4f862"
+      },
+      {
+        "relatedEntity": {
+          "type": "product",
+          "id": "68eee3d988f43b0810c4f87e"
+        },
+        "_id": "68eee3d988f43b0810c4f884",
+        "notificationId": "359c3622-1621-4e19-aa76-671d3af67d51",
+        "recipient": "68eedcd788f43b0810c4f468",
+        "type": "inventory_alert",
+        "category": "inventory",
+        "subcategory": "product_created",
+        "title": "New Product Added",
+        "message": "New product \"PORK SIOMAI\" has been added to inventory",
+        "data": {
+          "productName": "PORK SIOMAI",
+          "productCategory": "processed",
+          "productPrice": 0,
+          "productImage": "https://res.cloudinary.com/duv2elcut/image/upload/v1760486360/products/kfejjkvpgz9objwsoloa.png"
+        },
+        "isRead": false,
+        "readAt": null,
+        "priority": "medium",
+        "expiresAt": null,
+        "actionUrl": "/manage-products?product=68eee3d988f43b0810c4f87e",
+        "createdAt": "2025-10-14T23:59:21.513Z",
+        "updatedAt": "2025-10-14T23:59:21.513Z",
+        "__v": 0,
+        "timeAgo": "13m ago",
+        "id": "68eee3d988f43b0810c4f884"
+      },
+      {
+        "relatedEntity": {
+          "type": "product",
+          "id": "68eee41f88f43b0810c4f8ac"
+        },
+        "_id": "68eee41f88f43b0810c4f8b2",
+        "notificationId": "f05d9ba2-3ffe-441d-bba0-a4729831f944",
+        "recipient": "68eedcd788f43b0810c4f468",
+        "type": "inventory_alert",
+        "category": "inventory",
+        "subcategory": "product_created",
+        "title": "New Product Added",
+        "message": "New product \"BEEF SIOMAI\" has been added to inventory",
+        "data": {
+          "productName": "BEEF SIOMAI",
+          "productCategory": "processed",
+          "productPrice": 0,
+          "productImage": "https://res.cloudinary.com/duv2elcut/image/upload/v1760486430/products/brpzkoukwrhv46447ulz.png"
+        },
+        "isRead": false,
+        "readAt": null,
+        "priority": "medium",
+        "expiresAt": null,
+        "actionUrl": "/manage-products?product=68eee41f88f43b0810c4f8ac",
+        "createdAt": "2025-10-15T00:00:31.274Z",
+        "updatedAt": "2025-10-15T00:00:31.274Z",
+        "__v": 0,
+        "timeAgo": "12m ago",
+        "id": "68eee41f88f43b0810c4f8b2"
+      },
+      {
+        "relatedEntity": {
+          "type": "product",
+          "id": "68eee49788f43b0810c4f8f5"
+        },
+        "_id": "68eee49788f43b0810c4f8fb",
+        "notificationId": "23ddaf8f-64ef-4fea-b499-a3c6914eafa3",
+        "recipient": "68eedcd788f43b0810c4f468",
+        "type": "inventory_alert",
+        "category": "inventory",
+        "subcategory": "product_created",
+        "title": "New Product Added",
+        "message": "New product \"CHICKEN SIOMAI\" has been added to inventory",
+        "data": {
+          "productName": "CHICKEN SIOMAI",
+          "productCategory": "processed",
+          "productPrice": 0,
+          "productImage": "https://res.cloudinary.com/duv2elcut/image/upload/v1760486550/products/mvwzmvcbgbwppjk7huj7.png"
+        },
+        "isRead": false,
+        "readAt": null,
+        "priority": "medium",
+        "expiresAt": null,
+        "actionUrl": "/manage-products?product=68eee49788f43b0810c4f8f5",
+        "createdAt": "2025-10-15T00:02:31.427Z",
+        "updatedAt": "2025-10-15T00:02:31.427Z",
+        "__v": 0,
+        "timeAgo": "10m ago",
+        "id": "68eee49788f43b0810c4f8fb"
+      },
+      {
+        "relatedEntity": {
+          "type": "product",
+          "id": "68eee4ce88f43b0810c4f90b"
+        },
+        "_id": "68eee4cf88f43b0810c4f911",
+        "notificationId": "346a89a0-60e0-4f27-84a4-e058c7bc71f2",
+        "recipient": "68eedcd788f43b0810c4f468",
+        "type": "inventory_alert",
+        "category": "inventory",
+        "subcategory": "product_created",
+        "title": "New Product Added",
+        "message": "New product \"OLYMEL CREAM DORY FILLET\" has been added to inventory",
+        "data": {
+          "productName": "OLYMEL CREAM DORY FILLET",
+          "productCategory": "seafood",
+          "productPrice": 0,
+          "productImage": "https://res.cloudinary.com/duv2elcut/image/upload/v1760486606/products/ym9slqzlfv55ohzthy3q.png"
+        },
+        "isRead": false,
+        "readAt": null,
+        "priority": "medium",
+        "expiresAt": null,
+        "actionUrl": "/manage-products?product=68eee4ce88f43b0810c4f90b",
+        "createdAt": "2025-10-15T00:03:27.132Z",
+        "updatedAt": "2025-10-15T00:03:27.132Z",
+        "__v": 0,
+        "timeAgo": "9m ago",
+        "id": "68eee4cf88f43b0810c4f911"
+      },
+      {
+        "relatedEntity": {
+          "type": "product",
+          "id": "68eee4f188f43b0810c4f92d"
+        },
+        "_id": "68eee4f288f43b0810c4f933",
+        "notificationId": "0ae97144-b94b-4993-b021-61959397ca94",
+        "recipient": "68eedcd788f43b0810c4f468",
+        "type": "inventory_alert",
+        "category": "inventory",
+        "subcategory": "product_created",
+        "title": "New Product Added",
+        "message": "New product \"SEARA SQUID RINGS\" has been added to inventory",
+        "data": {
+          "productName": "SEARA SQUID RINGS",
+          "productCategory": "seafood",
+          "productPrice": 0,
+          "productImage": "https://res.cloudinary.com/duv2elcut/image/upload/v1760486641/products/lkg8xbrkf91idfmjgr94.png"
+        },
+        "isRead": false,
+        "readAt": null,
+        "priority": "medium",
+        "expiresAt": null,
+        "actionUrl": "/manage-products?product=68eee4f188f43b0810c4f92d",
+        "createdAt": "2025-10-15T00:04:02.003Z",
+        "updatedAt": "2025-10-15T00:04:02.003Z",
+        "__v": 0,
+        "timeAgo": "8m ago",
+        "id": "68eee4f288f43b0810c4f933"
+      },
+      {
+        "relatedEntity": {
+          "type": "product",
+          "id": "68eee57188f43b0810c4f96c"
+        },
+        "_id": "68eee57188f43b0810c4f972",
+        "notificationId": "5ae872fa-2371-48ab-a4d2-10148d4d24de",
+        "recipient": "68eedcd788f43b0810c4f468",
+        "type": "inventory_alert",
+        "category": "inventory",
+        "subcategory": "product_created",
+        "title": "New Product Added",
+        "message": "New product \"OLYMEL SCALLOPS\" has been added to inventory",
+        "data": {
+          "productName": "OLYMEL SCALLOPS",
+          "productCategory": "seafood",
+          "productPrice": 0,
+          "productImage": "https://res.cloudinary.com/duv2elcut/image/upload/v1760486768/products/cvlc7r2gvjctoi88cfbh.png"
+        },
+        "isRead": false,
+        "readAt": null,
+        "priority": "medium",
+        "expiresAt": null,
+        "actionUrl": "/manage-products?product=68eee57188f43b0810c4f96c",
+        "createdAt": "2025-10-15T00:06:09.468Z",
+        "updatedAt": "2025-10-15T00:06:09.468Z",
+        "__v": 0,
+        "timeAgo": "6m ago",
+        "id": "68eee57188f43b0810c4f972"
+      }
+    ],
+    "activityLogs": [
+      {
+        "_id": "68eedda988f43b0810c4f506",
+        "productId": "68eedda888f43b0810c4f503",
+        "productName": "AURORA PORK HEART",
+        "action": "created",
+        "details": "Product created with a weight of 10kg with a stock of 20 units",
+        "adminId": "68eedcd788f43b0810c4f468",
+        "adminName": "Rosel Sita",
+        "changes": {
+          "basePricePerKg": 350,
+          "quantity": 20,
+          "status": "available",
+          "category": "pork",
+          "weightKg": 10
+        },
+        "quantityChange": 20,
+        "oldQuantity": 0,
+        "newQuantity": 20,
+        "reason": null,
+        "createdAt": "2025-10-14T23:32:57.492Z",
+        "updatedAt": "2025-10-14T23:32:57.492Z",
+        "__v": 0
+      },
+      {
+        "_id": "68eeddee88f43b0810c4f539",
+        "productId": "68eeddee88f43b0810c4f536",
+        "productName": "FRIBOI PATA",
+        "action": "created",
+        "details": "Product created with a weight of 10kg with a stock of 20 units",
+        "adminId": "68eedcd788f43b0810c4f468",
+        "adminName": "Rosel Sita",
+        "changes": {
+          "basePricePerKg": 385,
+          "quantity": 20,
+          "status": "available",
+          "category": "pork",
+          "weightKg": 10
+        },
+        "quantityChange": 20,
+        "oldQuantity": 0,
+        "newQuantity": 20,
+        "reason": null,
+        "createdAt": "2025-10-14T23:34:06.090Z",
+        "updatedAt": "2025-10-14T23:34:06.090Z",
+        "__v": 0
+      },
+      {
+        "_id": "68eede2d88f43b0810c4f55b",
+        "productId": "68eede2d88f43b0810c4f558",
+        "productName": "HATFIELD EARS",
+        "action": "created",
+        "details": "Product created with a weight of 10kg with a stock of 20 units",
+        "adminId": "68eedcd788f43b0810c4f468",
+        "adminName": "Rosel Sita",
+        "changes": {
+          "basePricePerKg": 315,
+          "quantity": 20,
+          "status": "available",
+          "category": "pork",
+          "weightKg": 10
+        },
+        "quantityChange": 20,
+        "oldQuantity": 0,
+        "newQuantity": 20,
+        "reason": null,
+        "createdAt": "2025-10-14T23:35:09.387Z",
+        "updatedAt": "2025-10-14T23:35:09.387Z",
+        "__v": 0
+      },
+      {
+        "_id": "68eede6788f43b0810c4f57d",
+        "productId": "68eede6788f43b0810c4f57a",
+        "productName": "SEARA BELLY BISO",
+        "action": "created",
+        "details": "Product created with a weight of 10kg with a stock of 20 units",
+        "adminId": "68eedcd788f43b0810c4f468",
+        "adminName": "Rosel Sita",
+        "changes": {
+          "basePricePerKg": 420,
+          "quantity": 20,
+          "status": "available",
+          "category": "pork",
+          "weightKg": 10
+        },
+        "quantityChange": 20,
+        "oldQuantity": 0,
+        "newQuantity": 20,
+        "reason": null,
+        "createdAt": "2025-10-14T23:36:07.911Z",
+        "updatedAt": "2025-10-14T23:36:07.911Z",
+        "__v": 0
+      },
+      {
+        "_id": "68eede9488f43b0810c4f593",
+        "productId": "68eede9488f43b0810c4f590",
+        "productName": "PERDIGAO LACONE",
+        "action": "created",
+        "details": "Product created with a weight of 10kg with a stock of 20 units",
+        "adminId": "68eedcd788f43b0810c4f468",
+        "adminName": "Rosel Sita",
+        "changes": {
+          "basePricePerKg": 360,
+          "quantity": 20,
+          "status": "available",
+          "category": "pork",
+          "weightKg": 10
+        },
+        "quantityChange": 20,
+        "oldQuantity": 0,
+        "newQuantity": 20,
+        "reason": null,
+        "createdAt": "2025-10-14T23:36:52.307Z",
+        "updatedAt": "2025-10-14T23:36:52.307Z",
+        "__v": 0
+      },
+      {
+        "_id": "68eedec188f43b0810c4f5b5",
+        "productId": "68eedec188f43b0810c4f5b2",
+        "productName": "COOPER JOWLS",
+        "action": "created",
+        "details": "Product created with a weight of 9.99kg with a stock of 20 units",
+        "adminId": "68eedcd788f43b0810c4f468",
+        "adminName": "Rosel Sita",
+        "changes": {
+          "basePricePerKg": 330,
+          "quantity": 20,
+          "status": "available",
+          "category": "pork",
+          "weightKg": 9.99
+        },
+        "quantityChange": 20,
+        "oldQuantity": 0,
+        "newQuantity": 20,
+        "reason": null,
+        "createdAt": "2025-10-14T23:37:37.321Z",
+        "updatedAt": "2025-10-14T23:37:37.321Z",
+        "__v": 0
+      },
+      {
+        "_id": "68eedf4d88f43b0810c4f5f4",
+        "productId": "68eedf4d88f43b0810c4f5f1",
+        "productName": "ALLIANCE BEEF TENDER LOIN",
+        "action": "created",
+        "details": "Product created with a weight of 10kg with a stock of 20 units",
+        "adminId": "68eedcd788f43b0810c4f468",
+        "adminName": "Rosel Sita",
+        "changes": {
+          "basePricePerKg": 550,
+          "quantity": 20,
+          "status": "available",
+          "category": "beef",
+          "weightKg": 10
+        },
+        "quantityChange": 20,
+        "oldQuantity": 0,
+        "newQuantity": 20,
+        "reason": null,
+        "createdAt": "2025-10-14T23:39:57.536Z",
+        "updatedAt": "2025-10-14T23:39:57.536Z",
+        "__v": 0
+      },
+      {
+        "_id": "68eedf8488f43b0810c4f616",
+        "productId": "68eedf8488f43b0810c4f613",
+        "productName": "AMECO BEEF SHANK",
+        "action": "created",
+        "details": "Product created with a weight of 10kg with a stock of 20 units",
+        "adminId": "68eedcd788f43b0810c4f468",
+        "adminName": "Rosel Sita",
+        "changes": {
+          "basePricePerKg": 390,
+          "quantity": 20,
+          "status": "available",
+          "category": "beef",
+          "weightKg": 10
+        },
+        "quantityChange": 20,
+        "oldQuantity": 0,
+        "newQuantity": 20,
+        "reason": null,
+        "createdAt": "2025-10-14T23:40:52.776Z",
+        "updatedAt": "2025-10-14T23:40:52.776Z",
+        "__v": 0
+      },
+      {
+        "_id": "68eedfca88f43b0810c4f644",
+        "productId": "68eedfc988f43b0810c4f641",
+        "productName": "INGHAMS BONE MARROW",
+        "action": "created",
+        "details": "Product created with a weight of 10kg with a stock of 20 units",
+        "adminId": "68eedcd788f43b0810c4f468",
+        "adminName": "Rosel Sita",
+        "changes": {
+          "basePricePerKg": 450,
+          "quantity": 20,
+          "status": "available",
+          "category": "beef",
+          "weightKg": 10
+        },
+        "quantityChange": 20,
+        "oldQuantity": 0,
+        "newQuantity": 20,
+        "reason": null,
+        "createdAt": "2025-10-14T23:42:02.053Z",
+        "updatedAt": "2025-10-14T23:42:02.053Z",
+        "__v": 0
+      },
+      {
+        "_id": "68eee01a88f43b0810c4f666",
+        "productId": "68eee01a88f43b0810c4f663",
+        "productName": "BEEF BONE BRISKET",
+        "action": "created",
+        "details": "Product created with a weight of 10kg with a stock of 20 units",
+        "adminId": "68eedcd788f43b0810c4f468",
+        "adminName": "Rosel Sita",
+        "changes": {
+          "basePricePerKg": 420,
+          "quantity": 20,
+          "status": "available",
+          "category": "beef",
+          "weightKg": 10
+        },
+        "quantityChange": 20,
+        "oldQuantity": 0,
+        "newQuantity": 20,
+        "reason": null,
+        "createdAt": "2025-10-14T23:43:22.634Z",
+        "updatedAt": "2025-10-14T23:43:22.634Z",
+        "__v": 0
+      },
+      {
+        "_id": "68eee05188f43b0810c4f688",
+        "productId": "68eee05188f43b0810c4f685",
+        "productName": "FRIBOI FOREQUARTER",
+        "action": "created",
+        "details": "Product created with a weight of 10kg with a stock of 20 units",
+        "adminId": "68eedcd788f43b0810c4f468",
+        "adminName": "Rosel Sita",
+        "changes": {
+          "basePricePerKg": 370,
+          "quantity": 20,
+          "status": "available",
+          "category": "beef",
+          "weightKg": 10
+        },
+        "quantityChange": 20,
+        "oldQuantity": 0,
+        "newQuantity": 20,
+        "reason": null,
+        "createdAt": "2025-10-14T23:44:17.826Z",
+        "updatedAt": "2025-10-14T23:44:17.826Z",
+        "__v": 0
+      },
+      {
+        "_id": "68eee0a188f43b0810c4f6b6",
+        "productId": "68eee0a188f43b0810c4f6b3",
+        "productName": "AURORA WINGS",
+        "action": "created",
+        "details": "Product created with a weight of 10kg with a stock of 20 units",
+        "adminId": "68eedcd788f43b0810c4f468",
+        "adminName": "Rosel Sita",
+        "changes": {
+          "basePricePerKg": 210,
+          "quantity": 20,
+          "status": "available",
+          "category": "chicken",
+          "weightKg": 10
+        },
+        "quantityChange": 20,
+        "oldQuantity": 0,
+        "newQuantity": 20,
+        "reason": null,
+        "createdAt": "2025-10-14T23:45:37.974Z",
+        "updatedAt": "2025-10-14T23:45:37.974Z",
+        "__v": 0
+      },
+      {
+        "_id": "68eee0e388f43b0810c4f6d8",
+        "productId": "68eee0e388f43b0810c4f6d5",
+        "productName": "INGHAM CHICKEN FEET",
+        "action": "created",
+        "details": "Product created with a weight of 10kg with a stock of 20 units",
+        "adminId": "68eedcd788f43b0810c4f468",
+        "adminName": "Rosel Sita",
+        "changes": {
+          "basePricePerKg": 120,
+          "quantity": 20,
+          "status": "available",
+          "category": "chicken",
+          "weightKg": 10
+        },
+        "quantityChange": 20,
+        "oldQuantity": 0,
+        "newQuantity": 20,
+        "reason": null,
+        "createdAt": "2025-10-14T23:46:43.713Z",
+        "updatedAt": "2025-10-14T23:46:43.713Z",
+        "__v": 0
+      },
+      {
+        "_id": "68eee16d88f43b0810c4f723",
+        "productId": "68eee16d88f43b0810c4f720",
+        "productName": "AJC CHICKEN LIVER",
+        "action": "created",
+        "details": "Product created with a weight of 10kg with a stock of 20 units",
+        "adminId": "68eedcd788f43b0810c4f468",
+        "adminName": "Rosel Sita",
+        "changes": {
+          "basePricePerKg": 170,
+          "quantity": 20,
+          "status": "available",
+          "category": "chicken",
+          "weightKg": 10
+        },
+        "quantityChange": 20,
+        "oldQuantity": 0,
+        "newQuantity": 20,
+        "reason": null,
+        "createdAt": "2025-10-14T23:49:01.823Z",
+        "updatedAt": "2025-10-14T23:49:01.823Z",
+        "__v": 0
+      },
+      {
+        "_id": "68eee19f88f43b0810c4f73e",
+        "productId": "68eee19f88f43b0810c4f73b",
+        "productName": "MONTAIRE GIZZARD",
+        "action": "created",
+        "details": "Product created with a weight of 10kg with a stock of 20 units",
+        "adminId": "68eedcd788f43b0810c4f468",
+        "adminName": "Rosel Sita",
+        "changes": {
+          "basePricePerKg": 150,
+          "quantity": 20,
+          "status": "available",
+          "category": "chicken",
+          "weightKg": 10
+        },
+        "quantityChange": 20,
+        "oldQuantity": 0,
+        "newQuantity": 20,
+        "reason": null,
+        "createdAt": "2025-10-14T23:49:51.197Z",
+        "updatedAt": "2025-10-14T23:49:51.197Z",
+        "__v": 0
+      },
+      {
+        "_id": "68eee1f488f43b0810c4f76c",
+        "productId": "68eee1f488f43b0810c4f769",
+        "productName": "AJC CLQ",
+        "action": "created",
+        "details": "Product created with a weight of 10kg with a stock of 20 units",
+        "adminId": "68eedcd788f43b0810c4f468",
+        "adminName": "Rosel Sita",
+        "changes": {
+          "basePricePerKg": 210,
+          "quantity": 20,
+          "status": "available",
+          "category": "chicken",
+          "weightKg": 10
+        },
+        "quantityChange": 20,
+        "oldQuantity": 0,
+        "newQuantity": 20,
+        "reason": null,
+        "createdAt": "2025-10-14T23:51:16.794Z",
+        "updatedAt": "2025-10-14T23:51:16.794Z",
+        "__v": 0
+      },
+      {
+        "_id": "68eee24488f43b0810c4f79f",
+        "productId": "68eee24488f43b0810c4f79c",
+        "productName": "BEEF SHANK CUTTED",
+        "action": "created",
+        "details": "Product created with a weight of 10kg with a stock of 20 units",
+        "adminId": "68eedcd788f43b0810c4f468",
+        "adminName": "Rosel Sita",
+        "changes": {
+          "basePricePerKg": 390,
+          "quantity": 20,
+          "status": "available",
+          "category": "sliced",
+          "weightKg": 10
+        },
+        "quantityChange": 20,
+        "oldQuantity": 0,
+        "newQuantity": 20,
+        "reason": null,
+        "createdAt": "2025-10-14T23:52:36.300Z",
+        "updatedAt": "2025-10-14T23:52:36.300Z",
+        "__v": 0
+      },
+      {
+        "_id": "68eee26688f43b0810c4f7b5",
+        "productId": "68eee26688f43b0810c4f7b2",
+        "productName": "MONDELLI BEEF TRIMMINGS",
+        "action": "created",
+        "details": "Product created with a weight of 10kg with a stock of 20 units",
+        "adminId": "68eedcd788f43b0810c4f468",
+        "adminName": "Rosel Sita",
+        "changes": {
+          "basePricePerKg": 360,
+          "quantity": 20,
+          "status": "available",
+          "category": "sliced",
+          "weightKg": 10
+        },
+        "quantityChange": 20,
+        "oldQuantity": 0,
+        "newQuantity": 20,
+        "reason": null,
+        "createdAt": "2025-10-14T23:53:10.639Z",
+        "updatedAt": "2025-10-14T23:53:10.639Z",
+        "__v": 0
+      },
+      {
+        "_id": "68eee2a988f43b0810c4f7d7",
+        "productId": "68eee2a988f43b0810c4f7d4",
+        "productName": "PATA FRONT CUTTED",
+        "action": "created",
+        "details": "Product created with a weight of 10kg with a stock of 20 units",
+        "adminId": "68eedcd788f43b0810c4f468",
+        "adminName": "Rosel Sita",
+        "changes": {
+          "basePricePerKg": 385,
+          "quantity": 20,
+          "status": "available",
+          "category": "sliced",
+          "weightKg": 10
+        },
+        "quantityChange": 20,
+        "oldQuantity": 0,
+        "newQuantity": 20,
+        "reason": null,
+        "createdAt": "2025-10-14T23:54:17.457Z",
+        "updatedAt": "2025-10-14T23:54:17.457Z",
+        "__v": 0
+      },
+      {
+        "_id": "68eee2f088f43b0810c4f803",
+        "productId": "68eee2f088f43b0810c4f7ff",
+        "productName": "LITERA PORK HEAD CUTTED",
+        "action": "created",
+        "details": "Product created with a weight of 10kg with a stock of 20 units",
+        "adminId": "68eedcd788f43b0810c4f468",
+        "adminName": "Rosel Sita",
+        "changes": {
+          "basePricePerKg": 360,
+          "quantity": 20,
+          "status": "available",
+          "category": "sliced",
+          "weightKg": 10
+        },
+        "quantityChange": 20,
+        "oldQuantity": 0,
+        "newQuantity": 20,
+        "reason": null,
+        "createdAt": "2025-10-14T23:55:28.658Z",
+        "updatedAt": "2025-10-14T23:55:28.658Z",
+        "__v": 0
+      },
+      {
+        "_id": "68eee32f88f43b0810c4f827",
+        "productId": "68eee32e88f43b0810c4f824",
+        "productName": "PORK CHOP BISO",
+        "action": "created",
+        "details": "Product created with a weight of 10kg with a stock of 20 units",
+        "adminId": "68eedcd788f43b0810c4f468",
+        "adminName": "Rosel Sita",
+        "changes": {
+          "basePricePerKg": 380,
+          "quantity": 20,
+          "status": "available",
+          "category": "sliced",
+          "weightKg": 10
+        },
+        "quantityChange": 20,
+        "oldQuantity": 0,
+        "newQuantity": 20,
+        "reason": null,
+        "createdAt": "2025-10-14T23:56:31.014Z",
+        "updatedAt": "2025-10-14T23:56:31.014Z",
+        "__v": 0
+      },
+      {
+        "_id": "68eee35c88f43b0810c4f83d",
+        "productId": "68eee35c88f43b0810c4f83a",
+        "productName": "FRENCH FRIES",
+        "action": "created",
+        "details": "Product created with a weight of 10kg with a stock of 20 units",
+        "adminId": "68eedcd788f43b0810c4f468",
+        "adminName": "Rosel Sita",
+        "changes": {
+          "basePricePerKg": 220,
+          "quantity": 20,
+          "status": "available",
+          "category": "processed",
+          "weightKg": 10
+        },
+        "quantityChange": 20,
+        "oldQuantity": 0,
+        "newQuantity": 20,
+        "reason": null,
+        "createdAt": "2025-10-14T23:57:16.315Z",
+        "updatedAt": "2025-10-14T23:57:16.315Z",
+        "__v": 0
+      },
+      {
+        "_id": "68eee3a288f43b0810c4f85f",
+        "productId": "68eee3a288f43b0810c4f85c",
+        "productName": "TJ HOTDOG CLASSIC",
+        "action": "created",
+        "details": "Product created with a weight of 10kg with a stock of 20 units",
+        "adminId": "68eedcd788f43b0810c4f468",
+        "adminName": "Rosel Sita",
+        "changes": {
+          "basePricePerKg": 300,
+          "quantity": 20,
+          "status": "available",
+          "category": "processed",
+          "weightKg": 10
+        },
+        "quantityChange": 20,
+        "oldQuantity": 0,
+        "newQuantity": 20,
+        "reason": null,
+        "createdAt": "2025-10-14T23:58:26.593Z",
+        "updatedAt": "2025-10-14T23:58:26.593Z",
+        "__v": 0
+      },
+      {
+        "_id": "68eee3d988f43b0810c4f881",
+        "productId": "68eee3d988f43b0810c4f87e",
+        "productName": "PORK SIOMAI",
+        "action": "created",
+        "details": "Product created with a weight of 10kg with a stock of 20 units",
+        "adminId": "68eedcd788f43b0810c4f468",
+        "adminName": "Rosel Sita",
+        "changes": {
+          "basePricePerKg": 270,
+          "quantity": 20,
+          "status": "available",
+          "category": "processed",
+          "weightKg": 10
+        },
+        "quantityChange": 20,
+        "oldQuantity": 0,
+        "newQuantity": 20,
+        "reason": null,
+        "createdAt": "2025-10-14T23:59:21.357Z",
+        "updatedAt": "2025-10-14T23:59:21.357Z",
+        "__v": 0
+      },
+      {
+        "_id": "68eee41f88f43b0810c4f8af",
+        "productId": "68eee41f88f43b0810c4f8ac",
+        "productName": "BEEF SIOMAI",
+        "action": "created",
+        "details": "Product created with a weight of 10kg with a stock of 20 units",
+        "adminId": "68eedcd788f43b0810c4f468",
+        "adminName": "Rosel Sita",
+        "changes": {
+          "basePricePerKg": 360,
+          "quantity": 20,
+          "status": "available",
+          "category": "processed",
+          "weightKg": 10
+        },
+        "quantityChange": 20,
+        "oldQuantity": 0,
+        "newQuantity": 20,
+        "reason": null,
+        "createdAt": "2025-10-15T00:00:31.146Z",
+        "updatedAt": "2025-10-15T00:00:31.146Z",
+        "__v": 0
+      },
+      {
+        "_id": "68eee49788f43b0810c4f8f8",
+        "productId": "68eee49788f43b0810c4f8f5",
+        "productName": "CHICKEN SIOMAI",
+        "action": "created",
+        "details": "Product created with a weight of 10kg with a stock of 20 units",
+        "adminId": "68eedcd788f43b0810c4f468",
+        "adminName": "Rosel Sita",
+        "changes": {
+          "basePricePerKg": 270,
+          "quantity": 20,
+          "status": "available",
+          "category": "processed",
+          "weightKg": 10
+        },
+        "quantityChange": 20,
+        "oldQuantity": 0,
+        "newQuantity": 20,
+        "reason": null,
+        "createdAt": "2025-10-15T00:02:31.295Z",
+        "updatedAt": "2025-10-15T00:02:31.295Z",
+        "__v": 0
+      },
+      {
+        "_id": "68eee4cf88f43b0810c4f90e",
+        "productId": "68eee4ce88f43b0810c4f90b",
+        "productName": "OLYMEL CREAM DORY FILLET",
+        "action": "created",
+        "details": "Product created with a weight of 10kg with a stock of 20 units",
+        "adminId": "68eedcd788f43b0810c4f468",
+        "adminName": "Rosel Sita",
+        "changes": {
+          "basePricePerKg": 150,
+          "quantity": 20,
+          "status": "available",
+          "category": "seafood",
+          "weightKg": 10
+        },
+        "quantityChange": 20,
+        "oldQuantity": 0,
+        "newQuantity": 20,
+        "reason": null,
+        "createdAt": "2025-10-15T00:03:27.029Z",
+        "updatedAt": "2025-10-15T00:03:27.029Z",
+        "__v": 0
+      },
+      {
+        "_id": "68eee4f188f43b0810c4f930",
+        "productId": "68eee4f188f43b0810c4f92d",
+        "productName": "SEARA SQUID RINGS",
+        "action": "created",
+        "details": "Product created with a weight of 10kg with a stock of 20 units",
+        "adminId": "68eedcd788f43b0810c4f468",
+        "adminName": "Rosel Sita",
+        "changes": {
+          "basePricePerKg": 169,
+          "quantity": 20,
+          "status": "available",
+          "category": "seafood",
+          "weightKg": 10
+        },
+        "quantityChange": 20,
+        "oldQuantity": 0,
+        "newQuantity": 20,
+        "reason": null,
+        "createdAt": "2025-10-15T00:04:01.925Z",
+        "updatedAt": "2025-10-15T00:04:01.925Z",
+        "__v": 0
+      },
+      {
+        "_id": "68eee57188f43b0810c4f96f",
+        "productId": "68eee57188f43b0810c4f96c",
+        "productName": "OLYMEL SCALLOPS",
+        "action": "created",
+        "details": "Product created with a weight of 10kg with a stock of 20 units",
+        "adminId": "68eedcd788f43b0810c4f468",
+        "adminName": "Rosel Sita",
+        "changes": {
+          "basePricePerKg": 500,
+          "quantity": 20,
+          "status": "available",
+          "category": "seafood",
+          "weightKg": 10
+        },
+        "quantityChange": 20,
+        "oldQuantity": 0,
+        "newQuantity": 20,
+        "reason": null,
+        "createdAt": "2025-10-15T00:06:09.338Z",
+        "updatedAt": "2025-10-15T00:06:09.338Z",
+        "__v": 0
+      }
+    ],
+    "replacementRequests": [],
+    "chats": [],
+    "messages": [],
+    "faqs": [
+      {
+        "_id": "68eedbb088f43b0810c4f432",
+        "question": "What are your delivery areas?",
+        "answer": "We deliver to all areas within Metro Manila and selected provinces. Please contact us to confirm delivery availability in your area.",
+        "category": "delivery",
+        "keywords": [
+          "delivery",
+          "areas",
+          "metro manila",
+          "provinces",
+          "location"
+        ],
+        "isActive": true,
+        "priority": 10,
+        "viewCount": 0,
+        "lastUsed": null,
+        "createdAt": "2025-10-14T23:24:32.226Z",
+        "updatedAt": "2025-10-14T23:24:32.227Z",
+        "__v": 0
+      },
+      {
+        "_id": "68eedbb088f43b0810c4f433",
+        "question": "How long does delivery take?",
+        "answer": "Standard delivery takes 1-2 business days for Metro Manila and 2-3 business days for provincial areas. Express delivery options are available.",
+        "category": "delivery",
+        "keywords": [
+          "delivery",
+          "time",
+          "days",
+          "metro manila",
+          "provincial",
+          "express"
+        ],
+        "isActive": true,
+        "priority": 9,
+        "viewCount": 0,
+        "lastUsed": null,
+        "createdAt": "2025-10-14T23:24:32.229Z",
+        "updatedAt": "2025-10-14T23:24:32.229Z",
+        "__v": 0
+      },
+      {
+        "_id": "68eedbb088f43b0810c4f434",
+        "question": "What payment methods do you accept?",
+        "answer": "We accept cash on delivery, bank transfers, credit/debit cards, and digital wallets for your convenience.",
+        "category": "payment",
+        "keywords": [
+          "payment",
+          "methods",
+          "cash",
+          "delivery",
+          "bank",
+          "transfer",
+          "card",
+          "digital",
+          "wallet"
+        ],
+        "isActive": true,
+        "priority": 8,
+        "viewCount": 0,
+        "lastUsed": null,
+        "createdAt": "2025-10-14T23:24:32.229Z",
+        "updatedAt": "2025-10-14T23:24:32.229Z",
+        "__v": 0
+      },
+      {
+        "_id": "68eedbb088f43b0810c4f435",
+        "question": "How can I track my order?",
+        "answer": "You can track your order by logging into your account and going to the 'Track Orders' section. You'll receive updates via email and SMS.",
+        "category": "orders",
+        "keywords": [
+          "track",
+          "order",
+          "account",
+          "email",
+          "sms",
+          "updates"
+        ],
+        "isActive": true,
+        "priority": 7,
+        "viewCount": 0,
+        "lastUsed": null,
+        "createdAt": "2025-10-14T23:24:32.230Z",
+        "updatedAt": "2025-10-14T23:24:32.230Z",
+        "__v": 0
+      },
+      {
+        "_id": "68eedbb088f43b0810c4f436",
+        "question": "What if I'm not satisfied with my order?",
+        "answer": "We offer a replacement request system. You can submit a replacement request within 24 hours of delivery if you're not satisfied with the quality of your order.",
+        "category": "returns",
+        "keywords": [
+          "satisfied",
+          "order",
+          "replacement",
+          "request",
+          "quality",
+          "24 hours"
+        ],
+        "isActive": true,
+        "priority": 6,
+        "viewCount": 0,
+        "lastUsed": null,
+        "createdAt": "2025-10-14T23:24:32.230Z",
+        "updatedAt": "2025-10-14T23:24:32.230Z",
+        "__v": 0
+      },
+      {
+        "_id": "68eedbb088f43b0810c4f437",
+        "question": "How do I place an order?",
+        "answer": "Simply browse our products, add items to your cart, proceed to checkout, provide your delivery information, and complete payment. It's that easy!",
+        "category": "orders",
+        "keywords": [
+          "place",
+          "order",
+          "browse",
+          "products",
+          "cart",
+          "checkout",
+          "payment"
+        ],
+        "isActive": true,
+        "priority": 5,
+        "viewCount": 0,
+        "lastUsed": null,
+        "createdAt": "2025-10-14T23:24:32.230Z",
+        "updatedAt": "2025-10-14T23:24:32.230Z",
+        "__v": 0
+      },
+      {
+        "_id": "68eedbb088f43b0810c4f438",
+        "question": "Are your products fresh?",
+        "answer": "Yes, we guarantee fresh, high-quality meat products. All our products are sourced from trusted suppliers and delivered fresh to your doorstep.",
+        "category": "products",
+        "keywords": [
+          "fresh",
+          "quality",
+          "meat",
+          "products",
+          "suppliers",
+          "guarantee"
+        ],
+        "isActive": true,
+        "priority": 4,
+        "viewCount": 0,
+        "lastUsed": null,
+        "createdAt": "2025-10-14T23:24:32.231Z",
+        "updatedAt": "2025-10-14T23:24:32.231Z",
+        "__v": 0
+      },
+      {
+        "_id": "68eedbb088f43b0810c4f439",
+        "question": "What are your business hours?",
+        "answer": "We operate Monday to Friday from 8:00 AM to 6:00 PM, and Saturday from 9:00 AM to 4:00 PM. We're closed on Sundays.",
+        "category": "general",
+        "keywords": [
+          "business",
+          "hours",
+          "monday",
+          "friday",
+          "saturday",
+          "sunday",
+          "closed"
+        ],
+        "isActive": true,
+        "priority": 3,
+        "viewCount": 0,
+        "lastUsed": null,
+        "createdAt": "2025-10-14T23:24:32.231Z",
+        "updatedAt": "2025-10-14T23:24:32.231Z",
+        "__v": 0
+      },
+      {
+        "_id": "68eedbb088f43b0810c4f43a",
+        "question": "How can I contact customer support?",
+        "answer": "You can contact us through our live chat feature, email at info@roselmeat.com, or call us at +63 926 320 3832.",
+        "category": "general",
+        "keywords": [
+          "contact",
+          "support",
+          "chat",
+          "email",
+          "phone",
+          "help"
+        ],
+        "isActive": true,
+        "priority": 2,
+        "viewCount": 0,
+        "lastUsed": null,
+        "createdAt": "2025-10-14T23:24:32.231Z",
+        "updatedAt": "2025-10-14T23:24:32.231Z",
+        "__v": 0
+      },
+      {
+        "_id": "68eedbb088f43b0810c4f43b",
+        "question": "Do you offer bulk orders?",
+        "answer": "Yes, we offer special pricing for bulk orders. Please contact us directly to discuss your requirements and get a custom quote.",
+        "category": "orders",
+        "keywords": [
+          "bulk",
+          "orders",
+          "special",
+          "pricing",
+          "custom",
+          "quote",
+          "requirements"
+        ],
+        "isActive": true,
+        "priority": 1,
+        "viewCount": 0,
+        "lastUsed": null,
+        "createdAt": "2025-10-14T23:24:32.232Z",
+        "updatedAt": "2025-10-14T23:24:32.232Z",
+        "__v": 0
+      }
+    ],
+    "writeOffs": []
+  }
+}

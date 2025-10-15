@@ -32,7 +32,7 @@ export const getAllProductsForCustomers = async (req, res) => {
 export const getFeaturedProducts = async (req, res) => {
     try {
         // Check if cache should be bypassed (for testing)
-        const bypassCache = req.query.bypass === 'true';
+        const bypassCache = req.query.bypass === 'true' || req.query.t; // Also bypass on timestamp parameter
         
         if (!bypassCache) {
             let cached = await redis.get("featuredProducts");
@@ -214,9 +214,9 @@ export const deleteProduct = async (req, res) => {
 
 export const getRecommendedProducts = async (req, res) => {
     try {
-        // Aggregate top 6 selling products based on total ordered quantity and only available products
+        // Get top 6 selling products based on total ordered quantity and only available products
         // Exclude cancelled and refunded orders from recommendations
-        const topSelling = await Order.aggregate([
+        const topSellingProductIds = await Order.aggregate([
             // Filter out cancelled and refunded orders
             { $match: { 
                 status: { $nin: ['cancelled', 'refunded'] },
@@ -225,30 +225,26 @@ export const getRecommendedProducts = async (req, res) => {
             { $unwind: "$products" },
             { $group: { _id: "$products.product", totalQuantity: { $sum: "$products.quantity" } } },
             { $sort: { totalQuantity: -1 } },
-            { $limit: 6 },
-            {
-                $lookup: {
-                    from: "products",
-                    localField: "_id",
-                    foreignField: "_id",
-                    as: "product"
-                }
-            },
-            { $unwind: "$product" },
-            { $match: { "product.status": PRODUCT_STATUSES.AVAILABLE } },
-            {
-                $project: {
-                    _id: "$product._id",
-                    name: "$product.name",
-                    description: "$product.description",
-                    image: { $ifNull: ["$product.mainImageUrl", "$product.image"] },
-                    price: "$product.price",
-                    quantity: "$product.quantity",
-                    sales: "$totalQuantity"
-                }
-            }
+            { $limit: 6 }
         ]);
-        res.json({ products: topSelling });
+
+        // Get the actual product documents with virtual fields
+        const productIds = topSellingProductIds.map(item => item._id);
+        const products = await Product.find({ 
+            _id: { $in: productIds },
+            status: PRODUCT_STATUSES.AVAILABLE 
+        });
+
+        // Add sales data to each product
+        const productsWithSales = products.map(product => {
+            const salesData = topSellingProductIds.find(item => item._id.toString() === product._id.toString());
+            return {
+                ...product.toJSON(),
+                sales: salesData ? salesData.totalQuantity : 0
+            };
+        });
+
+        res.json({ products: productsWithSales });
     } catch (error) {
         console.log("Error in getRecommendedProducts controller", error.message);
         res.status(500).json({message: "Server error", error: error.message});
@@ -832,15 +828,14 @@ async function buildHybridFeaturedProducts() {
 
     // Manual featured first (sorted by most recently created)
     const manualFeatured = await Product.find({ isFeatured: true, status: PRODUCT_STATUSES.AVAILABLE })
-        .sort({ createdAt: -1 })
-        .lean();
+        .sort({ createdAt: -1 });
 
     const result = [];
     const usedIds = new Set();
 
     for (const p of manualFeatured) {
         if (result.length >= MAX_FEATURED) break;
-        result.push(p);
+        result.push(p.toJSON());
         usedIds.add(String(p._id));
     }
 
@@ -853,9 +848,9 @@ async function buildHybridFeaturedProducts() {
 
     const baseFilter = { _id: { $nin: excludeIds }, status: PRODUCT_STATUSES.AVAILABLE };
     const [recentlyAdded, lowestStock, priciest] = await Promise.all([
-        Product.find(baseFilter).sort({ createdAt: -1 }).lean(),
-        Product.find(baseFilter).sort({ quantity: 1, createdAt: -1 }).lean(),
-        Product.find(baseFilter).sort({ price: -1, createdAt: -1 }).lean(),
+        Product.find(baseFilter).sort({ createdAt: -1 }),
+        Product.find(baseFilter).sort({ totalStockUnits: 1, createdAt: -1 }),
+        Product.find(baseFilter).sort({ priceMin: -1, createdAt: -1 }),
     ]);
 
     const pools = [recentlyAdded, lowestStock, priciest /* trending (skip for now) */];
@@ -890,7 +885,7 @@ async function buildHybridFeaturedProducts() {
         if (idx < pool.length) {
             const candidate = pool[idx];
             if (!usedIds.has(String(candidate._id))) {
-                result.push(candidate);
+                result.push(candidate.toJSON());
                 usedIds.add(String(candidate._id));
             }
             poolIndices[poolCursor] = idx + 1;

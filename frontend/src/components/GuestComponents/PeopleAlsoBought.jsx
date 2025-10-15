@@ -110,7 +110,7 @@ const PeopleAlsoBought = () => {
 							}}
 							disabled={(product.totalStockUnits || product.quantity) === 0}
 							className={`w-full text-white py-1 px-2 rounded-lg transition-colors duration-300 font-semibold text-xs ${
-								product.quantity > 0
+								(product.totalStockUnits || product.quantity) > 0
 									? buttonStateById[product._id] === 'added'
 										? 'bg-emerald-600'
 										: buttonStateById[product._id] === 'maxed'
@@ -119,7 +119,7 @@ const PeopleAlsoBought = () => {
 									: 'bg-gray-400 cursor-not-allowed'
 							}`}
 						>
-							{product.quantity > 0
+							{(product.totalStockUnits || product.quantity) > 0
 								? buttonStateById[product._id] === 'added'
 									? 'Product Added'
 									: buttonStateById[product._id] === 'maxed'

@@ -79,8 +79,8 @@ const WelcomePage = () => {
     if (products && products.length > 0) {
       // Sort products by price in descending order and take the top 5
       const sortedProducts = [...products]
-        .filter(product => product.status === 'available' && product.quantity > 0)
-        .sort((a, b) => b.price - a.price)
+        .filter(product => product.status === 'available' && (product.totalStockUnits || product.quantity) > 0)
+        .sort((a, b) => (b.priceMin || b.price || 0) - (a.priceMin || a.price || 0))
         .slice(0, 5);
       setPremiumProducts(sortedProducts);
     }
@@ -306,7 +306,7 @@ const WelcomePage = () => {
                       onClick={() => handleAddToCart(product)}
                       disabled={(product.totalStockUnits || product.quantity) === 0}
                       className={`w-full text-white py-2 px-4 rounded-lg transition-colors duration-300 font-semibold ${
-                        product.quantity > 0
+                        (product.totalStockUnits || product.quantity) > 0
                           ? buttonStateById[product._id] === 'added'
                             ? 'bg-emerald-600'
                             : buttonStateById[product._id] === 'maxed'
@@ -315,7 +315,7 @@ const WelcomePage = () => {
                           : 'bg-gray-400 cursor-not-allowed'
                       }`}
                     >
-                      {product.quantity > 0 
+                      {(product.totalStockUnits || product.quantity) > 0 
                         ? buttonStateById[product._id] === 'added' 
                           ? 'Product Added'
                           : buttonStateById[product._id] === 'maxed'
@@ -368,25 +368,25 @@ const WelcomePage = () => {
                   </div>
                   <h3 className="text-lg font-bold text-[#030105] mb-2 line-clamp-2 font-alice">{premiumProducts[currentProductIndex]?.name}</h3>
                   <div className="flex justify-center items-center mb-2">
-                    <span className="text-xl text-[#901414] font-libre">₱{premiumProducts[currentProductIndex]?.price.toFixed(2)}</span>
+                    <span className="text-xl text-[#901414] font-libre">₱{((premiumProducts[currentProductIndex]?.priceMin || premiumProducts[currentProductIndex]?.price) || 0).toFixed(2)}</span>
                   </div>
                   <div className="flex justify-center items-center mb-3">
                     <span className={`text-xs font-medium px-2 py-1 rounded-full ${
-                      premiumProducts[currentProductIndex]?.quantity > 10 
+                      (premiumProducts[currentProductIndex]?.totalStockUnits || premiumProducts[currentProductIndex]?.quantity) > 10 
                         ? 'bg-green-100 text-green-800' 
-                        : premiumProducts[currentProductIndex]?.quantity > 0 
+                        : (premiumProducts[currentProductIndex]?.totalStockUnits || premiumProducts[currentProductIndex]?.quantity) > 0 
                           ? 'bg-yellow-100 text-yellow-800' 
                           : 'bg-red-100 text-red-800'
                     }`}>
-                      {premiumProducts[currentProductIndex]?.quantity > 0 ? `${premiumProducts[currentProductIndex]?.quantity} in stock` : 'Out of stock'}
+                      {(premiumProducts[currentProductIndex]?.totalStockUnits || premiumProducts[currentProductIndex]?.quantity) > 0 ? `${premiumProducts[currentProductIndex]?.totalStockUnits || premiumProducts[currentProductIndex]?.quantity} in stock` : 'Out of stock'}
                     </span>
                   </div>
                   <div className="mt-auto">
                     <button
                       onClick={() => handleAddToCart(premiumProducts[currentProductIndex])}
-                      disabled={premiumProducts[currentProductIndex]?.quantity === 0}
+                      disabled={(premiumProducts[currentProductIndex]?.totalStockUnits || premiumProducts[currentProductIndex]?.quantity) === 0}
                       className={`w-full text-white py-2 px-4 rounded-lg transition-colors duration-300 font-semibold ${
-                        (premiumProducts[currentProductIndex]?.quantity || 0) > 0
+                        (premiumProducts[currentProductIndex]?.totalStockUnits || premiumProducts[currentProductIndex]?.quantity || 0) > 0
                           ? buttonStateById[premiumProducts[currentProductIndex]?._id] === 'added'
                             ? 'bg-emerald-600'
                             : buttonStateById[premiumProducts[currentProductIndex]?._id] === 'maxed'
@@ -395,7 +395,7 @@ const WelcomePage = () => {
                           : 'bg-gray-400 cursor-not-allowed'
                       }`}
                     >
-                      {(premiumProducts[currentProductIndex]?.quantity || 0) > 0 
+                      {(premiumProducts[currentProductIndex]?.totalStockUnits || premiumProducts[currentProductIndex]?.quantity || 0) > 0 
                         ? buttonStateById[premiumProducts[currentProductIndex]?._id] === 'added' 
                           ? 'Product Added'
                           : buttonStateById[premiumProducts[currentProductIndex]?._id] === 'maxed'

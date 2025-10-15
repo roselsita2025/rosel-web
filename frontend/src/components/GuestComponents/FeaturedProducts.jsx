@@ -113,7 +113,7 @@ return (
 														disabled={(product.totalStockUnits || product.quantity) === 0}
 														className={`w-full text-white font-semibold py-1.5 px-3 rounded transition-colors duration-300 
 	                                                    flex items-center justify-center text-sm ${
-	                                                        product.quantity > 0 
+	                                                        (product.totalStockUnits || product.quantity) > 0 
 	                                                            ? buttonStateById[product._id] === 'added'
 	                                                                ? 'bg-emerald-600'
 	                                                                : buttonStateById[product._id] === 'maxed'
@@ -123,7 +123,7 @@ return (
 	                                                    }`}
 													>
 														<ShoppingCart className='w-4 h-4 mr-1.5' />
-	                                                        {product.quantity > 0 
+	                                                        {(product.totalStockUnits || product.quantity) > 0 
 	                                                            ? buttonStateById[product._id] === 'added' 
 	                                                                ? 'Product Added'
 	                                                                : buttonStateById[product._id] === 'maxed'
