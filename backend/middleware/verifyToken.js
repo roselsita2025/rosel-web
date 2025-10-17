@@ -11,7 +11,6 @@ export const verifyToken = async (req, res, next) => {
   }
 
   try {
-    // Verify JWT
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     
     if (!decoded || !decoded.userId) {
@@ -20,7 +19,6 @@ export const verifyToken = async (req, res, next) => {
         .json({ success: false, message: "Unauthorized - invalid token" });
     }
 
-    // Fetch full user document from DB
     const user = await User.findById(decoded.userId).populate("cartItems.product");
     if (!user) {
       return res
@@ -28,7 +26,6 @@ export const verifyToken = async (req, res, next) => {
         .json({ success: false, message: "User not found" });
     }
 
-    // Attach user to request
     req.user = user;       // full Mongoose doc
     req.userId = user._id; // shortcut if only the ID is needed
 
@@ -43,7 +40,6 @@ export const verifyToken = async (req, res, next) => {
 
 export const verifyAdmin = async (req, res, next) => {
   try {
-    // req.user is already a full doc (from verifyToken)
     const user = req.user || (await User.findById(req.userId));
     if (user && user.role === "admin") {
       return next();

@@ -9,10 +9,8 @@ import {
 
 const router = express.Router();
 
-// Apply admin authentication middleware to all routes
 router.use(verifyToken);
 
-// Middleware to check if user is admin
 const requireAdmin = (req, res, next) => {
     if (req.user.role !== 'admin') {
         return res.status(403).json({
@@ -23,7 +21,6 @@ const requireAdmin = (req, res, next) => {
     next();
 };
 
-// Apply admin role check to all routes
 router.use(requireAdmin);
 
 /**

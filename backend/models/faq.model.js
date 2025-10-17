@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 
 const faqSchema = new mongoose.Schema({
-    // FAQ identification
     question: {
         type: String,
         required: true,
@@ -13,20 +12,17 @@ const faqSchema = new mongoose.Schema({
         maxlength: 2000
     },
     
-    // FAQ categorization
     category: {
         type: String,
         enum: ['delivery', 'payment', 'products', 'orders', 'returns', 'general'],
         required: true
     },
     
-    // Keywords for search matching
     keywords: [{
         type: String,
         lowercase: true
     }],
     
-    // FAQ status and priority
     isActive: {
         type: Boolean,
         default: true
@@ -38,7 +34,6 @@ const faqSchema = new mongoose.Schema({
         max: 10
     },
     
-    // Usage statistics
     viewCount: {
         type: Number,
         default: 0
@@ -48,7 +43,6 @@ const faqSchema = new mongoose.Schema({
         default: null
     },
     
-    // Timestamps
     createdAt: {
         type: Date,
         default: Date.now
@@ -61,7 +55,6 @@ const faqSchema = new mongoose.Schema({
     timestamps: true
 });
 
-// Index for efficient queries
 faqSchema.index({ category: 1, isActive: 1 });
 faqSchema.index({ keywords: 1 });
 faqSchema.index({ priority: -1 });

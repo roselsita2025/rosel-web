@@ -11,19 +11,16 @@ export const getCustomerOrders = async (req, res) => {
         const userId = req.user._id;
         const { page = 1, limit = 10, status } = req.query;
         
-        // Build query filter - only show orders with successful payments
         const filter = { 
             user: userId,
-            paymentStatus: 'paid' // Only show orders that have been paid
+            paymentStatus: 'paid'
         };
         if (status) {
             filter.status = status;
         }
         
-        // Calculate pagination
         const skip = (parseInt(page) - 1) * parseInt(limit);
         
-        // Get orders with populated product details
         const orders = await Order.find(filter)
             .populate('products.product', 'name image price basePricePerKg weightOptions')
             .sort({ createdAt: -1 })

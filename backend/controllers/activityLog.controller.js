@@ -17,7 +17,6 @@ export const getActivityLogs = async (req, res) => {
             order = "desc"
         } = req.query;
 
-        // Build filter object
         const filter = {};
         
         if (productId) {
@@ -44,16 +43,13 @@ export const getActivityLogs = async (req, res) => {
 
         console.log("Filter object:", filter);
 
-        // Build sort object
         const sortObj = {};
         sortObj[sort] = order === 'asc' ? 1 : -1;
 
-        // Pagination
         const pageNumber = Math.max(1, parseInt(page));
         const pageSize = Math.min(100, Math.max(1, parseInt(limit)));
         const skip = (pageNumber - 1) * pageSize;
 
-        // Execute query
         const [logs, total] = await Promise.all([
             ActivityLog.find(filter)
                 .populate('productId', 'name category')

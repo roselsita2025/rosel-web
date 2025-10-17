@@ -45,7 +45,6 @@ app.use(cors({ origin: process.env.CLIENT_URL, credentials: true}));
 app.use(express.json({ limit: "10mb" }));
 app.use(cookieParser()); 
 
-// Routes
 app.use("/api/auth", authRoutes); 
 app.use("/api/products", productRoutes);
 app.use("/api/carts", cartRoutes);
@@ -68,21 +67,16 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/backup", backupRoutes);
 app.use("/api/write-offs", writeOffRoutes);
 
-// Serve static files from the React app build directory
 app.use(express.static(path.join(__dirname, '../frontend/dist')));
 
 const server = app.listen(PORT, async () => {
     await connectDB();
     await seedFAQs();
     
-    // Initialize WebSocket service
     socketService.initialize(server);
 });
 
-// Serve React app for all non-API routes
-// This must be the last route defined
 app.get('*', (req, res) => {
-  // Only serve React app for non-API routes
   if (!req.path.startsWith('/api/')) {
     res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
   } else {

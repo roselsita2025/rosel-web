@@ -39,13 +39,11 @@ class NotificationService {
         actionUrl = null
     }) {
         try {
-            // Verify recipient exists
             const recipient = await User.findById(recipientId);
             if (!recipient) {
                 throw new Error(`Recipient with ID ${recipientId} not found`);
             }
 
-            // Create notification
             const notification = await Notification.createNotification({
                 recipient: recipientId,
                 type,
@@ -60,10 +58,8 @@ class NotificationService {
                 actionUrl
             });
 
-            // Populate recipient info
             await notification.populate('recipient', 'name email role');
 
-            // Send real-time notification via WebSocket
             this.socketService.emitToUser(recipientId.toString(), 'new_notification', {
                 notification
             });
@@ -108,7 +104,6 @@ class NotificationService {
                 notifications.push(notification);
                 console.log(`✅ Created notification: ${notification.notificationId}`);
 
-                // Emit real-time notification
                 this.socketService.emitToUser(recipientId, 'new_notification', {
                     notification
                 });
@@ -173,7 +168,6 @@ class NotificationService {
         }
     }
 
-    // ==================== INVENTORY NOTIFICATIONS ====================
 
     /**
      * Send low stock alert to admins
@@ -202,10 +196,8 @@ class NotificationService {
             actionUrl: `/manage-products?product=${product._id}`
         };
 
-        // Create in-app + realtime notifications for admins
         const result = await this.notifyAdmins(notificationData);
 
-        // Send email notification to all admin users (best-effort)
         try {
             const admins = await User.find({ role: 'admin', email: { $exists: true, $ne: null } }).select('email');
             const adminEmails = admins.map(a => a.email).filter(Boolean);
@@ -312,7 +304,6 @@ class NotificationService {
         return await this.notifyAdmins(notificationData);
     }
 
-    // ==================== ORDER NOTIFICATIONS ====================
 
     /**
      * Send new order notification to admins
@@ -355,7 +346,6 @@ class NotificationService {
             'cancelled': 'Your order has been cancelled'
         };
 
-        // Map status to valid subcategory
         const subcategoryMap = {
             'processing': 'order_processing',
             'shipped': 'order_shipped',
@@ -386,7 +376,6 @@ class NotificationService {
         return await this.createNotification(notificationData);
     }
 
-    // ==================== CUSTOMER REQUEST NOTIFICATIONS ====================
 
     /**
      * Send new replacement request notification to admins
@@ -459,7 +448,6 @@ class NotificationService {
         return await this.createNotification(notificationData);
     }
 
-    // ==================== PROMOTION NOTIFICATIONS ====================
 
     /**
      * Send promotion notification to customers
@@ -499,7 +487,6 @@ class NotificationService {
         return await this.notifyCustomers(notificationData);
     }
 
-    // ==================== CHAT NOTIFICATIONS ====================
 
     /**
      * Send new chat message notification to admins
@@ -529,7 +516,6 @@ class NotificationService {
         return await this.notifyAdmins(notificationData);
     }
 
-    // ==================== UTILITY METHODS ====================
 
     /**
      * Clean up expired notifications
@@ -561,5 +547,4 @@ class NotificationService {
     }
 }
 
-// Create singleton instance
 export const notificationService = new NotificationService();

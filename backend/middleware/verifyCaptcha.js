@@ -19,7 +19,6 @@ export const verifyCaptcha = async (req, res, next) => {
       const params = new URLSearchParams();
       params.set("secret", RECAPTCHA_SECRET_KEY);
       params.set("response", captchaToken);
-      // Optionally include remote IP
       if (req.ip) params.set("remoteip", req.ip);
 
       const response = await fetch("https://www.google.com/recaptcha/api/siteverify", {

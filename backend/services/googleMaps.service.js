@@ -2,7 +2,6 @@ import { Client } from '@googlemaps/google-maps-services-js';
 
 const client = new Client({});
 
-// Initialize Google Maps client with API key
 const getGoogleMapsClient = () => {
     const apiKey = process.env.MAPS_PLATFORM_API_KEY;
     if (!apiKey) {
@@ -166,7 +165,6 @@ export const reverseGeocode = async (lat, lng) => {
         const result = response.data.results[0];
         const components = {};
         
-        // Extract address components
         result.address_components.forEach(component => {
             const types = component.types;
             if (types.includes('street_number')) components.street_number = component.long_name;

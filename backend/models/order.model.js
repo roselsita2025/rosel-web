@@ -14,7 +14,6 @@ const orderSchema = new mongoose.Schema(
 					ref: "Product",
 					required: true,
 				},
-				// Weight-based fields (optional for backward compatibility)
 				weightOptionId: {
 					type: mongoose.Schema.Types.ObjectId,
 					default: undefined
@@ -44,7 +43,6 @@ const orderSchema = new mongoose.Schema(
 			required: true,
 			min: 0,
 		},
-		// Revenue breakdown for accurate analytics
 		productSubtotal: {
 			type: Number,
 			required: true,
@@ -65,7 +63,6 @@ const orderSchema = new mongoose.Schema(
 			unique: true,
 			sparse: true, // Allows multiple null values but ensures uniqueness for non-null values
 		},
-		// Shipping Information
 		shippingInfo: {
 			email: { type: String, required: true },
 			firstName: { type: String, required: true },
@@ -82,13 +79,11 @@ const orderSchema = new mongoose.Schema(
 			},
 			fullAddress: { type: String, required: true }
 		},
-		// Shipping Method
 		shippingMethod: {
 			type: String,
 			enum: ['pickup', 'lalamove'],
 			required: true
 		},
-		// Lalamove Details (if applicable)
 		lalamoveDetails: {
 			quotationId: { type: String },
 			quotation: { type: Object }, // Store the full quotation data
@@ -109,26 +104,22 @@ const orderSchema = new mongoose.Schema(
 			trackingUrl: { type: String },
 			lastStatusUpdate: { type: Date, default: Date.now }
 		},
-		// Coupon Information
 		coupon: {
 			code: { type: String },
 			type: { type: String, enum: ['percent', 'fixed'] },
 			amount: { type: Number },
 			discount: { type: Number }
 		},
-		// Order Status
 		status: {
 			type: String,
 			enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled', 'refunded'],
 			default: 'pending'
 		},
-		// Admin Order Status (for tracking admin workflow)
 		adminStatus: {
 			type: String,
 			enum: ['order_received', 'order_preparing', 'order_prepared', 'order_placed', 'order_picked_up', 'order_completed'],
 			default: 'order_received'
 		},
-		// Payment Information
 		paymentStatus: {
 			type: String,
 			enum: ['pending', 'paid', 'failed', 'refunded'],

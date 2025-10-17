@@ -24,7 +24,6 @@ export const createReplacementRequest = async (req, res) => {
             images = []
         } = req.body;
 
-        // Validate required fields
         if (!orderId || !productId || !quantity || !reason || !description || !contactNumber || !images || images.length === 0) {
             return res.status(400).json({
                 success: false,
@@ -32,7 +31,6 @@ export const createReplacementRequest = async (req, res) => {
             });
         }
 
-        // Verify the order belongs to the user
         const order = await Order.findOne({ _id: orderId, user: userId })
             .populate('products.product', 'name image price');
 
@@ -43,7 +41,6 @@ export const createReplacementRequest = async (req, res) => {
             });
         }
 
-        // Verify the product exists in the order
         const orderProduct = order.products.find(
             item => item.product._id.toString() === productId
         );
@@ -55,7 +52,6 @@ export const createReplacementRequest = async (req, res) => {
             });
         }
 
-        // Check if quantity is valid
         if (quantity > orderProduct.quantity) {
             return res.status(400).json({
                 success: false,
@@ -63,7 +59,6 @@ export const createReplacementRequest = async (req, res) => {
             });
         }
 
-        // Check if there's already a pending request for this product in this order
         const existingRequest = await ReplacementRequest.findOne({
             user: userId,
             order: orderId,
@@ -78,7 +73,6 @@ export const createReplacementRequest = async (req, res) => {
             });
         }
 
-        // Verify the product exists
         const product = await Product.findById(productId);
         if (!product) {
             return res.status(404).json({
@@ -87,7 +81,6 @@ export const createReplacementRequest = async (req, res) => {
             });
         }
 
-        // Create the replacement request
         const replacementRequest = new ReplacementRequest({
             user: userId,
             order: orderId,
@@ -101,22 +94,18 @@ export const createReplacementRequest = async (req, res) => {
 
         await replacementRequest.save();
 
-        // Populate the request with related data
         await replacementRequest.populate([
             { path: 'user', select: 'name email' },
             { path: 'order', select: '_id totalAmount createdAt' },
             { path: 'product', select: 'name image price category basePricePerKg weightOptions' }
         ]);
 
-        // Send notification to admins about new replacement request
         try {
             await notificationService.sendNewReplacementRequestNotification(replacementRequest);
         } catch (notificationError) {
             console.error('Error sending new replacement request notification:', notificationError);
-            // Don't fail the request creation if notification fails
         }
 
-        // Send email notification to admin
         try {
             const adminUsers = await User.find({ role: 'admin' });
             const adminEmails = adminUsers.map(admin => admin.email);
@@ -144,7 +133,6 @@ export const createReplacementRequest = async (req, res) => {
             }
         } catch (emailError) {
             console.error('Error sending admin notification email:', emailError);
-            // Don't fail the request creation if email fails
         }
 
         res.status(201).json({
@@ -172,20 +160,16 @@ export const getCustomerReplacementRequests = async (req, res) => {
         const userId = req.user._id;
         const { page = 1, limit = 10, status, sortBy = 'createdAt', sortOrder = 'desc' } = req.query;
 
-        // Build query filter
         const filter = { user: userId };
         if (status) {
             filter.status = status;
         }
 
-        // Calculate pagination
         const skip = (parseInt(page) - 1) * parseInt(limit);
 
-        // Build sort object
         const sort = {};
         sort[sortBy] = sortOrder === 'desc' ? -1 : 1;
 
-        // Get replacement requests with populated data
         const requests = await ReplacementRequest.find(filter)
             .populate('order', '_id totalAmount createdAt')
             .populate({
@@ -201,7 +185,6 @@ export const getCustomerReplacementRequests = async (req, res) => {
             .skip(skip)
             .limit(parseInt(limit));
 
-        // Get total count for pagination
         const totalRequests = await ReplacementRequest.countDocuments(filter);
 
         res.status(200).json({
@@ -305,7 +288,6 @@ export const getAllReplacementRequests = async (req, res) => {
             sortOrder = 'desc' 
         } = req.query;
 
-        // Build query filter
         const filter = {};
         if (status) {
             filter.status = status;
@@ -323,14 +305,11 @@ export const getAllReplacementRequests = async (req, res) => {
             ];
         }
 
-        // Calculate pagination
         const skip = (parseInt(page) - 1) * parseInt(limit);
 
-        // Build sort object
         const sort = {};
         sort[sortBy] = sortOrder === 'desc' ? -1 : 1;
 
-        // Get replacement requests with populated data
         const requests = await ReplacementRequest.find(filter)
             .populate('user', 'name email phone')
             .populate({
@@ -347,7 +326,6 @@ export const getAllReplacementRequests = async (req, res) => {
             .skip(skip)
             .limit(parseInt(limit));
 
-        // Get total count for pagination
         const totalRequests = await ReplacementRequest.countDocuments(filter);
 
         res.status(200).json({

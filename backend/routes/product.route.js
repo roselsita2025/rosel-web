@@ -12,7 +12,6 @@ router.get("/suggest", suggestProducts);
 router.get("/category/:category", getProductsByCategory);
 router.get("/recommendations", getRecommendedProducts);
 router.get("/categories", (req, res) => {
-    // static categories for frontend; no auth required
     res.json({ categories: ["pork", "beef", "chicken", "sliced", "processed", "seafood"] });
 });
 router.get("/barcode/:barcode", verifyToken, verifyAdmin, getProductByBarcode);
@@ -27,7 +26,6 @@ router.put("/quantity/add", verifyToken, verifyAdmin, addProductQuantity);
 router.put("/quantity/remove", verifyToken, verifyAdmin, removeProductQuantity);
 router.delete("/cache/featured", verifyToken, verifyAdmin, clearFeaturedProductsCache);
 
-// Weight-based admin management
 router.post("/:id/weights", verifyToken, verifyAdmin, addWeightOption);
 router.patch("/:id/weights/:weightOptionId", verifyToken, verifyAdmin, updateWeightOption);
 router.delete("/:id/weights/:weightOptionId", verifyToken, verifyAdmin, deleteWeightOption);

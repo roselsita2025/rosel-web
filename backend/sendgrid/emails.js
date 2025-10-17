@@ -98,7 +98,6 @@ export const sendEmail = async (recipients, subject, template, data) => {
     const recipientList = recipients.map(email => ({ email }));
     
     try {
-        // Replace placeholders in template with data
         let htmlContent = template;
         Object.keys(data).forEach(key => {
             const placeholder = `{${key}}`;

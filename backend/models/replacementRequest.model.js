@@ -45,7 +45,6 @@ const replacementRequestSchema = new mongoose.Schema(
             required: true,
             validate: {
                 validator: function(v) {
-                    // Philippine phone number validation (starts with +63 or 09)
                     return /^(\+63|0)9\d{9}$/.test(v);
                 },
                 message: 'Please provide a valid Philippine phone number (e.g., +639123456789 or 09123456789)'
@@ -106,12 +105,10 @@ const replacementRequestSchema = new mongoose.Schema(
         actualResolutionDate: {
             type: Date,
         },
-        // For tracking who handled the request
         handledBy: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
         },
-        // Internal notes for admin use
         internalNotes: {
             type: String,
             maxlength: 2000,
@@ -121,22 +118,18 @@ const replacementRequestSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-// Indexes for better query performance
 replacementRequestSchema.index({ user: 1, createdAt: -1 });
 replacementRequestSchema.index({ status: 1, createdAt: -1 });
 replacementRequestSchema.index({ order: 1 });
 replacementRequestSchema.index({ product: 1 });
 
-// Virtual for request number (last 8 characters of ID)
 replacementRequestSchema.virtual('requestNumber').get(function() {
     return this._id.toString().slice(-8).toUpperCase();
 });
 
-// Ensure virtual fields are serialized
 replacementRequestSchema.set('toJSON', { virtuals: true });
 replacementRequestSchema.set('toObject', { virtuals: true });
 
-// Pre-save middleware to set admin response date when admin responds
 replacementRequestSchema.pre('save', function(next) {
     if (this.isModified('adminResponse') && this.adminResponse && this.adminResponse.trim() !== '') {
         this.adminResponseDate = new Date();
@@ -144,7 +137,6 @@ replacementRequestSchema.pre('save', function(next) {
     next();
 });
 
-// Static method to get request statistics
 replacementRequestSchema.statics.getStats = async function() {
     const stats = await this.aggregate([
         {
@@ -188,13 +180,11 @@ replacementRequestSchema.statics.getStats = async function() {
     };
 };
 
-// Instance method to check if request can be updated
 replacementRequestSchema.methods.canBeUpdated = function() {
     const nonUpdatableStatuses = ['completed', 'cancelled'];
     return !nonUpdatableStatuses.includes(this.status);
 };
 
-// Instance method to get status color for UI
 replacementRequestSchema.methods.getStatusColor = function() {
     const statusColors = {
         pending: 'yellow',
@@ -209,7 +199,6 @@ replacementRequestSchema.methods.getStatusColor = function() {
     return statusColors[this.status] || 'gray';
 };
 
-// Instance method to get priority color for UI
 replacementRequestSchema.methods.getPriorityColor = function() {
     const priorityColors = {
         low: 'green',

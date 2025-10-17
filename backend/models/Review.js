@@ -45,13 +45,11 @@ const reviewSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Index for efficient queries
 reviewSchema.index({ userId: 1, createdAt: -1 });
 reviewSchema.index({ rating: 1 });
 reviewSchema.index({ product: 1 });
 reviewSchema.index({ isVerified: 1 });
 
-// Static method to check daily review limit
 reviewSchema.statics.checkDailyLimit = async function(userId) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -70,7 +68,6 @@ reviewSchema.statics.checkDailyLimit = async function(userId) {
   return todayReviews < 3;
 };
 
-// Static method to get review statistics
 reviewSchema.statics.getStats = async function() {
   const stats = await this.aggregate([
     {
@@ -107,7 +104,6 @@ reviewSchema.statics.getStats = async function() {
   };
 };
 
-// Static method to get random reviews
 reviewSchema.statics.getRandomReviews = async function(limit = 3) {
   const reviews = await this.aggregate([
     { $sample: { size: limit } }

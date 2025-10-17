@@ -7,8 +7,7 @@ const writeOffSchema = new mongoose.Schema(
             ref: "Product",
             required: true
         },
-        // For weight-based products, track which weight option was written off
-        weightOptionId: {
+        weightOptionId: { 
             type: mongoose.Schema.Types.ObjectId,
             default: null
         },
@@ -40,13 +39,11 @@ const writeOffSchema = new mongoose.Schema(
             required: true,
             maxlength: 1000
         },
-        // Calculated cost of the written off items
         cost: {
             type: Number,
             required: true,
             min: 0
         },
-        // Admin who performed the write-off
         adminId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
@@ -61,7 +58,6 @@ const writeOffSchema = new mongoose.Schema(
             enum: ['pending', 'approved', 'rejected'],
             default: 'approved' // Write-offs are auto-approved when created
         },
-        // Additional metadata
         productName: {
             type: String,
             required: true
@@ -79,19 +75,16 @@ const writeOffSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-// Indexes for better query performance
 writeOffSchema.index({ product: 1, createdAt: -1 });
 writeOffSchema.index({ adminId: 1, createdAt: -1 });
 writeOffSchema.index({ reason: 1, createdAt: -1 });
 writeOffSchema.index({ productCategory: 1, createdAt: -1 });
 writeOffSchema.index({ status: 1, createdAt: -1 });
 
-// Virtual for total cost calculation
 writeOffSchema.virtual('totalCost').get(function() {
     return this.cost * this.quantity;
 });
 
-// Ensure virtual fields are serialized
 writeOffSchema.set('toJSON', { virtuals: true });
 writeOffSchema.set('toObject', { virtuals: true });
 

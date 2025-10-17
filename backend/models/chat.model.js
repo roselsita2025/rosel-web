@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 
 const chatSchema = new mongoose.Schema({
-    // Chat identification
     chatId: {
         type: String,
         required: true,
@@ -9,7 +8,6 @@ const chatSchema = new mongoose.Schema({
         index: true
     },
     
-    // Participants
     customer: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -21,7 +19,6 @@ const chatSchema = new mongoose.Schema({
         default: null
     },
     
-    // Chat type and status
     type: {
         type: String,
         enum: ['faq', 'support', 'chatbot'],
@@ -33,14 +30,12 @@ const chatSchema = new mongoose.Schema({
         default: 'active'
     },
     
-    // Customer details for support chats
     customerDetails: {
         name: { type: String, default: "" },
         contactNumber: { type: String, default: "" },
         issue: { type: String, default: "" }
     },
     
-    // Chat metadata
     lastMessage: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Message',
@@ -51,7 +46,6 @@ const chatSchema = new mongoose.Schema({
         default: Date.now
     },
     
-    // Timestamps
     createdAt: {
         type: Date,
         default: Date.now
@@ -68,7 +62,6 @@ const chatSchema = new mongoose.Schema({
     timestamps: true
 });
 
-// Index for efficient queries
 chatSchema.index({ customer: 1, status: 1 });
 chatSchema.index({ admin: 1, status: 1 });
 chatSchema.index({ lastMessageAt: -1 });

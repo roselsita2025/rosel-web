@@ -21,10 +21,8 @@ export const getOrders = async (req, res) => {
             end
         } = req.query;
 
-        // Build query filter
         const filter = {};
 
-        // Add search filter
         if (search) {
             filter.$or = [
                 { _id: { $regex: search, $options: 'i' } },
@@ -34,12 +32,10 @@ export const getOrders = async (req, res) => {
             ];
         }
 
-        // Add status filter
         if (status) {
             filter.adminStatus = status;
         }
 
-        // Add time filter
         if (timeframe && timeframe !== 'all') {
             const now = new Date();
             let startDate;
@@ -77,14 +73,11 @@ export const getOrders = async (req, res) => {
             }
         }
 
-        // Build sort object
         const sort = {};
         sort[sortBy] = sortOrder === 'asc' ? 1 : -1;
 
-        // Calculate pagination
         const skip = (parseInt(page) - 1) * parseInt(limit);
 
-        // Execute query
         const orders = await Order.find(filter)
             .populate('products.product', 'name image price category basePricePerKg weightOptions')
             .populate('user', 'name email')
@@ -92,7 +85,6 @@ export const getOrders = async (req, res) => {
             .skip(skip)
             .limit(parseInt(limit));
 
-        // Get total count for pagination
         const totalOrders = await Order.countDocuments(filter);
 
         res.json({
@@ -142,7 +134,6 @@ export const updateAdminOrderStatus = async (req, res) => {
             });
         }
         
-        // Find order
         const order = await Order.findById(orderId)
             .populate('products.product', 'name image price')
             .populate('user', 'name email');
@@ -154,13 +145,10 @@ export const updateAdminOrderStatus = async (req, res) => {
             });
         }
         
-        // Store original status for comparison
         const originalAdminStatus = order.adminStatus;
         
-        // Update admin status
         order.adminStatus = adminStatus;
         
-        // Add notes if provided
         if (notes) {
             if (!order.adminNotes) {
                 order.adminNotes = [];
@@ -177,13 +165,11 @@ export const updateAdminOrderStatus = async (req, res) => {
         
         console.log(`✅ Updated order ${orderId} admin status: ${originalAdminStatus} → ${adminStatus}`);
         
-        // Send notification to customer about status update
         try {
             await notificationService.sendOrderStatusUpdateNotification(order, adminStatus);
             console.log(`📢 Sent notification for order ${orderId} admin status change to ${adminStatus}`);
         } catch (notificationError) {
             console.error('Error sending order status update notification:', notificationError);
-            // Don't fail the order update if notification fails
         }
         
         res.status(200).json({
@@ -220,7 +206,6 @@ export const placeLalamoveOrder = async (req, res) => {
             });
         }
         
-        // Find order
         const order = await Order.findById(orderId)
             .populate('products.product', 'name image price')
             .populate('user', 'name email');
@@ -246,7 +231,6 @@ export const placeLalamoveOrder = async (req, res) => {
             });
         }
         
-        // Soft gate: block only if obviously completed; otherwise allow admin to rebook
         const nonRebookableHardStops = ['delivered'];
         if (nonRebookableHardStops.includes((order.lalamoveDetails.status || '').toLowerCase()) || order.adminStatus === 'order_completed') {
             return res.status(400).json({
@@ -325,7 +309,6 @@ export const placeLalamoveOrder = async (req, res) => {
             order.lalamoveDetails.trackingUrl = lalamoveOrder.data.data.trackingUrl;
             order.lalamoveDetails.lastStatusUpdate = new Date();
             
-            // Update admin status
             order.adminStatus = 'order_placed';
             
             await order.save();
@@ -418,7 +401,6 @@ export const getOrdersPendingActions = async (req, res) => {
             .skip(skip)
             .limit(parseInt(limit));
         
-        // Get total count for pagination
         const totalOrders = await Order.countDocuments(filter);
         
         // Map orders to include computed status and formatted data

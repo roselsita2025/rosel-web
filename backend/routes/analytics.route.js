@@ -182,9 +182,7 @@ router.get("/top-products", verifyToken, verifyAdmin, async (req, res) => {
     }
 });
 
-// ===== NEW COMBINED ANALYTICS ENDPOINTS =====
 
-// Get analytics data by source (orders, pos, or combined)
 router.get("/by-source", verifyToken, verifyAdmin, async (req, res) => {
     try {
         const dataSource = String(req.query.source || 'combined');
@@ -205,7 +203,6 @@ router.get("/by-source", verifyToken, verifyAdmin, async (req, res) => {
     }
 });
 
-// Get new orders/transactions count by source
 router.get("/new-orders-by-source", verifyToken, verifyAdmin, async (req, res) => {
     try {
         const timeframe = String(req.query.timeframe || 'today');

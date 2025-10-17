@@ -31,7 +31,6 @@ export function validateCouponForCheckout(couponDoc, user, subtotalCents) {
         return { valid: false, message: "Coupon expired" };
     }
 
-    // Usage limits
     const totalUses = couponDoc.usage?.totalUses || 0;
     const useLimit = couponDoc.useLimit ?? null;
     if (useLimit !== null && totalUses >= useLimit) {
@@ -51,13 +50,11 @@ export function validateCouponForCheckout(couponDoc, user, subtotalCents) {
         return { valid: false, message: "Coupon user limit reached" };
     }
 
-    // Minimum order amount
     const minOrderAmountCents = Math.round((couponDoc.minOrderAmount || 0) * 100);
     if (subtotalCents < minOrderAmountCents) {
         return { valid: false, message: `Minimum order of ₱${(minOrderAmountCents/100).toFixed(2)} required` };
     }
 
-    // Determine discount
     if (couponDoc.type === "percent") {
         return { valid: true, discountType: "percent", discountAmountCentsOrPercent: couponDoc.amount };
     }

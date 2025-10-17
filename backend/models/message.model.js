@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 
 const messageSchema = new mongoose.Schema({
-    // Message identification
     messageId: {
         type: String,
         required: true,
@@ -9,14 +8,12 @@ const messageSchema = new mongoose.Schema({
         index: true
     },
     
-    // Chat reference
     chat: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Chat',
         required: true
     },
     
-    // Sender information
     sender: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -28,7 +25,6 @@ const messageSchema = new mongoose.Schema({
         required: true
     },
     
-    // Message content
     content: {
         type: String,
         required: true,
@@ -40,7 +36,6 @@ const messageSchema = new mongoose.Schema({
         default: 'text'
     },
     
-    // Message status
     isRead: {
         type: Boolean,
         default: false
@@ -50,14 +45,12 @@ const messageSchema = new mongoose.Schema({
         default: null
     },
     
-    // For bot messages - reference to FAQ
     faqReference: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'FAQ',
         default: null
     },
     
-    // Timestamps
     createdAt: {
         type: Date,
         default: Date.now
@@ -66,7 +59,6 @@ const messageSchema = new mongoose.Schema({
     timestamps: true
 });
 
-// Index for efficient queries
 messageSchema.index({ chat: 1, createdAt: 1 });
 messageSchema.index({ sender: 1 });
 messageSchema.index({ isRead: 1 });

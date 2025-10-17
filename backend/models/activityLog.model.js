@@ -32,7 +32,6 @@ const activityLogSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.Mixed,
         default: {}
     },
-    // Additional fields for stock operations
     quantityChange: {
         type: Number,
         default: 0
@@ -53,7 +52,6 @@ const activityLogSchema = new mongoose.Schema({
     timestamps: true
 });
 
-// Index for better query performance
 activityLogSchema.index({ productId: 1, createdAt: -1 });
 activityLogSchema.index({ adminId: 1, createdAt: -1 });
 activityLogSchema.index({ action: 1, createdAt: -1 });

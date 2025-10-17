@@ -18,7 +18,6 @@ import WriteOff from '../models/writeOff.model.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Ensure backups directory exists
 const backupsDir = path.join(__dirname, '../backups');
 try {
   await fs.mkdir(backupsDir, { recursive: true });
@@ -26,12 +25,10 @@ try {
   console.log('Backups directory already exists or could not be created');
 }
 
-// Generate comprehensive backup
 export const generateBackup = async (req, res) => {
   try {
     console.log('🔄 Starting backup generation...');
     
-    // Fetch all data from collections
     const [
       products,
       orders,
@@ -62,7 +59,6 @@ export const generateBackup = async (req, res) => {
       WriteOff.find({})
     ]);
 
-    // Create backup object
     const backup = {
       metadata: {
         version: '2.1',
@@ -96,15 +92,11 @@ export const generateBackup = async (req, res) => {
       }
     };
 
-    // Generate filename with timestamp
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const filename = `backup_${timestamp}.json`;
     const filepath = path.join(backupsDir, filename);
 
-    // Write backup to file
     await fs.writeFile(filepath, JSON.stringify(backup, null, 2));
-    
-    // Get file size
     const stats = await fs.stat(filepath);
     const fileSizeKB = Math.round(stats.size / 1024);
 
@@ -129,7 +121,6 @@ export const generateBackup = async (req, res) => {
   }
 };
 
-// List all available backups
 export const listBackups = async (req, res) => {
   try {
     console.log('📋 Fetching backup list...');
@@ -151,7 +142,6 @@ export const listBackups = async (req, res) => {
       })
     );
 
-    // Sort by creation date (newest first)
     backups.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
     console.log(`📋 Found ${backups.length} backup files`);
@@ -172,12 +162,10 @@ export const listBackups = async (req, res) => {
   }
 };
 
-// Download specific backup file
 export const downloadBackup = async (req, res) => {
   try {
     const { filename } = req.params;
     
-    // Validate filename to prevent directory traversal
     if (!filename.startsWith('backup_') || !filename.endsWith('.json')) {
       return res.status(400).json({
         success: false,
@@ -187,7 +175,6 @@ export const downloadBackup = async (req, res) => {
 
     const filepath = path.join(backupsDir, filename);
     
-    // Check if file exists
     try {
       await fs.access(filepath);
     } catch (error) {
@@ -199,11 +186,9 @@ export const downloadBackup = async (req, res) => {
 
     console.log(`📥 Downloading backup: ${filename}`);
 
-    // Set headers for file download
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
     
-    // Stream the file
     const fileStream = await fs.readFile(filepath);
     res.send(fileStream);
 
@@ -217,12 +202,10 @@ export const downloadBackup = async (req, res) => {
   }
 };
 
-// Delete specific backup file
 export const deleteBackup = async (req, res) => {
   try {
     const { filename } = req.params;
     
-    // Validate filename
     if (!filename.startsWith('backup_') || !filename.endsWith('.json')) {
       return res.status(400).json({
         success: false,
@@ -232,7 +215,6 @@ export const deleteBackup = async (req, res) => {
 
     const filepath = path.join(backupsDir, filename);
     
-    // Check if file exists
     try {
       await fs.access(filepath);
     } catch (error) {
@@ -242,7 +224,6 @@ export const deleteBackup = async (req, res) => {
       });
     }
 
-    // Delete the file
     await fs.unlink(filepath);
     
     console.log(`🗑️ Deleted backup: ${filename}`);
@@ -263,7 +244,6 @@ export const deleteBackup = async (req, res) => {
   }
 };
 
-// Preview restore data (without actually restoring)
 export const previewRestore = async (req, res) => {
   try {
     const { backupData } = req.body;
@@ -277,7 +257,6 @@ export const previewRestore = async (req, res) => {
 
     console.log('🔍 Generating restore preview...');
 
-    // Get current counts
     const currentCounts = {
       products: await Product.countDocuments(),
       orders: await Order.countDocuments(),
@@ -285,7 +264,6 @@ export const previewRestore = async (req, res) => {
       reviews: await Review.countDocuments()
     };
 
-    // Get backup counts
     const backupCounts = {
       products: backupData.data.products?.length || 0,
       orders: backupData.data.orders?.length || 0,
@@ -293,7 +271,6 @@ export const previewRestore = async (req, res) => {
       reviews: backupData.data.reviews?.length || 0
     };
 
-    // Calculate differences
     const preview = {
       products: {
         current: currentCounts.products,
@@ -339,7 +316,6 @@ export const previewRestore = async (req, res) => {
   }
 };
 
-// Execute restore from backup data
 export const executeRestore = async (req, res) => {
   try {
     const { backupData, confirmReplace } = req.body;
@@ -362,7 +338,6 @@ export const executeRestore = async (req, res) => {
 
     const restoreResults = {};
 
-    // Restore Products
     if (backupData.data.products && backupData.data.products.length > 0) {
       console.log(`📦 Restoring ${backupData.data.products.length} products...`);
       await Product.deleteMany({});

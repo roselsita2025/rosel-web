@@ -86,14 +86,12 @@ function getDatesInRange(startDate, endDate) {
 	return dates;
 }
 
-// Helper to compute date range from a timeframe key
 function getDateRangeFromTimeframe(timeframe) {
 	const endDate = new Date();
 	let startDate = new Date();
 
 	switch (timeframe) {
 		case "today": {
-			// Start of today
 			startDate = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
 			break;
 		}
@@ -380,9 +378,6 @@ export const getTopProductsByRange = async (startDate, endDate, limit = 10) => {
     return { results, startDate, endDate };
 };
 
-// ===== NEW FUNCTIONS FOR COMBINED ANALYTICS =====
-
-// Get analytics data based on data source (orders, pos, or combined)
 export const getAnalyticsDataBySource = async (dataSource = 'combined') => {
     const totalUsers = await User.countDocuments();
     const totalProducts = await Product.countDocuments();
@@ -434,7 +429,6 @@ export const getAnalyticsDataBySource = async (dataSource = 'combined') => {
     };
 };
 
-// Get daily sales data based on data source
 export const getDailySalesDataBySource = async (startDate, endDate, dataSource = 'combined') => {
     try {
         let dailySalesData = [];
@@ -483,7 +477,6 @@ export const getDailySalesDataBySource = async (startDate, endDate, dataSource =
             dailySalesData = [...dailySalesData, ...posData];
         }
 
-        // Combine data by date
         const combinedData = {};
         dailySalesData.forEach(item => {
             if (combinedData[item._id]) {
@@ -510,7 +503,6 @@ export const getDailySalesDataBySource = async (startDate, endDate, dataSource =
     }
 };
 
-// Get new orders/transactions count by data source
 export const getNewOrdersCountBySource = async (startDate, endDate, dataSource = 'combined') => {
     let count = 0;
 
@@ -533,7 +525,6 @@ export const getNewOrdersCountBySource = async (startDate, endDate, dataSource =
     return count;
 };
 
-// Get total sales quantity by data source
 export const getTotalSalesQuantityBySource = async (startDate, endDate, dataSource = 'combined') => {
     let totalQuantity = 0;
 
@@ -578,7 +569,6 @@ export const getTotalSalesQuantityBySource = async (startDate, endDate, dataSour
     return totalQuantity;
 };
 
-// Get revenue by data source
 export const getRevenueBySource = async (startDate, endDate, dataSource = 'combined') => {
     let revenue = 0;
 
@@ -607,7 +597,6 @@ export const getRevenueBySource = async (startDate, endDate, dataSource = 'combi
     return revenue;
 };
 
-// Get top products by data source
 export const getTopProductsBySource = async (startDate, endDate, dataSource = 'combined', limit = 10) => {
     let allProducts = [];
 
@@ -675,7 +664,6 @@ export const getTopProductsBySource = async (startDate, endDate, dataSource = 'c
         allProducts = [...allProducts, ...posResults];
     }
 
-    // Combine products from both sources
     const combinedProducts = {};
     allProducts.forEach(product => {
         const key = product._id.toString();
@@ -691,7 +679,6 @@ export const getTopProductsBySource = async (startDate, endDate, dataSource = 'c
         }
     });
 
-    // Convert back to array and sort
     const results = Object.values(combinedProducts).map(product => ({
         _id: 0,
         productId: product._id,
@@ -708,12 +695,10 @@ export const getTopProductsBySource = async (startDate, endDate, dataSource = 'c
         .slice(0, limit);
 };
 
-// Get customer analytics data
 export const getCustomerAnalytics = async (req, res) => {
     try {
         const { timeframe = 'all', source = 'combined' } = req.query;
         
-        // Calculate date range based on timeframe
         let startDate, endDate;
         const now = new Date();
         
@@ -739,7 +724,6 @@ export const getCustomerAnalytics = async (req, res) => {
                 endDate = null;
         }
 
-        // Build match criteria for orders
         let orderMatch = {
             paymentStatus: 'paid',
             status: { $nin: ['cancelled', 'refunded'] }
@@ -749,13 +733,10 @@ export const getCustomerAnalytics = async (req, res) => {
             orderMatch.createdAt = { $gte: startDate, $lte: endDate };
         }
 
-        // Add source filter
         if (source !== 'combined') {
             orderMatch.source = source;
         }
 
-        // Get customer data with order counts and ratings - always show all customers
-        // This is not affected by timeframe or data source filters
         const customerData = await Order.aggregate([
             {
                 $match: {
@@ -807,8 +788,6 @@ export const getCustomerAnalytics = async (req, res) => {
             { $limit: 10 }
         ]);
 
-        // Get rating distribution directly from reviews collection - always show all reviews
-        // This is not affected by timeframe or data source filters
         const Review = (await import('../models/Review.js')).default;
         
         const ratingDistribution = await Review.aggregate([
@@ -828,7 +807,6 @@ export const getCustomerAnalytics = async (req, res) => {
             { $sort: { rating: 1 } }
         ]);
 
-        // Format rating distribution
         const ratingData = {};
         for (let i = 1; i <= 5; i++) {
             ratingData[i] = 0;
@@ -838,7 +816,6 @@ export const getCustomerAnalytics = async (req, res) => {
             ratingData[item.rating] = item.count;
         });
 
-        // Customer analytics data processed successfully
 
         res.json({
             success: true,
@@ -855,7 +832,6 @@ export const getCustomerAnalytics = async (req, res) => {
     }
 };
 
-// ===== DISCREPANCY ANALYTICS FUNCTIONS =====
 
 /**
  * Get discrepancy analytics data (write-offs, replacement requests, or combined)

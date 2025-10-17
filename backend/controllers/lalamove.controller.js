@@ -9,7 +9,6 @@ export const getQuotation = async (req, res) => {
     try {
         const { deliveryAddress, cartItems } = req.body;
 
-        // Validate required fields
         if (!deliveryAddress || !cartItems || !Array.isArray(cartItems)) {
             return res.status(400).json({
                 success: false,
@@ -17,7 +16,6 @@ export const getQuotation = async (req, res) => {
             });
         }
 
-        // Calculate total box quantity (each item represents 1 box)
         const totalBoxQuantity = cartItems.reduce((sum, item) => sum + (item.cartQuantity || item.quantity), 0);
         
         if (totalBoxQuantity === 0) {
@@ -27,19 +25,14 @@ export const getQuotation = async (req, res) => {
             });
         }
 
-        // Get pickup location
         const pickupLocation = lalamoveService.getPickupLocation();
         
-        // Geocode delivery address
         const deliveryCoords = await geocodeAddress(deliveryAddress);
-        
-        // Calculate distance
         const distanceResult = await calculateDistance(
             { lat: pickupLocation.lat, lng: pickupLocation.lng },
             { lat: deliveryCoords.lat, lng: deliveryCoords.lng }
         );
 
-        // Prepare stops for Lalamove
         const stops = [
             {
                 coordinates: {
@@ -57,7 +50,6 @@ export const getQuotation = async (req, res) => {
             }
         ];
 
-        // Get quotation from Lalamove
         const quotation = await lalamoveService.getQuotation({
             stops: stops,
             boxQuantity: totalBoxQuantity,
@@ -111,7 +103,6 @@ export const placeOrder = async (req, res) => {
             stopId1
         } = req.body;
 
-        // Validate required fields
         if (!quotationId || !senderName || !senderPhone || !recipientName || !recipientPhone || !stopId0 || !stopId1) {
             return res.status(400).json({
                 success: false,
@@ -119,7 +110,6 @@ export const placeOrder = async (req, res) => {
             });
         }
 
-        // Place order with Lalamove
         const order = await lalamoveService.placeOrder({
             quotationId,
             senderName,

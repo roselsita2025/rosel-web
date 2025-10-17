@@ -49,13 +49,11 @@ const productSchema = new mongoose.Schema({
         default: 0,
         required: [true, 'Quantity is required']
     },
-    // Base price per kilogram used when weight options are specified
     basePricePerKg: {
         type: Number,
         min: 0,
         required: [true, 'Base price per kilogram is required']
     },
-    // Weight-based variants with independent stock counts
     weightOptions: [
         {
             _id: { type: mongoose.Schema.Types.ObjectId, auto: true },
@@ -93,7 +91,6 @@ const productSchema = new mongoose.Schema({
                     priceMax = priceMax === null ? price : Math.max(priceMax, price);
                     return { ...opt, price };
                 });
-                // If there is still legacy quantity on the product (from pre-weight mode), expose it as a synthetic 15kg option
                 const legacyQty = Number(ret.quantity || 0);
                 if (legacyQty > 0) {
                     const defaultWeightKg = 15;
@@ -110,14 +107,12 @@ const productSchema = new mongoose.Schema({
                 ret.priceMax = priceMax === null ? 0 : priceMax;
                 ret.totalStockUnits = totalStockUnits;
             } else {
-                // For legacy products without weight options, synthesize a default 15kg option for display purposes
                 const legacyQty = Number(ret.quantity || 0);
                 const defaultWeightKg = 15;
                 const base = Number(doc.basePricePerKg || 0);
                 const price = Number((base * defaultWeightKg).toFixed(2));
                 ret.weightOptions = [
                     {
-                        // No real subdocument id; keep undefined so mutation actions stay disabled
                         weightKg: defaultWeightKg,
                         stockUnits: legacyQty,
                         price,

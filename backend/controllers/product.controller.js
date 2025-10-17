@@ -9,7 +9,6 @@ import { createActivityLog } from "./activityLog.controller.js";
 
 export const getAllProducts = async (req, res) => {
     try {
-        // Admin view: include all statuses
         const products = await Product.find({});
         res.json({products});
     } catch (error) {
@@ -20,7 +19,6 @@ export const getAllProducts = async (req, res) => {
 
 export const getAllProductsForCustomers = async (req, res) => {
     try {
-        // Customer view: only available products
         const products = await Product.find({ status: PRODUCT_STATUSES.AVAILABLE });
         res.json({products});
     } catch (error) {
@@ -31,8 +29,7 @@ export const getAllProductsForCustomers = async (req, res) => {
 
 export const getFeaturedProducts = async (req, res) => {
     try {
-        // Check if cache should be bypassed (for testing)
-        const bypassCache = req.query.bypass === 'true' || req.query.t; // Also bypass on timestamp parameter
+        const bypassCache = req.query.bypass === 'true' || req.query.t;
         
         if (!bypassCache) {
             let cached = await redis.get("featuredProducts");
@@ -43,7 +40,6 @@ export const getFeaturedProducts = async (req, res) => {
 
         const hybrid = await buildHybridFeaturedProducts();
         await redis.set("featuredProducts", JSON.stringify(hybrid));
-        // Only expose available products to guests
         const filtered = Array.isArray(hybrid) ? hybrid.filter((p) => p.status === PRODUCT_STATUSES.AVAILABLE) : [];
         res.json(filtered);
     } catch (error) {
@@ -56,19 +52,16 @@ export const createProduct = async (req, res) => {
     try {
         const {name, description, basePricePerKg, image, images = [], category, quantity, barcode, weightKg, supplier} = req.body;
 
-        // Validate category against fixed list
         if (!CATEGORIES.includes(String(category))) {
             return res.status(400).json({ message: "Invalid category" });
         }
 
-        // Gather image payloads (support legacy single 'image' and new 'images' array)
         const incomingImages = [];
         if (Array.isArray(images)) incomingImages.push(...images.filter(Boolean));
         if (image) incomingImages.unshift(image);
 
         const uploadedUrls = [];
         for (const img of incomingImages) {
-            // If already a URL, keep; if base64, upload
             if (typeof img === 'string' && (img.startsWith('http://') || img.startsWith('https://'))) {
                 uploadedUrls.push(img);
             } else if (img) {
@@ -91,24 +84,20 @@ export const createProduct = async (req, res) => {
             status: PRODUCT_STATUSES.AVAILABLE,
             barcode: typeof barcode === 'string' && barcode.trim() ? barcode.trim() : undefined,
             supplier: supplier || "",
-            // If weightKg is provided, create an initial weight option
             ...(weightKg && { weightOptions: [{ weightKg: Number(weightKg), stockUnits: quantity || 0 }] })
         });
 
-        // Log the activity
         try {
             let activityDetails;
             let quantityChange = 0;
             let newQuantity = 0;
 
             if (weightKg && product.weightOptions && product.weightOptions.length > 0) {
-                // Product created with weight options
                 const weightOption = product.weightOptions[0];
                 activityDetails = `Product created with a weight of ${weightOption.weightKg}kg with a stock of ${weightOption.stockUnits} units`;
                 quantityChange = weightOption.stockUnits;
                 newQuantity = weightOption.stockUnits;
             } else {
-                // Legacy product without weight options
                 activityDetails = `Product created with initial stock of ${product.quantity} units`;
                 quantityChange = product.quantity;
                 newQuantity = product.quantity;
@@ -133,7 +122,6 @@ export const createProduct = async (req, res) => {
             });
         } catch (logError) {
             console.error('Error logging product creation:', logError);
-            // Don't fail the product creation if logging fails
         }
 
         // Send notification to admins about new product
@@ -141,7 +129,6 @@ export const createProduct = async (req, res) => {
             await notificationService.sendProductCreatedNotification(product);
         } catch (notificationError) {
             console.error('Error sending product created notification:', notificationError);
-            // Don't fail the product creation if notification fails
         }
 
         res.status(201).json({product});
@@ -176,7 +163,6 @@ export const deleteProduct = async (req, res) => {
             }
         }
 
-        // Log the deletion activity
         try {
             await createActivityLog({
                 productId: product._id,
@@ -191,7 +177,6 @@ export const deleteProduct = async (req, res) => {
             });
         } catch (logError) {
             console.error('Error logging product deletion:', logError);
-            // Don't fail the product deletion if logging fails
         }
 
         // Send notification to admins about product removal
@@ -199,7 +184,6 @@ export const deleteProduct = async (req, res) => {
             await notificationService.sendProductRemovedNotification(product);
         } catch (notificationError) {
             console.error('Error sending product removed notification:', notificationError);
-            // Don't fail the product deletion if notification fails
         }
 
         await Product.findByIdAndDelete(req.params.id);
@@ -214,13 +198,10 @@ export const deleteProduct = async (req, res) => {
 
 export const getRecommendedProducts = async (req, res) => {
     try {
-        // Get top 6 selling products based on total ordered quantity and only available products
-        // Exclude cancelled and refunded orders from recommendations
         const topSellingProductIds = await Order.aggregate([
-            // Filter out cancelled and refunded orders
             { $match: { 
                 status: { $nin: ['cancelled', 'refunded'] },
-                paymentStatus: 'paid' // Only include paid orders
+                paymentStatus: 'paid'
             }},
             { $unwind: "$products" },
             { $group: { _id: "$products.product", totalQuantity: { $sum: "$products.quantity" } } },
@@ -228,14 +209,12 @@ export const getRecommendedProducts = async (req, res) => {
             { $limit: 6 }
         ]);
 
-        // Get the actual product documents with virtual fields
         const productIds = topSellingProductIds.map(item => item._id);
         const products = await Product.find({ 
             _id: { $in: productIds },
             status: PRODUCT_STATUSES.AVAILABLE 
         });
 
-        // Add sales data to each product
         const productsWithSales = products.map(product => {
             const salesData = topSellingProductIds.find(item => item._id.toString() === product._id.toString());
             return {
@@ -278,7 +257,6 @@ export const searchProducts = async (req, res) => {
         } = req.query;
 
         const filter = {};
-        // By default, guests searching should see available only; admin can include others
         if (typeof status === 'string' && Object.values(PRODUCT_STATUSES).includes(status)) {
             filter.status = status;
         } else {
@@ -369,7 +347,6 @@ export const getProductById = async (req, res) => {
         if (!product) {
             return res.status(404).json({message: "Product not found"});
         }
-        // Expose only available products to guests. Admin routes use /products (protected) instead.
         if (product.status !== PRODUCT_STATUSES.AVAILABLE) {
             return res.status(404).json({ message: "Product not found" });
         }
@@ -390,7 +367,6 @@ export const getProductByBarcode = async (req, res) => {
         if (!product) {
             return res.status(404).json({ message: "Product not found" });
         }
-        // Admin route only – do not filter by status here
         res.json({ product });
     } catch (error) {
         console.log("Error in getProductByBarcode controller", error.message);
@@ -430,10 +406,8 @@ export const updateProduct = async (req, res) => {
             return res.status(404).json({ message: "Product not found" });
         }
 
-        // Updatable fields
         const { name, category, barcode, basePricePerKg, description, status, isFeatured, supplier, addImages = [], removeImageUrls = [], mainImageUrl } = req.body;
 
-        // Store original values for change detection
         const originalValues = {
             name: product.name,
             category: product.category,
@@ -457,9 +431,7 @@ export const updateProduct = async (req, res) => {
             if (!Object.values(PRODUCT_STATUSES).includes(status)) {
                 return res.status(400).json({ message: "Invalid status" });
             }
-            // If trashed: delete and return
             if (status === PRODUCT_STATUSES.TRASHED) {
-                // delete images then delete product
                 const urlsToDelete = new Set();
                 if (product.image) urlsToDelete.add(product.image);
                 if (Array.isArray(product.images)) product.images.forEach((u) => urlsToDelete.add(u));
@@ -477,7 +449,6 @@ export const updateProduct = async (req, res) => {
             product.status = status;
         }
 
-        // Handle image removals
         if (Array.isArray(removeImageUrls) && removeImageUrls.length > 0) {
             product.images = (product.images || []).filter((u) => !removeImageUrls.includes(u));
             if (removeImageUrls.includes(product.image)) product.image = "";
@@ -491,7 +462,6 @@ export const updateProduct = async (req, res) => {
             }
         }
 
-        // Handle image additions (base64 or URLs)
         if (Array.isArray(addImages) && addImages.length > 0) {
             const newUrls = [];
             for (const img of addImages) {
@@ -507,13 +477,12 @@ export const updateProduct = async (req, res) => {
             if (!product.image && (product.mainImageUrl || product.images[0])) product.image = product.mainImageUrl || product.images[0];
         }
 
-        // Set new main image if provided
         if (typeof mainImageUrl === 'string' && mainImageUrl) {
             if (!product.images?.includes(mainImageUrl)) {
                 product.images = [mainImageUrl, ...(product.images || [])];
             }
             product.mainImageUrl = mainImageUrl;
-            product.image = mainImageUrl; // keep legacy in sync
+            product.image = mainImageUrl;
         }
 
         const updated = await product.save();
@@ -521,11 +490,9 @@ export const updateProduct = async (req, res) => {
             await updateFeaturedProductsCache();
         }
 
-        // Log the activity if there were changes
         try {
             const changes = {};
             
-            // Check for changes in all updatable fields
             if (typeof name === 'string' && name.trim() && name.trim() !== originalValues.name) {
                 changes.name = { from: originalValues.name, to: name.trim() };
             }
@@ -554,7 +521,6 @@ export const updateProduct = async (req, res) => {
                 changes.supplier = { from: originalValues.supplier || 'none', to: supplier.trim() || 'none' };
             }
             
-            // Check for image changes
             if (Array.isArray(addImages) && addImages.length > 0) {
                 changes.images = { action: 'added', count: addImages.length };
             }
@@ -588,14 +554,12 @@ export const updateProduct = async (req, res) => {
             }
         } catch (logError) {
             console.error('Error logging product update:', logError);
-            // Don't fail the product update if logging fails
         }
 
         // Send notification to admins about product update
         try {
             const notificationChanges = {};
             
-            // Check for changes in key fields for notifications
             if (typeof name === 'string' && name.trim() && name.trim() !== originalValues.name) {
                 notificationChanges.name = { from: originalValues.name, to: name.trim() };
             }
@@ -620,7 +584,6 @@ export const updateProduct = async (req, res) => {
             }
         } catch (notificationError) {
             console.error('Error sending product updated notification:', notificationError);
-            // Don't fail the product update if notification fails
         }
 
         res.json({ product: updated });
@@ -647,17 +610,14 @@ export const updateProductQuantity = async (req, res) => {
         product.quantity = quantity;
         const updatedProduct = await product.save();
 
-        // Check for low stock alert
         try {
             if (quantity <= 10 && oldQuantity > 10) {
                 const result = await notificationService.sendLowStockAlert(updatedProduct, quantity, 10);
             }
         } catch (notificationError) {
             console.error('❌ Error sending low stock notification:', notificationError);
-            // Don't fail the quantity update if notification fails
         }
 
-        // Update featured products cache since quantity changed
         await updateFeaturedProductsCache();
         
         res.json({product: updatedProduct, message: "Quantity updated successfully"});
@@ -688,7 +648,6 @@ export const addProductQuantity = async (req, res) => {
         product.quantity += quantityToAdd;
         const updatedProduct = await product.save();
 
-        // Log the stock in activity
         try {
             await createActivityLog({
                 productId: updatedProduct._id,
@@ -706,20 +665,14 @@ export const addProductQuantity = async (req, res) => {
             });
         } catch (logError) {
             console.error('Error logging stock in activity:', logError);
-            // Don't fail the quantity update if logging fails
         }
-
-        // Check for low stock alert
         try {
             if (updatedProduct.quantity <= 10 && oldQuantity > 10) {
                 await notificationService.sendLowStockAlert(updatedProduct, updatedProduct.quantity, 10);
             }
         } catch (notificationError) {
             console.error('Error sending low stock notification:', notificationError);
-            // Don't fail the quantity update if notification fails
         }
-
-        // Update featured products cache since quantity changed
         await updateFeaturedProductsCache();
         
         res.json({product: updatedProduct, message: "Quantity added successfully"});
@@ -754,7 +707,6 @@ export const removeProductQuantity = async (req, res) => {
         product.quantity -= quantityToRemove;
         const updatedProduct = await product.save();
 
-        // Log the stock out activity
         try {
             await createActivityLog({
                 productId: updatedProduct._id,
@@ -773,26 +725,19 @@ export const removeProductQuantity = async (req, res) => {
             });
         } catch (logError) {
             console.error('Error logging stock out activity:', logError);
-            // Don't fail the quantity update if logging fails
         }
-
-        // Log the stock removal with reason
-
-        // Check for low stock alert
         try {
             if (updatedProduct.quantity <= 10 && oldQuantity > 10) {
                 await notificationService.sendLowStockAlert(updatedProduct, updatedProduct.quantity, 10);
             }
         } catch (notificationError) {
             console.error('Error sending low stock notification:', notificationError);
-            // Don't fail the quantity update if notification fails
         }
 
         const message = reason 
             ? `Quantity removed successfully (Reason: ${reason})`
             : "Quantity removed successfully";
 
-        // Update featured products cache since quantity changed
         await updateFeaturedProductsCache();
         
         res.json({product: updatedProduct, message});
@@ -822,11 +767,7 @@ export const clearFeaturedProductsCache = async (req, res) => {
 };
 
 async function buildHybridFeaturedProducts() {
-    // Goal: Return up to 8 products. Start with manual isFeatured=true first (highest priority),
-    // then auto-fill by cycling criteria: recently added, lowest stock, priciest. Skip trending for now.
     const MAX_FEATURED = 8;
-
-    // Manual featured first (sorted by most recently created)
     const manualFeatured = await Product.find({ isFeatured: true, status: PRODUCT_STATUSES.AVAILABLE })
         .sort({ createdAt: -1 });
 
@@ -843,7 +784,6 @@ async function buildHybridFeaturedProducts() {
         return result.slice(0, MAX_FEATURED);
     }
 
-    // If we need to auto-fill, prepare candidate pools excluding already used ids
     const excludeIds = manualFeatured.map(p => p._id);
 
     const baseFilter = { _id: { $nin: excludeIds }, status: PRODUCT_STATUSES.AVAILABLE };
@@ -862,9 +802,7 @@ async function buildHybridFeaturedProducts() {
     while (result.length < MAX_FEATURED && safety < 100) {
         safety++;
 
-        // Cycle: 0 -> 1 -> 2 -> 3 (skip) -> 0 -> ...
         if (poolCursor === 3) {
-            // trending placeholder – skip adding for now
             poolCursor = 0;
             continue;
         }
@@ -875,7 +813,6 @@ async function buildHybridFeaturedProducts() {
             continue;
         }
 
-        // Advance to next unused item in the current pool
         let idx = poolIndices[poolCursor];
         while (idx < pool.length && usedIds.has(String(pool[idx]._id))) {
             idx++;
@@ -891,10 +828,7 @@ async function buildHybridFeaturedProducts() {
             poolIndices[poolCursor] = idx + 1;
         }
 
-        // Move to next criterion (including placeholder trending step)
         poolCursor = (poolCursor + 1) % 4;
-
-        // Stop if we've exhausted all pools
         const noMoreCandidates = pools.every((p, i) => {
             if (!p || p.length === 0) return true;
             let j = poolIndices[i];
@@ -908,7 +842,6 @@ async function buildHybridFeaturedProducts() {
     return result;
 }
 
-// ==================== WEIGHT-BASED ADMIN ENDPOINTS ====================
 
 export const addWeightOption = async (req, res) => {
     try {
@@ -921,7 +854,6 @@ export const addWeightOption = async (req, res) => {
         if (!Number.isFinite(weightKg)) {
             return res.status(400).json({ message: "weightKg must be finite" });
         }
-        // normalize to 2 decimals
         weightKg = Math.round(weightKg * 100) / 100;
 
         if (typeof stockUnits !== 'number' || !Number.isInteger(stockUnits) || stockUnits < 0) {
@@ -935,7 +867,6 @@ export const addWeightOption = async (req, res) => {
         product.weightOptions.push({ weightKg, stockUnits });
         const updated = await product.save();
 
-        // Invalidate featured cache if needed
         try { await redis.del("featuredProducts"); } catch {}
 
         res.json({ product: updated });
@@ -965,20 +896,17 @@ export const updateWeightOption = async (req, res) => {
             if (typeof stockUnits !== 'number' || !Number.isInteger(stockUnits) || stockUnits < 0) {
                 return res.status(400).json({ message: "stockUnits must be an integer >= 0" });
             }
-            // Store old stock before updating
             const oldStock = opt.stockUnits;
             opt.stockUnits = stockUnits;
             
             const updated = await product.save();
             try { await redis.del("featuredProducts"); } catch {}
             
-            // Log the activity if stock was updated
             try {
                 const newStock = stockUnits;
                 const stockChange = newStock - oldStock;
                 
                 if (stockChange > 0) {
-                    // Stock in
                     await createActivityLog({
                         productId: updated._id,
                         productName: updated.name,
@@ -995,7 +923,6 @@ export const updateWeightOption = async (req, res) => {
                         newQuantity: newStock
                     });
                 } else if (stockChange < 0) {
-                    // Stock out
                     await createActivityLog({
                         productId: updated._id,
                         productName: updated.name,
@@ -1014,12 +941,10 @@ export const updateWeightOption = async (req, res) => {
                 }
             } catch (logError) {
                 console.error('Error logging weight option stock update:', logError);
-                // Don't fail the update if logging fails
             }
             
             res.json({ product: updated });
         } else {
-            // No stock update, just save and return
             const updated = await product.save();
             try { await redis.del("featuredProducts"); } catch {}
             res.json({ product: updated });
@@ -1059,13 +984,11 @@ export const updateBasePricePerKg = async (req, res) => {
         const product = await Product.findById(id);
         if (!product) return res.status(404).json({ message: "Product not found" });
         
-        // Store original price for change detection
         const originalPrice = product.basePricePerKg;
         product.basePricePerKg = basePricePerKg;
         const updated = await product.save();
         try { await redis.del("featuredProducts"); } catch {}
         
-        // Log the activity if price was actually changed
         if (originalPrice !== basePricePerKg) {
             try {
                 await createActivityLog({
@@ -1081,7 +1004,6 @@ export const updateBasePricePerKg = async (req, res) => {
                 });
             } catch (logError) {
                 console.error('Error logging base price update:', logError);
-                // Don't fail the price update if logging fails
             }
         }
         

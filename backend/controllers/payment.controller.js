@@ -9,11 +9,6 @@ import { notificationService } from "../services/notificationService.js";
 
 export const createCheckoutSession = async (req, res) => {
     try {
-        // Payment request received
-        
-        // Lalamove quote structure available
-
-        // Environment variables validated
 
         const { products, couponCode, shippingInfo, shippingMethod, lalamoveQuote, finalTotal, taxAmount, subtotal } = req.body;
 
@@ -39,7 +34,6 @@ export const createCheckoutSession = async (req, res) => {
             return res.status(500).json({ error: "Payment system not configured" });
         }
 
-        // Calculate discount first to adjust product prices
         let discountAmount = 0;
         if (couponCode) {
             const couponDoc = await Coupon.findOne({ code: couponCode });
@@ -55,17 +49,14 @@ export const createCheckoutSession = async (req, res) => {
             }
         }
 
-        // Build Stripe line items and compute subtotal (in cents)
         let subtotalCents = 0;
         const lineItems = [];
 
-        // To validate real-time prices and stock, load products from DB
         const productDocsById = new Map();
         const productIds = Array.from(new Set(products.map(p => String(p._id))));
         const productDocs = await Product.find({ _id: { $in: productIds } });
         for (const doc of productDocs) productDocsById.set(String(doc._id), doc);
 
-        // Helper to compute unit price either legacy or weight-based
         const computeUnitPrice = (doc, incoming) => {
             const hasWeightOptions = Array.isArray(doc.weightOptions) && doc.weightOptions.length > 0;
             if (hasWeightOptions && incoming.weightOptionId) {
@@ -74,12 +65,10 @@ export const createCheckoutSession = async (req, res) => {
                 const unit = Number((Number(doc.basePricePerKg || 0) * Number(opt.weightKg || 0)).toFixed(2));
                 return { unitPrice: unit, weightKg: Number(opt.weightKg || 0), weightOptionId: String(opt._id), stockUnits: Number(opt.stockUnits || 0) };
             }
-            // Legacy fallback: use provided price field as unit price, validated against DB if desired
             const unit = Number(incoming.price);
             return { unitPrice: unit, weightKg: undefined, weightOptionId: undefined, stockUnits: Number(doc.quantity || 0) };
         };
 
-        // Precompute total product sum for proportional coupon discount
         const totalCartValue = products.reduce((sum, p) => sum + (Number(p.price) * (p.cartQuantity || p.quantity || 1)), 0) || 0;
 
         for (const p of products) {
@@ -93,7 +82,6 @@ export const createCheckoutSession = async (req, res) => {
                 throw new Error("Insufficient stock for selected option");
             }
 
-            // Calculate per-unit discount proportionally
             const productTotal = Number(p.price) * cartQuantity;
             const discountTotalForItem = discountAmount > 0 && totalCartValue > 0 ? (discountAmount * (productTotal / totalCartValue)) : 0;
             const discountPerUnit = discountTotalForItem / cartQuantity;
@@ -115,9 +103,6 @@ export const createCheckoutSession = async (req, res) => {
             });
         }
 
-        // Line items created successfully
-
-        // Calculate shipping fee for Stripe
         let shippingFeeCents = 0;
         if (shippingMethod === 'lalamove' && lalamoveQuote) {
             const deliveryFee = parseFloat(
@@ -128,7 +113,6 @@ export const createCheckoutSession = async (req, res) => {
             shippingFeeCents = Math.round(deliveryFee * 100);
         }
 
-        // Validate coupon if provided
         let appliedCouponCode = "";
         if (couponCode) {
             try {
@@ -156,13 +140,11 @@ export const createCheckoutSession = async (req, res) => {
             }
         }
 
-        // Calculate product subtotal (actual revenue)
         const productSubtotal = products.reduce((sum, product) => {
             const quantity = product.cartQuantity || product.quantity || 1;
             return sum + (product.price * quantity);
         }, 0);
 
-        // Calculate delivery fee
         let deliveryFee = 0;
         if (shippingMethod === 'lalamove' && lalamoveQuote) {
             deliveryFee = parseFloat(
@@ -172,12 +154,10 @@ export const createCheckoutSession = async (req, res) => {
             );
         }
 
-        // Use tax amount from frontend or calculate if not provided
         const calculatedTaxAmount = taxAmount || (productSubtotal * 0.12);
 
-        // Create a temporary order record to store full data
         const tempOrderData = {
-            user: req.user._id, // Use 'user' instead of 'userId'
+            user: req.user._id,
             products: products.map((p) => {
                 const doc = productDocsById.get(String(p._id));
                 const hasWeight = Array.isArray(doc?.weightOptions) && doc.weightOptions.length > 0 && p.weightOptionId;
@@ -229,10 +209,8 @@ export const createCheckoutSession = async (req, res) => {
             paymentStatus: 'pending'
         };
 
-        // Create temporary order without stripeSessionId initially
         const tempOrder = new Order(tempOrderData);
         await tempOrder.save();
-        // Temporary order created successfully
 
         // Creating Stripe session
 

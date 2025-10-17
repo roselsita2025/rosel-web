@@ -76,7 +76,6 @@ const transactionSchema = new mongoose.Schema({
       type: Number,
       required: true
     },
-    // Revenue breakdown for accurate analytics
     productSubtotal: {
       type: Number,
       required: true
@@ -109,14 +108,12 @@ const transactionSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Generate unique transaction ID
 transactionSchema.pre('save', async function(next) {
   if (!this.transactionId) {
     try {
       const count = await mongoose.model('Transaction').countDocuments();
       this.transactionId = `TXN-${Date.now()}-${String(count + 1).padStart(4, '0')}`;
     } catch (error) {
-      // Fallback if countDocuments fails
       this.transactionId = `TXN-${Date.now()}-${Math.random().toString(36).substr(2, 4).toUpperCase()}`;
     }
   }

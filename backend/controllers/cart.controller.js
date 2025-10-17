@@ -4,7 +4,6 @@ export const getCartProducts = async (req, res) => {
 	try {
 		const products = await Product.find({ _id: { $in: req.user.cartItems.map(item => item.id) } });
 
-		// Create cart items with weight option information
 		const cartItems = req.user.cartItems.map((cartItem) => {
 			const product = products.find(p => p._id.toString() === cartItem.id);
 			if (!product) return null;
@@ -15,7 +14,6 @@ export const getCartProducts = async (req, res) => {
 				weightOptionId: cartItem.weightOptionId || null
 			};
 
-			// If this is a weighted product, add weight and unit price info
 			if (cartItem.weightOptionId && product.hasWeightOptions) {
 				const selectedOption = product.weightOptions.find(opt => 
 					String(opt._id) === String(cartItem.weightOptionId)
@@ -26,7 +24,6 @@ export const getCartProducts = async (req, res) => {
 					cartItemData.stockQuantity = selectedOption.stockUnits;
 				}
 			} else {
-				// Legacy product
 				cartItemData.stockQuantity = product.quantity;
 				cartItemData.unitPrice = product.price;
 			}
@@ -46,7 +43,6 @@ export const addToCart = async (req, res) => {
         const { productId, weightOptionId } = req.body;
         const user = req.user;
 
-        // Find existing cart item with same product and weight option
         const existingItem = user.cartItems.find((item) => 
             item.id === productId && 
             String(item.weightOptionId || '') === String(weightOptionId || '')
@@ -55,7 +51,6 @@ export const addToCart = async (req, res) => {
         if (existingItem) {
             existingItem.quantity += 1;
         } else {
-            // Create new cart item with weight option info
             const newItem = {
                 id: productId,
                 quantity: 1,
@@ -81,7 +76,6 @@ export const removeAllFromCart = async (req, res) => {
         if (!productId) {
             user.cartItems = [];            
         } else {
-            // Remove specific product with specific weight option
             user.cartItems = user.cartItems.filter(item => 
                 !(item.id === productId && 
                   String(item.weightOptionId || '') === String(weightOptionId || ''))

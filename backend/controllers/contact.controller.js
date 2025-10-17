@@ -9,7 +9,6 @@ export const sendContactMessage = async (req, res) => {
     try {
         const { name, email, phone, message } = req.body;
 
-        // Validate required fields
         if (!name || !email || !message) {
             return res.status(400).json({
                 success: false,
@@ -17,7 +16,6 @@ export const sendContactMessage = async (req, res) => {
             });
         }
 
-        // Validate email format
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
             return res.status(400).json({
@@ -26,13 +24,11 @@ export const sendContactMessage = async (req, res) => {
             });
         }
 
-        // Determine admin recipients dynamically (users with admin role)
         const admins = await User.find({ role: 'admin' }).select('email name').lean();
         const adminRecipients = (admins || [])
             .map((u) => ({ email: u.email, name: u.name || 'Admin' }))
             .filter((r) => !!r.email);
 
-        // Fallback to configured single sender if no admin users are found
         const fallbackAdminEmail = process.env.SENDGRID_SINGLE_SENDER;
         if (adminRecipients.length === 0) {
             if (!fallbackAdminEmail) {
@@ -43,7 +39,6 @@ export const sendContactMessage = async (req, res) => {
             }
         }
 
-        // Create email content
         const emailSubject = `New Contact Form Message from ${name}`;
         const emailContent = `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -70,7 +65,6 @@ export const sendContactMessage = async (req, res) => {
             </div>
         `;
 
-        // Send email to admin
         const msg = {
             from: sender,
             to: adminRecipients.length > 0 ? adminRecipients : [{ email: fallbackAdminEmail }],
@@ -82,7 +76,6 @@ export const sendContactMessage = async (req, res) => {
 
         await sgMail.send(msg);
 
-        // Send confirmation email to customer
         const confirmationContent = `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
                 <h2 style="color: #860809; border-bottom: 2px solid #f7e9b8; padding-bottom: 10px;">

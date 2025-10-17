@@ -1,11 +1,8 @@
 import Coupon from "../models/coupon.model.js";
 import { computeEffectiveStatus, validateCouponForCheckout } from "../utils/coupons.js";
 
-// CUSTOMER
 export const getCoupons = async (req, res) => {
     try {
-        // For new global model, return the most relevant active coupon(s) is optional.
-        // To preserve existing frontend behavior (single coupon), return null.
         return res.json(null);
     } catch (error) {
         console.log("Error in getCoupons controller", error.message);
@@ -22,7 +19,6 @@ export const validateCoupon = async (req, res) => {
         const result = validateCouponForCheckout(coupon, req.user, subtotalCents);
         if (!result.valid) return res.status(400).json({ message: result.message });
 
-        // respond with normalized shape for frontend
         if (result.discountType === "percent") {
             return res.json({
                 message: "Coupon is valid",
@@ -31,7 +27,6 @@ export const validateCoupon = async (req, res) => {
                 amount: coupon.amount,
             });
         }
-        // fixed
         return res.json({
             message: "Coupon is valid",
             code: coupon.code,
@@ -44,7 +39,6 @@ export const validateCoupon = async (req, res) => {
     }
 };
 
-// ADMIN
 export const createCoupon = async (req, res) => {
     try {
         const {
@@ -88,13 +82,11 @@ export const updateCoupon = async (req, res) => {
     try {
         const { id } = req.params;
         const updates = req.body || {};
-        // Disallow code changes
         delete updates.code;
 
         const coupon = await Coupon.findById(id);
         if (!coupon) return res.status(404).json({ message: "Coupon not found" });
 
-        // Locking rules (based on effective status priority over manual)
         const effectiveStatus = computeEffectiveStatus(coupon);
         if (["Used", "Expired", "Removed"].includes(effectiveStatus)) {
             return res.status(400).json({ message: `Coupon is ${effectiveStatus.toLowerCase()} and cannot be updated` });
@@ -112,7 +104,6 @@ export const updateCoupon = async (req, res) => {
 export const listCoupons = async (req, res) => {
     try {
         const coupons = await Coupon.find({}).sort({ createdAt: -1 });
-        // Attach effective status; auto-mark effective Used when depleted for monitoring
         const data = coupons.map(c => {
             const obj = c.toObject();
             obj.effectiveStatus = computeEffectiveStatus(c);

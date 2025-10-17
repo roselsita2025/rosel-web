@@ -39,7 +39,6 @@ export const getDistance = async (req, res) => {
     try {
         const { origin, destination } = req.body;
 
-        // Validate origin
         if (!origin || typeof origin.lat !== 'number' || typeof origin.lng !== 'number') {
             return res.status(400).json({
                 success: false,
@@ -47,7 +46,6 @@ export const getDistance = async (req, res) => {
             });
         }
 
-        // Validate destination
         if (!destination || typeof destination.lat !== 'number' || typeof destination.lng !== 'number') {
             return res.status(400).json({
                 success: false,
@@ -117,7 +115,6 @@ export const reverseGeocodeController = async (req, res) => {
             });
         }
 
-        // Validate coordinate ranges
         if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
             return res.status(400).json({
                 success: false,
@@ -156,7 +153,6 @@ export const getDeliveryDistance = async (req, res) => {
             });
         }
 
-        // Get pickup coordinates from environment variables
         const pickupLat = parseFloat(process.env.LALAMOVE_PICKUP_LAT);
         const pickupLng = parseFloat(process.env.LALAMOVE_PICKUP_LNG);
 
@@ -167,10 +163,7 @@ export const getDeliveryDistance = async (req, res) => {
             });
         }
 
-        // Geocode the delivery address
         const deliveryCoords = await geocodeAddress(deliveryAddress.trim());
-        
-        // Calculate distance
         const distanceResult = await calculateDistance(
             { lat: pickupLat, lng: pickupLng },
             { lat: deliveryCoords.lat, lng: deliveryCoords.lng }

@@ -16,7 +16,6 @@ export const signup = async (req, res) => {
             throw new Error ("All fields are required");
         }
 
-        // Enforce strong password policy: at least 6 chars, 1 uppercase, 1 lowercase, 1 number, 1 special char
         const passwordPolicyRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{6,}$/;
         if (!passwordPolicyRegex.test(password)) {
             return res.status(400).json({
@@ -104,7 +103,6 @@ export const login = async (req, res) => {
         const failKey = `login_fail_count:${normalizedEmail}`;
         const lockKey = `login_lock:${normalizedEmail}`;
 
-        // If locked, return remaining seconds
         const lockTtl = await redis.ttl(lockKey);
         if (lockTtl && lockTtl > 0) {
             return res.status(429).json({ success: false, message: `Too many failed login attempts. Try again in ${lockTtl} seconds.` });
@@ -112,7 +110,6 @@ export const login = async (req, res) => {
 
         const user = await User.findOne({ email: normalizedEmail });
         if (!user) {
-            // Count failed attempt for the provided email identifier
             const attempts = await redis.incr(failKey);
             if (attempts === 1) {
                 await redis.expire(failKey, 600); // keep counter for 10 minutes
@@ -138,16 +135,13 @@ export const login = async (req, res) => {
             return res.status(400).json({ success: false, message: "Invalid credentials" });
         }
 
-        // Reset counters on successful password validation
         await redis.del(failKey);
         await redis.del(lockKey);
 
-        // Generate OTP and store in Redis for 10 minutes
         const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
         const redisKey = `login_otp:${user._id.toString()}`;
         await redis.set(redisKey, otpCode, "EX", 10 * 60);
 
-        // Send OTP via email
         await sendLoginOtpEmail(user.email, otpCode);
 
         return res.status(200).json({
@@ -304,7 +298,6 @@ export const getSocketToken = async (req, res) => {
             return res.status(400).json({ success: false, message: "User not found" });
         }
 
-        // Generate a temporary token for WebSocket authentication
         const socketToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
             expiresIn: "1h", // Short-lived token for security
         });
@@ -345,12 +338,10 @@ export const updateProfile = async (req, res) => {
             };
         }
 
-        // If a new base64 image was sent, upload to Cloudinary like product flow
         if (image) {
             const upload = await cloudinary.uploader.upload(image, { folder: "users" });
             user.profileImage = upload.secure_url;
         } else if (avatarUrl) {
-            // Keep previously stored URL if provided
             user.profileImage = avatarUrl;
         }
 

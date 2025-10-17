@@ -4,9 +4,6 @@ import { verifyToken } from '../middleware/verifyToken.js';
 
 const router = express.Router();
 
-// @route   GET /api/reviews
-// @desc    Get all reviews with pagination and filtering
-// @access  Public
 router.get('/', async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -17,7 +14,6 @@ router.get('/', async (req, res) => {
     
     const skip = (page - 1) * limit;
     
-    // Build filter object
     const filter = {};
     
     if (rating) {
@@ -63,9 +59,6 @@ router.get('/', async (req, res) => {
   }
 });
 
-// @route   GET /api/reviews/stats
-// @desc    Get review statistics
-// @access  Public
 router.get('/stats', async (req, res) => {
   try {
     const stats = await Review.getStats();
@@ -82,9 +75,6 @@ router.get('/stats', async (req, res) => {
   }
 });
 
-// @route   GET /api/reviews/random
-// @desc    Get random reviews for welcome page
-// @access  Public
 router.get('/random', async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 3;
@@ -103,14 +93,10 @@ router.get('/random', async (req, res) => {
   }
 });
 
-// @route   POST /api/reviews
-// @desc    Submit a new review
-// @access  Private (Customer only)
 router.post('/', verifyToken, async (req, res) => {
   try {
     const { rating, feedback, product } = req.body;
     
-    // Validate input
     if (!rating || rating < 1 || rating > 5) {
       return res.status(400).json({
         success: false,
@@ -132,7 +118,6 @@ router.post('/', verifyToken, async (req, res) => {
       });
     }
     
-    // Check if user is verified customer
     if (req.user.role !== 'customer' || !req.user.isVerified) {
       return res.status(403).json({
         success: false,
@@ -140,7 +125,6 @@ router.post('/', verifyToken, async (req, res) => {
       });
     }
     
-    // Check daily review limit
     const canSubmit = await Review.checkDailyLimit(req.user._id);
     if (!canSubmit) {
       return res.status(429).json({
@@ -149,7 +133,6 @@ router.post('/', verifyToken, async (req, res) => {
       });
     }
     
-    // Create review
     const review = new Review({
       userId: req.user._id,
       userName: req.user.name,
@@ -175,9 +158,6 @@ router.post('/', verifyToken, async (req, res) => {
   }
 });
 
-// @route   DELETE /api/reviews/:id
-// @desc    Delete a review (own reviews only)
-// @access  Private (Customer only)
 router.delete('/:id', verifyToken, async (req, res) => {
   try {
     const review = await Review.findById(req.params.id);
@@ -189,7 +169,6 @@ router.delete('/:id', verifyToken, async (req, res) => {
       });
     }
     
-    // Check if user owns the review
     if (review.userId.toString() !== req.user._id.toString()) {
       return res.status(403).json({
         success: false,
@@ -212,12 +191,8 @@ router.delete('/:id', verifyToken, async (req, res) => {
   }
 });
 
-// @route   GET /api/reviews/user/:userId
-// @desc    Get reviews by specific user
-// @access  Private (Own reviews only)
 router.get('/user/:userId', verifyToken, async (req, res) => {
   try {
-    // Check if user is requesting their own reviews
     if (req.params.userId !== req.user._id.toString()) {
       return res.status(403).json({
         success: false,

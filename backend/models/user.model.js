@@ -37,7 +37,6 @@ const userSchema = new mongoose.Schema({
             ref: 'Product'
         }
     }],
-    // Profile fields
     profileImage: { type: String, default: "" },
     phone: { type: String, default: "" },
     address: {

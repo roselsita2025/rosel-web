@@ -21,7 +21,6 @@ export const createWriteOff = async (req, res) => {
         const adminId = req.user._id;
         const adminName = req.user.name;
 
-        // Validate required fields
         if (!productId || !quantity || !reason || !description) {
             return res.status(400).json({
                 success: false,
@@ -29,7 +28,6 @@ export const createWriteOff = async (req, res) => {
             });
         }
 
-        // Validate quantity
         if (quantity <= 0) {
             return res.status(400).json({
                 success: false,
@@ -37,7 +35,6 @@ export const createWriteOff = async (req, res) => {
             });
         }
 
-        // Find the product
         const product = await Product.findById(productId);
         if (!product) {
             return res.status(404).json({
@@ -46,13 +43,11 @@ export const createWriteOff = async (req, res) => {
             });
         }
 
-        // Calculate unit price and validate stock
         let unitPrice = 0;
         let weightKg = null;
         let availableStock = 0;
 
         if (weightOptionId) {
-            // Handle weight-based products
             const weightOption = product.weightOptions.id(weightOptionId);
             if (!weightOption) {
                 return res.status(400).json({
@@ -72,7 +67,6 @@ export const createWriteOff = async (req, res) => {
             weightKg = weightOption.weightKg;
             availableStock = weightOption.stockUnits;
         } else {
-            // Handle legacy products
             if (product.quantity < quantity) {
                 return res.status(400).json({
                     success: false,
@@ -86,7 +80,6 @@ export const createWriteOff = async (req, res) => {
 
         const cost = unitPrice * quantity;
 
-        // Create the write-off record
         const writeOff = new WriteOff({
             product: productId,
             weightOptionId: weightOptionId || null,
@@ -104,9 +97,7 @@ export const createWriteOff = async (req, res) => {
 
         await writeOff.save();
 
-        // Update product stock
         if (weightOptionId) {
-            // Update weight option stock
             await Product.findByIdAndUpdate(
                 productId,
                 { $inc: { 'weightOptions.$[elem].stockUnits': -quantity } },
@@ -116,7 +107,6 @@ export const createWriteOff = async (req, res) => {
                 }
             );
         } else {
-            // Update legacy quantity
             await Product.findByIdAndUpdate(
                 productId,
                 { $inc: { quantity: -quantity } },
@@ -124,7 +114,6 @@ export const createWriteOff = async (req, res) => {
             );
         }
 
-        // Log the activity
         try {
             await createActivityLog({
                 productId: product._id,
@@ -144,10 +133,7 @@ export const createWriteOff = async (req, res) => {
             });
         } catch (logError) {
             console.error('Error logging write-off activity:', logError);
-            // Don't fail the write-off if logging fails
         }
-
-        // Send notification to other admins about the write-off
         try {
             await notificationService.notifyAdmins({
                 type: 'inventory_alert',
@@ -171,7 +157,6 @@ export const createWriteOff = async (req, res) => {
             });
         } catch (notificationError) {
             console.error('Error sending write-off notification:', notificationError);
-            // Don't fail the write-off if notification fails
         }
 
         res.status(201).json({
@@ -208,7 +193,6 @@ export const getWriteOffs = async (req, res) => {
             sortOrder = 'desc'
         } = req.query;
 
-        // Build filter object
         const filter = {};
         
         if (reason) filter.reason = reason;
@@ -221,14 +205,11 @@ export const getWriteOffs = async (req, res) => {
             if (endDate) filter.createdAt.$lte = new Date(endDate);
         }
 
-        // Calculate pagination
         const skip = (parseInt(page) - 1) * parseInt(limit);
         
-        // Build sort object
         const sort = {};
         sort[sortBy] = sortOrder === 'desc' ? -1 : 1;
 
-        // Get write-offs with populated product data
         const writeOffs = await WriteOff.find(filter)
             .populate('product', 'name image category basePricePerKg weightOptions')
             .populate('adminId', 'name email')
@@ -237,7 +218,6 @@ export const getWriteOffs = async (req, res) => {
             .limit(parseInt(limit));
 
 
-        // Get total count for pagination
         const totalWriteOffs = await WriteOff.countDocuments(filter);
 
         res.status(200).json({
@@ -277,7 +257,6 @@ export const getWriteOffAnalytics = async (req, res) => {
             endDate
         } = req.query;
 
-        // Calculate date range based on timeframe
         let dateFilter = {};
         const now = new Date();
         
@@ -307,7 +286,6 @@ export const getWriteOffAnalytics = async (req, res) => {
                 break;
         }
 
-        // Get analytics data
         const [
             totalWriteOffs,
             totalQuantity,
@@ -378,7 +356,6 @@ export const getWriteOffTrends = async (req, res) => {
             endDate
         } = req.query;
 
-        // Calculate date range
         let dateFilter = {};
         const now = new Date();
         
@@ -404,7 +381,6 @@ export const getWriteOffTrends = async (req, res) => {
                 break;
         }
 
-        // Group by date and calculate trends
         const trends = await WriteOff.aggregate([
             { $match: dateFilter },
             {
@@ -424,7 +400,6 @@ export const getWriteOffTrends = async (req, res) => {
             }
         ]);
 
-        // Format the data for charts
         const formattedTrends = trends.map(trend => ({
             date: `${trend._id.year}-${String(trend._id.month).padStart(2, '0')}-${String(trend._id.day).padStart(2, '0')}`,
             quantity: trend.quantity,
@@ -460,7 +435,6 @@ export const getWriteOffByCategory = async (req, res) => {
             endDate
         } = req.query;
 
-        // Calculate date range
         let dateFilter = {};
         const now = new Date();
         

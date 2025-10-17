@@ -6,10 +6,8 @@ class LalamoveService {
         this.apiKey = process.env.LALAMOVE_API_KEY;
         this.secret = process.env.LALAMOVE_API_SECRET;
         this.hostname = process.env.LALAMOVE_HOSTNAME;
-        // Try different market codes for sandbox
         this.market = process.env.LALAMOVE_MARKET;
         
-        // Try PH_MNL for Philippines Manila
         if (this.market === 'PH') {
             this.market = 'PH_MNL';
         }
@@ -20,7 +18,6 @@ class LalamoveService {
         this.pickupPhone = process.env.LALAMOVE_PICK_PHONE;
         this.itemCategory = process.env.LALAMOVE_ITEM_CATEGORY;
         
-        // Use sandbox-specific hostname if in sandbox mode
         this.baseURL = this.hostname.includes('sandbox') ? `https://${this.hostname}` : `https://sandbox-rest.lalamove.com`;
     }
 
@@ -77,7 +74,6 @@ class LalamoveService {
     determineServiceType(boxQuantity, distance) {
         const vehicleSpecs = this.getVehicleSpecs();
         
-        // Check for intercity vehicles first (distance > 40km)
         if (distance > 40) {
             if (boxQuantity <= vehicleSpecs.SEDAN_INTERCITY.boxes) {
                 return "SEDAN_INTERCITY";
@@ -91,7 +87,6 @@ class LalamoveService {
                 return "SPLIT_DELIVERY_REQUIRED";
             }
         } else {
-            // Regular vehicles for local delivery
             if (boxQuantity <= vehicleSpecs.SEDAN.boxes) {
                 return "SEDAN";
             } else if (boxQuantity <= vehicleSpecs.MPV.boxes) {
@@ -127,7 +122,6 @@ class LalamoveService {
             const vehicleSpecs = this.getVehicleSpecs();
             const selectedVehicle = vehicleSpecs[serviceType];
             
-            // Calculate total weight based on box quantity (assuming average weight per box)
             const totalWeight = boxQuantity * 15; // 1 box = 15kg average
             
             const requestBody = {
@@ -231,7 +225,6 @@ class LalamoveService {
             const body = JSON.stringify(requestBody);
             const authHeader = this.getAuthHeader(timestamp, 'POST', path, body);
 
-            // Market header is required even in sandbox mode
             const headers = {
                 'Content-Type': 'application/json',
                 'Authorization': authHeader,
@@ -436,7 +429,6 @@ class LalamoveService {
     }
 }
 
-// Create singleton instance
 const lalamoveService = new LalamoveService();
 
 export default lalamoveService;

@@ -6,13 +6,11 @@ import { v4 as uuidv4 } from 'uuid';
 import { socketService } from '../services/socketService.js';
 import { notificationService } from '../services/notificationService.js';
 
-// Create a new chat session
 export const createChat = async (req, res) => {
     try {
         const { type, customerDetails } = req.body;
         const customerId = req.user._id;
 
-        // Validate chat type
         if (!['faq', 'support', 'chatbot'].includes(type)) {
             return res.status(400).json({
                 success: false,
@@ -20,7 +18,6 @@ export const createChat = async (req, res) => {
             });
         }
 
-        // Check if customer already has an active chat of this type
         const existingChat = await Chat.findOne({
             customer: customerId,
             type: type,
@@ -35,7 +32,6 @@ export const createChat = async (req, res) => {
             });
         }
 
-        // Create new chat
         const chatId = uuidv4();
         const newChat = new Chat({
             chatId,
@@ -46,9 +42,7 @@ export const createChat = async (req, res) => {
 
         await newChat.save();
 
-        // If it's a support chat, create initial bot message
         if (type === 'support') {
-            // Find or create bot user
             let botUser = await User.findOne({ role: 'bot' });
             if (!botUser) {
                 botUser = new User({
@@ -73,15 +67,12 @@ export const createChat = async (req, res) => {
 
             await welcomeMessage.save();
 
-            // Update chat with last message
             newChat.lastMessage = welcomeMessage._id;
             newChat.lastMessageAt = welcomeMessage.createdAt;
             await newChat.save();
         }
 
-        // If it's a chatbot, create initial bot message
         if (type === 'chatbot') {
-            // Find or create chatbot user
             let chatbotUser = await User.findOne({ role: 'chatbot' });
             if (!chatbotUser) {
                 chatbotUser = new User({
@@ -106,7 +97,6 @@ export const createChat = async (req, res) => {
 
             await welcomeMessage.save();
 
-            // Update chat with last message
             newChat.lastMessage = welcomeMessage._id;
             newChat.lastMessageAt = welcomeMessage.createdAt;
             await newChat.save();
@@ -127,7 +117,6 @@ export const createChat = async (req, res) => {
     }
 };
 
-// Get customer's chats
 export const getCustomerChats = async (req, res) => {
     try {
         const customerId = req.user._id;
@@ -156,7 +145,6 @@ export const getCustomerChats = async (req, res) => {
     }
 };
 
-// Get admin's chats (all support chats)
 export const getAdminChats = async (req, res) => {
     try {
         const { status, page = 1, limit = 20 } = req.query;
@@ -196,13 +184,11 @@ export const getAdminChats = async (req, res) => {
     }
 };
 
-// Get chat messages
 export const getChatMessages = async (req, res) => {
     try {
         const { chatId } = req.params;
         const userId = req.user._id;
 
-        // Find chat and verify access
         const chat = await Chat.findOne({ chatId }).populate('customer admin');
         if (!chat) {
             return res.status(404).json({
@@ -211,7 +197,6 @@ export const getChatMessages = async (req, res) => {
             });
         }
 
-        // Check if user has access to this chat
         const isCustomer = chat.customer._id.toString() === userId.toString();
         const isAdmin = chat.admin && chat.admin._id.toString() === userId.toString();
         const isAdminUser = req.user.role === 'admin';
@@ -223,7 +208,6 @@ export const getChatMessages = async (req, res) => {
             });
         }
 
-        // Get messages
         const messages = await Message.find({ chat: chat._id })
             .populate('sender', 'name email role')
             .sort({ createdAt: 1 });
@@ -245,14 +229,12 @@ export const getChatMessages = async (req, res) => {
     }
 };
 
-// Send a message
 export const sendMessage = async (req, res) => {
     try {
         const { chatId } = req.params;
         const { content, messageType = 'text' } = req.body;
         const senderId = req.user._id;
 
-        // Find chat
         const chat = await Chat.findOne({ chatId });
         if (!chat) {
             return res.status(404).json({
@@ -261,7 +243,6 @@ export const sendMessage = async (req, res) => {
             });
         }
 
-        // Check if user can send messages to this chat
         const isCustomer = chat.customer.toString() === senderId.toString();
         const isAdmin = chat.admin && chat.admin.toString() === senderId.toString();
         const isAdminUser = req.user.role === 'admin';
@@ -273,7 +254,6 @@ export const sendMessage = async (req, res) => {
             });
         }
 
-        // Check if chat is ended - no one can send messages to ended chats
         if (chat.status === 'ended') {
             return res.status(400).json({
                 success: false,
@@ -281,7 +261,6 @@ export const sendMessage = async (req, res) => {
             });
         }
 
-        // Create message
         const message = new Message({
             messageId: uuidv4(),
             chat: chat._id,
@@ -503,7 +482,6 @@ export const endChat = async (req, res) => {
         const { chatId } = req.params;
         const customerId = req.user._id;
 
-        // Find chat
         const chat = await Chat.findOne({ chatId }).populate('customer admin');
         if (!chat) {
             return res.status(404).json({
@@ -703,7 +681,6 @@ export const sendFAQResponse = async (req, res) => {
         const { chatId } = req.params;
         const { faqId } = req.body;
 
-        // Find chat
         const chat = await Chat.findOne({ chatId });
         if (!chat) {
             return res.status(404).json({

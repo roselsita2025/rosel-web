@@ -13,13 +13,11 @@ import {
 
 const router = express.Router();
 
-// Customer routes (require authentication)
 router.post('/', verifyToken, createReplacementRequest);
 router.get('/', verifyToken, getCustomerReplacementRequests);
 router.get('/:requestId', verifyToken, getReplacementRequestDetails);
 router.patch('/:requestId/cancel', verifyToken, cancelReplacementRequest);
 
-// Admin routes (require admin authentication)
 router.get('/admin/all', verifyToken, verifyAdmin, getAllReplacementRequests);
 router.get('/admin/stats', verifyToken, verifyAdmin, getReplacementRequestStats);
 router.get('/admin/:requestId', verifyToken, verifyAdmin, getAdminReplacementRequestDetails);

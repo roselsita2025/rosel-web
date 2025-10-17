@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 import { v4 as uuidv4 } from 'uuid';
 
 const notificationSchema = new mongoose.Schema({
-    // Notification identification
     notificationId: {
         type: String,
         required: true,
@@ -10,23 +9,19 @@ const notificationSchema = new mongoose.Schema({
         index: true
     },
     
-    // Recipient information
     recipient: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },
     
-    // Notification type and category
     type: {
         type: String,
         enum: [
-            // Admin notifications
             'inventory_alert',
             'sales_alert', 
             'order_alert',
             'customer_alert',
-            // Customer notifications
             'promotion',
             'order_notification',
             'request_notification'
@@ -34,16 +29,13 @@ const notificationSchema = new mongoose.Schema({
         required: true
     },
     
-    // Notification category for grouping
     category: {
         type: String,
         enum: [
-            // Admin categories
             'inventory',
             'sales',
             'orders',
             'customers',
-            // Customer categories
             'promotions',
             'orders',
             'requests'
@@ -51,27 +43,22 @@ const notificationSchema = new mongoose.Schema({
         required: true
     },
     
-    // Notification subcategory for specific actions
     subcategory: {
         type: String,
         enum: [
-            // Inventory subcategories
             'low_stock',
             'stock_update',
             'product_created',
             'product_updated',
             'product_removed',
-            // Order subcategories
             'order_pending',
             'order_processing',
             'order_shipped',
             'order_delivered',
             'order_cancelled',
-            // Customer subcategories
             'new_request',
             'request_update',
             'chat_message',
-            // Promotion subcategories
             'top_selling',
             'special_offer',
             'discount_available'
@@ -79,7 +66,6 @@ const notificationSchema = new mongoose.Schema({
         required: true
     },
     
-    // Notification content
     title: {
         type: String,
         required: true,
@@ -91,7 +77,6 @@ const notificationSchema = new mongoose.Schema({
         maxlength: 500
     },
     
-    // Related entity references
     relatedEntity: {
         type: {
             type: String,
@@ -102,13 +87,11 @@ const notificationSchema = new mongoose.Schema({
         }
     },
     
-    // Additional data for the notification
     data: {
         type: mongoose.Schema.Types.Mixed,
         default: {}
     },
     
-    // Notification status
     isRead: {
         type: Boolean,
         default: false
@@ -118,26 +101,22 @@ const notificationSchema = new mongoose.Schema({
         default: null
     },
     
-    // Priority level
     priority: {
         type: String,
         enum: ['low', 'medium', 'high', 'urgent'],
         default: 'medium'
     },
     
-    // Expiration date (for time-sensitive notifications)
     expiresAt: {
         type: Date,
         default: null
     },
     
-    // Action URL for the notification
     actionUrl: {
         type: String,
         default: null
     },
     
-    // Timestamps
     createdAt: {
         type: Date,
         default: Date.now
@@ -150,13 +129,11 @@ const notificationSchema = new mongoose.Schema({
     timestamps: true
 });
 
-// Indexes for efficient queries
 notificationSchema.index({ recipient: 1, isRead: 1, createdAt: -1 });
 notificationSchema.index({ type: 1, category: 1 });
 notificationSchema.index({ expiresAt: 1 });
 notificationSchema.index({ 'relatedEntity.type': 1, 'relatedEntity.id': 1 });
 
-// Virtual for time ago
 notificationSchema.virtual('timeAgo').get(function() {
     const now = new Date();
     const diffInSeconds = Math.floor((now - this.createdAt) / 1000);
@@ -168,11 +145,9 @@ notificationSchema.virtual('timeAgo').get(function() {
     return this.createdAt.toLocaleDateString();
 });
 
-// Ensure virtual fields are serialized
 notificationSchema.set('toJSON', { virtuals: true });
 notificationSchema.set('toObject', { virtuals: true });
 
-// Pre-save middleware to set readAt when isRead changes
 notificationSchema.pre('save', function(next) {
     if (this.isModified('isRead') && this.isRead && !this.readAt) {
         this.readAt = new Date();
@@ -180,7 +155,6 @@ notificationSchema.pre('save', function(next) {
     next();
 });
 
-// Static method to get notification statistics
 notificationSchema.statics.getStats = async function(recipientId = null) {
     const matchStage = recipientId ? { recipient: recipientId } : {};
     
@@ -220,7 +194,6 @@ notificationSchema.statics.getStats = async function(recipientId = null) {
 
     const result = stats[0];
     
-    // Process category stats
     const categoryStats = {};
     result.byCategory.forEach(item => {
         if (!categoryStats[item.category]) {
@@ -230,7 +203,6 @@ notificationSchema.statics.getStats = async function(recipientId = null) {
         if (!item.isRead) categoryStats[item.category].unread++;
     });
 
-    // Process priority stats
     const priorityStats = {};
     result.byPriority.forEach(item => {
         if (!priorityStats[item.priority]) {
@@ -248,7 +220,6 @@ notificationSchema.statics.getStats = async function(recipientId = null) {
     };
 };
 
-// Static method to create notification
 notificationSchema.statics.createNotification = async function({
     recipient,
     type,
@@ -285,14 +256,12 @@ notificationSchema.statics.createNotification = async function({
     return notification;
 };
 
-// Instance method to mark as read
 notificationSchema.methods.markAsRead = function() {
     this.isRead = true;
     this.readAt = new Date();
     return this.save();
 };
 
-// Instance method to get priority color for UI
 notificationSchema.methods.getPriorityColor = function() {
     const colors = {
         low: 'green',
@@ -303,12 +272,10 @@ notificationSchema.methods.getPriorityColor = function() {
     return colors[this.priority] || 'blue';
 };
 
-// Instance method to check if notification is expired
 notificationSchema.methods.isExpired = function() {
     return this.expiresAt && new Date() > this.expiresAt;
 };
 
-// Static method to clean up expired notifications
 notificationSchema.statics.cleanupExpired = async function() {
     const result = await this.deleteMany({
         expiresAt: { $lt: new Date() }

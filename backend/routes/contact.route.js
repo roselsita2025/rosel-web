@@ -3,7 +3,6 @@ import { sendContactMessage, getContactInfo } from '../controllers/contact.contr
 
 const router = express.Router();
 
-// Public routes - no authentication required
 router.post('/send-message', sendContactMessage);
 router.get('/info', getContactInfo);
 

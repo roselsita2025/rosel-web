@@ -4,11 +4,9 @@ import { getCoupons, validateCoupon, createCoupon, updateCoupon, listCoupons, ge
 
 const router = express.Router();
 
-// Customer endpoints
 router.get("/", verifyToken, getCoupons);
 router.post("/validate", verifyToken, validateCoupon);
 
-// Admin endpoints
 router.post("/admin", verifyToken, verifyAdmin, createCoupon);
 router.put("/admin/:id", verifyToken, verifyAdmin, updateCoupon);
 router.get("/admin", verifyToken, verifyAdmin, listCoupons);

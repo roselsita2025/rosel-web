@@ -1,12 +1,10 @@
 import Transaction from '../models/transaction.model.js';
 import Product from '../models/product.model.js';
 
-// Create new POS transaction
 export const createTransaction = async (req, res) => {
   try {
     const { items, customer, payment, cashier } = req.body;
 
-    // Validate required fields
     if (!items || !Array.isArray(items) || items.length === 0) {
       return res.status(400).json({
         success: false,
@@ -21,7 +19,6 @@ export const createTransaction = async (req, res) => {
       });
     }
 
-    // Validate payment method specific requirements
     if (payment.method === 'cash' && (!payment.cashReceived || payment.cashReceived < payment.total)) {
       return res.status(400).json({
         success: false,
@@ -43,7 +40,6 @@ export const createTransaction = async (req, res) => {
       });
     }
 
-    // Validate stock availability and update quantities
     const stockUpdates = [];
     for (const item of items) {
       const product = await Product.findById(item.productId);
@@ -54,8 +50,6 @@ export const createTransaction = async (req, res) => {
         });
       }
 
-      // Check if this is a weight-based product (either by weightOptionId or by having weight options and no legacy quantity)
-      // Use direct property access instead of virtual property
       const hasWeightOptions = product.weightOptions && product.weightOptions.length > 0;
       const isWeightBased = Boolean(
         (item.weightOptionId && hasWeightOptions) || 
@@ -66,10 +60,8 @@ export const createTransaction = async (req, res) => {
         let weightOption;
         
         if (item.weightOptionId) {
-          // Find by weightOptionId
           weightOption = product.weightOptions.find(opt => String(opt._id) === String(item.weightOptionId));
         } else {
-          // If no weightOptionId provided, use the first available weight option with stock
           weightOption = product.weightOptions.find(opt => opt.stockUnits > 0);
         }
         
@@ -95,7 +87,6 @@ export const createTransaction = async (req, res) => {
           isWeightBased: true
         });
       } else {
-        // Handle legacy products
         if (product.quantity < item.quantity) {
           return res.status(400).json({
             success: false,
@@ -112,10 +103,7 @@ export const createTransaction = async (req, res) => {
       }
     }
 
-    // Calculate product subtotal (actual revenue)
     const productSubtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-
-    // Create transaction
     const transaction = new Transaction({
       items,
       customer: customer || {},
@@ -128,10 +116,8 @@ export const createTransaction = async (req, res) => {
 
     await transaction.save();
 
-    // Update product quantities
     for (const update of stockUpdates) {
       if (update.isWeightBased) {
-        // Update weight option stock
         await Product.findByIdAndUpdate(
           update.productId,
           { $inc: { 'weightOptions.$[elem].stockUnits': -update.requestedQuantity } },
@@ -141,7 +127,6 @@ export const createTransaction = async (req, res) => {
           }
         );
       } else {
-        // Update legacy quantity
         await Product.findByIdAndUpdate(
           update.productId,
           { $inc: { quantity: -update.requestedQuantity } },
@@ -166,7 +151,6 @@ export const createTransaction = async (req, res) => {
   }
 };
 
-// Get transaction by ID
 export const getTransaction = async (req, res) => {
   try {
     const { id } = req.params;
@@ -197,7 +181,6 @@ export const getTransaction = async (req, res) => {
   }
 };
 
-// Get recent transactions (for basic history)
 export const getRecentTransactions = async (req, res) => {
   try {
     const { 
@@ -208,10 +191,8 @@ export const getRecentTransactions = async (req, res) => {
       end
     } = req.query;
 
-    // Build query filter
     const filter = {};
 
-    // Add time filter
     if (timeframe && timeframe !== 'all') {
       const now = new Date();
       let startDate;

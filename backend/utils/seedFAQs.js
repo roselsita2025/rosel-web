@@ -2,7 +2,6 @@ import { FAQ } from '../models/faq.model.js';
 
 export const seedFAQs = async () => {
     try {
-        // Check if FAQs already exist
         const existingFAQs = await FAQ.countDocuments();
         if (existingFAQs > 0) {
             return;

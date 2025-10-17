@@ -20,10 +20,7 @@ export const handleLalamoveWebhook = async (req, res) => {
             body: webhookData
         });
 
-        // Additional debugging - log the full webhook structure
         console.log('🔍 Full webhook data structure:', JSON.stringify(webhookData, null, 2));
-        
-        // Log specific fields that might be causing issues
         console.log('🔍 Webhook field analysis:');
         console.log('- eventType:', webhookData.eventType);
         console.log('- eventId:', webhookData.eventId);
@@ -32,7 +29,6 @@ export const handleLalamoveWebhook = async (req, res) => {
         console.log('- data.order.orderId:', webhookData.data?.order?.orderId);
         console.log('- data.order.status:', webhookData.data?.order?.status);
 
-        // Validate webhook data structure
         if (!webhookData || typeof webhookData !== 'object') {
             console.error('Invalid webhook data received');
             return res.status(400).json({
@@ -41,7 +37,6 @@ export const handleLalamoveWebhook = async (req, res) => {
             });
         }
 
-        // Extract webhook event type and data
         const eventType = webhookData.eventType || webhookData.type || webhookData.event_type || 'unknown';
         const orderId = webhookData.data?.order?.orderId || webhookData.order_id || webhookData.orderId || webhookData.id;
         const status = webhookData.data?.order?.status || webhookData.status || webhookData.delivery_status || 'unknown';
@@ -53,7 +48,6 @@ export const handleLalamoveWebhook = async (req, res) => {
             timestamp: webhookData.timestamp || webhookData.created_at || new Date().toISOString()
         });
 
-        // Process different webhook event types
         try {
             switch (eventType.toLowerCase()) {
                 case 'order_status_changed':
@@ -113,7 +107,6 @@ export const handleLalamoveWebhook = async (req, res) => {
             throw processingError; // Re-throw to be caught by outer try-catch
         }
 
-        // Always respond with success to acknowledge receipt
         res.status(200).json({
             success: true,
             message: 'Webhook received and processed successfully',
@@ -167,7 +160,6 @@ const handleOrderStatusChanged = async (webhookData) => {
             return;
         }
         
-        // Find order by Lalamove order ID
         const order = await Order.findOne({ 'lalamoveDetails.orderId': lalamoveOrderId });
         
         if (!order) {
@@ -180,14 +172,11 @@ const handleOrderStatusChanged = async (webhookData) => {
             throw new Error(`Order not found for Lalamove order ID: ${lalamoveOrderId}`);
         }
         
-        // Capture old status values for comparison
         const oldAdminStatus = order.adminStatus;
         const oldStatus = order.status;
         
-        // Map Lalamove status to our internal status
         let mappedStatus = newStatus.toLowerCase();
         
-        // Handle Lalamove's uppercase status format
         if (newStatus === 'ASSIGNING_DRIVER') {
             mappedStatus = 'pending';
         } else if (newStatus === 'ON_GOING') {
@@ -204,16 +193,13 @@ const handleOrderStatusChanged = async (webhookData) => {
             mappedStatus = 'expired';
         }
         
-        // Update order status and driver details
         order.lalamoveDetails.status = mappedStatus;
         order.lalamoveDetails.lastStatusUpdate = new Date();
         
-        // Update driver information if provided
         if (driverId) {
             order.lalamoveDetails.driverId = driverId;
         }
         
-        // Update admin status based on Lalamove status
         if (mappedStatus === 'picked_up') {
             order.adminStatus = 'order_picked_up';
         } else if (mappedStatus === 'delivered') {
@@ -221,10 +207,8 @@ const handleOrderStatusChanged = async (webhookData) => {
             order.status = 'delivered';
         } else if (mappedStatus === 'cancelled') {
             order.status = 'cancelled';
-            // allow rebooking flow
             order.adminStatus = 'order_prepared';
         } else if (['failed', 'expired'].includes(mappedStatus)) {
-            // rejection/failed/expired – return to prepared so admin can rebook
             order.adminStatus = 'order_prepared';
         }
         
@@ -308,7 +292,6 @@ const handleDriverAssigned = async (webhookData) => {
             return;
         }
         
-        // Find order by Lalamove order ID
         const order = await Order.findOne({ 'lalamoveDetails.orderId': lalamoveOrderId });
         
         if (!order) {
@@ -366,7 +349,6 @@ const handleOrderCreated = async (webhookData) => {
             return;
         }
         
-        // Find order by Lalamove order ID
         const order = await Order.findOne({ 'lalamoveDetails.orderId': lalamoveOrderId });
         
         if (!order) {
@@ -400,7 +382,6 @@ const handleOrderAccepted = async (webhookData) => {
             return;
         }
         
-        // Find order by Lalamove order ID
         const order = await Order.findOne({ 'lalamoveDetails.orderId': lalamoveOrderId });
         
         if (!order) {
@@ -411,7 +392,6 @@ const handleOrderAccepted = async (webhookData) => {
         // Extract driver information from webhook data
         const driverInfo = webhookData.driver || webhookData.driver_info || {};
         
-        // Update order status and driver details
         const oldStatus = order.status;
         order.lalamoveDetails.status = 'accepted';
         order.lalamoveDetails.driverId = driverInfo.driver_id || driverInfo.id;
@@ -449,7 +429,6 @@ const handleOrderPickedUp = async (webhookData) => {
             return;
         }
         
-        // Find order by Lalamove order ID
         const order = await Order.findOne({ 'lalamoveDetails.orderId': lalamoveOrderId });
         
         if (!order) {
@@ -492,7 +471,6 @@ const handleOrderDelivered = async (webhookData) => {
             return;
         }
         
-        // Find order by Lalamove order ID
         const order = await Order.findOne({ 'lalamoveDetails.orderId': lalamoveOrderId });
         
         if (!order) {
@@ -538,7 +516,6 @@ const handleOrderCancelled = async (webhookData) => {
             return;
         }
         
-        // Find order by Lalamove order ID
         const order = await Order.findOne({ 'lalamoveDetails.orderId': lalamoveOrderId });
         
         if (!order) {
@@ -595,7 +572,6 @@ const handleOrderFailed = async (webhookData) => {
             return;
         }
         
-        // Find order by Lalamove order ID
         const order = await Order.findOne({ 'lalamoveDetails.orderId': lalamoveOrderId });
         
         if (!order) {
@@ -659,7 +635,6 @@ const handleOrderExpired = async (webhookData) => {
             return;
         }
         
-        // Find order by Lalamove order ID
         const order = await Order.findOne({ 'lalamoveDetails.orderId': lalamoveOrderId });
         
         if (!order) {
@@ -902,7 +877,6 @@ export const simulateWebhook = async (req, res) => {
             
             console.log(`🔍 Looking for order with Lalamove ID: ${lalamoveOrderId}`);
             
-            // Find order by Lalamove order ID
             const order = await Order.findOne({ 'lalamoveDetails.orderId': lalamoveOrderId });
             
             if (!order) {
@@ -918,10 +892,8 @@ export const simulateWebhook = async (req, res) => {
                 return;
             }
             
-            // Map Lalamove status to our internal status
             let mappedStatus = newStatus.toLowerCase();
             
-            // Handle Lalamove's uppercase status format
             if (newStatus === 'ASSIGNING_DRIVER') {
                 mappedStatus = 'pending';
             } else if (newStatus === 'ON_GOING') {
@@ -938,11 +910,9 @@ export const simulateWebhook = async (req, res) => {
                 mappedStatus = 'expired';
             }
             
-            // Update order status and driver details
             order.lalamoveDetails.status = mappedStatus;
             order.lalamoveDetails.lastStatusUpdate = new Date();
             
-            // Update driver information if provided
             if (driverId) {
                 order.lalamoveDetails.driverId = driverId;
             }

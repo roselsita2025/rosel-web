@@ -19,10 +19,8 @@ export const getUserNotifications = async (req, res) => {
             sortOrder = 'desc' 
         } = req.query;
 
-        // Build query filter
         const filter = { recipient: userId };
         
-        // Handle null values properly (convert 'null' strings to actual null)
         if (category && category !== 'null') filter.category = category;
         if (isRead !== undefined && isRead !== 'null') filter.isRead = isRead === 'true';
         if (priority && priority !== 'null') filter.priority = priority;
@@ -31,14 +29,11 @@ export const getUserNotifications = async (req, res) => {
         console.log('🔍 User ID:', userId);
         console.log('🔍 Query params:', { category, isRead, priority });
 
-        // Calculate pagination
         const skip = (parseInt(page) - 1) * parseInt(limit);
 
-        // Build sort object
         const sort = {};
         sort[sortBy] = sortOrder === 'desc' ? -1 : 1;
 
-        // Get notifications
         const notifications = await Notification.find(filter)
             .populate('recipient', 'name email role')
             .sort(sort)
@@ -47,10 +42,8 @@ export const getUserNotifications = async (req, res) => {
 
         console.log('📋 Found notifications:', notifications.length);
 
-        // Get total count for pagination
         const totalNotifications = await Notification.countDocuments(filter);
 
-        // Get unread count
         const unreadCount = await Notification.countDocuments({
             recipient: userId,
             isRead: false
@@ -125,7 +118,6 @@ export const markNotificationAsRead = async (req, res) => {
             });
         }
 
-        // Find notification and verify ownership
         const notification = await Notification.findOne({
             notificationId,
             recipient: userId
@@ -138,7 +130,6 @@ export const markNotificationAsRead = async (req, res) => {
             });
         }
 
-        // Mark as read
         await notification.markAsRead();
 
         res.status(200).json({
@@ -207,7 +198,6 @@ export const deleteNotification = async (req, res) => {
             });
         }
 
-        // Find and delete notification
         const notification = await Notification.findOneAndDelete({
             notificationId,
             recipient: userId
@@ -253,7 +243,6 @@ export const getAllNotifications = async (req, res) => {
             sortOrder = 'desc' 
         } = req.query;
 
-        // Build query filter
         const filter = {};
         
         if (category) filter.category = category;
@@ -262,21 +251,17 @@ export const getAllNotifications = async (req, res) => {
         if (priority) filter.priority = priority;
         if (recipientId) filter.recipient = recipientId;
 
-        // Calculate pagination
         const skip = (parseInt(page) - 1) * parseInt(limit);
 
-        // Build sort object
         const sort = {};
         sort[sortBy] = sortOrder === 'desc' ? -1 : 1;
 
-        // Get notifications
         const notifications = await Notification.find(filter)
             .populate('recipient', 'name email role')
             .sort(sort)
             .skip(skip)
             .limit(parseInt(limit));
 
-        // Get total count for pagination
         const totalNotifications = await Notification.countDocuments(filter);
 
         // Get overall statistics
@@ -526,7 +511,7 @@ export const getNotificationSummary = async (req, res) => {
         .sort({ createdAt: -1 })
         .limit(parseInt(limit));
 
-        // Get unread count by category
+ by category
         const categoryCounts = await Notification.aggregate([
             { $match: { recipient: userId, isRead: false } },
             {
