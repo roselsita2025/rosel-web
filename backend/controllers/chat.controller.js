@@ -272,25 +272,20 @@ export const sendMessage = async (req, res) => {
 
         await message.save();
 
-        // Update chat
         chat.lastMessage = message._id;
         chat.lastMessageAt = message.createdAt;
         
-        // If customer sends first message in support chat, set status to waiting
         if (chat.type === 'support' && chat.status === 'active' && isCustomer) {
             chat.status = 'waiting';
             
-            // Check if this is the first customer message (no previous customer messages)
             const previousCustomerMessages = await Message.find({
                 chat: chat._id,
                 senderType: 'customer'
             }).countDocuments();
             
-            // Only send bot response if this is the first customer message
             if (previousCustomerMessages === 1) {
                 setTimeout(async () => {
                     try {
-                        // Find or create support bot user
                         let botUser = await User.findOne({ role: 'bot' });
                         if (!botUser) {
                             botUser = new User({
@@ -315,12 +310,11 @@ export const sendMessage = async (req, res) => {
                         await botResponse.save();
                         await botResponse.populate('sender', 'name email role');
 
-                        // Update chat with bot response
+ with bot response
                         chat.lastMessage = botResponse._id;
                         chat.lastMessageAt = botResponse.createdAt;
                         await chat.save();
 
-                        // Emit bot response to chat
                         socketService.emitToChat(chatId, 'new_message', {
                             message: botResponse,
                             chatId
@@ -334,28 +328,23 @@ export const sendMessage = async (req, res) => {
         
         await chat.save();
 
-        // Populate sender info for response
         await message.populate('sender', 'name email role');
 
-        // Emit WebSocket event for real-time updates
         socketService.emitToChat(chatId, 'new_message', {
             message,
             chatId
         });
 
-        // Notify admin room if it's a support chat and customer sent message
         if (chat.type === 'support' && isCustomer) {
             socketService.emitToAdmin('new_support_message', {
                 chat,
                 message
             });
 
-            // Send notification to admins about new chat message
             try {
                 await notificationService.sendNewChatMessageNotification(chat, message);
             } catch (notificationError) {
                 console.error('Error sending new chat message notification:', notificationError);
-                // Don't fail the message sending if notification fails
             }
         }
 
@@ -374,7 +363,6 @@ export const sendMessage = async (req, res) => {
     }
 };
 
-// Assign chat to admin
 export const assignChatToAdmin = async (req, res) => {
     try {
         const { chatId } = req.params;
@@ -399,7 +387,6 @@ export const assignChatToAdmin = async (req, res) => {
         chat.status = 'active';
         await chat.save();
 
-        // Create system message
         const systemMessage = new Message({
             messageId: uuidv4(),
             chat: chat._id,
@@ -411,7 +398,6 @@ export const assignChatToAdmin = async (req, res) => {
 
         await systemMessage.save();
 
-        // Emit WebSocket events for real-time updates
         socketService.emitToChat(chatId, 'chat_assigned', {
             chat,
             message: systemMessage
@@ -437,7 +423,6 @@ export const assignChatToAdmin = async (req, res) => {
     }
 };
 
-// Update chat status
 export const updateChatStatus = async (req, res) => {
     try {
         const { chatId } = req.params;
@@ -476,7 +461,6 @@ export const updateChatStatus = async (req, res) => {
     }
 };
 
-// End chat (customer leaves)
 export const endChat = async (req, res) => {
     try {
         const { chatId } = req.params;
@@ -490,7 +474,6 @@ export const endChat = async (req, res) => {
             });
         }
 
-        // Check if customer has access to this chat
         if (chat.customer._id.toString() !== customerId.toString()) {
             return res.status(403).json({
                 success: false,
@@ -498,13 +481,12 @@ export const endChat = async (req, res) => {
             });
         }
 
-        // Update status to ended
         chat.status = 'ended';
         chat.endedAt = new Date();
         chat.updatedAt = new Date();
         await chat.save();
 
-        // Create system message to notify that chat has ended
+ to notify that chat has ended
         const endMessage = new Message({
             messageId: uuidv4(),
             chat: chat._id,
@@ -516,12 +498,11 @@ export const endChat = async (req, res) => {
 
         await endMessage.save();
 
-        // Update chat with last message
+ with last message
         chat.lastMessage = endMessage._id;
         chat.lastMessageAt = endMessage.createdAt;
         await chat.save();
 
-        // Notify admin if they're connected
         if (chat.admin) {
             socketService.emitToAdmin('customer_left_chat', {
                 chat,
@@ -529,7 +510,6 @@ export const endChat = async (req, res) => {
             });
         }
 
-        // Emit WebSocket event to chat room
         socketService.emitToChat(chatId, 'chat_ended', {
             chat,
             message: endMessage
@@ -550,7 +530,6 @@ export const endChat = async (req, res) => {
     }
 };
 
-// Get FAQs
 export const getFAQs = async (req, res) => {
     try {
         const { category, search } = req.query;
@@ -584,7 +563,6 @@ export const getFAQs = async (req, res) => {
     }
 };
 
-// Create FAQ (admin only)
 export const createFAQ = async (req, res) => {
     try {
         const { question, answer, category, keywords = [], priority = 0 } = req.body;
@@ -614,7 +592,6 @@ export const createFAQ = async (req, res) => {
     }
 };
 
-// Update FAQ (admin only)
 export const updateFAQ = async (req, res) => {
     try {
         const { faqId } = req.params;
@@ -648,7 +625,6 @@ export const updateFAQ = async (req, res) => {
     }
 };
 
-// Delete FAQ (admin only)
 export const deleteFAQ = async (req, res) => {
     try {
         const { faqId } = req.params;
@@ -675,7 +651,6 @@ export const deleteFAQ = async (req, res) => {
     }
 };
 
-// Send FAQ response (bot response)
 export const sendFAQResponse = async (req, res) => {
     try {
         const { chatId } = req.params;
@@ -689,7 +664,6 @@ export const sendFAQResponse = async (req, res) => {
             });
         }
 
-        // Find FAQ
         const faq = await FAQ.findById(faqId);
         if (!faq) {
             return res.status(404).json({
@@ -698,7 +672,6 @@ export const sendFAQResponse = async (req, res) => {
             });
         }
 
-        // Find or create bot user
         let botUser = await User.findOne({ role: 'bot' });
         if (!botUser) {
             botUser = new User({
@@ -711,7 +684,6 @@ export const sendFAQResponse = async (req, res) => {
             await botUser.save();
         }
 
-        // Create bot message
         const message = new Message({
             messageId: uuidv4(),
             chat: chat._id,
@@ -725,17 +697,14 @@ export const sendFAQResponse = async (req, res) => {
         await message.save();
         await message.populate('sender', 'name email role');
 
-        // Update chat
         chat.lastMessage = message._id;
         chat.lastMessageAt = message.createdAt;
         await chat.save();
 
-        // Update FAQ usage stats
         faq.viewCount += 1;
         faq.lastUsed = new Date();
         await faq.save();
 
-        // Emit WebSocket event for real-time updates
         socketService.emitToChat(chatId, 'new_message', {
             message,
             chatId

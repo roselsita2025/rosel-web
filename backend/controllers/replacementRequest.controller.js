@@ -228,7 +228,6 @@ export const getReplacementRequestDetails = async (req, res) => {
             });
         }
 
-        // Validate ObjectId format
         if (!mongoose.Types.ObjectId.isValid(requestId)) {
             return res.status(400).json({
                 success: false,
@@ -236,7 +235,6 @@ export const getReplacementRequestDetails = async (req, res) => {
             });
         }
 
-        // Find request and verify ownership
         const request = await ReplacementRequest.findOne({ _id: requestId, user: userId })
             .populate({
                 path: 'order',
@@ -296,7 +294,6 @@ export const getAllReplacementRequests = async (req, res) => {
             filter.priority = priority;
         }
 
-        // Search functionality
         if (search) {
             filter.$or = [
                 { description: { $regex: search, $options: 'i' } },
@@ -379,7 +376,6 @@ export const updateReplacementRequestStatus = async (req, res) => {
             });
         }
 
-        // Validate ObjectId format
         if (!mongoose.Types.ObjectId.isValid(requestId)) {
             return res.status(400).json({
                 success: false,
@@ -387,7 +383,6 @@ export const updateReplacementRequestStatus = async (req, res) => {
             });
         }
 
-        // Find the replacement request
         const request = await ReplacementRequest.findById(requestId)
             .populate('user', 'name email')
             .populate('product', 'name image price')
@@ -400,7 +395,6 @@ export const updateReplacementRequestStatus = async (req, res) => {
             });
         }
 
-        // Check if request can be updated
         if (!request.canBeUpdated()) {
             return res.status(400).json({
                 success: false,
@@ -408,7 +402,6 @@ export const updateReplacementRequestStatus = async (req, res) => {
             });
         }
 
-        // Validate workflow transitions
         if (status === 'approved' && request.status !== 'under_review') {
             return res.status(400).json({
                 success: false,
@@ -431,7 +424,6 @@ export const updateReplacementRequestStatus = async (req, res) => {
             }
         }
 
-        // Validate replacement product if provided
         if (replacementProductId) {
             const replacementProduct = await Product.findById(replacementProductId);
             if (!replacementProduct) {
@@ -442,7 +434,6 @@ export const updateReplacementRequestStatus = async (req, res) => {
             }
         }
 
-        // Update the request
         const updateData = {
             handledBy: adminId
         };
@@ -604,7 +595,6 @@ export const cancelReplacementRequest = async (req, res) => {
             });
         }
 
-        // Validate ObjectId format
         if (!mongoose.Types.ObjectId.isValid(requestId)) {
             return res.status(400).json({
                 success: false,
@@ -612,7 +602,6 @@ export const cancelReplacementRequest = async (req, res) => {
             });
         }
 
-        // Find the replacement request
         const request = await ReplacementRequest.findOne({ _id: requestId, user: userId });
 
         if (!request) {
@@ -631,7 +620,7 @@ export const cancelReplacementRequest = async (req, res) => {
             });
         }
 
-        // Update the request status
+ status
         const updatedRequest = await ReplacementRequest.findByIdAndUpdate(
             requestId,
             { status: 'cancelled' },
@@ -673,7 +662,6 @@ export const getAdminReplacementRequestDetails = async (req, res) => {
             });
         }
 
-        // Validate ObjectId format
         if (!mongoose.Types.ObjectId.isValid(requestId)) {
             return res.status(400).json({
                 success: false,

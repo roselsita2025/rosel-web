@@ -240,7 +240,6 @@ export const placeLalamoveOrder = async (req, res) => {
         }
         
         try {
-            // Normalize PH phone numbers to E.164
             const toE164PH = (raw) => {
                 const digits = (raw || '').replace(/\D/g, '');
                 if (!digits) return raw;
@@ -251,7 +250,6 @@ export const placeLalamoveOrder = async (req, res) => {
             };
             console.log('Generating new Lalamove quotation for order:', orderId);
             
-            // Prepare stops for new quotation
             const stops = [
                 {
                     coordinates: {
@@ -269,10 +267,8 @@ export const placeLalamoveOrder = async (req, res) => {
                 }
             ];
             
-            // Calculate total box quantity
             const totalBoxQuantity = order.products.reduce((sum, item) => sum + item.quantity, 0);
             
-            // Get new quotation from Lalamove
             const quotation = await lalamoveService.getQuotation({
                 stops: stops,
                 boxQuantity: totalBoxQuantity,
@@ -282,11 +278,9 @@ export const placeLalamoveOrder = async (req, res) => {
             
             console.log('New quotation generated:', quotation.data.data.quotationId);
             
-            // Extract stop IDs from new quotation
             const stopId0 = quotation.data.data.stops[0].stopId;
             const stopId1 = quotation.data.data.stops[1].stopId;
             
-            // Prepare Lalamove order data
             const lalamoveOrderData = {
                 quotationId: quotation.data.data.quotationId,
                 senderName: "Rosel Store",
@@ -300,10 +294,8 @@ export const placeLalamoveOrder = async (req, res) => {
             
             console.log('Placing Lalamove order with data:', lalamoveOrderData);
             
-            // Place the order with Lalamove
             const lalamoveOrder = await lalamoveService.placeOrder(lalamoveOrderData);
             
-            // Update order with Lalamove order details
             order.lalamoveDetails.orderId = lalamoveOrder.data.data.orderId;
             order.lalamoveDetails.status = 'pending';
             order.lalamoveDetails.trackingUrl = lalamoveOrder.data.data.trackingUrl;
@@ -315,7 +307,6 @@ export const placeLalamoveOrder = async (req, res) => {
             
             console.log('✅ Lalamove order placed successfully:', lalamoveOrder.data.data.orderId);
             
-            // Send notification to customer
             try {
                 await notificationService.sendOrderStatusUpdateNotification(order, 'order_placed');
                 console.log(`📢 Sent notification for order ${orderId} Lalamove placement`);
@@ -337,12 +328,10 @@ export const placeLalamoveOrder = async (req, res) => {
         } catch (lalamoveError) {
             console.error('Failed to place Lalamove order:', lalamoveError);
             
-            // Update order status to indicate failure
             order.lalamoveDetails.status = 'failed';
             order.lalamoveDetails.lastStatusUpdate = new Date();
             await order.save();
             
-            // If upstream returned a structured error (e.g., 422), surface it
             const upstreamStatus = lalamoveError?.response?.status;
             const upstreamErrors = lalamoveError?.response?.data?.errors;
             const upstreamMessage = (Array.isArray(upstreamErrors) && (upstreamErrors[0]?.message || upstreamErrors[0]?.detail))
@@ -375,7 +364,6 @@ export const getOrdersPendingActions = async (req, res) => {
     try {
         const { page = 1, limit = 10, status } = req.query;
         
-        // Build query filter for orders that need admin attention
         const filter = {
             paymentStatus: 'paid',
             $or: [
@@ -390,10 +378,8 @@ export const getOrdersPendingActions = async (req, res) => {
             filter.adminStatus = status;
         }
         
-        // Calculate pagination
         const skip = (parseInt(page) - 1) * parseInt(limit);
         
-        // Get orders with populated details
         const orders = await Order.find(filter)
             .populate('user', 'name email')
             .populate('products.product', 'name image price category basePricePerKg weightOptions')
@@ -403,7 +389,6 @@ export const getOrdersPendingActions = async (req, res) => {
         
         const totalOrders = await Order.countDocuments(filter);
         
-        // Map orders to include computed status and formatted data
         const ordersWithStatus = orders.map(order => ({
             ...order.toObject(),
             computedStatus: getComputedOrderStatus(order),
@@ -446,17 +431,14 @@ export const getOrdersPendingActions = async (req, res) => {
  * Helper function to compute order status based on payment, admin status, and Lalamove status
  */
 function getComputedOrderStatus(order) {
-    // If payment is not completed, order is pending
     if (order.paymentStatus !== 'paid') {
         return 'PENDING';
     }
     
-    // If order is cancelled or refunded
     if (order.status === 'cancelled' || order.status === 'refunded') {
         return 'CANCELED';
     }
     
-    // For pickup orders
     if (order.shippingMethod === 'pickup') {
         switch (order.adminStatus) {
             case 'order_received':
@@ -476,11 +458,9 @@ function getComputedOrderStatus(order) {
         }
     }
     
-    // For Lalamove delivery orders
     if (order.shippingMethod === 'lalamove' && order.lalamoveDetails) {
         const lalamoveStatus = order.lalamoveDetails.status;
         
-        // If order hasn't been placed in Lalamove yet
         if (lalamoveStatus === 'pending_placement') {
             switch (order.adminStatus) {
                 case 'order_received':
@@ -494,7 +474,6 @@ function getComputedOrderStatus(order) {
             }
         }
         
-        // If order has been placed in Lalamove
         switch (lalamoveStatus) {
             case 'pending':
             case 'ASSIGNING_DRIVER':
@@ -522,7 +501,6 @@ function getComputedOrderStatus(order) {
         }
     }
     
-    // Default fallback
     return 'PROCESSING';
 }
 

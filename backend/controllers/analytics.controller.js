@@ -847,7 +847,6 @@ export const getDiscrepancyAnalytics = async (req, res) => {
         } = req.query;
 
 
-        // Calculate date range
         let dateFilter = {};
         const now = new Date();
         
@@ -883,7 +882,6 @@ export const getDiscrepancyAnalytics = async (req, res) => {
         let categoryBreakdown = [];
         let trendsData = [];
 
-        // Get write-offs data
         if (dataSource === 'writeoffs' || dataSource === 'combined') {
             const writeOffData = await WriteOff.aggregate([
                 { $match: {} }, // Remove date filter to get all write-offs
@@ -901,7 +899,6 @@ export const getDiscrepancyAnalytics = async (req, res) => {
                 totalCost += writeOffData[0].totalCost || 0;
             }
 
-            // Get write-off category breakdown
             const writeOffCategories = await WriteOff.aggregate([
                 { $match: {} }, // Remove date filter to get all write-offs
                 {
@@ -916,7 +913,6 @@ export const getDiscrepancyAnalytics = async (req, res) => {
 
             categoryBreakdown = [...categoryBreakdown, ...writeOffCategories];
 
-            // Get write-off trends
             const writeOffTrends = await WriteOff.aggregate([
                 { $match: {} }, // Remove date filter to get all write-offs
                 {
@@ -936,7 +932,6 @@ export const getDiscrepancyAnalytics = async (req, res) => {
             trendsData = [...trendsData, ...writeOffTrends];
         }
 
-        // Get replacement requests data
         if (dataSource === 'replacements' || dataSource === 'combined') {
             const replacementData = await ReplacementRequest.aggregate([
                 { $match: { ...dateFilter, status: 'approved' } },
@@ -973,7 +968,6 @@ export const getDiscrepancyAnalytics = async (req, res) => {
                 totalCost += replacementData[0].totalCost || 0;
             }
 
-            // Get replacement category breakdown
             const replacementCategories = await ReplacementRequest.aggregate([
                 { $match: { ...dateFilter, status: 'approved' } },
                 {
@@ -1006,7 +1000,6 @@ export const getDiscrepancyAnalytics = async (req, res) => {
 
             categoryBreakdown = [...categoryBreakdown, ...replacementCategories];
 
-            // Get replacement trends
             const replacementTrends = await ReplacementRequest.aggregate([
                 { $match: { ...dateFilter, status: 'approved' } },
                 {
@@ -1044,14 +1037,12 @@ export const getDiscrepancyAnalytics = async (req, res) => {
             trendsData = [...trendsData, ...replacementTrends];
         }
 
-        // Sort and combine trends data by date
         trendsData.sort((a, b) => {
             const dateA = new Date(a._id.year, a._id.month - 1, a._id.day);
             const dateB = new Date(b._id.year, b._id.month - 1, b._id.day);
             return dateA - dateB;
         });
 
-        // Combine trends data by date (in case there are multiple entries for the same date)
         const combinedTrends = {};
         trendsData.forEach(trend => {
             const dateKey = `${trend._id.year}-${trend._id.month.toString().padStart(2, '0')}-${trend._id.day.toString().padStart(2, '0')}`;
@@ -1067,15 +1058,12 @@ export const getDiscrepancyAnalytics = async (req, res) => {
             }
         });
 
-        // Convert back to array and format for frontend
         const rawTrendsData = Object.values(combinedTrends).map(trend => ({
             date: `${trend._id.year}-${trend._id.month.toString().padStart(2, '0')}-${trend._id.day.toString().padStart(2, '0')}`,
             quantity: trend.quantity,
             cost: trend.cost
         }));
 
-        // Generate 7 days of data (including days with 0 values)
-        // Find the latest date from the actual data
         let latestDataDate = null;
         if (rawTrendsData.length > 0) {
             const dataDates = rawTrendsData.map(item => new Date(item.date));
@@ -1084,7 +1072,6 @@ export const getDiscrepancyAnalytics = async (req, res) => {
             latestDataDate = new Date(); // Use today if no data
         }
         
-        // Generate 7 days ending on the latest data date
         const sevenDaysAgo = new Date(latestDataDate.getTime() - 6 * 24 * 60 * 60 * 1000);
         
         trendsData = [];
@@ -1092,7 +1079,6 @@ export const getDiscrepancyAnalytics = async (req, res) => {
             const currentDate = new Date(sevenDaysAgo.getTime() + i * 24 * 60 * 60 * 1000);
             const dateString = currentDate.toISOString().split('T')[0]; // YYYY-MM-DD format
             
-            // Find data for this date
             const existingData = rawTrendsData.find(item => item.date === dateString);
             
             trendsData.push({
@@ -1103,7 +1089,6 @@ export const getDiscrepancyAnalytics = async (req, res) => {
         }
 
 
-        // Combine category data
         const combinedCategories = {};
         categoryBreakdown.forEach(item => {
             if (combinedCategories[item._id]) {
@@ -1163,7 +1148,6 @@ export const getDiscrepancyDetails = async (req, res) => {
         } = req.query;
         
 
-        // Calculate date range
         let dateFilter = {};
         const now = new Date();
         

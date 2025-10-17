@@ -264,7 +264,6 @@ export const getAllNotifications = async (req, res) => {
 
         const totalNotifications = await Notification.countDocuments(filter);
 
-        // Get overall statistics
         const stats = await Notification.getStats();
 
         res.status(200).json({
@@ -313,7 +312,6 @@ export const createNotification = async (req, res) => {
             actionUrl = null
         } = req.body;
 
-        // Validate required fields
         if (!recipientId || !type || !category || !subcategory || !title || !message) {
             return res.status(400).json({
                 success: false,
@@ -321,7 +319,6 @@ export const createNotification = async (req, res) => {
             });
         }
 
-        // Verify recipient exists
         const recipient = await User.findById(recipientId);
         if (!recipient) {
             return res.status(404).json({
@@ -330,7 +327,6 @@ export const createNotification = async (req, res) => {
             });
         }
 
-        // Create notification
         const notification = await Notification.createNotification({
             recipient: recipientId,
             type,
@@ -345,10 +341,8 @@ export const createNotification = async (req, res) => {
             actionUrl
         });
 
-        // Populate recipient info
         await notification.populate('recipient', 'name email role');
 
-        // Emit real-time notification
         socketService.emitToUser(recipientId.toString(), 'new_notification', {
             notification
         });
@@ -391,7 +385,6 @@ export const createBulkNotifications = async (req, res) => {
             try {
                 const notificationData = notifications[i];
                 
-                // Validate required fields
                 if (!notificationData.recipientId || !notificationData.type || 
                     !notificationData.category || !notificationData.subcategory || 
                     !notificationData.title || !notificationData.message) {
@@ -402,7 +395,6 @@ export const createBulkNotifications = async (req, res) => {
                     continue;
                 }
 
-                // Verify recipient exists
                 const recipient = await User.findById(notificationData.recipientId);
                 if (!recipient) {
                     errors.push({
@@ -412,7 +404,6 @@ export const createBulkNotifications = async (req, res) => {
                     continue;
                 }
 
-                // Create notification
                 const notification = await Notification.createNotification({
                     recipient: notificationData.recipientId,
                     type: notificationData.type,
@@ -430,7 +421,6 @@ export const createBulkNotifications = async (req, res) => {
                 await notification.populate('recipient', 'name email role');
                 createdNotifications.push(notification);
 
-                // Emit real-time notification
                 socketService.emitToUser(notificationData.recipientId.toString(), 'new_notification', {
                     notification
                 });

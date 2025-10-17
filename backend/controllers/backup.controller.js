@@ -345,7 +345,6 @@ export const executeRestore = async (req, res) => {
       restoreResults.products = backupData.data.products.length;
     }
 
-    // Restore Orders
     if (backupData.data.orders && backupData.data.orders.length > 0) {
       console.log(`📋 Restoring ${backupData.data.orders.length} orders...`);
       await Order.deleteMany({});
@@ -353,7 +352,6 @@ export const executeRestore = async (req, res) => {
       restoreResults.orders = backupData.data.orders.length;
     }
 
-    // Restore Users
     if (backupData.data.users && backupData.data.users.length > 0) {
       console.log(`👥 Restoring ${backupData.data.users.length} users...`);
       await User.deleteMany({});
@@ -361,7 +359,6 @@ export const executeRestore = async (req, res) => {
       restoreResults.users = backupData.data.users.length;
     }
 
-    // Restore Reviews
     if (backupData.data.reviews && backupData.data.reviews.length > 0) {
       console.log(`⭐ Restoring ${backupData.data.reviews.length} reviews...`);
       await Review.deleteMany({});
@@ -369,7 +366,6 @@ export const executeRestore = async (req, res) => {
       restoreResults.reviews = backupData.data.reviews.length;
     }
 
-    // Restore Transactions
     if (backupData.data.transactions && backupData.data.transactions.length > 0) {
       console.log(`💳 Restoring ${backupData.data.transactions.length} transactions...`);
       await Transaction.deleteMany({});
@@ -377,7 +373,6 @@ export const executeRestore = async (req, res) => {
       restoreResults.transactions = backupData.data.transactions.length;
     }
 
-    // Restore Coupons
     if (backupData.data.coupons && backupData.data.coupons.length > 0) {
       console.log(`🎫 Restoring ${backupData.data.coupons.length} coupons...`);
       await Coupon.deleteMany({});
@@ -385,7 +380,6 @@ export const executeRestore = async (req, res) => {
       restoreResults.coupons = backupData.data.coupons.length;
     }
 
-    // Restore Notifications
     if (backupData.data.notifications && backupData.data.notifications.length > 0) {
       console.log(`🔔 Restoring ${backupData.data.notifications.length} notifications...`);
       await Notification.deleteMany({});
@@ -393,7 +387,6 @@ export const executeRestore = async (req, res) => {
       restoreResults.notifications = backupData.data.notifications.length;
     }
 
-    // Restore Activity Logs
     if (backupData.data.activityLogs && backupData.data.activityLogs.length > 0) {
       console.log(`📊 Restoring ${backupData.data.activityLogs.length} activity logs...`);
       await ActivityLog.deleteMany({});
@@ -401,7 +394,6 @@ export const executeRestore = async (req, res) => {
       restoreResults.activityLogs = backupData.data.activityLogs.length;
     }
 
-    // Restore Replacement Requests
     if (backupData.data.replacementRequests && backupData.data.replacementRequests.length > 0) {
       console.log(`🔄 Restoring ${backupData.data.replacementRequests.length} replacement requests...`);
       await ReplacementRequest.deleteMany({});
@@ -409,7 +401,6 @@ export const executeRestore = async (req, res) => {
       restoreResults.replacementRequests = backupData.data.replacementRequests.length;
     }
 
-    // Restore Chats
     if (backupData.data.chats && backupData.data.chats.length > 0) {
       console.log(`💬 Restoring ${backupData.data.chats.length} chats...`);
       await Chat.deleteMany({});
@@ -417,7 +408,6 @@ export const executeRestore = async (req, res) => {
       restoreResults.chats = backupData.data.chats.length;
     }
 
-    // Restore Messages
     if (backupData.data.messages && backupData.data.messages.length > 0) {
       console.log(`📨 Restoring ${backupData.data.messages.length} messages...`);
       await Message.deleteMany({});
@@ -425,7 +415,6 @@ export const executeRestore = async (req, res) => {
       restoreResults.messages = backupData.data.messages.length;
     }
 
-    // Restore FAQs
     if (backupData.data.faqs && backupData.data.faqs.length > 0) {
       console.log(`❓ Restoring ${backupData.data.faqs.length} FAQs...`);
       await FAQ.deleteMany({});
@@ -433,7 +422,6 @@ export const executeRestore = async (req, res) => {
       restoreResults.faqs = backupData.data.faqs.length;
     }
 
-    // Restore Write-offs
     if (backupData.data.writeOffs && backupData.data.writeOffs.length > 0) {
       console.log(`📝 Restoring ${backupData.data.writeOffs.length} write-offs...`);
       await WriteOff.deleteMany({});
@@ -460,11 +448,8 @@ export const executeRestore = async (req, res) => {
   }
 };
 
-// Upload and validate backup file
 export const uploadRestore = async (req, res) => {
   try {
-    // This would typically handle file upload via multer
-    // For now, we'll expect the backup data in the request body
     const { backupData } = req.body;
     
     if (!backupData) {
@@ -474,7 +459,6 @@ export const uploadRestore = async (req, res) => {
       });
     }
 
-    // Validate backup structure
     if (!backupData.metadata || !backupData.data) {
       return res.status(400).json({
         success: false,
@@ -482,7 +466,6 @@ export const uploadRestore = async (req, res) => {
       });
     }
 
-    // Validate required collections
     const requiredCollections = [
       'products', 'orders', 'users', 'reviews', 'transactions', 
       'coupons', 'notifications', 'activityLogs', 'replacementRequests', 
@@ -519,7 +502,6 @@ export const uploadRestore = async (req, res) => {
   }
 };
 
-// Enhanced backup validation
 export const validateBackup = async (req, res) => {
   try {
     const { backupData } = req.body;

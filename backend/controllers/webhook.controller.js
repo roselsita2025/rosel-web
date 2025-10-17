@@ -216,10 +216,8 @@ const handleOrderStatusChanged = async (webhookData) => {
         
         console.log(`✅ Updated order ${order._id} status to ${mappedStatus}`);
         
-        // Notifications
         try {
             if (mappedStatus === 'failed') {
-                // customer notification: delivery rejected
                 await notificationService.createNotification({
                     recipientId: order.user.toString(),
                     type: 'order_notification',
