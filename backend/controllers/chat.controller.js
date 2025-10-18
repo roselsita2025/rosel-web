@@ -310,7 +310,7 @@ export const sendMessage = async (req, res) => {
                         await botResponse.save();
                         await botResponse.populate('sender', 'name email role');
 
- with bot response
+                        // with bot response
                         chat.lastMessage = botResponse._id;
                         chat.lastMessageAt = botResponse.createdAt;
                         await chat.save();
@@ -486,7 +486,7 @@ export const endChat = async (req, res) => {
         chat.updatedAt = new Date();
         await chat.save();
 
- to notify that chat has ended
+        // to notify that chat has ended
         const endMessage = new Message({
             messageId: uuidv4(),
             chat: chat._id,
@@ -498,7 +498,7 @@ export const endChat = async (req, res) => {
 
         await endMessage.save();
 
- with last message
+        // with last message
         chat.lastMessage = endMessage._id;
         chat.lastMessageAt = endMessage.createdAt;
         await chat.save();

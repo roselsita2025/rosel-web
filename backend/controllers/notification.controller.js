@@ -501,7 +501,7 @@ export const getNotificationSummary = async (req, res) => {
         .sort({ createdAt: -1 })
         .limit(parseInt(limit));
 
- by category
+        // by category
         const categoryCounts = await Notification.aggregate([
             { $match: { recipient: userId, isRead: false } },
             {
