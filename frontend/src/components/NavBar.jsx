@@ -7,7 +7,7 @@ import NotificationBell from "./NotificationBell.jsx";
 import { useSidebar } from "../contexts/SidebarContext.jsx";
 
 
-import { PlusCircle, ShoppingBasket, LayoutDashboard, Package, RefreshCw, MessageCircle, Ticket, CreditCard, ClipboardList, Database, AlertTriangle } from "lucide-react";
+import { PlusCircle, ShoppingBasket, LayoutDashboard, Package, RefreshCw, MessageCircle, Ticket, CreditCard, ClipboardList, Database, AlertTriangle, BarChart3 } from "lucide-react";
 import { productStore } from "../store/productStore.js";
 import { useAdminOrderStore } from "../store/adminOrderStore.js";
 import { useReplacementRequestStore } from "../store/replacementRequestStore.js";
@@ -233,164 +233,182 @@ const Navbar = () => {
 							</button>
 						</div>
 					</div>
-					<nav className="flex-1 flex flex-col px-2 py-4 gap-1 bg-[#f8f3ed]">
-						<Link
-							to="/dashboard"
-							className={`flex items-center rounded-md font-medium transition-colors duration-200 bg-transparent text-[#030105] hover:bg-[#860809] hover:text-white font-alice ${
-								isSidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-2'
-							}`}
-							title={isSidebarCollapsed ? "Dashboard" : ""}
-						>
-							<LayoutDashboard className={`h-5 w-5 ${!isSidebarCollapsed ? 'mr-3' : ''}`} />
-							{!isSidebarCollapsed && "Dashboard"}
-						</Link>
-						<Link
-							to="/discrepancy-report"
-							className={`flex items-center rounded-md font-medium transition-colors duration-200 bg-transparent text-[#030105] hover:bg-[#860809] hover:text-white font-alice ${
-								isSidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-2'
-							}`}
-							title={isSidebarCollapsed ? "Discrepancy Report" : ""}
-						>
-							<AlertTriangle className={`h-5 w-5 ${!isSidebarCollapsed ? 'mr-3' : ''}`} />
-							{!isSidebarCollapsed && "Discrepancy Report"}
-						</Link>
-						<Link
-							to="/manage-products"
-							className={`flex items-center rounded-md font-medium transition-colors duration-200 bg-transparent text-[#030105] hover:bg-[#860809] hover:text-white font-alice ${
-								isSidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-2'
-							}`}
-							title={isSidebarCollapsed ? "Manage Products" : ""}
-						>
-							<Package className={`h-5 w-5 ${!isSidebarCollapsed ? 'mr-3' : ''}`} />
-							{!isSidebarCollapsed && "Manage Products"}
-						</Link>
-						<Link
-							to="/pos"
-							className={`flex items-center rounded-md font-medium transition-colors duration-200 bg-transparent text-[#030105] hover:bg-[#860809] hover:text-white font-alice ${
-								isSidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-2'
-							}`}
-							title={isSidebarCollapsed ? "Point of Sale" : ""}
-						>
-							<CreditCard className={`h-5 w-5 ${!isSidebarCollapsed ? 'mr-3' : ''}`} />
-							{!isSidebarCollapsed && "Point of Sale"}
-						</Link>
-						<Link
-							to="/coupons"
-							className={`flex items-center rounded-md font-medium transition-colors duration-200 bg-transparent text-[#030105] hover:bg-[#860809] hover:text-white font-alice ${
-								isSidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-2'
-							}`}
-							title={isSidebarCollapsed ? "Manage Coupons" : ""}
-						>
-							<Ticket className={`h-5 w-5 ${!isSidebarCollapsed ? 'mr-3' : ''}`} />
-							{!isSidebarCollapsed && "Manage Coupons"}
-						</Link>
-						<Link
-							to="/order-management"
-							className={`flex items-center rounded-md font-medium transition-colors duration-200 bg-transparent text-[#030105] hover:bg-[#860809] hover:text-white font-alice ${
-								isSidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-2'
-							}`}
-							title={isSidebarCollapsed ? "Order Management" : ""}
-						>
-							{isSidebarCollapsed ? (
-								// When sidebar is collapsed, show badge beside icon
-								<div className="relative">
-									<ClipboardList className="h-5 w-5" />
-									{pendingOrdersCount > 0 && (
-										<span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
-											{pendingOrdersCount > 99 ? '99+' : pendingOrdersCount}
-										</span>
-									)}
-								</div>
-							) : (
-								// When sidebar is open, show badge beside text only
-								<>
-									<ClipboardList className="h-5 w-5 mr-3" />
-									<div className="flex items-center justify-between w-full">
-										<span>Order Management</span>
-										{pendingOrdersCount > 0 && (
-											<span className="bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
-												{pendingOrdersCount > 99 ? '99+' : pendingOrdersCount}
-											</span>
-										)}
-									</div>
-								</>
-							)}
-						</Link>
-						<Link
-							to="/admin/replacement-requests"
-							className={`flex items-center rounded-md font-medium transition-colors duration-200 bg-transparent text-[#030105] hover:bg-[#860809] hover:text-white font-alice ${
-								isSidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-2'
-							}`}
-							title={isSidebarCollapsed ? "Replacement Requests" : ""}
-						>
-							{isSidebarCollapsed ? (
-								// When sidebar is collapsed, show badge beside icon
-								<div className="relative">
-									<RefreshCw className="h-5 w-5" />
-									{pendingRequestsCount > 0 && (
-										<span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
-											{pendingRequestsCount > 99 ? '99+' : pendingRequestsCount}
-										</span>
-									)}
-								</div>
-							) : (
-								// When sidebar is open, show badge beside text only
-								<>
-									<RefreshCw className="h-5 w-5 mr-3" />
-									<div className="flex items-center justify-between w-full">
-										<span>Replacement Requests</span>
-										{pendingRequestsCount > 0 && (
-											<span className="bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
-												{pendingRequestsCount > 99 ? '99+' : pendingRequestsCount}
-											</span>
-										)}
-									</div>
-								</>
-							)}
-						</Link>
-						<Link
-							to="/admin/chat-management"
-							className={`flex items-center rounded-md font-medium transition-colors duration-200 bg-transparent text-[#030105] hover:bg-[#860809] hover:text-white font-alice ${
-								isSidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-2'
-							}`}
-							title={isSidebarCollapsed ? "Chat Management" : ""}
-						>
-							{isSidebarCollapsed ? (
-								// When sidebar is collapsed, show badge beside icon
-								<div className="relative">
-									<MessageCircle className="h-5 w-5" />
-									{pendingChatsCount > 0 && (
-										<span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
-											{pendingChatsCount > 99 ? '99+' : pendingChatsCount}
-										</span>
-									)}
-								</div>
-							) : (
-								// When sidebar is open, show badge beside text only
-								<>
-									<MessageCircle className="h-5 w-5 mr-3" />
-									<div className="flex items-center justify-between w-full">
-										<span>Chat Management</span>
-										{pendingChatsCount > 0 && (
-											<span className="bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
-												{pendingChatsCount > 99 ? '99+' : pendingChatsCount}
-											</span>
-										)}
-									</div>
-								</>
-							)}
-						</Link>
-						<Link
-							to="/admin/backup-restore"
-							className={`flex items-center rounded-md font-medium transition-colors duration-200 bg-transparent text-[#030105] hover:bg-[#860809] hover:text-white font-alice ${
-								isSidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-2'
-							}`}
-							title={isSidebarCollapsed ? "Backup & Restore" : ""}
-						>
-							<Database className={`h-5 w-5 ${!isSidebarCollapsed ? 'mr-3' : ''}`} />
-							{!isSidebarCollapsed && "Backup & Restore"}
-						</Link>
-					</nav>
+                    <nav className="flex-1 flex flex-col px-2 py-4 gap-1 bg-[#f8f3ed]">
+                        {/* Dashboard */}
+                        <Link
+                            to="/dashboard"
+                            className={`flex items-center rounded-md font-medium transition-colors duration-200 bg-transparent text-[#030105] hover:bg-[#860809] hover:text-white font-alice ${
+                                isSidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-2'
+                            }`}
+                            title={isSidebarCollapsed ? "Dashboard" : ""}
+                        >
+                            <LayoutDashboard className={`h-5 w-5 ${!isSidebarCollapsed ? 'mr-3' : ''}`} />
+                            {!isSidebarCollapsed && "Dashboard"}
+                        </Link>
+
+                        {/* Sales Group */}
+                        {!isSidebarCollapsed && (
+                            <div className="mt-3 mb-1 px-4 text-sm font-bold text-[#860809] font-libre">Sales</div>
+                        )}
+                        <Link
+                            to="/pos"
+                            className={`flex items-center rounded-md font-medium transition-colors duration-200 bg-transparent text-[#030105] hover:bg-[#860809] hover:text-white font-alice ${
+                                isSidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-2'
+                            }`}
+                            title={isSidebarCollapsed ? "Point of Sale" : ""}
+                        >
+                            <CreditCard className={`h-5 w-5 ${!isSidebarCollapsed ? 'mr-3' : ''}`} />
+                            {!isSidebarCollapsed && "Point of Sale"}
+                        </Link>
+                        <Link
+                            to="/order-management"
+                            className={`flex items-center rounded-md font-medium transition-colors duration-200 bg-transparent text-[#030105] hover:bg-[#860809] hover:text-white font-alice ${
+                                isSidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-2'
+                            }`}
+                            title={isSidebarCollapsed ? "Order Management" : ""}
+                        >
+                            {isSidebarCollapsed ? (
+                                <div className="relative">
+                                    <ClipboardList className="h-5 w-5" />
+                                    {pendingOrdersCount > 0 && (
+                                        <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">{pendingOrdersCount > 99 ? '99+' : pendingOrdersCount}</span>
+                                    )}
+                                </div>
+                            ) : (
+                                <>
+                                    <ClipboardList className="h-5 w-5 mr-3" />
+                                    <div className="flex items-center justify-between w-full">
+                                        <span>Order Management</span>
+                                        {pendingOrdersCount > 0 && (
+                                            <span className="bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">{pendingOrdersCount > 99 ? '99+' : pendingOrdersCount}</span>
+                                        )}
+                                    </div>
+                                </>
+                            )}
+                        </Link>
+                        <Link
+                            to="/admin/replacement-requests"
+                            className={`flex items-center rounded-md font-medium transition-colors duration-200 bg-transparent text-[#030105] hover:bg-[#860809] hover:text-white font-alice ${
+                                isSidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-2'
+                            }`}
+                            title={isSidebarCollapsed ? "Replacement Requests" : ""}
+                        >
+                            {isSidebarCollapsed ? (
+                                <div className="relative">
+                                    <RefreshCw className="h-5 w-5" />
+                                    {pendingRequestsCount > 0 && (
+                                        <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">{pendingRequestsCount > 99 ? '99+' : pendingRequestsCount}</span>
+                                    )}
+                                </div>
+                            ) : (
+                                <>
+                                    <RefreshCw className="h-5 w-5 mr-3" />
+                                    <div className="flex items-center justify-between w-full">
+                                        <span>Replacement Requests</span>
+                                        {pendingRequestsCount > 0 && (
+                                            <span className="bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">{pendingRequestsCount > 99 ? '99+' : pendingRequestsCount}</span>
+                                        )}
+                                    </div>
+                                </>
+                            )}
+                        </Link>
+
+                        {/* Products Group */}
+                        {!isSidebarCollapsed && (
+                            <div className="mt-3 mb-1 px-4 text-sm font-bold text-[#860809] font-libre">Products</div>
+                        )}
+                        <Link
+                            to="/manage-products"
+                            className={`flex items-center rounded-md font-medium transition-colors duration-200 bg-transparent text-[#030105] hover:bg-[#860809] hover:text-white font-alice ${
+                                isSidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-2'
+                            }`}
+                            title={isSidebarCollapsed ? "Manage Products" : ""}
+                        >
+                            <Package className={`h-5 w-5 ${!isSidebarCollapsed ? 'mr-3' : ''}`} />
+                            {!isSidebarCollapsed && "Manage Products"}
+                        </Link>
+                        <Link
+                            to="/coupons"
+                            className={`flex items-center rounded-md font-medium transition-colors duration-200 bg-transparent text-[#030105] hover:bg-[#860809] hover:text-white font-alice ${
+                                isSidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-2'
+                            }`}
+                            title={isSidebarCollapsed ? "Manage Coupons" : ""}
+                        >
+                            <Ticket className={`h-5 w-5 ${!isSidebarCollapsed ? 'mr-3' : ''}`} />
+                            {!isSidebarCollapsed && "Manage Coupons"}
+                        </Link>
+
+                        {/* Reports Group */}
+                        {!isSidebarCollapsed && (
+                            <div className="mt-3 mb-1 px-4 text-sm font-bold text-[#860809] font-libre">Reports</div>
+                        )}
+                        <Link
+                            to="/admin/sales-report"
+                            className={`flex items-center rounded-md font-medium transition-colors duration-200 bg-transparent text-[#030105] hover:bg-[#860809] hover:text-white font-alice ${
+                                isSidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-2'
+                            }`}
+                            title={isSidebarCollapsed ? "Sales Report" : ""}
+                        >
+                            <BarChart3 className={`h-5 w-5 ${!isSidebarCollapsed ? 'mr-3' : ''}`} />
+                            {!isSidebarCollapsed && "Sales Report"}
+                        </Link>
+                        <Link
+                            to="/discrepancy-report"
+                            className={`flex items-center rounded-md font-medium transition-colors duration-200 bg-transparent text-[#030105] hover:bg-[#860809] hover:text-white font-alice ${
+                                isSidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-2'
+                            }`}
+                            title={isSidebarCollapsed ? "Discrepancy Report" : ""}
+                        >
+                            <AlertTriangle className={`h-5 w-5 ${!isSidebarCollapsed ? 'mr-3' : ''}`} />
+                            {!isSidebarCollapsed && "Discrepancy Report"}
+                        </Link>
+
+                        {/* Support Group */}
+                        {!isSidebarCollapsed && (
+                            <div className="mt-3 mb-1 px-4 text-sm font-bold text-[#860809] font-libre">Support</div>
+                        )}
+                        <Link
+                            to="/admin/chat-management"
+                            className={`flex items-center rounded-md font-medium transition-colors duration-200 bg-transparent text-[#030105] hover:bg-[#860809] hover:text-white font-alice ${
+                                isSidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-2'
+                            }`}
+                            title={isSidebarCollapsed ? "Chat Management" : ""}
+                        >
+                            {isSidebarCollapsed ? (
+                                <div className="relative">
+                                    <MessageCircle className="h-5 w-5" />
+                                    {pendingChatsCount > 0 && (
+                                        <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">{pendingChatsCount > 99 ? '99+' : pendingChatsCount}</span>
+                                    )}
+                                </div>
+                            ) : (
+                                <>
+                                    <MessageCircle className="h-5 w-5 mr-3" />
+                                    <div className="flex items-center justify-between w-full">
+                                        <span>Chat Management</span>
+                                        {pendingChatsCount > 0 && (
+                                            <span className="bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">{pendingChatsCount > 99 ? '99+' : pendingChatsCount}</span>
+                                        )}
+                                    </div>
+                                </>
+                            )}
+                        </Link>
+
+                        {/* System Group */}
+                        {!isSidebarCollapsed && (
+                            <div className="mt-3 mb-1 px-4 text-sm font-bold text-[#860809] font-libre">System</div>
+                        )}
+                        <Link
+                            to="/admin/backup-restore"
+                            className={`flex items-center rounded-md font-medium transition-colors duration-200 bg-transparent text-[#030105] hover:bg-[#860809] hover:text-white font-alice ${
+                                isSidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-2'
+                            }`}
+                            title={isSidebarCollapsed ? "Backup & Restore" : ""}
+                        >
+                            <Database className={`h-5 w-5 ${!isSidebarCollapsed ? 'mr-3' : ''}`} />
+                            {!isSidebarCollapsed && "Backup & Restore"}
+                        </Link>
+                    </nav>
 				</aside>
 
 				{/* Topbar for admin */}
@@ -468,11 +486,11 @@ const Navbar = () => {
 						></div>
 						
 						{/* Sidebar */}
-						<div className={`fixed top-0 left-0 h-full w-64 bg-[#f8f3ed] shadow-lg transform transition-transform duration-300 ${
+						<div className={`fixed top-0 left-0 h-full w-64 sm:w-72 max-w-[85vw] bg-[#f8f3ed] shadow-lg transform transition-transform duration-300 ${
 							isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
 						}`}> 
 								<div className="flex items-center justify-between px-4 py-4 border-b border-[#860809]">
-									<span className="text-lg font-bold text-[#860809] font-libre">ROSEL FROZEN MEATS</span>
+									<span className="text-base sm:text-lg font-bold text-[#860809] font-libre">ROSEL FROZEN MEATS</span>
 								<button
 									onClick={() => setIsMobileMenuOpen(false)}
 										className="p-2 rounded hover:bg-[#fffefc] transition"
@@ -513,7 +531,7 @@ const Navbar = () => {
 								{user && !isAdmin && (
 									<Link
 										to={"/replacement-requests"}
-										className='text-[#901414] font-semibold hover:text-[#810e0e] transition duration-300 ease-in-out py-2 px-3 rounded hover:bg-[#f7e9b8]'
+										className='text-[#901414] font-semibold hover:text-[#810e0e] transition duration-300 ease-in-out py-2 px-3 rounded hover:bg-[#f7e9b8] font-alice'
 										onClick={() => setIsMobileMenuOpen(false)}
 									>
 										Replacement Requests
@@ -535,6 +553,10 @@ const Navbar = () => {
 									>
 										{isMobileMenuOpen ? <X className={isAtTop ? "text-white" : "text-[#901414]"} size={isAtTop ? 20 : 20} /> : <Menu className={isAtTop ? "text-white" : "text-[#901414]"} size={isAtTop ? 20 : 20} />}
 									</button>
+									{/* Mobile logo - visible only on mobile/tablet */}
+									<Link to='/welcome' className='xl:hidden flex items-center'>
+										<img src="/rosellogo.png" alt="Rosel Logo" className={isAtTop ? "h-7 w-11 sm:h-8 sm:w-12" : "h-8 w-12 sm:h-9 sm:w-14"} />
+									</Link>
 									{/* Show logo and brand text only on desktop for customer/guest users */}
 									<Link to='/welcome' className={`hidden xl:flex ${isAtTop ? 'text-lg sm:text-xl lg:text-2xl' : 'text-lg sm:text-xl lg:text-2xl'} font-bold ${isAtTop ? 'text-white' : 'text-[#901414]'} items-center space-x-2 font-nexa`}>
 										<img src="/rosellogo.png" alt="Rosel Logo" className={isAtTop ? "h-7 w-11 sm:h-9 sm:w-14" : "h-8 w-12 sm:h-10 sm:w-16"} />
@@ -543,37 +565,37 @@ const Navbar = () => {
 								</div>
 
 								{/* Desktop Navigation */}
-								<nav className='hidden xl:flex flex-wrap items-center [&>*]:mx-5 gap-4 justify-center flex-grow '>
+								<nav className='hidden xl:flex flex-wrap items-center gap-8 justify-center flex-grow '>
 									<Link
 												to={"/welcome"}
-												className={`${isAtTop ? 'text-base' : 'text-base'} ${isAtTop ? 'text-white hover:text-white/80' : 'text-[#901414] hover:text-[#810e0e]'} font-semibold transition duration-300 ease-in-out hover:underline hover:underline-offset-8 ${isAtTop ? 'hover:decoration-white/80' : 'hover:decoration-[#810e0e]'} font-alice`}
+												className={`text-base ${isAtTop ? 'text-white hover:text-white/80' : 'text-[#901414] hover:text-[#810e0e]'} font-semibold transition duration-300 ease-in-out hover:underline hover:underline-offset-8 ${isAtTop ? 'hover:decoration-white/80' : 'hover:decoration-[#810e0e]'} font-alice`}
 											>
 												Home
 											</Link>
 
 									<Link
-												to={"/products"} //Add Shop page later
-												className={`${isAtTop ? 'text-base' : 'text-base'} ${isAtTop ? 'text-white hover:text-white/80' : 'text-[#901414] hover:text-[#810e0e]'} font-semibold transition duration-300 ease-in-out hover:underline hover:underline-offset-8 ${isAtTop ? 'hover:decoration-white/80' : 'hover:decoration-[#810e0e]'} font-alice`}
+												to={"/products"}
+												className={`text-base ${isAtTop ? 'text-white hover:text-white/80' : 'text-[#901414] hover:text-[#810e0e]'} font-semibold transition duration-300 ease-in-out hover:underline hover:underline-offset-8 ${isAtTop ? 'hover:decoration-white/80' : 'hover:decoration-[#810e0e]'} font-alice`}
 											>
 												Products
 											</Link>
 
 									<Link
-												to={"/about"} //Add About page later
-												className={`${isAtTop ? 'text-base' : 'text-base'} ${isAtTop ? 'text-white hover:text-white/80' : 'text-[#901414] hover:text-[#810e0e]'} font-semibold transition duration-300 ease-in-out hover:underline hover:underline-offset-8 ${isAtTop ? 'hover:decoration-white/80' : 'hover:decoration-[#810e0e]'} font-alice`}
+												to={"/about"}
+												className={`text-base ${isAtTop ? 'text-white hover:text-white/80' : 'text-[#901414] hover:text-[#810e0e]'} font-semibold transition duration-300 ease-in-out hover:underline hover:underline-offset-8 ${isAtTop ? 'hover:decoration-white/80' : 'hover:decoration-[#810e0e]'} font-alice`}
 											>
 												About
 											</Link>
 									
 									<Link
-												to={"/contactus"} //Add Contact page later
-												className={`${isAtTop ? 'text-base' : 'text-base'} ${isAtTop ? 'text-white hover:text-white/80' : 'text-[#901414] hover:text-[#810e0e]'} font-semibold transition duration-300 ease-in-out hover:underline hover:underline-offset-8 ${isAtTop ? 'hover:decoration-white/80' : 'hover:decoration-[#810e0e]'} font-alice`}
+												to={"/contactus"}
+												className={`text-base ${isAtTop ? 'text-white hover:text-white/80' : 'text-[#901414] hover:text-[#810e0e]'} font-semibold transition duration-300 ease-in-out hover:underline hover:underline-offset-8 ${isAtTop ? 'hover:decoration-white/80' : 'hover:decoration-[#810e0e]'} font-alice`}
 											>
 												Contact
 											</Link>
 								</nav>
 
-								<div className='flex items-center gap-1 sm:gap-2 lg:gap-6'>
+								<div className='flex items-center gap-2 sm:gap-3 lg:gap-6'>
 									{!isAdmin && (
 										<div className='relative' ref={suggestionsRef}>
 											{!isSearchVisible ? (
@@ -585,7 +607,7 @@ const Navbar = () => {
 													<Search size={isAtTop ? 20 : 20} />
 												</button>
 											) : (
-												<div className='w-48 sm:w-64 lg:w-72'>
+												<div className='w-40 sm:w-64 lg:w-72'>
 											<form onSubmit={handleSearchSubmit}>
 												<input
 													type='text'
@@ -597,7 +619,7 @@ const Navbar = () => {
 												/>
 											</form>
 											{showSuggestions && suggestions?.length > 0 && (
-												<div className='absolute mt-2 w-full bg-white border border-[#f7e9b8] rounded-md shadow-lg z-50 max-h-64 overflow-auto'>
+												<div className='absolute right-0 mt-2 w-full bg-white border border-[#f7e9b8] rounded-md shadow-lg z-50 max-h-64 overflow-auto'>
 													{suggestions.map((s) => (
 														<button
 															key={s._id}
@@ -606,7 +628,7 @@ const Navbar = () => {
 														>
 															<img src={s.image} alt={s.name} className='w-8 h-8 object-cover rounded' />
 															<span className='text-sm text-[#030105]'>{s.name}</span>
-															<span className='ml-auto text-xs text-[#860809]'>₱{s.price}</span>
+															<span className='ml-auto text-xs text-[#860809]'>₱{(s.priceMin || s.price || 0).toFixed(2)}</span>
 														</button>
 													))}
 													<button onClick={handleSearchSubmit} className='w-full text-center px-3 py-2 text-[#860809] font-medium border-t border-[#f7e9b8]'>See all results</button>
@@ -628,7 +650,7 @@ const Navbar = () => {
 										</span>
 										{cart.length > 0 && (
 											<span
-												className={`absolute -top-2 -left-2 ${isAtTop ? 'bg-white text-[#901414] group-hover:bg-white/90' : 'bg-[#901414] text-white group-hover:bg-[#a31f17]'} rounded-full px-2 py-0.5 text-xs transition duration-300 ease-in-out`}
+												className={`absolute -top-2 -right-2 ${isAtTop ? 'bg-white text-[#901414] group-hover:bg-white/90' : 'bg-[#901414] text-white group-hover:bg-[#a31f17]'} rounded-full px-2 py-0.5 text-xs transition duration-300 ease-in-out`}
 											>
 												{cart.length}
 											</span>
@@ -655,14 +677,14 @@ const Navbar = () => {
 											aria-expanded={isProfileMenuOpen}
 										>
 											{user && (user.profileImageUrl || user.avatarUrl || user.profileImage || user.photoURL || user.photo) ? (
-												<img src={user.profileImageUrl || user.avatarUrl || user.profileImage || user.photoURL || user.photo} alt='Profile' className={`${isAtTop ? 'w-5 h-5 sm:w-6 sm:h-6' : 'w-5 h-5 sm:w-6 sm:h-6'} object-cover rounded-full`} />
+												<img src={user.profileImageUrl || user.avatarUrl || user.profileImage || user.photoURL || user.photo} alt='Profile' className='w-6 h-6 sm:w-8 sm:h-8 object-cover rounded-full' />
 											) : (
 												<User size={isAtTop ? 20 : 20} />
 											)}
 										</button>
 
 										{isProfileMenuOpen && (
-											<div className='absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50'>
+											<div className='absolute right-0 mt-2 w-64 max-w-[calc(100vw-2rem)] bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50'>
 												{user ? (
 													<>
 														<div className='px-4 py-3'>

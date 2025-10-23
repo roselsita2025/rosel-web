@@ -299,7 +299,7 @@ const POSHistoryPage = () => {
 
           <div class="totals">
             <div><strong>Subtotal:</strong> ${formatCurrency(transaction.payment.subtotal)}</div>
-            ${transaction.payment.tax > 0 ? `<div><strong>Tax (12%):</strong> ${formatCurrency(transaction.payment.tax)}</div>` : ''}
+            {/* Tax removed */}
             ${transaction.payment.discount > 0 ? `<div><strong>Discount:</strong> -${formatCurrency(transaction.payment.discount)}</div>` : ''}
             <div class="total"><strong>TOTAL:</strong> ${formatCurrency(transaction.payment.total)}</div>
           </div>
@@ -728,10 +728,7 @@ const POSHistoryPage = () => {
                       <span className="text-[#a31f17] font-alice">Subtotal:</span>
                       <span className="text-[#030105] font-libre">{formatCurrency(selectedTransaction.payment.subtotal)}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-[#a31f17] font-alice">Tax (12%):</span>
-                      <span className="text-[#030105] font-libre">{formatCurrency(selectedTransaction.payment.tax)}</span>
-                    </div>
+                    {/* Tax removed */}
                     {selectedTransaction.payment.discount > 0 && (
                       <div className="flex justify-between">
                         <span className="text-[#a31f17] font-alice">Discount:</span>

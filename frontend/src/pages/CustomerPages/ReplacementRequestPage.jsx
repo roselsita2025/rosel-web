@@ -76,27 +76,27 @@ const ReplacementRequestPage = () => {
     }
 
     return (
-        <div className="min-h-screen pt-32 pb-8 bg-[#f8f3ed]">
-            <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen pt-20 sm:pt-24 md:pt-28 lg:pt-32 pb-6 sm:pb-8 bg-[#f8f3ed]">
+            <div className="mx-auto max-w-4xl px-3 sm:px-4 md:px-6 lg:px-8">
                 {/* Header */}
                 <motion.div
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
-                    className="mb-8"
+                    className="mb-4 sm:mb-6 md:mb-8"
                 >
                     <Link
                         to="/replacement-requests"
-                        className="inline-flex items-center gap-2 text-sm font-medium transition-colors hover:opacity-80 mb-4"
+                        className="inline-flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-medium transition-colors hover:opacity-80 mb-3 sm:mb-4"
                         style={{ color: '#860809' }}
                     >
-                        <ArrowLeft size={16} />
+                        <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                         Back to Requests
                     </Link>
-                    <h1 className="text-3xl font-bold text-[#860809] font-libre">
+                    <h1 className="text-2xl sm:text-3xl font-bold text-[#860809] font-libre">
                         Request Product Replacement
                     </h1>
-                    <p className="text-[#030105] mt-2 font-alice">
+                    <p className="text-[#030105] mt-1.5 sm:mt-2 font-alice text-sm sm:text-base">
                         Select an order and product to request a replacement
                     </p>
                 </motion.div>
@@ -106,14 +106,14 @@ const ReplacementRequestPage = () => {
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6"
+                        className="bg-red-50 border border-red-200 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6"
                     >
                         <div className="flex items-center">
-                            <AlertCircle className="h-5 w-5 text-red-600 mr-2" />
-                            <p className="text-red-800">{error}</p>
+                            <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-red-600 mr-2 flex-shrink-0" />
+                            <p className="text-red-800 text-xs sm:text-sm flex-1">{error}</p>
                             <button
                                 onClick={clearError}
-                                className="ml-auto text-red-600 hover:text-red-800"
+                                className="ml-auto text-red-600 hover:text-red-800 text-lg sm:text-xl"
                             >
                                 ×
                             </button>
@@ -126,14 +126,14 @@ const ReplacementRequestPage = () => {
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6"
+                        className="bg-green-50 border border-green-200 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6"
                     >
                         <div className="flex items-center">
-                            <CheckCircle className="h-5 w-5 text-green-600 mr-2" />
-                            <p className="text-green-800">{message}</p>
+                            <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-600 mr-2 flex-shrink-0" />
+                            <p className="text-green-800 text-xs sm:text-sm flex-1">{message}</p>
                             <button
                                 onClick={clearMessage}
-                                className="ml-auto text-green-600 hover:text-green-800"
+                                className="ml-auto text-green-600 hover:text-green-800 text-lg sm:text-xl"
                             >
                                 ×
                             </button>
@@ -147,49 +147,49 @@ const ReplacementRequestPage = () => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.1 }}
-                        className="rounded-lg shadow-md p-6 bg-[#fffefc]"
+                        className="rounded-lg shadow-md p-4 sm:p-6 bg-[#fffefc]"
                     >
-                        <h2 className="text-xl font-semibold text-[#860809] mb-4 font-libre">
+                        <h2 className="text-lg sm:text-xl font-semibold text-[#860809] mb-3 sm:mb-4 font-libre">
                             Select an Order
                         </h2>
-                        <p className="text-[#a31f17] mb-6 font-libre">
+                        <p className="text-[#a31f17] mb-4 sm:mb-6 font-libre text-sm sm:text-base">
                             Choose an order to request a replacement for one of its products.
                         </p>
 
                         {orders.length === 0 ? (
-                            <div className="text-center py-8">
-                                <p className="text-[#a31f17] mb-4 font-libre">You don't have any orders yet.</p>
+                            <div className="text-center py-6 sm:py-8">
+                                <p className="text-[#a31f17] mb-3 sm:mb-4 font-libre text-sm sm:text-base">You don't have any orders yet.</p>
                                 <Link
                                     to="/products"
-                                    className="inline-flex items-center px-4 py-2 bg-[#860809] text-white rounded-md hover:bg-[#a31f17] transition-colors font-alice"
+                                    className="inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 bg-[#860809] text-white rounded-md hover:bg-[#a31f17] transition-colors font-alice text-xs sm:text-sm"
                                 >
                                     Start Shopping
                                 </Link>
                             </div>
                         ) : (
-                            <div className="space-y-4">
+                            <div className="space-y-3 sm:space-y-4">
                                 {orders.map((order) => (
                                     <motion.div
                                         key={order._id}
                                         initial={{ opacity: 0, y: 20 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         whileHover={{ y: -2 }}
-                                        className="border border-gray-300 rounded-lg p-4 hover:shadow-md transition-all cursor-pointer bg-[#fffefc]"
+                                        className="border border-gray-300 rounded-lg p-3 sm:p-4 hover:shadow-md transition-all cursor-pointer bg-[#fffefc]"
                                         onClick={() => handleOrderSelect(order)}
                                     >
-                                        <div className="flex items-center justify-between">
-                                            <div>
-                                                <h3 className="font-medium text-[#030105] font-alice">
+                                        <div className="flex items-center justify-between gap-2">
+                                            <div className="flex-1 min-w-0">
+                                                <h3 className="font-medium text-[#030105] font-alice text-sm sm:text-base">
                                                     Order #{order._id.slice(-8).toUpperCase()}
                                                 </h3>
-                                                <p className="text-sm text-[#a31f17] font-libre">
+                                                <p className="text-xs sm:text-sm text-[#a31f17] font-libre">
                                                     {new Date(order.createdAt).toLocaleDateString()} • ₱{order.totalAmount.toFixed(2)}
                                                 </p>
-                                                <p className="text-sm text-[#a31f17] font-libre">
+                                                <p className="text-xs sm:text-sm text-[#a31f17] font-libre">
                                                     {order.products.length} item{order.products.length !== 1 ? 's' : ''}
                                                 </p>
                                             </div>
-                                            <div className="text-gray-400">
+                                            <div className="text-gray-400 flex-shrink-0 text-lg sm:text-xl">
                                                 →
                                             </div>
                                         </div>
@@ -204,43 +204,43 @@ const ReplacementRequestPage = () => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.1 }}
-                        className="rounded-lg shadow-md p-6 bg-[#fffefc]"
+                        className="rounded-lg shadow-md p-4 sm:p-6 bg-[#fffefc]"
                     >
-                        <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-xl font-semibold text-[#860809] font-libre">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-3 sm:mb-4">
+                            <h2 className="text-lg sm:text-xl font-semibold text-[#860809] font-libre">
                                 Select a Product to Replace
                             </h2>
                             <button
                                 onClick={() => setIsOrderSelected(false)}
-                                className="text-sm text-[#a31f17] hover:text-[#860809] font-alice"
+                                className="text-xs sm:text-sm text-[#a31f17] hover:text-[#860809] font-alice whitespace-nowrap"
                             >
                                 Change Order
                             </button>
                         </div>
-                        <p className="text-[#a31f17] mb-6 font-libre">
+                        <p className="text-[#a31f17] mb-4 sm:mb-6 font-libre text-sm sm:text-base">
                             Choose which product from Order #{selectedOrder._id.slice(-8).toUpperCase()} you want to replace.
                         </p>
 
-                        <div className="space-y-4">
+                        <div className="space-y-3 sm:space-y-4">
                             {selectedOrder.products.map((item, index) => (
                                 <motion.div
                                     key={index}
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     whileHover={{ y: -2 }}
-                                    className="border border-gray-300 rounded-lg p-4 hover:shadow-md transition-all cursor-pointer bg-[#fffefc]"
+                                    className="border border-gray-300 rounded-lg p-3 sm:p-4 hover:shadow-md transition-all cursor-pointer bg-[#fffefc]"
                                     onClick={() => handleProductSelect(item.product)}
                                 >
-                                    <div className="flex items-center gap-4">
+                                    <div className="flex items-center gap-3 sm:gap-4">
                                         {item.product.image && (
                                             <img
                                                 src={item.product.image}
                                                 alt={item.product.name}
-                                                className="w-16 h-16 object-cover rounded"
+                                                className="w-14 h-14 sm:w-16 sm:h-16 object-cover rounded flex-shrink-0"
                                             />
                                         )}
-                                        <div className="flex-1">
-                                            <h3 className="font-medium text-[#030105] font-alice">
+                                        <div className="flex-1 min-w-0">
+                                            <h3 className="font-medium text-[#030105] font-alice text-sm sm:text-base">
                                                 {item.product.name}
                                                 {(() => {
                                                     // Try to get weight info from stored data first, then from product data
@@ -256,14 +256,14 @@ const ReplacementRequestPage = () => {
                                                     return '';
                                                 })()}
                                             </h3>
-                                            <p className="text-sm text-[#a31f17] font-libre">
+                                            <p className="text-xs sm:text-sm text-[#a31f17] font-libre">
                                                 Quantity: {item.quantity} • ₱{item.price.toFixed(2)} each
                                             </p>
-                                            <p className="text-sm text-[#a31f17] font-libre">
+                                            <p className="text-xs sm:text-sm text-[#a31f17] font-libre">
                                                 Total: ₱{(item.quantity * item.price).toFixed(2)}
                                             </p>
                                         </div>
-                                        <div className="text-gray-400">
+                                        <div className="text-gray-400 flex-shrink-0 text-lg sm:text-xl">
                                             →
                                         </div>
                                     </div>
@@ -278,10 +278,10 @@ const ReplacementRequestPage = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.1 }}
                     >
-                        <div className="mb-6">
+                        <div className="mb-4 sm:mb-6">
                             <button
                                 onClick={() => setSelectedProduct(null)}
-                                className="text-sm text-[#a31f17] hover:text-[#860809] mb-2 font-alice"
+                                className="text-xs sm:text-sm text-[#a31f17] hover:text-[#860809] mb-1.5 sm:mb-2 font-alice"
                             >
                                 ← Back to Product Selection
                             </button>

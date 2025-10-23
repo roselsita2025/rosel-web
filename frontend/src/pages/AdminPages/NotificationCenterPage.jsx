@@ -16,7 +16,10 @@ import {
     Trash2,
     CheckCheck,
     Plus,
-    Send
+    Send,
+    Volume2,
+    VolumeX,
+    Settings
 } from 'lucide-react';
 import { useNotificationStore } from '../../store/notificationStore.js';
 import { useAuthStore } from '../../store/authStore.js';
@@ -34,6 +37,8 @@ const AdminNotificationCenterPage = () => {
         error,
         message,
         isConnected,
+        soundEnabled,
+        soundVolume,
         fetchNotifications,
         initializeSocket,
         disconnectSocket,
@@ -47,13 +52,17 @@ const AdminNotificationCenterPage = () => {
         formatTimeAgo,
         getPriorityColor,
         getCategoryIcon,
-        getCategoryColor
+        getCategoryColor,
+        setSoundEnabled,
+        setSoundVolume,
+        playNotificationSound
     } = useNotificationStore();
 
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedNotifications, setSelectedNotifications] = useState([]);
     const [showFilters, setShowFilters] = useState(false);
     const [showCreateModal, setShowCreateModal] = useState(false);
+    const [showSettings, setShowSettings] = useState(false);
 
     // Initialize socket and fetch notifications on component mount
     useEffect(() => {
@@ -229,6 +238,13 @@ const AdminNotificationCenterPage = () => {
                         </div>
                         <div className="flex items-center space-x-3">
                             <button
+                                onClick={() => setShowSettings(!showSettings)}
+                                className="flex items-center space-x-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors font-alice"
+                                title="Notification Settings"
+                            >
+                                <Settings size={16} />
+                            </button>
+                            <button
                                 onClick={() => setShowCreateModal(true)}
                                 className="flex items-center space-x-2 px-4 py-2 bg-[#860809] text-white rounded-lg hover:bg-[#a31f17] transition-colors font-alice"
                             >
@@ -297,6 +313,78 @@ const AdminNotificationCenterPage = () => {
                         </div>
                     </div>
                 </div>
+
+                {/* Settings Panel */}
+                {showSettings && (
+                    <div className="bg-[#fffefc] rounded-lg shadow-md border border-gray-300 p-6 mb-6">
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-lg font-semibold text-[#860809] font-libre">Notification Settings</h2>
+                            <button
+                                onClick={() => setShowSettings(false)}
+                                className="p-1 hover:bg-gray-200 rounded"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+                        
+                        <div className="space-y-6">
+                            {/* Sound Toggle */}
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-3">
+                                    {soundEnabled ? (
+                                        <Volume2 className="text-[#860809]" size={24} />
+                                    ) : (
+                                        <VolumeX className="text-gray-400" size={24} />
+                                    )}
+                                    <div>
+                                        <h3 className="text-sm font-medium text-[#860809] font-alice">Notification Sound</h3>
+                                        <p className="text-xs text-gray-500 font-alice">
+                                            Play a sound when new notifications arrive
+                                        </p>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => setSoundEnabled(!soundEnabled)}
+                                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                                        soundEnabled ? 'bg-[#860809]' : 'bg-gray-300'
+                                    }`}
+                                >
+                                    <span
+                                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                                            soundEnabled ? 'translate-x-6' : 'translate-x-1'
+                                        }`}
+                                    />
+                                </button>
+                            </div>
+
+                            {/* Volume Control */}
+                            {soundEnabled && (
+                                <div className="space-y-2">
+                                    <div className="flex items-center justify-between">
+                                        <label className="text-sm font-medium text-[#860809] font-alice">
+                                            Volume: {Math.round(soundVolume * 100)}%
+                                        </label>
+                                        <button
+                                            onClick={() => playNotificationSound()}
+                                            className="text-sm text-[#860809] hover:text-[#a31f17] font-alice underline"
+                                        >
+                                            Test Sound
+                                        </button>
+                                    </div>
+                                    <input
+                                        type="range"
+                                        min="0"
+                                        max="1"
+                                        step="0.1"
+                                        value={soundVolume}
+                                        onChange={(e) => setSoundVolume(parseFloat(e.target.value))}
+                                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#860809]"
+                                    />
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
 
                 {/* Search and Filters */}
                 <div className="bg-[#fffefc] rounded-lg shadow-md border border-gray-300 p-6 mb-6">

@@ -12,7 +12,7 @@ const activityLogSchema = new mongoose.Schema({
     },
     action: {
         type: String,
-        enum: ['created', 'updated', 'stock_in', 'stock_out', 'deleted'],
+        enum: ['created', 'updated', 'stock_in', 'stock_out', 'write_off', 'deleted'],
         required: true
     },
     details: {

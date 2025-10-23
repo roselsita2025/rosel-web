@@ -21,6 +21,7 @@ import ChatManagementPage from "./pages/AdminPages/ChatManagementPage.jsx";
 import POSPage from "./pages/AdminPages/POSPage.jsx";
 import POSHistoryPage from "./pages/AdminPages/POSHistoryPage.jsx";
 import BackupRestorePage from "./pages/AdminPages/BackupRestorePage.jsx";
+import SalesReportPage from "./pages/AdminPages/SalesReportPage.jsx";
 
 import ProfilePage from "./pages/ProfilePage";
 import AccountSettingsPage from "./pages/AccountSettingsPage";
@@ -55,6 +56,7 @@ import ChatModal from "./components/ChatModal.jsx";
 import { Toaster } from 'react-hot-toast';
 import { useAuthStore } from "./store/authStore.js";
 import { useChatStore } from "./store/chatStore.js";
+import { useNotificationStore } from "./store/notificationStore.js";
 import { useEffect, useRef } from "react";
 import { cartStore } from "./store/cartStore.js";
 
@@ -165,7 +167,8 @@ const CustomerRestrictedRoute = ({children}) => {
 function App() {
   const {isCheckingAuth, checkAuth, user} = useAuthStore();
   const {getCartItems, mergeGuestCartToServer} = cartStore();
-  const {initializeSocket, disconnectSocket} = useChatStore();
+  const {initializeSocket, disconnectSocket, socket: chatSocket} = useChatStore();
+  const {initializeSocket: initNotificationSocket} = useNotificationStore();
   const socketInitialized = useRef(false);
 
   const location = useLocation();
@@ -200,31 +203,9 @@ function App() {
     if (isCheckingAuth) return;
     
     if (user && user.isVerified && !socketInitialized.current) {
-      // Get socket token from backend
-      const getSocketToken = async () => {
-        try {
-          const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/socket-token`, {
-            credentials: 'include' // Include cookies for authentication
-          });
-          
-          if (response.ok) {
-            const data = await response.json();
-            if (data.success && data.token) {
-              // Initializing global socket connection for user
-              initializeSocket(data.token);
-              socketInitialized.current = true;
-            } else {
-              console.error('❌ Failed to get socket token:', data.message);
-            }
-          } else {
-            console.error('❌ Failed to get socket token: HTTP', response.status);
-          }
-        } catch (error) {
-          console.error('❌ Error getting socket token:', error);
-        }
-      };
-      
-      getSocketToken();
+      // Initialize chat socket with HTTP-only cookies
+      initializeSocket();
+      socketInitialized.current = true;
     } else if (!user && !isCheckingAuth) {
       // Guest user - no socket connection needed (only log when auth check is complete)
       // Guest user - no socket connection required
@@ -238,7 +219,13 @@ function App() {
       }
     };
   }, [user?.id, user?.isVerified, isCheckingAuth]); // Include isCheckingAuth in dependencies
-    
+
+  // Set up notification listeners on the chat socket
+  useEffect(() => {
+    if (chatSocket && user && user.isVerified) {
+      initNotificationSocket(chatSocket);
+    }
+  }, [chatSocket, user, initNotificationSocket]);
 
   if (isCheckingAuth) return <LoadingSpinner />; 
 
@@ -278,6 +265,7 @@ function App() {
         <Route path = '/admin/chat-management' element = { <AdminRoute> <ChatManagementPage /> </AdminRoute> } />
         <Route path = '/admin/notifications' element = { <AdminRoute> <AdminNotificationCenterPage /> </AdminRoute> } />
         <Route path = '/admin/backup-restore' element = { <AdminRoute> <BackupRestorePage /> </AdminRoute> } />
+        <Route path = '/admin/sales-report' element = { <AdminRoute> <SalesReportPage /> </AdminRoute> } />
         
         {/* Customer-only routes */}
         <Route path = '/profile' element = { <ProtectedRoute> <ProfilePage /> </ProtectedRoute> } />

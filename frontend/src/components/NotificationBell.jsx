@@ -4,24 +4,28 @@ import { Link } from 'react-router-dom';
 import { useNotificationStore } from '../store/notificationStore.js';
 import { useAuthStore } from '../store/authStore.js';
 
-const NotificationBell = ({ isAtTop = false }) => {
+const NotificationBell = ({ isAtTop = false, debugId = 'unknown' }) => {
     const { user } = useAuthStore();
-    const {
-        summary,
-        unreadCount,
-        isLoading,
-        error,
-        isConnected,
-        fetchNotificationSummary,
-        initializeSocket,
-        disconnectSocket,
-        markAsRead,
-        deleteNotification,
-        formatTimeAgo,
-        getPriorityColor,
-        getCategoryIcon,
-        getCategoryColor
-    } = useNotificationStore();
+    
+    // Add unique identifier for debugging
+    const bellId = useRef(`bell-${isAtTop ? 'top' : 'sidebar'}-${Math.random().toString(36).substr(2, 9)}`);
+    
+    // Subscribe to notification store with proper reactivity
+    const summary = useNotificationStore((state) => state.summary);
+    const unreadCount = useNotificationStore((state) => state.unreadCount);
+    const isLoading = useNotificationStore((state) => state.isLoading);
+    const error = useNotificationStore((state) => state.error);
+    const isConnected = useNotificationStore((state) => state.isConnected);
+    const fetchNotificationSummary = useNotificationStore((state) => state.fetchNotificationSummary);
+    const initializeSocket = useNotificationStore((state) => state.initializeSocket);
+    const disconnectSocket = useNotificationStore((state) => state.disconnectSocket);
+    const markAsRead = useNotificationStore((state) => state.markAsRead);
+    const markAllAsRead = useNotificationStore((state) => state.markAllAsRead);
+    const deleteNotification = useNotificationStore((state) => state.deleteNotification);
+    const formatTimeAgo = useNotificationStore((state) => state.formatTimeAgo);
+    const getPriorityColor = useNotificationStore((state) => state.getPriorityColor);
+    const getCategoryIcon = useNotificationStore((state) => state.getCategoryIcon);
+    const getCategoryColor = useNotificationStore((state) => state.getCategoryColor);
 
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isLoadingAction, setIsLoadingAction] = useState(false);
@@ -31,21 +35,9 @@ const NotificationBell = ({ isAtTop = false }) => {
     // Memoize the initialization function to prevent unnecessary re-runs
     const initializeNotifications = useCallback(async () => {
         if (user && user.isVerified && !initializedRef.current) {
-            // NotificationBell: Initializing for user
             initializedRef.current = true;
             
-            // Get token from localStorage or cookies
-            const token = localStorage.getItem('token') || document.cookie
-                .split('; ')
-                .find(row => row.startsWith('token='))
-                ?.split('=')[1];
-            
-            if (token) {
-                // Initializing notification socket
-                initializeSocket(token);
-            }
-            
-            // Fetch initial notifications
+            // Fetch initial notifications (socket is initialized globally in App.jsx)
             fetchNotificationSummary();
         } else if (!user || !user.isVerified) {
             // Reset initialization flag when user logs out
@@ -53,7 +45,7 @@ const NotificationBell = ({ isAtTop = false }) => {
             // Disconnect socket if user is not authenticated
             disconnectSocket();
         }
-    }, [user?.id, user?.isVerified]); // Only depend on user ID and verification status
+    }, [user?.id, user?.isVerified, fetchNotificationSummary, disconnectSocket]); // Only depend on user ID and verification status
 
     // Initialize socket and fetch notifications on component mount
     useEffect(() => {
@@ -64,6 +56,7 @@ const NotificationBell = ({ isAtTop = false }) => {
             disconnectSocket();
         };
     }, [initializeNotifications]);
+
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -87,6 +80,19 @@ const NotificationBell = ({ isAtTop = false }) => {
             await markAsRead(notificationId);
         } catch (error) {
             console.error('Error marking notification as read:', error);
+        } finally {
+            setIsLoadingAction(false);
+        }
+    };
+
+    // Handle mark all as read
+    const handleMarkAllAsRead = async () => {
+        setIsLoadingAction(true);
+        try {
+            await markAllAsRead();
+            await fetchNotificationSummary(); // Refresh the summary
+        } catch (error) {
+            console.error('Error marking all notifications as read:', error);
         } finally {
             setIsLoadingAction(false);
         }
@@ -162,6 +168,7 @@ const NotificationBell = ({ isAtTop = false }) => {
         return null;
     }
 
+
     return (
         <div className="relative" ref={dropdownRef}>
             {/* Notification Bell Button */}
@@ -178,11 +185,17 @@ const NotificationBell = ({ isAtTop = false }) => {
                 aria-label="Notifications"
             >
                 <Bell size={isAtTop ? 24 : 20} />
-                {unreadCount > 0 && (
-                    <span className={`absolute -top-1 -left-1 text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium transition duration-300 ease-in-out ${isAtTop ? 'bg-white text-[#901414] group-hover:bg-white/90' : 'bg-[#901414] text-white group-hover:bg-[#a31f17]'}`}>
-                        {unreadCount > 99 ? '99+' : unreadCount}
-                    </span>
-                )}
+                <span 
+                    key={`badge-${unreadCount}`}
+                    className={`absolute -top-1 -left-1 text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium transition duration-300 ease-in-out ${
+                        unreadCount > 0 
+                            ? (isAtTop ? 'bg-white text-[#901414] group-hover:bg-white/90' : 'bg-[#901414] text-white group-hover:bg-[#a31f17]')
+                            : 'hidden'
+                    }`}
+                    data-count={unreadCount}
+                >
+                    {unreadCount > 99 ? '99+' : unreadCount}
+                </span>
                 {/* Connection status indicator */}
                 <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full ${
                     isConnected ? 'bg-green-500' : 'bg-gray-400'
@@ -287,14 +300,6 @@ const NotificationBell = ({ isAtTop = false }) => {
                                                                 <Check size={14} />
                                                             </button>
                                                         )}
-                                                        <button
-                                                            onClick={(e) => handleDeleteNotification(notification.notificationId, e)}
-                                                            disabled={isLoadingAction}
-                                                            className="p-1 hover:bg-gray-200 rounded text-gray-400 hover:text-red-600 transition-colors"
-                                                            title="Delete"
-                                                        >
-                                                            <X size={14} />
-                                                        </button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -315,10 +320,11 @@ const NotificationBell = ({ isAtTop = false }) => {
                             >
                                 View all notifications
                             </Link>
-                            {summary.recentNotifications.length > 0 && (
+                            {summary.recentNotifications.length > 0 && unreadCount > 0 && (
                                 <button
-                                    onClick={() => setIsDropdownOpen(false)}
-                                    className="text-xs text-gray-500 hover:text-gray-700"
+                                    onClick={handleMarkAllAsRead}
+                                    disabled={isLoadingAction}
+                                    className="text-xs text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     Mark all as read
                                 </button>

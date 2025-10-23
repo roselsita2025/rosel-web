@@ -123,41 +123,41 @@ const ReplacementRequestsPage = () => {
 
     return (
         <AdminLayout>
-            <div className="py-8 bg-[#f8f3ed] min-h-screen">
-                <div className="relative z-10 container mx-auto px-4">
+            <div className="py-4 sm:py-6 md:py-8 bg-[#f8f3ed] min-h-screen">
+                <div className="relative z-10 container mx-auto px-3 sm:px-4">
                 {/* Header */}
                 <motion.div
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
-                    className="mb-8"
+                    className="mb-6 sm:mb-8"
                 >
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                         <div>
-                            <h2 className="text-2xl font-bold text-[#860809] font-libre">Replacement Requests</h2>
-                            <p className="text-[#a31f17] mt-1 font-alice">
+                            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#860809] font-libre">Replacement Requests</h2>
+                            <p className="text-[#a31f17] mt-1 text-sm sm:text-base font-alice">
                                 Manage and process customer replacement requests
                             </p>
                         </div>
-                        <div className="flex gap-3">
+                        <div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
                             <button
                                 onClick={() => setShowStats(!showStats)}
-                                className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors font-alice ${
+                                className={`inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg border transition-colors font-alice text-xs sm:text-sm active:scale-95 ${
                                     showStats 
                                         ? 'bg-[#860809] text-white border-[#860809]' 
                                         : 'bg-[#f8f3ed] text-[#030105] border-gray-300'
                                 }`}
                             >
-                                <BarChart3 size={16} />
-                                {showStats ? 'Hide Stats' : 'Show Stats'}
+                                <BarChart3 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                                <span className="whitespace-nowrap">{showStats ? 'Hide Stats' : 'Show Stats'}</span>
                             </button>
                             <button
                                 onClick={handleRefresh}
                                 disabled={isLoading}
-                                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 bg-[#f8f3ed] text-[#030105] hover:bg-[#a31f17] hover:text-white transition-colors disabled:opacity-50 font-alice"
+                                className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg border border-gray-300 bg-[#f8f3ed] text-[#030105] hover:bg-[#a31f17] hover:text-white transition-colors disabled:opacity-50 font-alice text-xs sm:text-sm active:scale-95"
                             >
-                                <RefreshCw size={16} className={isLoading ? 'animate-spin' : ''} />
-                                Refresh
+                                <RefreshCw className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isLoading ? 'animate-spin' : ''}`} />
+                                <span className="whitespace-nowrap">Refresh</span>
                             </button>
                         </div>
                     </div>
@@ -169,41 +169,41 @@ const ReplacementRequestsPage = () => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.1 }}
-                        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
+                        className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-6 sm:mb-8"
                     >
-                        <div className="bg-[#fffefc] rounded-lg p-6 shadow-md border border-gray-300">
+                        <div className="bg-[#fffefc] rounded-lg p-3 sm:p-4 md:p-6 shadow-md border border-gray-300">
                             <div className="flex items-center">
-                                <Package className="h-8 w-8 text-[#860809]" />
-                                <div className="ml-4">
-                                    <p className="text-sm font-medium text-[#a31f17] font-alice">Total Requests</p>
-                                    <p className="text-2xl font-bold text-[#860809] font-libre">{stats.totalRequests}</p>
+                                <Package className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-[#860809]" />
+                                <div className="ml-2 sm:ml-3 md:ml-4">
+                                    <p className="text-xs sm:text-sm font-medium text-[#a31f17] font-alice">Total Requests</p>
+                                    <p className="text-lg sm:text-xl md:text-2xl font-bold text-[#860809] font-libre">{stats.totalRequests}</p>
                                 </div>
                             </div>
                         </div>
-                        <div className="bg-[#fffefc] rounded-lg p-6 shadow-md border border-gray-300">
+                        <div className="bg-[#fffefc] rounded-lg p-3 sm:p-4 md:p-6 shadow-md border border-gray-300">
                             <div className="flex items-center">
-                                <Clock className="h-8 w-8 text-yellow-600" />
-                                <div className="ml-4">
-                                    <p className="text-sm font-medium text-[#a31f17] font-alice">Pending</p>
-                                    <p className="text-2xl font-bold text-[#860809] font-libre">{(stats.pendingRequests || 0) + (stats.underReviewRequests || 0)}</p>
+                                <Clock className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-yellow-600" />
+                                <div className="ml-2 sm:ml-3 md:ml-4">
+                                    <p className="text-xs sm:text-sm font-medium text-[#a31f17] font-alice">Pending</p>
+                                    <p className="text-lg sm:text-xl md:text-2xl font-bold text-[#860809] font-libre">{(stats.pendingRequests || 0) + (stats.underReviewRequests || 0)}</p>
                                 </div>
                             </div>
                         </div>
-                        <div className="bg-[#fffefc] rounded-lg p-6 shadow-md border border-gray-300">
+                        <div className="bg-[#fffefc] rounded-lg p-3 sm:p-4 md:p-6 shadow-md border border-gray-300">
                             <div className="flex items-center">
-                                <CheckCircle className="h-8 w-8 text-green-600" />
-                                <div className="ml-4">
-                                    <p className="text-sm font-medium text-[#a31f17] font-alice">Approved</p>
-                                    <p className="text-2xl font-bold text-[#860809] font-libre">{stats.approvedRequests || 0}</p>
+                                <CheckCircle className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-green-600" />
+                                <div className="ml-2 sm:ml-3 md:ml-4">
+                                    <p className="text-xs sm:text-sm font-medium text-[#a31f17] font-alice">Approved</p>
+                                    <p className="text-lg sm:text-xl md:text-2xl font-bold text-[#860809] font-libre">{stats.approvedRequests || 0}</p>
                                 </div>
                             </div>
                         </div>
-                        <div className="bg-[#fffefc] rounded-lg p-6 shadow-md border border-gray-300">
+                        <div className="bg-[#fffefc] rounded-lg p-3 sm:p-4 md:p-6 shadow-md border border-gray-300">
                             <div className="flex items-center">
-                                <XCircle className="h-8 w-8 text-red-600" />
-                                <div className="ml-4">
-                                    <p className="text-sm font-medium text-[#a31f17] font-alice">Rejected</p>
-                                    <p className="text-2xl font-bold text-[#860809] font-libre">{stats.rejectedRequests || 0}</p>
+                                <XCircle className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-red-600" />
+                                <div className="ml-2 sm:ml-3 md:ml-4">
+                                    <p className="text-xs sm:text-sm font-medium text-[#a31f17] font-alice">Rejected</p>
+                                    <p className="text-lg sm:text-xl md:text-2xl font-bold text-[#860809] font-libre">{stats.rejectedRequests || 0}</p>
                                 </div>
                             </div>
                         </div>
@@ -215,18 +215,18 @@ const ReplacementRequestsPage = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.2 }}
-                    className="bg-[#fffefc] rounded-lg shadow-md border border-gray-300 p-6 mb-8"
+                    className="bg-[#fffefc] rounded-lg shadow-md border border-gray-300 p-3 sm:p-4 md:p-6 mb-6 sm:mb-8"
                 >
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
                         <div className="md:col-span-2">
                             <div className="relative">
-                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#a31f17]" size={20} />
+                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#a31f17] w-4 h-4 sm:w-5 sm:h-5" />
                                 <input
                                     type="text"
-                                    placeholder="Search by description, admin response, or tracking number..."
+                                    placeholder="Search by description or response..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#860809] focus:border-transparent bg-[#fffefc] font-alice"
+                                    className="w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#860809] focus:border-transparent bg-[#fffefc] font-alice"
                                 />
                             </div>
                         </div>
@@ -234,7 +234,7 @@ const ReplacementRequestsPage = () => {
                             <select
                                 value={statusFilter}
                                 onChange={(e) => setStatusFilter(e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#860809] focus:border-transparent bg-[#fffefc] font-alice"
+                                className="w-full px-2 sm:px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#860809] focus:border-transparent bg-[#fffefc] font-alice"
                             >
                                 <option value="">All Statuses</option>
                                 <option value="pending">Pending</option>
@@ -305,22 +305,22 @@ const ReplacementRequestsPage = () => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.4 }}
-                        className="flex items-center justify-center gap-2 mt-8"
+                        className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-2 mt-6 sm:mt-8"
                     >
                         <button
                             onClick={() => handlePageChange(currentPage - 1)}
                             disabled={!pagination.hasPrevPage}
-                            className="px-3 py-2 text-sm font-medium text-[#030105] bg-[#fffefc] border border-gray-300 rounded-md hover:bg-[#f8f3ed] disabled:opacity-50 disabled:cursor-not-allowed font-alice"
+                            className="w-full sm:w-auto px-4 sm:px-3 py-2 text-xs sm:text-sm font-medium text-[#030105] bg-[#fffefc] border border-gray-300 rounded-md hover:bg-[#f8f3ed] active:bg-[#f8f3ed] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed font-alice transition-all"
                         >
                             Previous
                         </button>
-                        <span className="px-3 py-2 text-sm text-[#a31f17] font-alice">
+                        <span className="px-3 py-2 text-xs sm:text-sm text-[#a31f17] font-alice whitespace-nowrap">
                             Page {pagination.currentPage} of {pagination.totalPages}
                         </span>
                         <button
                             onClick={() => handlePageChange(currentPage + 1)}
                             disabled={!pagination.hasNextPage}
-                            className="px-3 py-2 text-sm font-medium text-[#030105] bg-[#fffefc] border border-gray-300 rounded-md hover:bg-[#f8f3ed] disabled:opacity-50 disabled:cursor-not-allowed font-alice"
+                            className="w-full sm:w-auto px-4 sm:px-3 py-2 text-xs sm:text-sm font-medium text-[#030105] bg-[#fffefc] border border-gray-300 rounded-md hover:bg-[#f8f3ed] active:bg-[#f8f3ed] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed font-alice transition-all"
                         >
                             Next
                         </button>

@@ -104,7 +104,7 @@ const ContactUsPage = () => {
             transition={{ duration: 0.6, delay: 0.4 }}
           >
             <motion.h1 
-              className="text-5xl md:text-6xl font-bold text-white mb-6 font-libre"
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 font-libre"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.6 }}
@@ -112,7 +112,7 @@ const ContactUsPage = () => {
               Contact Us
             </motion.h1>
             <motion.p 
-              className="text-xl text-white leading-relaxed font-alice"
+              className="text-lg sm:text-xl text-white leading-relaxed font-alice"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.8 }}
@@ -133,7 +133,7 @@ const ContactUsPage = () => {
       >
         <div className="container mx-auto px-4">
           <div className="max-w-7xl mx-auto">
-            <div className="grid lg:grid-cols-2 gap-12">
+            <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
               {/* Contact Information */}
               <motion.div 
                 className="space-y-8"
@@ -148,10 +148,10 @@ const ContactUsPage = () => {
                   transition={{ duration: 0.6, delay: 0.4 }}
                   viewport={{ once: true }}
                 >
-                  <h2 className="text-4xl font-bold text-[#a31f17] mb-6 font-libre">
+                  <h2 className="text-3xl sm:text-4xl font-bold text-[#a31f17] mb-6 font-libre">
                     Get In Touch
                   </h2>
-                  <p className="text-[#030105] text-lg leading-relaxed mb-8 max-w-lg font-alice">
+                  <p className="text-[#030105] text-base sm:text-lg leading-relaxed mb-8 max-w-lg font-alice">
                     We'd love to hear from you. Send us a message and we'll respond as soon as possible.
                   </p>
                 </motion.div>
@@ -183,12 +183,12 @@ const ContactUsPage = () => {
                       transition={{ duration: 0.5, delay: 0.8 + (index * 0.1) }}
                       viewport={{ once: true }}
                     >
-                    <div className="w-12 h-12 bg-[#860809] rounded-full flex items-center justify-center flex-shrink-0">
-                        <item.icon className="w-6 h-6 text-[#fffefc]" />
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#860809] rounded-full flex items-center justify-center flex-shrink-0">
+                        <item.icon className="w-5 h-5 sm:w-6 sm:h-6 text-[#fffefc]" />
                     </div>
                     <div>
-                        <h3 className="text-xl font-bold text-[#a31f17] mb-2 font-alice">{item.title}</h3>
-                        <p className={`text-[#030105] ${item.isPreLine ? 'whitespace-pre-line' : ''} font-libre`}>
+                        <h3 className="text-lg sm:text-xl font-bold text-[#a31f17] mb-2 font-alice">{item.title}</h3>
+                        <p className={`text-sm sm:text-base text-[#030105] ${item.isPreLine ? 'whitespace-pre-line' : ''} font-libre`}>
                           {item.content}
                       </p>
                     </div>
@@ -199,14 +199,14 @@ const ContactUsPage = () => {
 
               {/* Map */}
               <motion.div 
-                className="bg-transparent rounded-2xl p-8"
+                className="bg-transparent rounded-2xl p-4 sm:p-6 md:p-8"
                 initial={{ opacity: 0, x: 30 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
                 viewport={{ once: true }}
               >
                 <motion.h3 
-                  className="text-3xl font-bold text-[#860809] mb-6 text-center font-libre"
+                  className="text-2xl sm:text-3xl font-bold text-[#860809] mb-6 text-center font-libre"
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.4 }}
@@ -215,7 +215,7 @@ const ContactUsPage = () => {
                   Find Us
                 </motion.h3>
                 <motion.div 
-                  className="border-2 border-[#901414] rounded-lg overflow-hidden h-96"
+                  className="border-2 border-[#901414] rounded-lg overflow-hidden h-64 sm:h-80 md:h-96"
                   initial={{ opacity: 0, scale: 0.95 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.6, delay: 0.6 }}
@@ -240,7 +240,7 @@ const ContactUsPage = () => {
       >
         <div className="container mx-auto px-4">
           <div className="max-w-7xl mx-auto">
-            <div className="grid lg:grid-cols-2 gap-12">
+            <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
               {/* FAQ Section */}
               <motion.div
                 initial={{ opacity: 0, x: -30 }}
@@ -249,7 +249,7 @@ const ContactUsPage = () => {
                 viewport={{ once: true }}
               >
                 <motion.h2 
-                  className="text-4xl font-bold text-[#860809] mb-8 font-libre"
+                  className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#860809] mb-8 font-libre"
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.4 }}
@@ -280,16 +280,16 @@ const ContactUsPage = () => {
                   ].map((faq, index) => (
                     <motion.div 
                       key={faq.question}
-                      className="bg-[#f8f3ed] p-6 rounded-xl"
+                      className="bg-[#f8f3ed] p-4 sm:p-6 rounded-xl"
                       initial={{ opacity: 0, y: 20 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.5, delay: 0.8 + (index * 0.1) }}
                       viewport={{ once: true }}
                     >
-                      <h3 className="text-xl font-bold text-[#a31f17] mb-3 font-alice">
+                      <h3 className="text-lg sm:text-xl font-bold text-[#a31f17] mb-3 font-alice">
                         {faq.question}
                       </h3>
-                      <p className="text-[#030105] font-libre">
+                      <p className="text-sm sm:text-base text-[#030105] font-libre">
                         {faq.answer}
                       </p>
                     </motion.div>
@@ -299,14 +299,14 @@ const ContactUsPage = () => {
 
               {/* Contact Form */}
               <motion.div 
-                className="bg-[#f8f3ed] p-8 rounded-2xl shadow-lg"
+                className="bg-[#f8f3ed] p-6 sm:p-8 rounded-2xl shadow-lg"
                 initial={{ opacity: 0, x: 30 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
                 viewport={{ once: true }}
               >
                 <motion.h3 
-                  className="text-2xl font-bold text-[#860809] mb-6 flex items-center font-libre"
+                  className="text-xl sm:text-2xl font-bold text-[#860809] mb-6 flex items-center font-libre"
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.4 }}

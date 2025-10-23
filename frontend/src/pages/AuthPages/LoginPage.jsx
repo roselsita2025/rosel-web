@@ -25,7 +25,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center pb-10 min-h-screen w-full px-4">
+    <div className="flex flex-col items-center justify-center pb-10 min-h-screen w-full px-3 sm:px-4 md:px-6">
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -36,22 +36,22 @@ const LoginPage = () => {
         {/* Home Icon */}
         <Link 
           to="/welcome" 
-          className="absolute top-4 left-4 z-10 p-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
+          className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 p-1.5 sm:p-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
           title="Go to Home"
         >
-          <Home className="w-5 h-5 text-gray-600 hover:text-[#8F3333]" />
+          <Home className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 hover:text-[#8F3333]" />
         </Link>
         
-        <div className='p-7 pb-2'>
-				<h2 className='text-lg font-semibold text-center text-black flex items-center justify-center'>
-					<LucideUser className='w-5 h-5 mr-2' />
+        <div className='p-5 sm:p-6 md:p-7 pb-2'>
+				<h2 className='text-base sm:text-lg font-semibold text-center text-black flex items-center justify-center'>
+					<LucideUser className='w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2' />
 					Sign In to Your Account
 				</h2>
-				<p className='text-sm text-gray-500 mb-6 text-center'>Welcome back! Please enter your details.</p>
+				<p className='text-xs sm:text-sm text-gray-500 mb-5 sm:mb-6 text-center'>Welcome back! Please enter your details.</p>
       
         {!otpRequired ? (
         <form onSubmit={handleLogin}>
-					<h3 className='text-sm font-semibold text-black'>Email Address</h3>
+					<h3 className='text-xs sm:text-sm font-semibold text-black'>Email Address</h3>
 					<Input
 						icon={Mail}
 						type='email'
@@ -60,7 +60,7 @@ const LoginPage = () => {
 						onChange={(e) => setEmail(e.target.value)}
 					/>
 
-					<h3 className='text-sm font-semibold text-black'>Password</h3>
+					<h3 className='text-xs sm:text-sm font-semibold text-black'>Password</h3>
 					<Input
 						icon={Lock}
 						type='password'
@@ -69,20 +69,20 @@ const LoginPage = () => {
 						onChange={(e) => setPassword(e.target.value)}
 					/>
 
-					{error && <p className='text-red-500 font-semibold mb-2'>{error}</p>}
+					{error && <p className='text-red-500 font-semibold mb-2 text-xs sm:text-sm'>{error}</p>}
 					
           <motion.button
 						whileHover={{ scale: 1.02 }}
 						whileTap={{ scale: 0.98 }}
-						className='w-full mt-2 py-2 px-4 bg-[#8F3333] text-[#fffefc] font-bold rounded-lg shadow-lg border border-[#a31f17] hover:bg-[#a31f17] hover:text-[#fffefc] focus:outline-none focus:ring-2 focus:ring-[#a31f17] focus:ring-offset-2 transition duration-200'
+						className='w-full mt-2 py-2 sm:py-2.5 px-4 bg-[#8F3333] text-[#fffefc] font-bold rounded-lg shadow-lg border border-[#a31f17] hover:bg-[#a31f17] hover:text-[#fffefc] focus:outline-none focus:ring-2 focus:ring-[#a31f17] focus:ring-offset-2 transition duration-200 text-sm sm:text-base'
 						type='submit'
             disabled={isLoading}
 					>
-            {isLoading ? <Loader className='w-6 h-6 animate-spin  mx-auto' /> : "Login"}
+            {isLoading ? <Loader className='w-5 h-5 sm:w-6 sm:h-6 animate-spin mx-auto' /> : "Login"}
           </motion.button>
 
-			<div className='flex items-center justify-center mt-5'>
-				<Link to='/forgot-password' className='text-sm font-semibold text-[#a31f17] hover:underline'>
+			<div className='flex items-center justify-center mt-4 sm:mt-5'>
+				<Link to='/forgot-password' className='text-xs sm:text-sm font-semibold text-[#a31f17] hover:underline'>
 					Forgot password?
 				</Link>
 			</div>
@@ -90,7 +90,7 @@ const LoginPage = () => {
         </form>
         ) : (
           <form onSubmit={handleVerify}>
-            <h3 className='text-sm font-semibold text-black'>Verification Code</h3>
+            <h3 className='text-xs sm:text-sm font-semibold text-black'>Verification Code</h3>
             <Input
               icon={Lock}
               type='text'
@@ -99,13 +99,13 @@ const LoginPage = () => {
               onChange={(e) => setCode(e.target.value)}
             />
             {pendingEmail && <p className='text-xs text-gray-500 mt-1'>Code sent to {pendingEmail}</p>}
-            {message && <p className='text-green-600 font-semibold mt-2'>{message}</p>}
-            {error && <p className='text-red-500 font-semibold mt-2'>{error}</p>}
-            <div className='flex items-center justify-between mt-2'>
+            {message && <p className='text-green-600 font-semibold mt-2 text-xs sm:text-sm'>{message}</p>}
+            {error && <p className='text-red-500 font-semibold mt-2 text-xs sm:text-sm'>{error}</p>}
+            <div className='flex flex-col sm:flex-row items-center justify-between mt-2 gap-2 sm:gap-0'>
               <button
                 type='button'
                 onClick={resendLoginOtp}
-                className='text-sm font-semibold text-[#a31f17] hover:underline disabled:opacity-50'
+                className='text-xs sm:text-sm font-semibold text-[#a31f17] hover:underline disabled:opacity-50'
                 disabled={isLoading}
               >
                 Resend Code
@@ -113,20 +113,20 @@ const LoginPage = () => {
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className='py-2 px-4 bg-[#8F3333] text-[#fffefc] font-bold rounded-lg shadow-lg border border-[#a31f17] hover:bg-[#a31f17] hover:text-[#fffefc] focus:outline-none focus:ring-2 focus:ring-[#a31f17] focus:ring-offset-2 transition duration-200'
+                className='w-full sm:w-auto py-2 sm:py-2.5 px-4 bg-[#8F3333] text-[#fffefc] font-bold rounded-lg shadow-lg border border-[#a31f17] hover:bg-[#a31f17] hover:text-[#fffefc] focus:outline-none focus:ring-2 focus:ring-[#a31f17] focus:ring-offset-2 transition duration-200 text-sm sm:text-base'
                 type='submit'
                 disabled={isLoading}
               >
-                {isLoading ? <Loader className='w-6 h-6 animate-spin  mx-auto' /> : "Verify"}
+                {isLoading ? <Loader className='w-5 h-5 sm:w-6 sm:h-6 animate-spin mx-auto' /> : "Verify"}
               </motion.button>
             </div>
           </form>
         )}
       </div>
 
-    	<div className="px-8 py-5 bg-[#fffefc] flex flex-col items-center">
-			<hr className="w-full border-t border-gray-200 mb-4" />
-			<p className='text-sm text-gray-400'>
+    	<div className="px-5 sm:px-6 md:px-8 py-4 sm:py-5 bg-[#fffefc] flex flex-col items-center">
+			<hr className="w-full border-t border-gray-200 mb-3 sm:mb-4" />
+			<p className='text-xs sm:text-sm text-gray-400'>
 				Don't have an account?{" "}
 				<Link to='/signup' className='text-[#a31f17] font-semibold hover:underline '>
 					Sign up

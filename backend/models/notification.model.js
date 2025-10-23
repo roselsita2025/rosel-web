@@ -51,6 +51,7 @@ const notificationSchema = new mongoose.Schema({
             'product_created',
             'product_updated',
             'product_removed',
+            'write_off',
             'order_pending',
             'order_processing',
             'order_shipped',
@@ -80,7 +81,7 @@ const notificationSchema = new mongoose.Schema({
     relatedEntity: {
         type: {
             type: String,
-            enum: ['product', 'order', 'replacement_request', 'chat', 'user']
+            enum: ['product', 'order', 'replacement_request', 'write_off', 'chat', 'user']
         },
         id: {
             type: mongoose.Schema.Types.ObjectId

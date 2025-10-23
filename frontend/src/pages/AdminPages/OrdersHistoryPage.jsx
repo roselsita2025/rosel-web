@@ -345,47 +345,83 @@ const OrdersHistoryPage = () => {
                         exit={{ opacity: 0, height: 0 }}
                         transition={{ duration: 0.3 }}
                       >
-                        <h4 className="text-sm font-medium text-[#030105] mb-3">Products Ordered:</h4>
-                        <div className="space-y-3">
-                          {order.products.map((item, index) => {
-                            console.log('Order item data:', item);
-                            const weightInfo = item.weightKg ? ` (${item.weightKg}kg)` : '';
-                            return (
-                              <div key={index} className="flex items-center gap-4 p-3 bg-white rounded-lg border border-[#f7e9b8]">
-                                {/* Product Image */}
-                                <div className="flex-shrink-0">
-                                  <img
-                                    src={item.product?.image || '/placeholder-product.jpg'}
-                                    alt={item.product?.name || 'Product'}
-                                    className="h-12 w-12 rounded-lg object-cover"
-                                  />
-                                </div>
-                                
-                                {/* Product Details */}
-                                <div className="flex-1 min-w-0">
-                                  <div className="text-sm font-medium text-[#030105] truncate">
-                                    {item.product?.name || 'Unknown Product'}{weightInfo}
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                          {/* Products */}
+                          <div>
+                            <h4 className="text-sm font-medium text-[#030105] mb-3">Products Ordered:</h4>
+                            <div className="space-y-3">
+                              {order.products.map((item, index) => {
+                                console.log('Order item data:', item);
+                                const weightInfo = item.weightKg ? ` (${item.weightKg}kg)` : '';
+                                return (
+                                  <div key={index} className="flex items-center gap-4 p-3 bg-white rounded-lg border border-[#f7e9b8]">
+                                    {/* Product Image */}
+                                    <div className="flex-shrink-0">
+                                      <img
+                                        src={item.product?.image || '/placeholder-product.jpg'}
+                                        alt={item.product?.name || 'Product'}
+                                        className="h-12 w-12 rounded-lg object-cover"
+                                      />
+                                    </div>
+                                    
+                                    {/* Product Details */}
+                                    <div className="flex-1 min-w-0">
+                                      <div className="text-sm font-medium text-[#030105] truncate">
+                                        {item.product?.name || 'Unknown Product'}{weightInfo}
+                                      </div>
+                                      <div className="text-xs text-gray-500">
+                                        Category: {item.product?.category || 'N/A'}
+                                      </div>
+                                    </div>
+                                    
+                                    {/* Price and Quantity */}
+                                    <div className="flex items-center gap-4 text-sm text-[#030105]">
+                                      <div>
+                                        <span className="text-gray-500">Price:</span> ₱{item.price.toFixed(2)}
+                                      </div>
+                                      <div>
+                                        <span className="text-gray-500">Qty:</span> {item.quantity}
+                                      </div>
+                                      <div className="font-medium">
+                                        <span className="text-gray-500">Total:</span> ₱{item.totalPrice.toFixed(2)}
+                                      </div>
+                                    </div>
                                   </div>
-                                  <div className="text-xs text-gray-500">
-                                    Category: {item.product?.category || 'N/A'}
+                                );
+                              })}
+                            </div>
+                          </div>
+
+                          {/* Order Summary */}
+                          <div>
+                            <h4 className="text-sm font-medium text-[#030105] mb-3">Order Summary:</h4>
+                            <div className="p-3 bg-white rounded-lg border border-[#f7e9b8]">
+                              <div className="text-sm text-[#030105]">
+                                <div className="space-y-1 text-xs">
+                                  <div className="flex justify-between">
+                                    <span>Subtotal:</span>
+                                    <span>₱{order.productSubtotal?.toFixed(2) || '0.00'}</span>
                                   </div>
-                                </div>
-                                
-                                {/* Price and Quantity */}
-                                <div className="flex items-center gap-4 text-sm text-[#030105]">
-                                  <div>
-                                    <span className="text-gray-500">Price:</span> ₱{item.price.toFixed(2)}
-                                  </div>
-                                  <div>
-                                    <span className="text-gray-500">Qty:</span> {item.quantity}
-                                  </div>
-                                  <div className="font-medium">
-                                    <span className="text-gray-500">Total:</span> ₱{item.totalPrice.toFixed(2)}
+                                  {order.coupon?.code && (
+                                    <div className="flex justify-between text-green-600">
+                                      <span>Coupon ({order.coupon.code}):</span>
+                                      <span>-₱{order.coupon.discount?.toFixed(2) || '0.00'}</span>
+                                    </div>
+                                  )}
+                                  {order.deliveryFee > 0 && (
+                                    <div className="flex justify-between">
+                                      <span>Delivery Fee:</span>
+                                      <span>₱{order.deliveryFee.toFixed(2)}</span>
+                                    </div>
+                                  )}
+                                  <div className="flex justify-between font-medium border-t pt-1">
+                                    <span>Total:</span>
+                                    <span>₱{order.totalAmount?.toFixed(2) || '0.00'}</span>
                                   </div>
                                 </div>
                               </div>
-                            );
-                          })}
+                            </div>
+                          </div>
                         </div>
                       </motion.div>
                     )}

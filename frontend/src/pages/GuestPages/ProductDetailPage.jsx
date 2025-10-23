@@ -192,11 +192,11 @@ const ProductDetailPage = () => {
         return (
             <div className='min-h-screen bg-[#fffefc] flex items-center justify-center'>
                 <div className='text-center max-w-md mx-auto px-4'>
-                    <h1 className='text-3xl font-bold text-[#030105] mb-4'>Product Not Found</h1>
-                    <p className='text-gray-600 mb-8'>The product you're looking for doesn't exist or has been removed.</p>
+                    <h1 className='text-2xl sm:text-3xl font-bold text-[#030105] mb-4'>Product Not Found</h1>
+                    <p className='text-sm sm:text-base text-gray-600 mb-6 sm:mb-8'>The product you're looking for doesn't exist or has been removed.</p>
                     <Link 
                         to='/products'
-                        className='inline-flex items-center px-6 py-3 bg-[#860809] text-white rounded-lg hover:bg-[#a31f17] transition-colors duration-300'
+                        className='inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 bg-[#860809] text-white rounded-lg hover:bg-[#a31f17] transition-colors duration-300 text-sm sm:text-base'
                     >
                         <ArrowLeft className='w-4 h-4 mr-2' />
                         Back to Products
@@ -209,7 +209,7 @@ const ProductDetailPage = () => {
     return (
         <div className='min-h-screen bg-white w-full'>
             {/* Header Section */}
-            <div className='pt-24 sm:pt-20 pb-4 sm:pb-4 bg-white w-full'>
+            <div className='pt-20 sm:pt-24 md:pt-28 pb-4 sm:pb-6 bg-white w-full'>
                 <div className='max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8'>
                     <motion.div
                         initial={{ opacity: 0, y: -20 }}
@@ -219,9 +219,9 @@ const ProductDetailPage = () => {
                     >
                         <Link 
                             to='/products'
-                            className='inline-flex items-center text-[#860809] pt-10 hover:text-[#a31f17] transition-colors duration-300'
+                            className='inline-flex items-center text-[#860809] hover:text-[#a31f17] transition-colors duration-300 text-sm sm:text-base'
                         >
-                            <ArrowLeft className='w-5 h-5 mr-2' />
+                            <ArrowLeft className='w-4 h-4 sm:w-5 sm:h-5 mr-2' />
                             Back to Products
                         </Link>
                         <div className='w-20'></div> {/* Spacer for centering */}
@@ -230,19 +230,19 @@ const ProductDetailPage = () => {
             </div>
 
             {/* Main Content */}
-            <div className='w-full px-3 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-4 md:py-4'>
+            <div className='w-full px-3 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-4 md:py-6 lg:py-8'>
                 <div className='max-w-6xl mx-auto'>
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8, delay: 0.2 }}
-                        className='grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12'
+                        className='grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12'
                     >
                         {/* Left Side - Product Image Gallery */}
                         <div className='flex justify-center lg:justify-start'>
-                            <div className='w-full max-w-md lg:max-w-lg'>
+                            <div className='w-full max-w-md md:max-w-lg lg:max-w-xl'>
                                 {/* Main Image Display */}
-                                <div className='relative aspect-square bg-white rounded-lg shadow-lg overflow-hidden mb-4'>
+                                <div className='relative aspect-square bg-white rounded-lg shadow-lg overflow-hidden mb-3 sm:mb-4'>
                                     <img
                                         src={images[currentImageIndex] || product.image}
                                         alt={product.name}
@@ -254,17 +254,17 @@ const ProductDetailPage = () => {
                                         <>
                                             <button
                                                 onClick={goToPreviousImage}
-                                                className='absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-2 rounded-full transition-all duration-200'
+                                                className='absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-1.5 sm:p-2 rounded-full transition-all duration-200'
                                                 aria-label="Previous image"
                                             >
-                                                <ChevronLeft size={20} />
+                                                <ChevronLeft className='w-4 h-4 sm:w-5 sm:h-5' />
                                             </button>
                                             <button
                                                 onClick={goToNextImage}
-                                                className='absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-2 rounded-full transition-all duration-200'
+                                                className='absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-1.5 sm:p-2 rounded-full transition-all duration-200'
                                                 aria-label="Next image"
                                             >
-                                                <ChevronRight size={20} />
+                                                <ChevronRight className='w-4 h-4 sm:w-5 sm:h-5' />
                                             </button>
                                         </>
                                     )}
@@ -277,7 +277,7 @@ const ProductDetailPage = () => {
                                             <button
                                                 key={index}
                                                 onClick={() => selectImage(index)}
-                                                className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all duration-200 ${
+                                                className={`flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-lg overflow-hidden border-2 transition-all duration-200 ${
                                                     index === currentImageIndex
                                                         ? 'border-[#030105] shadow-md'
                                                         : 'border-gray-200 hover:border-gray-300'
@@ -296,13 +296,13 @@ const ProductDetailPage = () => {
                         </div>
 
                         {/* Right Side - Product Information */}
-                        <div className='flex flex-col justify-center space-y-6'>
+                        <div className='flex flex-col justify-center space-y-4 sm:space-y-6'>
                             {/* Product Name */}
                             <motion.h1
                                 initial={{ opacity: 0, x: 20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ duration: 0.8, delay: 0.3 }}
-                                className='text-3xl lg:text-4xl font-bold text-[#030105]'
+                                className='text-2xl sm:text-3xl lg:text-4xl font-bold text-[#030105]'
                             >
                                 {product.name}
                             </motion.h1>
@@ -312,7 +312,7 @@ const ProductDetailPage = () => {
                                 initial={{ opacity: 0, x: 20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ duration: 0.8, delay: 0.4 }}
-                                className='text-xl text-[#860809] capitalize'
+                                className='text-lg sm:text-xl text-[#860809] capitalize'
                             >
                                 {product.category}
                             </motion.h2>
@@ -330,7 +330,7 @@ const ProductDetailPage = () => {
                                 initial={{ opacity: 0, x: 20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ duration: 0.8, delay: 0.6 }}
-                                className='text-3xl font-bold text-[#860809]'
+                                className='text-2xl sm:text-3xl font-bold text-[#860809]'
                             >
                                 ₱{displayPrice}
                             </motion.div>
@@ -342,7 +342,7 @@ const ProductDetailPage = () => {
                                 transition={{ duration: 0.8, delay: 0.65 }}
                                 className='flex items-center space-x-2'
                             >
-                                <span className={`text-sm font-medium px-3 py-1 rounded-full ${
+                                <span className={`text-xs sm:text-sm font-medium px-3 py-1 rounded-full ${
                                     totalStocks > 10 
                                         ? 'bg-green-100 text-green-800' 
                                         : totalStocks > 0 
@@ -365,7 +365,7 @@ const ProductDetailPage = () => {
                                                 type='button'
                                                 onClick={() => { setSelectedWeightOptionId(String(opt._id)); setQuantity(1); }}
                                                 disabled={(opt.stockUnits || 0) <= 0}
-                                                className={`inline-flex items-center px-3 py-1 rounded-full border text-sm transition-colors ${
+                                                className={`inline-flex items-center px-2.5 sm:px-3 py-1 rounded-full border text-xs sm:text-sm transition-colors ${
                                                     isSelected ? 'border-[#860809] text-[#860809] bg-[#f8f3ed]' : 'border-gray-300 text-[#030105]'
                                                 } ${ (opt.stockUnits||0) <= 0 ? 'opacity-50 cursor-not-allowed' : 'hover:border-[#860809]'}`}
                                             >
@@ -381,24 +381,24 @@ const ProductDetailPage = () => {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.8, delay: 0.7 }}
-                                className='flex items-center gap-4'
+                                className='flex items-center gap-3 sm:gap-4'
                             >
                                 {/* Quantity Controls */}
                                 <div className='flex items-center border border-gray-300 rounded-lg'>
                                     <button
                                         onClick={() => setQuantity(Math.max(1, quantity - 1))}
                                         disabled={quantity <= 1}
-                                        className='p-2 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200'
+                                        className='p-1.5 sm:p-2 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200'
                                     >
-                                        <Minus className='w-4 h-4' />
+                                        <Minus className='w-3.5 h-3.5 sm:w-4 sm:h-4' />
                                     </button>
-                                    <span className='px-4 py-2 text-lg font-semibold min-w-[3rem] text-center'>{quantity}</span>
+                                    <span className='px-3 sm:px-4 py-2 text-base sm:text-lg font-semibold min-w-[2.5rem] sm:min-w-[3rem] text-center'>{quantity}</span>
                                     <button
                                         onClick={() => setQuantity(Math.min(selectedStock || totalStocks, quantity + 1))}
                                         disabled={quantity >= (selectedStock || totalStocks)}
-                                        className='p-2 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200'
+                                        className='p-1.5 sm:p-2 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200'
                                     >
-                                        <Plus className='w-4 h-4' />
+                                        <Plus className='w-3.5 h-3.5 sm:w-4 sm:h-4' />
                                     </button>
                                 </div>
 
@@ -406,7 +406,7 @@ const ProductDetailPage = () => {
                                 <button
                                     onClick={handleAddToCart}
                                     disabled={addingToCart || (selectedStock || totalStocks) === 0 || user?.role === 'admin'}
-                                    className={`flex-1 px-8 py-4 text-white text-lg font-semibold rounded-lg transition-colors duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${
+                                    className={`flex-1 px-4 sm:px-6 md:px-8 py-3 sm:py-4 text-white text-base sm:text-lg font-semibold rounded-lg transition-colors duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${
                                         (selectedStock || totalStocks) > 0 
                                             ? buttonState === 'added'
                                                 ? 'bg-emerald-600'
@@ -418,17 +418,17 @@ const ProductDetailPage = () => {
                                 >
                                     {addingToCart ? (
                                         <>
-                                            <div className='animate-spin rounded-full h-5 w-5 border-b-2 border-[#ffd901]'></div>
-                                            Adding...
+                                            <div className='animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 border-b-2 border-[#ffd901]'></div>
+                                            <span className='hidden sm:inline'>Adding...</span>
                                         </>
                                     ) : (
                                         <>
-                                            <ShoppingCart className='w-5 h-5' />
+                                            <ShoppingCart className='w-4 h-4 sm:w-5 sm:h-5' />
                                             {(selectedStock || totalStocks) > 0 
                                                 ? buttonState === 'added'
-                                                    ? 'Product Added'
+                                                    ? 'Added'
                                                     : buttonState === 'maxed'
-                                                        ? 'Maxed item'
+                                                        ? 'Maxed'
                                                         : 'Add to Cart'
                                                 : 'Out of Stock'}
                                         </>
@@ -441,11 +441,11 @@ const ProductDetailPage = () => {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.8, delay: 0.8 }}
-                                className='bg-[#f8f3ed] rounded-lg shadow-lg p-6'
+                                className='bg-[#f8f3ed] rounded-lg shadow-lg p-4 sm:p-6'
                             >
-                                <h3 className='text-xl font-bold text-[#030105] mb-4'>Product Details</h3>
+                                <h3 className='text-lg sm:text-xl font-bold text-[#030105] mb-3 sm:mb-4'>Product Details</h3>
                                 {product.description && (
-                                    <p className='text-[#030105] leading-relaxed'>{product.description}</p>
+                                    <p className='text-sm sm:text-base text-[#030105] leading-relaxed'>{product.description}</p>
                                 )}
                             </motion.div>
                         </div>

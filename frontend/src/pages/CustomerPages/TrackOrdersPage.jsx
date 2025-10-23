@@ -94,37 +94,37 @@ const TrackOrdersPage = () => {
     return (
         <>
             <div className="min-h-screen bg-[#f8f3ed] flex flex-col">
-                <div className="flex-1 pt-32 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-8">
+                <div className="flex-1 pt-20 sm:pt-24 md:pt-28 lg:pt-32 mx-auto max-w-7xl px-3 sm:px-4 md:px-6 lg:px-8 pb-6 sm:pb-8">
                 {/* Header */}
                 <motion.div
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
-                    className="mb-8"
+                    className="mb-4 sm:mb-6 md:mb-8"
                 >
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                         <div>
                             <Link
                                 to="/"
-                                className="inline-flex items-center gap-2 text-sm font-medium transition-colors hover:opacity-80 mb-4"
+                                className="inline-flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-medium transition-colors hover:opacity-80 mb-3 sm:mb-4"
                                 style={{ color: '#860809' }}
                             >
-                                <ArrowLeft size={16} />
+                                <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                                 Back to Home
                             </Link>
-                            <h1 className="text-3xl font-bold text-[#860809] font-libre">
+                            <h1 className="text-2xl sm:text-3xl font-bold text-[#860809] font-libre">
                                 Track Your Orders
                             </h1>
-                            <p className="text-[#030105] mt-2 font-alice">
+                            <p className="text-[#030105] mt-1.5 sm:mt-2 font-alice text-sm sm:text-base">
                                 Monitor the status of your orders and deliveries
                             </p>
                         </div>
                         <button
                             onClick={handleRefresh}
                             disabled={isLoading}
-                            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition-colors disabled:opacity-50 bg-[#fffefc] text-[#860809] font-alice"
+                            className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg shadow-md hover:shadow-lg transition-colors disabled:opacity-50 bg-[#fffefc] text-[#860809] font-alice text-xs sm:text-sm"
                         >
-                            <RefreshCw size={16} className={isLoading ? 'animate-spin' : ''} />
+                            <RefreshCw className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isLoading ? 'animate-spin' : ''}`} />
                             Refresh
                         </button>
                     </div>
@@ -136,41 +136,41 @@ const TrackOrdersPage = () => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.1 }}
-                        className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8"
+                        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-4 sm:mb-6 md:mb-8"
                     >
-                        <div className="rounded-lg shadow-md p-6 bg-[#fffefc]">
+                        <div className="rounded-lg shadow-md p-4 sm:p-5 md:p-6 bg-[#fffefc]">
                             <div className="flex items-center">
-                                <Package className="h-8 w-8 text-blue-600" />
-                                <div className="ml-4">
-                                    <p className="text-sm font-medium text-[#a31f17] font-alice">Total Orders</p>
-                                    <p className="text-2xl font-bold text-[#030105] font-libre">{orderStats.totalOrders}</p>
+                                <Package className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-blue-600" />
+                                <div className="ml-3 sm:ml-4">
+                                    <p className="text-xs sm:text-sm font-medium text-[#a31f17] font-alice">Total Orders</p>
+                                    <p className="text-xl sm:text-2xl font-bold text-[#030105] font-libre">{orderStats.totalOrders}</p>
                                 </div>
                             </div>
                         </div>
-                        <div className="rounded-lg shadow-md p-6 bg-[#fffefc]">
+                        <div className="rounded-lg shadow-md p-4 sm:p-5 md:p-6 bg-[#fffefc]">
                             <div className="flex items-center">
-                                <CheckCircle className="h-8 w-8 text-green-600" />
-                                <div className="ml-4">
-                                    <p className="text-sm font-medium text-[#a31f17] font-alice">Completed</p>
-                                    <p className="text-2xl font-bold text-[#030105] font-libre">{orderStats.completedOrders}</p>
+                                <CheckCircle className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-green-600" />
+                                <div className="ml-3 sm:ml-4">
+                                    <p className="text-xs sm:text-sm font-medium text-[#a31f17] font-alice">Completed</p>
+                                    <p className="text-xl sm:text-2xl font-bold text-[#030105] font-libre">{orderStats.completedOrders}</p>
                                 </div>
                             </div>
                         </div>
-                        <div className="rounded-lg shadow-md p-6 bg-[#fffefc]">
+                        <div className="rounded-lg shadow-md p-4 sm:p-5 md:p-6 bg-[#fffefc]">
                             <div className="flex items-center">
-                                <Clock className="h-8 w-8 text-yellow-600" />
-                                <div className="ml-4">
-                                    <p className="text-sm font-medium text-[#a31f17] font-alice">Pending</p>
-                                    <p className="text-2xl font-bold text-[#030105] font-libre">{orderStats.pendingOrders}</p>
+                                <Clock className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-yellow-600" />
+                                <div className="ml-3 sm:ml-4">
+                                    <p className="text-xs sm:text-sm font-medium text-[#a31f17] font-alice">Pending</p>
+                                    <p className="text-xl sm:text-2xl font-bold text-[#030105] font-libre">{orderStats.pendingOrders}</p>
                                 </div>
                             </div>
                         </div>
-                        <div className="rounded-lg shadow-md p-6 bg-[#fffefc]">
+                        <div className="rounded-lg shadow-md p-4 sm:p-5 md:p-6 bg-[#fffefc]">
                             <div className="flex items-center">
-                                <Package className="h-8 w-8 text-green-600" />
-                                <div className="ml-4">
-                                    <p className="text-sm font-medium text-[#a31f17] font-alice">Total Spent</p>
-                                    <p className="text-2xl font-bold text-[#030105] font-libre">₱{orderStats.totalSpent.toFixed(2)}</p>
+                                <Package className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-green-600" />
+                                <div className="ml-3 sm:ml-4">
+                                    <p className="text-xs sm:text-sm font-medium text-[#a31f17] font-alice">Total Spent</p>
+                                    <p className="text-xl sm:text-2xl font-bold text-[#030105] font-libre">₱{orderStats.totalSpent.toFixed(2)}</p>
                                 </div>
                             </div>
                         </div>
@@ -182,16 +182,16 @@ const TrackOrdersPage = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.2 }}
-                    className="rounded-lg shadow-md p-6 mb-8 bg-[#fffefc]"
+                    className="rounded-lg shadow-md p-3 sm:p-4 md:p-6 mb-4 sm:mb-6 md:mb-8 bg-[#fffefc]"
                 >
                     <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                        <Search className="absolute left-2.5 sm:left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
                         <input
                             type="text"
                             placeholder="Search by order number or recipient name..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#860809] focus:border-transparent"
+                            className="w-full pl-8 sm:pl-10 pr-3 sm:pr-4 py-1.5 sm:py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#860809] focus:border-transparent text-sm sm:text-base"
                         />
                     </div>
                 </motion.div>
@@ -201,16 +201,16 @@ const TrackOrdersPage = () => {
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6"
+                        className="bg-red-50 border border-red-200 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6"
                     >
                         <div className="flex items-center">
-                            <AlertCircle className="h-5 w-5 text-red-600 mr-2" />
-                            <p className="text-red-800">{error}</p>
+                            <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-red-600 mr-2" />
+                            <p className="text-red-800 text-xs sm:text-sm flex-1">{error}</p>
                             <button
                                 onClick={clearError}
                                 className="ml-auto text-red-600 hover:text-red-800"
                             >
-                                <XCircle size={20} />
+                                <XCircle className="w-4 h-4 sm:w-5 sm:h-5" />
                             </button>
                         </div>
                     </motion.div>
@@ -221,20 +221,20 @@ const TrackOrdersPage = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.3 }}
-                    className="space-y-4"
+                    className="space-y-3 sm:space-y-4"
                 >
                     {filteredOrders.length === 0 ? (
-                        <div className="text-center py-12">
-                            <Package className="mx-auto h-12 w-12 text-gray-400" />
-                            <h3 className="mt-2 text-sm font-medium text-[#030105] font-alice">No orders found</h3>
-                            <p className="mt-1 text-sm text-[#a31f17] font-libre">
+                        <div className="text-center py-8 sm:py-10 md:py-12">
+                            <Package className="mx-auto h-10 w-10 sm:h-12 sm:w-12 text-gray-400" />
+                            <h3 className="mt-2 text-sm sm:text-base font-medium text-[#030105] font-alice">No orders found</h3>
+                            <p className="mt-1 text-xs sm:text-sm text-[#a31f17] font-libre">
                                 {searchTerm ? 'Try adjusting your search criteria.' : 'You haven\'t placed any orders yet.'}
                             </p>
                             {!searchTerm && (
-                                <div className="mt-6">
+                                <div className="mt-4 sm:mt-6">
                                     <Link
                                         to="/products"
-                                        className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#860809] hover:bg-[#a31f17] font-alice"
+                                        className="inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 border border-transparent shadow-sm text-xs sm:text-sm font-medium rounded-md text-white bg-[#860809] hover:bg-[#a31f17] font-alice"
                                     >
                                         Start Shopping
                                     </Link>
@@ -251,48 +251,50 @@ const TrackOrdersPage = () => {
                                 className="rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer bg-[#fffefc]"
                                 onClick={() => handleOrderClick(order)}
                             >
-                                <div className="p-6">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex-1">
-                                            <div className="flex items-center gap-4 mb-3">
-                                                <h3 className="text-lg font-semibold text-[#030105] font-alice">
+                                <div className="p-3 sm:p-4 md:p-6">
+                                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                                        <div className="flex-1 w-full sm:w-auto">
+                                            <div className="flex flex-wrap items-center gap-2 sm:gap-3 md:gap-4 mb-2 sm:mb-3">
+                                                <h3 className="text-base sm:text-lg font-semibold text-[#030105] font-alice">
                                                     Order #{order._id.slice(-8).toUpperCase()}
                                                 </h3>
-                                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(order.computedStatus)}`}>
+                                                <span className={`inline-flex items-center px-2 sm:px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(order.computedStatus)}`}>
                                                     {getStatusIcon(order.computedStatus)} {order.computedStatus.replace('_', ' ')}
                                                 </span>
                                             </div>
-                                            <p className="text-sm text-[#a31f17] mb-2 font-libre">
+                                            <p className="text-xs sm:text-sm text-[#a31f17] mb-2 font-libre">
                                                 {getStatusDescription(order.computedStatus)}
                                             </p>
-                                            <div className="flex items-center gap-6 text-sm text-[#030105] font-libre">
+                                            <div className="flex flex-wrap items-center gap-3 sm:gap-4 md:gap-6 text-xs sm:text-sm text-[#030105] font-libre">
                                                 <div className="flex items-center gap-1">
-                                                    <Clock size={16} />
+                                                    <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                                                     {new Date(order.createdAt).toLocaleDateString()}
                                                 </div>
                                                 <div className="flex items-center gap-1">
-                                                    <MapPin size={16} />
-                                                    {order.shippingInfo?.city || 'N/A'}, {order.shippingInfo?.province || 'N/A'}
+                                                    <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                                                    <span className="truncate max-w-[120px] sm:max-w-none">
+                                                        {order.shippingInfo?.city || 'N/A'}, {order.shippingInfo?.province || 'N/A'}
+                                                    </span>
                                                 </div>
                                                 <div className="flex items-center gap-1">
                                                     <span className="font-medium">₱{order.totalAmount.toFixed(2)}</span>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="flex items-center gap-2">
+                                        <div className="flex items-center gap-2 self-end sm:self-auto">
                                             {order.lalamoveDetails?.trackingUrl && (
                                                 <a
                                                     href={order.lalamoveDetails.trackingUrl}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
                                                     onClick={(e) => e.stopPropagation()}
-                                                    className="inline-flex items-center gap-1 px-3 py-1 text-sm text-blue-600 hover:text-blue-800 border border-blue-200 rounded-md hover:bg-blue-50"
+                                                    className="inline-flex items-center gap-1 px-2 sm:px-3 py-1 text-xs sm:text-sm text-blue-600 hover:text-blue-800 border border-blue-200 rounded-md hover:bg-blue-50"
                                                 >
-                                                    <ExternalLink size={14} />
+                                                    <ExternalLink className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                                                     Track
                                                 </a>
                                             )}
-                                            <span className="text-gray-400">→</span>
+                                            <span className="text-gray-400 hidden sm:inline">→</span>
                                         </div>
                                     </div>
                                 </div>
@@ -307,22 +309,22 @@ const TrackOrdersPage = () => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.4 }}
-                        className="flex items-center justify-center gap-2 mt-8"
+                        className="flex items-center justify-center gap-1.5 sm:gap-2 mt-6 sm:mt-8"
                     >
                         <button
                             onClick={() => handlePageChange(currentPage - 1)}
                             disabled={!pagination.hasPrevPage}
-                            className="px-3 py-2 text-sm font-medium text-[#030105] border border-gray-300 rounded-md hover:bg-[#f8f3ed] disabled:opacity-50 disabled:cursor-not-allowed bg-[#fffefc] font-alice"
+                            className="px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-[#030105] border border-gray-300 rounded-md hover:bg-[#f8f3ed] disabled:opacity-50 disabled:cursor-not-allowed bg-[#fffefc] font-alice"
                         >
                             Previous
                         </button>
-                        <span className="px-3 py-2 text-sm text-[#030105] font-libre">
+                        <span className="px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm text-[#030105] font-libre">
                             Page {pagination.currentPage} of {pagination.totalPages}
                         </span>
                         <button
                             onClick={() => handlePageChange(currentPage + 1)}
                             disabled={!pagination.hasNextPage}
-                            className="px-3 py-2 text-sm font-medium text-[#030105] border border-gray-300 rounded-md hover:bg-[#f8f3ed] disabled:opacity-50 disabled:cursor-not-allowed bg-[#fffefc] font-alice"
+                            className="px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-[#030105] border border-gray-300 rounded-md hover:bg-[#f8f3ed] disabled:opacity-50 disabled:cursor-not-allowed bg-[#fffefc] font-alice"
                         >
                             Next
                         </button>
@@ -599,66 +601,67 @@ const OrderDetailsModal = ({ order, onClose, getStatusColor, getStatusIcon, getS
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-3 sm:p-4 z-50">
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
                 className="rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto bg-[#fffefc]"
             >
-                <div className="p-6">
-                    <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-2xl font-bold text-[#860809] font-libre">
+                <div className="p-4 sm:p-6">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4 sm:mb-6">
+                        <h2 className="text-xl sm:text-2xl font-bold text-[#860809] font-libre">
                             Order Details
                         </h2>
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2 sm:gap-3 self-end sm:self-auto">
                             <button
                                 onClick={handlePrintReceipt}
-                                className="inline-flex items-center gap-2 px-4 py-2 bg-[#860809] text-white rounded-lg hover:bg-[#a31f17] transition-colors font-alice"
+                                className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-[#860809] text-white rounded-lg hover:bg-[#a31f17] transition-colors font-alice text-xs sm:text-sm"
                                 title="Print Receipt"
                             >
-                                <Printer size={16} />
-                                Print Receipt
+                                <Printer className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                                <span className="hidden sm:inline">Print Receipt</span>
+                                <span className="sm:hidden">Print</span>
                             </button>
                             <button
                                 onClick={onClose}
                                 className="text-gray-400 hover:text-gray-600"
                             >
-                                <XCircle size={24} />
+                                <XCircle className="w-5 h-5 sm:w-6 sm:h-6" />
                             </button>
                         </div>
                     </div>
 
                     {/* Order Status */}
-                    <div className="mb-6">
-                        <div className="flex items-center gap-3 mb-2">
-                            <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(order.computedStatus)}`}>
+                    <div className="mb-4 sm:mb-6">
+                        <div className="flex items-center gap-2 sm:gap-3 mb-1.5 sm:mb-2">
+                            <span className={`inline-flex items-center px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full text-xs sm:text-sm font-medium ${getStatusColor(order.computedStatus)}`}>
                                 {getStatusIcon(order.computedStatus)} {order.computedStatus.replace('_', ' ')}
                             </span>
                         </div>
-                        <p className="text-[#a31f17] font-libre">{getStatusDescription(order.computedStatus)}</p>
+                        <p className="text-[#a31f17] font-libre text-xs sm:text-sm">{getStatusDescription(order.computedStatus)}</p>
                     </div>
 
                     {/* Order Information */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
                         <div>
-                            <h3 className="text-lg font-semibold text-[#860809] mb-3 font-libre">Order Information</h3>
-                            <div className="space-y-2 text-sm">
-                                <div className="flex justify-between">
+                            <h3 className="text-base sm:text-lg font-semibold text-[#860809] mb-2 sm:mb-3 font-libre">Order Information</h3>
+                            <div className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm">
+                                <div className="flex justify-between gap-2">
                                     <span className="text-[#a31f17] font-alice">Order Number:</span>
                                     <span className="font-medium">#{order._id.slice(-8).toUpperCase()}</span>
                                 </div>
-                                <div className="flex justify-between">
+                                <div className="flex justify-between gap-2">
                                     <span className="text-[#a31f17] font-alice">Order Date:</span>
                                     <span className="font-medium">{new Date(order.createdAt).toLocaleDateString()}</span>
                                 </div>
-                                <div className="flex justify-between">
+                                <div className="flex justify-between gap-2">
                                     <span className="text-[#a31f17] font-alice">Payment Status:</span>
                                     <span className={`font-medium ${order.paymentStatus === 'paid' ? 'text-green-600' : 'text-yellow-600'}`}>
                                         {order.paymentStatus.charAt(0).toUpperCase() + order.paymentStatus.slice(1)}
                                     </span>
                                 </div>
-                                <div className="flex justify-between">
+                                <div className="flex justify-between gap-2">
                                     <span className="text-[#a31f17] font-alice">Shipping Method:</span>
                                     <span className="font-medium">{order.shippingMethod === 'lalamove' ? 'Delivery' : 'Pickup'}</span>
                                 </div>
@@ -666,24 +669,24 @@ const OrderDetailsModal = ({ order, onClose, getStatusColor, getStatusIcon, getS
                         </div>
 
                         <div>
-                            <h3 className="text-lg font-semibold text-[#860809] mb-3 font-libre">Shipping Information</h3>
-                            <div className="space-y-2 text-sm">
-                                <div>
+                            <h3 className="text-base sm:text-lg font-semibold text-[#860809] mb-2 sm:mb-3 font-libre">Shipping Information</h3>
+                            <div className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm">
+                                <div className="flex flex-col sm:flex-row sm:items-start gap-1">
                                     <span className="text-[#a31f17] font-alice">Recipient:</span>
-                                    <span className="font-medium ml-2">
+                                    <span className="font-medium sm:ml-2">
                                         {order.shippingInfo ? 
                                             `${order.shippingInfo.firstName || ''} ${order.shippingInfo.lastName || ''}`.trim() || 'N/A' : 
                                             'N/A'
                                         }
                                     </span>
                                 </div>
-                                <div>
+                                <div className="flex flex-col sm:flex-row sm:items-start gap-1">
                                     <span className="text-[#a31f17] font-alice">Phone:</span>
-                                    <span className="font-medium ml-2">{order.shippingInfo?.phone || 'N/A'}</span>
+                                    <span className="font-medium sm:ml-2">{order.shippingInfo?.phone || 'N/A'}</span>
                                 </div>
-                                <div>
+                                <div className="flex flex-col sm:flex-row sm:items-start gap-1">
                                     <span className="text-[#a31f17] font-alice">Address:</span>
-                                    <span className="font-medium ml-2">{order.shippingInfo?.fullAddress || 'N/A'}</span>
+                                    <span className="font-medium sm:ml-2">{order.shippingInfo?.fullAddress || 'N/A'}</span>
                                 </div>
                             </div>
                         </div>
@@ -691,14 +694,14 @@ const OrderDetailsModal = ({ order, onClose, getStatusColor, getStatusIcon, getS
 
                     {/* Driver Information (if available) */}
                     {order.lalamoveDetails?.driverName && (
-                        <div className="mb-6">
-                            <h3 className="text-lg font-semibold text-[#860809] mb-3 font-libre">Driver Information</h3>
-                            <div className="bg-blue-50 rounded-lg p-4">
-                                <div className="flex items-center gap-3">
-                                    <Truck className="h-6 w-6 text-blue-600" />
+                        <div className="mb-4 sm:mb-6">
+                            <h3 className="text-base sm:text-lg font-semibold text-[#860809] mb-2 sm:mb-3 font-libre">Driver Information</h3>
+                            <div className="bg-blue-50 rounded-lg p-3 sm:p-4">
+                                <div className="flex items-center gap-2 sm:gap-3">
+                                    <Truck className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600 flex-shrink-0" />
                                     <div>
-                                        <p className="font-medium text-gray-900">{order.lalamoveDetails.driverName}</p>
-                                        <p className="text-sm text-gray-600">{order.lalamoveDetails.driverPhone}</p>
+                                        <p className="font-medium text-gray-900 text-sm sm:text-base">{order.lalamoveDetails.driverName}</p>
+                                        <p className="text-xs sm:text-sm text-gray-600">{order.lalamoveDetails.driverPhone}</p>
                                     </div>
                                 </div>
                             </div>
@@ -706,20 +709,20 @@ const OrderDetailsModal = ({ order, onClose, getStatusColor, getStatusIcon, getS
                     )}
 
                     {/* Products */}
-                    <div className="mb-6">
-                            <h3 className="text-lg font-semibold text-[#860809] mb-3 font-libre">Products</h3>
-                        <div className="space-y-3">
+                    <div className="mb-4 sm:mb-6">
+                            <h3 className="text-base sm:text-lg font-semibold text-[#860809] mb-2 sm:mb-3 font-libre">Products</h3>
+                        <div className="space-y-2 sm:space-y-3">
                             {order.products.map((item, index) => (
-                                <div key={index} className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
+                                <div key={index} className="flex items-center gap-2 sm:gap-3 md:gap-4 p-2 sm:p-3 bg-gray-50 rounded-lg">
                                     {item.product?.image && (
                                         <img
                                             src={item.product.image}
                                             alt={item.product.name}
-                                            className="w-12 h-12 object-cover rounded"
+                                            className="w-10 h-10 sm:w-12 sm:h-12 object-cover rounded flex-shrink-0"
                                         />
                                     )}
-                                    <div className="flex-1">
-                                        <h4 className="font-medium text-[#030105] font-alice">
+                                    <div className="flex-1 min-w-0">
+                                        <h4 className="font-medium text-[#030105] font-alice text-xs sm:text-sm truncate">
                                             {item.product?.name || 'Product'}
                                             {(() => {
                                                 // Try to get weight info from stored data first, then from product data
@@ -735,11 +738,11 @@ const OrderDetailsModal = ({ order, onClose, getStatusColor, getStatusIcon, getS
                                                 return '';
                                             })()}
                                         </h4>
-                                        <p className="text-sm text-[#a31f17] font-libre">Quantity: {item.quantity}</p>
+                                        <p className="text-xs sm:text-sm text-[#a31f17] font-libre">Quantity: {item.quantity}</p>
                                     </div>
-                                    <div className="text-right">
-                                        <p className="font-medium text-[#030105] font-libre">₱{(item.price * item.quantity).toFixed(2)}</p>
-                                        <p className="text-sm text-[#a31f17] font-libre">₱{item.price.toFixed(2)} each</p>
+                                    <div className="text-right flex-shrink-0">
+                                        <p className="font-medium text-[#030105] font-libre text-xs sm:text-sm">₱{(item.price * item.quantity).toFixed(2)}</p>
+                                        <p className="text-xs text-[#a31f17] font-libre">₱{item.price.toFixed(2)} each</p>
                                     </div>
                                 </div>
                             ))}
@@ -747,16 +750,16 @@ const OrderDetailsModal = ({ order, onClose, getStatusColor, getStatusIcon, getS
                     </div>
 
                     {/* Order Summary */}
-                    <div className="border-t pt-4">
+                    <div className="border-t pt-3 sm:pt-4">
                         {/* Subtotal */}
-                        <div className="flex justify-between items-center text-sm mb-2">
+                        <div className="flex justify-between items-center text-xs sm:text-sm mb-1.5 sm:mb-2">
                             <span className="text-[#030105] font-alice">Subtotal:</span>
                             <span className="text-[#030105] font-libre">₱{order.productSubtotal?.toFixed(2) || order.products.reduce((sum, item) => sum + (item.price * item.quantity), 0).toFixed(2)}</span>
                         </div>
 
                         {/* Tax */}
                         {order.taxAmount && typeof order.taxAmount === 'number' && order.taxAmount > 0 ? (
-                            <div className="flex justify-between items-center text-sm mb-2">
+                            <div className="flex justify-between items-center text-xs sm:text-sm mb-1.5 sm:mb-2">
                                 <span className="text-[#030105] font-alice">Tax (12%):</span>
                                 <span className="text-[#030105] font-libre">₱{order.taxAmount.toFixed(2)}</span>
                             </div>
@@ -764,7 +767,7 @@ const OrderDetailsModal = ({ order, onClose, getStatusColor, getStatusIcon, getS
 
                         {/* Coupon Discount */}
                         {order.coupon && order.coupon.code && order.coupon.discount ? (
-                            <div className="flex justify-between items-center text-sm text-green-600 mb-2">
+                            <div className="flex justify-between items-center text-xs sm:text-sm text-green-600 mb-1.5 sm:mb-2">
                                 <span className="font-libre">Coupon Applied: {order.coupon.code}</span>
                                 <span className="font-libre">-₱{order.coupon.discount.toFixed(2)}</span>
                             </div>
@@ -772,14 +775,14 @@ const OrderDetailsModal = ({ order, onClose, getStatusColor, getStatusIcon, getS
 
                         {/* Delivery Fee */}
                         {order.deliveryFee && typeof order.deliveryFee === 'number' && order.deliveryFee > 0 ? (
-                            <div className="flex justify-between items-center text-sm mb-2">
+                            <div className="flex justify-between items-center text-xs sm:text-sm mb-1.5 sm:mb-2">
                                 <span className="text-[#030105] font-alice">Delivery Fee:</span>
                                 <span className="text-[#030105] font-libre">₱{order.deliveryFee.toFixed(2)}</span>
                             </div>
                         ) : null}
 
                         {/* Total Amount */}
-                        <div className="flex justify-between items-center text-lg font-semibold border-t pt-2">
+                        <div className="flex justify-between items-center text-base sm:text-lg font-semibold border-t pt-1.5 sm:pt-2 mt-1.5 sm:mt-2">
                             <span className="text-[#860809] font-libre">Total Amount:</span>
                             <span className="text-[#030105] font-libre">₱{order.totalAmount.toFixed(2)}</span>
                         </div>

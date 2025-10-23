@@ -117,32 +117,33 @@ const DiscrepancyReportPage = () => {
 
     return (
         <AdminLayout>
-            <div className="p-6 bg-[#f8f3ed] min-h-screen">
+            <div className="p-3 sm:p-4 md:p-6 bg-[#f8f3ed] min-h-screen">
             {/* Header */}
-            <div className="mb-8">
-                <div className="flex items-center justify-between">
+            <div className="mb-4 sm:mb-6 md:mb-8">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-1 sm:mb-2">
                             Discrepancy Report
                         </h1>
-                        <p className="text-gray-600">
+                        <p className="text-xs sm:text-sm text-gray-600">
                             Track and analyze product write-offs and discrepancies
                         </p>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 sm:gap-3 flex-wrap w-full sm:w-auto">
                         <button
                             onClick={() => setShowWriteOffModal(true)}
-                            className="flex items-center gap-2 px-4 py-2 bg-[#82695b] text-white rounded-lg hover:bg-[#6b5649] transition-colors"
+                            className="flex items-center gap-2 px-3 sm:px-4 py-2 text-xs sm:text-sm bg-[#82695b] text-white rounded-lg hover:bg-[#6b5649] active:bg-[#6b5649] transition-colors active:scale-95 whitespace-nowrap flex-1 sm:flex-initial justify-center"
                         >
-                            <Plus className="w-4 h-4" />
-                            New Write-off
+                            <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                            <span className="hidden xs:inline">New Write-off</span>
+                            <span className="xs:hidden">Write-off</span>
                         </button>
                         <button
                             onClick={loadData}
                             disabled={isLoading}
-                            className="flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50"
+                            className="flex items-center gap-2 px-3 sm:px-4 py-2 text-xs sm:text-sm bg-gray-600 text-white rounded-lg hover:bg-gray-700 active:bg-gray-700 transition-colors disabled:opacity-50 active:scale-95 whitespace-nowrap flex-1 sm:flex-initial justify-center"
                         >
-                            <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+                            <RefreshCw className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isLoading ? 'animate-spin' : ''}`} />
                             Refresh
                         </button>
                     </div>
@@ -150,17 +151,17 @@ const DiscrepancyReportPage = () => {
             </div>
 
             {/* Filters */}
-            <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="bg-white rounded-lg shadow-sm p-3 sm:p-4 md:p-6 mb-4 sm:mb-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
                     {/* Data Source */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
                             Data Source
                         </label>
                         <select
                             value={dataSource}
                             onChange={(e) => setDataSource(e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#82695b] focus:border-transparent"
+                            className="w-full px-2 sm:px-3 py-2 text-xs sm:text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#82695b] focus:border-transparent"
                         >
                             <option value="combined">Combined</option>
                             <option value="writeoffs">Write-offs Only</option>
@@ -170,13 +171,13 @@ const DiscrepancyReportPage = () => {
 
                     {/* Timeframe */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
                             Timeframe
                         </label>
                         <select
                             value={timeframe}
                             onChange={(e) => handleTimeframeChange(e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#82695b] focus:border-transparent"
+                            className="w-full px-2 sm:px-3 py-2 text-xs sm:text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#82695b] focus:border-transparent"
                         >
                             <option value="today">Today</option>
                             <option value="week">This Week</option>
@@ -190,25 +191,25 @@ const DiscrepancyReportPage = () => {
                     {timeframe === 'custom' && (
                         <>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
                                     Start Date
                                 </label>
                                 <input
                                     type="date"
                                     value={customDateRange.startDate}
                                     onChange={(e) => handleCustomDateChange('startDate', e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#82695b] focus:border-transparent"
+                                    className="w-full px-2 sm:px-3 py-2 text-xs sm:text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#82695b] focus:border-transparent"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
                                     End Date
                                 </label>
                                 <input
                                     type="date"
                                     value={customDateRange.endDate}
                                     onChange={(e) => handleCustomDateChange('endDate', e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#82695b] focus:border-transparent"
+                                    className="w-full px-2 sm:px-3 py-2 text-xs sm:text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#82695b] focus:border-transparent"
                                 />
                             </div>
                         </>
@@ -217,39 +218,39 @@ const DiscrepancyReportPage = () => {
             </div>
 
             {/* Tabs */}
-            <div className="bg-white rounded-lg shadow-sm mb-6">
+            <div className="bg-white rounded-lg shadow-sm mb-4 sm:mb-6">
                 <div className="border-b border-gray-200">
-                    <nav className="flex space-x-8 px-6">
+                    <nav className="flex space-x-4 sm:space-x-8 px-3 sm:px-4 md:px-6">
                         <button
                             onClick={() => setActiveTab('analytics')}
-                            className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                            className={`py-3 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm transition-colors active:scale-95 ${
                                 activeTab === 'analytics'
                                     ? 'border-[#82695b] text-[#82695b]'
                                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                             }`}
                         >
-                            <div className="flex items-center gap-2">
-                                <BarChart3 className="w-4 h-4" />
-                                Analytics
+                            <div className="flex items-center gap-1.5 sm:gap-2">
+                                <BarChart3 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                                <span className="hidden xs:inline">Analytics</span>
                             </div>
                         </button>
                         <button
                             onClick={() => setActiveTab('writeoffs')}
-                            className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                            className={`py-3 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm transition-colors active:scale-95 ${
                                 activeTab === 'writeoffs'
                                     ? 'border-[#82695b] text-[#82695b]'
                                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                             }`}
                         >
-                            <div className="flex items-center gap-2">
-                                <Table className="w-4 h-4" />
-                                Write-offs
+                            <div className="flex items-center gap-1.5 sm:gap-2">
+                                <Table className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                                <span className="hidden xs:inline">Write-offs</span>
                             </div>
                         </button>
                     </nav>
                 </div>
 
-                <div className="p-6">
+                <div className="p-3 sm:p-4 md:p-6">
                     {activeTab === 'analytics' && (
                         <AnalyticsTab 
                             analytics={analytics} 
@@ -296,44 +297,44 @@ const AnalyticsTab = ({ analytics, writeOffs, dataSource, timeframe, customDateR
     
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
             {/* Key Metrics */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-gradient-to-r from-red-500 to-red-600 rounded-lg p-6 text-white">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
+                <div className="bg-gradient-to-r from-red-500 to-red-600 rounded-lg p-4 sm:p-5 md:p-6 text-white">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-red-100 text-sm font-medium">Total Stocks Lost</p>
-                            <p className="text-3xl font-bold">{totalStocks || 0}</p>
+                            <p className="text-red-100 text-xs sm:text-sm font-medium">Total Stocks Lost</p>
+                            <p className="text-2xl sm:text-3xl font-bold">{totalStocks || 0}</p>
                         </div>
-                        <Package className="w-8 h-8 text-red-200" />
+                        <Package className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-red-200 flex-shrink-0" />
                     </div>
                 </div>
-                <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg p-6 text-white">
+                <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg p-4 sm:p-5 md:p-6 text-white">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-orange-100 text-sm font-medium">Total Cost Impact</p>
-                            <p className="text-3xl font-bold">₱{totalCost?.toLocaleString() || 0}</p>
+                            <p className="text-orange-100 text-xs sm:text-sm font-medium">Total Cost Impact</p>
+                            <p className="text-2xl sm:text-3xl font-bold break-words">₱{totalCost?.toLocaleString() || 0}</p>
                         </div>
-                        <DollarSign className="w-8 h-8 text-orange-200" />
+                        <DollarSign className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-orange-200 flex-shrink-0" />
                     </div>
                 </div>
-                <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-lg p-6 text-white">
+                <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-lg p-4 sm:p-5 md:p-6 text-white sm:col-span-2 md:col-span-1">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-yellow-100 text-sm font-medium">Categories Affected</p>
-                            <p className="text-3xl font-bold">{categoryBreakdown?.length || 0}</p>
+                            <p className="text-yellow-100 text-xs sm:text-sm font-medium">Categories Affected</p>
+                            <p className="text-2xl sm:text-3xl font-bold">{categoryBreakdown?.length || 0}</p>
                         </div>
-                        <AlertTriangle className="w-8 h-8 text-yellow-200" />
+                        <AlertTriangle className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-yellow-200 flex-shrink-0" />
                     </div>
                 </div>
             </div>
 
             {/* Charts */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                 {/* Trends Chart */}
-                <div className="bg-white border border-gray-200 rounded-lg p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Discrepancy Trends</h3>
-                    <ResponsiveContainer width="100%" height={300}>
+                <div className="bg-white border border-gray-200 rounded-lg p-3 sm:p-4 md:p-6">
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Discrepancy Trends</h3>
+                    <ResponsiveContainer width="100%" height={250} className="sm:!h-[300px]">
                         <AreaChart data={trendsData || []}>
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="date" />
@@ -361,9 +362,9 @@ const AnalyticsTab = ({ analytics, writeOffs, dataSource, timeframe, customDateR
                 </div>
 
                 {/* Category Breakdown */}
-                <div className="bg-white border border-gray-200 rounded-lg p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Category Breakdown</h3>
-                    <ResponsiveContainer width="100%" height={300}>
+                <div className="bg-white border border-gray-200 rounded-lg p-3 sm:p-4 md:p-6">
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Category Breakdown</h3>
+                    <ResponsiveContainer width="100%" height={250} className="sm:!h-[300px]">
                         <BarChart data={categoryBreakdown}>
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="category" />

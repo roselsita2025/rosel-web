@@ -147,62 +147,63 @@ const ReplacementRequestDetailsPage = () => {
 
     return (
         <AdminLayout>
-            <div className="py-8">
-                <div className="relative z-10 container mx-auto px-4">
+            <div className="py-4 sm:py-6 md:py-8">
+                <div className="relative z-10 container mx-auto px-3 sm:px-4">
                 {/* Header */}
                 <motion.div
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
-                    className="mb-8"
+                    className="mb-6 sm:mb-8"
                 >
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                            <button
-                                onClick={() => navigate('/admin/replacement-requests')}
-                                className="inline-flex items-center gap-2 text-sm font-medium transition-colors hover:opacity-80"
-                                style={{ color: '#860809' }}
-                            >
-                                <ArrowLeft size={16} />
-                                Back to Requests
-                            </button>
+                    <div className="flex flex-col gap-4">
+                        <button
+                            onClick={() => navigate('/admin/replacement-requests')}
+                            className="inline-flex items-center gap-2 text-xs sm:text-sm font-medium transition-colors hover:opacity-80 self-start active:scale-95"
+                            style={{ color: '#860809' }}
+                        >
+                            <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                            <span className="whitespace-nowrap">Back to Requests</span>
+                        </button>
+                        
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                             <div>
-                                <h2 className="text-2xl font-bold text-[#030105]">
+                                <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#030105]">
                                     Request #{currentRequest.requestNumber}
                                 </h2>
                                 <div className="flex items-center gap-3 mt-2">
                                     <StatusBadge status={currentRequest.status} />
                                 </div>
                             </div>
-                        </div>
-                        <div className="flex gap-3">
-                            {!isEditing && (currentRequest.status !== 'approved' && currentRequest.status !== 'rejected') ? (
-                                <button
-                                    onClick={() => setIsEditing(true)}
-                                    className="inline-flex items-center gap-2 px-4 py-2 bg-[#860809] text-white rounded-lg hover:bg-[#a31f17] transition-colors"
-                                >
-                                    <MessageSquare size={16} />
-                                    Update Request
-                                </button>
-                            ) : isEditing ? (
-                                <div className="flex gap-2">
+                            <div className="flex flex-wrap gap-2 sm:gap-3">
+                                {!isEditing && (currentRequest.status !== 'approved' && currentRequest.status !== 'rejected') ? (
                                     <button
-                                        onClick={handleCancel}
-                                        className="inline-flex items-center gap-2 px-4 py-2 border border-[#f7e9b8] bg-[#f7e9b8] text-[#030105] rounded-lg hover:bg-[#f0d896] transition-colors"
+                                        onClick={() => setIsEditing(true)}
+                                        className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 bg-[#860809] text-white rounded-lg hover:bg-[#a31f17] transition-colors text-xs sm:text-sm active:scale-95"
                                     >
-                                        <X size={16} />
-                                        Cancel
+                                        <MessageSquare className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                                        <span className="whitespace-nowrap">Update Request</span>
                                     </button>
-                                    <button
-                                        onClick={handleSave}
-                                        disabled={isLoading}
-                                        className="inline-flex items-center gap-2 px-4 py-2 bg-[#860809] text-white rounded-lg hover:bg-[#a31f17] transition-colors disabled:opacity-50"
-                                    >
-                                        <Save size={16} />
-                                        {isLoading ? 'Saving...' : 'Save Changes'}
-                                    </button>
-                                </div>
-                            ) : null}
+                                ) : isEditing ? (
+                                    <>
+                                        <button
+                                            onClick={handleCancel}
+                                            className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 border border-[#f7e9b8] bg-[#f7e9b8] text-[#030105] rounded-lg hover:bg-[#f0d896] transition-colors text-xs sm:text-sm active:scale-95"
+                                        >
+                                            <X className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                                            <span className="whitespace-nowrap">Cancel</span>
+                                        </button>
+                                        <button
+                                            onClick={handleSave}
+                                            disabled={isLoading}
+                                            className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 bg-[#860809] text-white rounded-lg hover:bg-[#a31f17] transition-colors disabled:opacity-50 text-xs sm:text-sm active:scale-95"
+                                        >
+                                            <Save className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                                            <span className="whitespace-nowrap">{isLoading ? 'Saving...' : 'Save Changes'}</span>
+                                        </button>
+                                    </>
+                                ) : null}
+                            </div>
                         </div>
                     </div>
                 </motion.div>
@@ -247,30 +248,30 @@ const ReplacementRequestDetailsPage = () => {
                     </motion.div>
                 )}
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
                     {/* Left Column - Request Information */}
-                    <div className="lg:col-span-2 space-y-6">
+                    <div className="lg:col-span-2 space-y-4 sm:space-y-6">
                         {/* Product Information */}
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.5, delay: 0.1 }}
-                            className="bg-[#fffefc] rounded-lg shadow-sm border border-[#f7e9b8] p-6"
+                            className="bg-[#fffefc] rounded-lg shadow-sm border border-[#f7e9b8] p-3 sm:p-4 md:p-6"
                         >
-                            <h3 className="font-semibold text-[#030105] mb-4 flex items-center">
-                                <Package className="h-5 w-5 mr-2" />
+                            <h3 className="font-semibold text-[#030105] mb-3 sm:mb-4 flex items-center text-sm sm:text-base">
+                                <Package className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                                 Product Information
                             </h3>
-                            <div className="flex items-start gap-4">
+                            <div className="flex items-start gap-3 sm:gap-4">
                                 {currentRequest.product?.image && (
                                     <img
                                         src={currentRequest.product.image}
                                         alt={currentRequest.product.name}
-                                        className="w-20 h-20 object-cover rounded"
+                                        className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded flex-shrink-0"
                                     />
                                 )}
-                                <div className="flex-1">
-                                    <h4 className="font-medium text-[#030105]">
+                                <div className="flex-1 min-w-0">
+                                    <h4 className="font-medium text-[#030105] text-sm sm:text-base break-words">
                                         {currentRequest.product?.name}
                                         {(() => {
                                             // Try to get weight info from product data
@@ -283,10 +284,10 @@ const ReplacementRequestDetailsPage = () => {
                                             return '';
                                         })()}
                                     </h4>
-                                    <p className="text-sm text-[#030105] opacity-80">
+                                    <p className="text-xs sm:text-sm text-[#030105] opacity-80 break-words">
                                         Category: {currentRequest.product?.category}
                                     </p>
-                                    <p className="text-sm text-[#030105] opacity-80">
+                                    <p className="text-xs sm:text-sm text-[#030105] opacity-80">
                                         Price: ₱{(() => {
                                             // Use the historical price from the order if available
                                             if (currentRequest.order && currentRequest.order.products) {
@@ -306,7 +307,7 @@ const ReplacementRequestDetailsPage = () => {
                                             return currentRequest.product?.price?.toFixed(2) || '0.00';
                                         })()}
                                     </p>
-                                    <p className="text-sm text-[#030105] opacity-80">
+                                    <p className="text-xs sm:text-sm text-[#030105] opacity-80">
                                         Quantity: {currentRequest.quantity}
                                     </p>
                                 </div>
@@ -318,31 +319,31 @@ const ReplacementRequestDetailsPage = () => {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.5, delay: 0.2 }}
-                            className="bg-[#fffefc] rounded-lg shadow-sm border border-[#f7e9b8] p-6"
+                            className="bg-[#fffefc] rounded-lg shadow-sm border border-[#f7e9b8] p-3 sm:p-4 md:p-6"
                         >
-                            <h3 className="font-semibold text-[#030105] mb-4 flex items-center">
-                                <User className="h-5 w-5 mr-2" />
+                            <h3 className="font-semibold text-[#030105] mb-3 sm:mb-4 flex items-center text-sm sm:text-base">
+                                <User className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                                 Customer Information
                             </h3>
-                            <div className="space-y-2 text-sm">
-                                <div className="flex justify-between">
+                            <div className="space-y-2 text-xs sm:text-sm">
+                                <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-2">
                                     <span className="text-[#030105] opacity-80">Name:</span>
-                                    <span className="font-medium text-[#030105]">{currentRequest.user?.name}</span>
+                                    <span className="font-medium text-[#030105] break-words">{currentRequest.user?.name}</span>
                                 </div>
-                                <div className="flex justify-between">
+                                <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-2">
                                     <span className="text-[#030105] opacity-80">Email:</span>
-                                    <span className="font-medium text-[#030105]">{currentRequest.user?.email}</span>
+                                    <span className="font-medium text-[#030105] break-words">{currentRequest.user?.email}</span>
                                 </div>
                                 {currentRequest.contactNumber && (
-                                    <div className="flex justify-between">
+                                    <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-2">
                                         <span className="text-[#030105] opacity-80">Contact Number:</span>
-                                        <span className="font-medium text-[#030105]">{currentRequest.contactNumber}</span>
+                                        <span className="font-medium text-[#030105] break-words">{currentRequest.contactNumber}</span>
                                     </div>
                                 )}
                                 {currentRequest.user?.phone && (
-                                    <div className="flex justify-between">
+                                    <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-2">
                                         <span className="text-[#030105] opacity-80">Phone:</span>
-                                        <span className="font-medium text-[#030105]">{currentRequest.user.phone}</span>
+                                        <span className="font-medium text-[#030105] break-words">{currentRequest.user.phone}</span>
                                     </div>
                                 )}
                             </div>
@@ -353,53 +354,53 @@ const ReplacementRequestDetailsPage = () => {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.5, delay: 0.3 }}
-                            className="bg-[#fffefc] rounded-lg shadow-sm border border-[#f7e9b8] p-6"
+                            className="bg-[#fffefc] rounded-lg shadow-sm border border-[#f7e9b8] p-3 sm:p-4 md:p-6"
                         >
-                            <h3 className="font-semibold text-[#030105] mb-4 flex items-center">
-                                <MessageSquare className="h-5 w-5 mr-2" />
+                            <h3 className="font-semibold text-[#030105] mb-3 sm:mb-4 flex items-center text-sm sm:text-base">
+                                <MessageSquare className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                                 Request Details
                             </h3>
-                            <div className="space-y-4">
+                            <div className="space-y-3 sm:space-y-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-[#030105] mb-1">
+                                    <label className="block text-xs sm:text-sm font-medium text-[#030105] mb-1">
                                         Reason
                                     </label>
-                                    <p className="text-sm text-[#030105] bg-gray-50 p-3 rounded">
+                                    <p className="text-xs sm:text-sm text-[#030105] bg-gray-50 p-2 sm:p-3 rounded break-words">
                                         {currentRequest.reason?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                                     </p>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-[#030105] mb-1">
+                                    <label className="block text-xs sm:text-sm font-medium text-[#030105] mb-1">
                                         Description
                                     </label>
-                                    <p className="text-sm text-[#030105] bg-gray-50 p-3 rounded whitespace-pre-wrap">
+                                    <p className="text-xs sm:text-sm text-[#030105] bg-gray-50 p-2 sm:p-3 rounded whitespace-pre-wrap break-words">
                                         {currentRequest.description}
                                     </p>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-[#030105] mb-1">
+                                    <label className="block text-xs sm:text-sm font-medium text-[#030105] mb-1">
                                         Submitted
                                     </label>
-                                    <p className="text-sm text-[#030105] bg-gray-50 p-3 rounded">
+                                    <p className="text-xs sm:text-sm text-[#030105] bg-gray-50 p-2 sm:p-3 rounded break-words">
                                         {formatDate(currentRequest.createdAt)}
                                     </p>
                                 </div>
                                 {currentRequest.adminResponse && (
                                     <div>
-                                        <label className="block text-sm font-medium text-[#030105] mb-1">
+                                        <label className="block text-xs sm:text-sm font-medium text-[#030105] mb-1">
                                             Admin Response
                                         </label>
-                                        <p className="text-sm text-[#030105] bg-gray-50 p-3 rounded whitespace-pre-wrap">
+                                        <p className="text-xs sm:text-sm text-[#030105] bg-gray-50 p-2 sm:p-3 rounded whitespace-pre-wrap break-words">
                                             {currentRequest.adminResponse}
                                         </p>
                                     </div>
                                 )}
                                 {currentRequest.rejectionReason && (
                                     <div>
-                                        <label className="block text-sm font-medium text-[#030105] mb-1">
+                                        <label className="block text-xs sm:text-sm font-medium text-[#030105] mb-1">
                                             Rejection Reason
                                         </label>
-                                        <p className="text-sm text-[#030105] bg-gray-50 p-3 rounded whitespace-pre-wrap">
+                                        <p className="text-xs sm:text-sm text-[#030105] bg-gray-50 p-2 sm:p-3 rounded whitespace-pre-wrap break-words">
                                             {currentRequest.rejectionReason}
                                         </p>
                                     </div>
@@ -413,18 +414,18 @@ const ReplacementRequestDetailsPage = () => {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.5, delay: 0.4 }}
-                                className="bg-[#fffefc] rounded-lg shadow-sm border border-[#f7e9b8] p-6"
+                                className="bg-[#fffefc] rounded-lg shadow-sm border border-[#f7e9b8] p-3 sm:p-4 md:p-6"
                             >
-                                <h3 className="font-semibold text-[#030105] mb-4">
+                                <h3 className="font-semibold text-[#030105] mb-3 sm:mb-4 text-sm sm:text-base">
                                     Uploaded Images
                                 </h3>
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                                     {currentRequest.images.map((image, index) => (
                                         <div key={index} className="relative">
                                             <img
                                                 src={image}
                                                 alt={`Request image ${index + 1}`}
-                                                className="w-full h-48 object-contain rounded-lg cursor-pointer hover:opacity-80 transition-opacity bg-gray-50 border border-gray-200"
+                                                className="w-full h-40 sm:h-48 object-contain rounded-lg cursor-pointer hover:opacity-80 active:opacity-80 transition-opacity bg-gray-50 border border-gray-200"
                                                 onClick={() => window.open(image, '_blank')}
                                             />
                                         </div>
@@ -435,20 +436,20 @@ const ReplacementRequestDetailsPage = () => {
                     </div>
 
                     {/* Right Column - Admin Actions */}
-                    <div className="space-y-6">
+                    <div className="space-y-4 sm:space-y-6">
                         {/* Admin Response Form */}
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.5, delay: 0.1 }}
-                            className="bg-[#fffefc] rounded-lg shadow-sm border border-[#f7e9b8] p-6"
+                            className="bg-[#fffefc] rounded-lg shadow-sm border border-[#f7e9b8] p-3 sm:p-4 md:p-6"
                         >
-                            <h3 className="font-semibold text-[#030105] mb-4">
+                            <h3 className="font-semibold text-[#030105] mb-3 sm:mb-4 text-sm sm:text-base">
                                 Admin Response
                             </h3>
-                            <div className="space-y-4">
+                            <div className="space-y-3 sm:space-y-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-[#030105] mb-1">
+                                    <label className="block text-xs sm:text-sm font-medium text-[#030105] mb-1">
                                         Status
                                     </label>
                                     <select
@@ -456,7 +457,7 @@ const ReplacementRequestDetailsPage = () => {
                                         value={formData.status}
                                         onChange={handleInputChange}
                                         disabled={!isEditing || (currentRequest.status === 'approved' || currentRequest.status === 'rejected')}
-                                        className="w-full px-3 py-2 border border-[#f7e9b8] rounded-lg focus:ring-2 focus:ring-[#860809] focus:border-transparent bg-[#fffefc] disabled:bg-gray-100"
+                                        className="w-full px-2 sm:px-3 py-2 text-xs sm:text-sm border border-[#f7e9b8] rounded-lg focus:ring-2 focus:ring-[#860809] focus:border-transparent bg-[#fffefc] disabled:bg-gray-100"
                                     >
                                         <option value="pending">Pending</option>
                                         <option value="under_review">Under Review</option>
@@ -467,7 +468,7 @@ const ReplacementRequestDetailsPage = () => {
 
 
                                 <div>
-                                    <label className="block text-sm font-medium text-[#030105] mb-1">
+                                    <label className="block text-xs sm:text-sm font-medium text-[#030105] mb-1">
                                         Admin Response {formData.status === 'approved' && <span className="text-red-500">*</span>}
                                     </label>
                                     <textarea
@@ -477,14 +478,14 @@ const ReplacementRequestDetailsPage = () => {
                                         disabled={!isEditing || (currentRequest.status === 'approved' || currentRequest.status === 'rejected')}
                                         rows={4}
                                         required={formData.status === 'approved'}
-                                        className="w-full px-3 py-2 border border-[#f7e9b8] rounded-lg focus:ring-2 focus:ring-[#860809] focus:border-transparent bg-[#fffefc] disabled:bg-gray-100"
+                                        className="w-full px-2 sm:px-3 py-2 text-xs sm:text-sm border border-[#f7e9b8] rounded-lg focus:ring-2 focus:ring-[#860809] focus:border-transparent bg-[#fffefc] disabled:bg-gray-100"
                                         placeholder="Enter your response to the customer..."
                                     />
                                 </div>
 
                                 {formData.status === 'rejected' && (
                                     <div>
-                                        <label className="block text-sm font-medium text-[#030105] mb-1">
+                                        <label className="block text-xs sm:text-sm font-medium text-[#030105] mb-1">
                                             Rejection Reason *
                                         </label>
                                         <textarea
@@ -493,7 +494,7 @@ const ReplacementRequestDetailsPage = () => {
                                             onChange={handleInputChange}
                                             disabled={!isEditing || (currentRequest.status === 'approved' || currentRequest.status === 'rejected')}
                                             rows={3}
-                                            className="w-full px-3 py-2 border border-[#f7e9b8] rounded-lg focus:ring-2 focus:ring-[#860809] focus:border-transparent bg-[#fffefc] disabled:bg-gray-100"
+                                            className="w-full px-2 sm:px-3 py-2 text-xs sm:text-sm border border-[#f7e9b8] rounded-lg focus:ring-2 focus:ring-[#860809] focus:border-transparent bg-[#fffefc] disabled:bg-gray-100"
                                             placeholder="Please provide a reason for rejection..."
                                             required
                                         />
@@ -502,7 +503,7 @@ const ReplacementRequestDetailsPage = () => {
 
 
                                 <div>
-                                    <label className="block text-sm font-medium text-[#030105] mb-1">
+                                    <label className="block text-xs sm:text-sm font-medium text-[#030105] mb-1">
                                         Internal Notes
                                     </label>
                                     <textarea
@@ -511,7 +512,7 @@ const ReplacementRequestDetailsPage = () => {
                                         onChange={handleInputChange}
                                         disabled={!isEditing || (currentRequest.status === 'approved' || currentRequest.status === 'rejected')}
                                         rows={3}
-                                        className="w-full px-3 py-2 border border-[#f7e9b8] rounded-lg focus:ring-2 focus:ring-[#860809] focus:border-transparent bg-[#fffefc] disabled:bg-gray-100"
+                                        className="w-full px-2 sm:px-3 py-2 text-xs sm:text-sm border border-[#f7e9b8] rounded-lg focus:ring-2 focus:ring-[#860809] focus:border-transparent bg-[#fffefc] disabled:bg-gray-100"
                                         placeholder="Internal notes (not visible to customer)..."
                                     />
                                 </div>
@@ -523,14 +524,14 @@ const ReplacementRequestDetailsPage = () => {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.5, delay: 0.2 }}
-                            className="bg-[#fffefc] rounded-lg shadow-sm border border-[#f7e9b8] p-6"
+                            className="bg-[#fffefc] rounded-lg shadow-sm border border-[#f7e9b8] p-3 sm:p-4 md:p-6"
                         >
-                            <h3 className="font-semibold text-[#030105] mb-4">
+                            <h3 className="font-semibold text-[#030105] mb-3 sm:mb-4 text-sm sm:text-base">
                                 Replacement Product
                             </h3>
-                            <div className="space-y-4">
+                            <div className="space-y-3 sm:space-y-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-[#030105] mb-1">
+                                    <label className="block text-xs sm:text-sm font-medium text-[#030105] mb-1">
                                         Replacement Product
                                     </label>
                                     <select
@@ -538,7 +539,7 @@ const ReplacementRequestDetailsPage = () => {
                                         value={formData.replacementProductId}
                                         onChange={handleInputChange}
                                         disabled={!isEditing || (currentRequest.status === 'approved' || currentRequest.status === 'rejected')}
-                                        className="w-full px-3 py-2 border border-[#f7e9b8] rounded-lg focus:ring-2 focus:ring-[#860809] focus:border-transparent bg-[#fffefc] disabled:bg-gray-100"
+                                        className="w-full px-2 sm:px-3 py-2 text-xs sm:text-sm border border-[#f7e9b8] rounded-lg focus:ring-2 focus:ring-[#860809] focus:border-transparent bg-[#fffefc] disabled:bg-gray-100"
                                     >
                                         <option value="">Same Product</option>
                                         {products.map(product => (
@@ -550,7 +551,7 @@ const ReplacementRequestDetailsPage = () => {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-[#030105] mb-1">
+                                    <label className="block text-xs sm:text-sm font-medium text-[#030105] mb-1">
                                         Replacement Quantity
                                     </label>
                                     <input
@@ -560,7 +561,7 @@ const ReplacementRequestDetailsPage = () => {
                                         onChange={handleInputChange}
                                         disabled={!isEditing || (currentRequest.status === 'approved' || currentRequest.status === 'rejected')}
                                         min="1"
-                                        className="w-full px-3 py-2 border border-[#f7e9b8] rounded-lg focus:ring-2 focus:ring-[#860809] focus:border-transparent bg-[#fffefc] disabled:bg-gray-100"
+                                        className="w-full px-2 sm:px-3 py-2 text-xs sm:text-sm border border-[#f7e9b8] rounded-lg focus:ring-2 focus:ring-[#860809] focus:border-transparent bg-[#fffefc] disabled:bg-gray-100"
                                     />
                                 </div>
                             </div>

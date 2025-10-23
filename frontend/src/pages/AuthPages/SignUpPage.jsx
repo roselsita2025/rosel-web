@@ -57,7 +57,7 @@ const SignUpPage = () => {
 	};
   
     return (
-<div className="flex flex-col items-center justify-center min-h-screen w-full px-4">
+<div className="flex flex-col items-center justify-center min-h-screen w-full px-3 sm:px-4 md:px-6">
 
         <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -68,21 +68,21 @@ const SignUpPage = () => {
             {/* Home Icon */}
             <Link 
               to="/welcome" 
-              className="absolute top-4 left-4 z-10 p-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
+              className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 p-1.5 sm:p-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
               title="Go to Home"
             >
-              <Home className="w-5 h-5 text-gray-600 hover:text-[#8F3333]" />
+              <Home className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 hover:text-[#8F3333]" />
             </Link>
             
-            <div className='p-7 pt-4 pb-2'>
-		        <h2 className='text-lg font-semibold mb-1 text-center text-black flex items-center justify-center'>
-			        <LucideUserPlus className='w-5 h-5 mr-2 text-black' />
+            <div className='p-5 sm:p-6 md:p-7 pt-3 sm:pt-4 pb-2'>
+		        <h2 className='text-base sm:text-lg font-semibold mb-1 text-center text-black flex items-center justify-center'>
+			        <LucideUserPlus className='w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2 text-black' />
 			        Create Account
 		        </h2>
-				<p className='text-sm text-gray-500 mb-5 text-center'>Welcome to our platform! Please enter your details.</p>
+				<p className='text-xs sm:text-sm text-gray-500 mb-4 sm:mb-5 text-center'>Welcome to our platform! Please enter your details.</p>
 
                 <form onSubmit={handleSignUp}>
-					<h3 className='text-sm font-semibold text-black'>Full Name</h3>
+					<h3 className='text-xs sm:text-sm font-semibold text-black'>Full Name</h3>
                     <Input
 						icon={User}
 						type='text'
@@ -90,7 +90,7 @@ const SignUpPage = () => {
 						value={name}
 						onChange={(e) => setName(e.target.value)}
 					/>
-					<h3 className='text-sm font-semibold text-black'>Email Address</h3>
+					<h3 className='text-xs sm:text-sm font-semibold text-black'>Email Address</h3>
                     <Input
 						icon={Mail}
 						type='email'
@@ -98,7 +98,7 @@ const SignUpPage = () => {
 						value={email}
 						onChange={(e) => setEmail(e.target.value)}
 					/>
-					<h3 className='text-sm font-semibold text-black'>Password</h3>
+					<h3 className='text-xs sm:text-sm font-semibold text-black'>Password</h3>
                     <Input
 						icon={Lock}
 						type='password'
@@ -106,7 +106,7 @@ const SignUpPage = () => {
 						value={password}
 						onChange={(e) => setPassword(e.target.value)}
 					/>
-					<h3 className='text-sm font-semibold text-black'>Confirm Password</h3>
+					<h3 className='text-xs sm:text-sm font-semibold text-black'>Confirm Password</h3>
 					<Input
 						icon={Lock}
 						type='password'
@@ -114,17 +114,17 @@ const SignUpPage = () => {
 						value={confirmPassword}
 						onChange={(e) => setConfirmPassword(e.target.value)}
 					/>
-					{(localError || error) && <p className='text-red-500 font-semibold mt-2'>{localError || error}</p>}
+					{(localError || error) && <p className='text-red-500 font-semibold mt-2 text-xs sm:text-sm'>{localError || error}</p>}
 					<PasswordStrengthMeter password={password} />
 
-					<div className='mt-3 flex items-start gap-2 text-sm text-gray-600'>
+					<div className='mt-2 sm:mt-3 flex items-start gap-2 text-xs sm:text-sm text-gray-600'>
 						<input
 							id='agree'
 							type='checkbox'
 							checked={agreed}
 							onChange={(e) => setAgreed(e.target.checked)}
 							required
-							className='mt-1 h-4 w-4 rounded border-gray-300 text-[#8F3333] focus:ring-[#a31f17]'
+							className='mt-0.5 sm:mt-1 h-3.5 w-3.5 sm:h-4 sm:w-4 rounded border-gray-300 text-[#8F3333] focus:ring-[#a31f17] flex-shrink-0'
 						/>
 						<label htmlFor='agree' className='leading-5'>
 							By creating and/or using your account, you agree to our {""}
@@ -135,20 +135,20 @@ const SignUpPage = () => {
 					</div>
 
                     <motion.button
-                    className='w-full mt-2 py-2 px-4 bg-[#8F3333] text-[#fffefc] font-bold rounded-lg shadow-lg border border-[#a31f17] hover:bg-[#a31f17] hover:text-[#fffefc] focus:outline-none focus:ring-2 focus:ring-[#a31f17] focus:ring-offset-2 transition duration-200'
+                    className='w-full mt-2 py-2 sm:py-2.5 px-4 bg-[#8F3333] text-[#fffefc] font-bold rounded-lg shadow-lg border border-[#a31f17] hover:bg-[#a31f17] hover:text-[#fffefc] focus:outline-none focus:ring-2 focus:ring-[#a31f17] focus:ring-offset-2 transition duration-200 text-sm sm:text-base'
 					whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
 					type='submit'
 					disabled={isLoading}
                     >
-                        {isLoading ? <Loader className=' animate-spin mx-auto' size={24} /> : "Sign Up"}
+                        {isLoading ? <Loader className='w-5 h-5 sm:w-6 sm:h-6 animate-spin mx-auto' /> : "Sign Up"}
                     </motion.button>
                 </form>
             </div>
 
-            <div className="px-8 py-5 bg-[#fffefc] flex flex-col items-center">
-			<hr className="w-full border-t border-gray-200 mb-4" />
-                <p className='text-sm text-gray-400'>
+            <div className="px-5 sm:px-6 md:px-8 py-4 sm:py-5 bg-[#fffefc] flex flex-col items-center">
+			<hr className="w-full border-t border-gray-200 mb-3 sm:mb-4" />
+                <p className='text-xs sm:text-sm text-gray-400'>
 					Already have an account?{" "}
 					<Link to={"/login"} className='text-[#a31f17] font-semibold hover:underline '>
 						Login

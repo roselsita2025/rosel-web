@@ -97,14 +97,14 @@ const RatingsPage = () => {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="pt-32 pb-8"
+        className="pt-20 sm:pt-24 md:pt-32 pb-6 sm:pb-8"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center justify-between mb-6 sm:mb-8">
             <div>
               <Link
                 to="/"
-                className="inline-flex items-center gap-2 text-sm font-medium transition-colors hover:opacity-80 mb-4"
+                className="inline-flex items-center gap-2 text-xs sm:text-sm font-medium transition-colors hover:opacity-80 mb-4"
                 style={{ color: '#860809' }}
               >
                 <ArrowLeft size={16} />
@@ -113,7 +113,7 @@ const RatingsPage = () => {
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#030105] font-libre">
                 Customer Reviews & Ratings
               </h1>
-              <p className="text-lg text-[#82695b] mt-2 font-alice">
+              <p className="text-base sm:text-lg text-[#82695b] mt-2 font-alice">
                 See what our customers are saying about Rosel Frozen Meats
               </p>
             </div>
@@ -123,7 +123,7 @@ const RatingsPage = () => {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
           {/* Left Column - Overall Rating & Distribution */}
           <div className="lg:col-span-1">
             {/* Overall Rating */}
@@ -131,33 +131,32 @@ const RatingsPage = () => {
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
-              className="bg-white rounded-xl p-6 shadow-lg mb-6"
+              className="bg-white rounded-xl p-4 sm:p-6 shadow-lg mb-4 sm:mb-6"
             >
               <div className="text-center">
                 {isLoading ? (
                   <div className="animate-pulse">
-                    <div className="h-12 bg-gray-300 rounded mb-2"></div>
-                    <div className="h-6 bg-gray-300 rounded mb-2"></div>
+                    <div className="h-10 sm:h-12 bg-gray-300 rounded mb-2"></div>
+                    <div className="h-5 sm:h-6 bg-gray-300 rounded mb-2"></div>
                     <div className="h-4 bg-gray-300 rounded w-3/4 mx-auto"></div>
                   </div>
                 ) : (
                   <>
-                    <div className="text-5xl font-bold text-[#030105] font-libre mb-2">
+                    <div className="text-4xl sm:text-5xl font-bold text-[#030105] font-libre mb-2">
                       {getAverageRating() || '0.0'}
                     </div>
                     <div className="flex items-center justify-center mb-2">
-                      <span className="text-[#82695b] font-alice mr-2">Out of 5 Stars</span>
+                      <span className="text-sm sm:text-base text-[#82695b] font-alice mr-2">Out of 5 Stars</span>
                       <div className="flex text-[#ffd901]">
                         {[...Array(5)].map((_, i) => (
                           <Star 
                             key={i} 
-                            size={20} 
-                            className={i < Math.floor(getAverageRating()) ? "fill-current" : "text-gray-300"} 
+                            className={`w-4 h-4 sm:w-5 sm:h-5 ${i < Math.floor(getAverageRating()) ? "fill-current" : "text-gray-300"}`}
                           />
                         ))}
                       </div>
                     </div>
-                    <p className="text-sm text-[#82695b] font-libre">
+                    <p className="text-xs sm:text-sm text-[#82695b] font-libre">
                       Overall rating of {getTotalReviews()} {getTotalReviews() === 1 ? 'review' : 'reviews'}
                     </p>
                   </>
@@ -170,9 +169,9 @@ const RatingsPage = () => {
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="bg-white rounded-xl p-6 shadow-lg"
+              className="bg-white rounded-xl p-4 sm:p-6 shadow-lg"
             >
-              <h3 className="text-lg font-semibold text-[#030105] mb-4 font-libre">Rating Distribution</h3>
+              <h3 className="text-base sm:text-lg font-semibold text-[#030105] mb-3 sm:mb-4 font-libre">Rating Distribution</h3>
               
               {isLoading ? (
                 <div className="space-y-3">
@@ -194,16 +193,16 @@ const RatingsPage = () => {
                     const percentage = total > 0 ? (count / total) * 100 : 0;
                     
                     return (
-                      <div key={rating} className="flex items-center mb-3">
-                        <span className="text-sm text-[#030105] w-8 font-alice">{rating}</span>
-                        <Star size={16} className="text-[#ffd901] fill-current mx-2" />
-                        <div className="flex-1 bg-gray-200 rounded-full h-2 mx-2">
+                      <div key={rating} className="flex items-center mb-2 sm:mb-3">
+                        <span className="text-xs sm:text-sm text-[#030105] w-6 sm:w-8 font-alice">{rating}</span>
+                        <Star className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#ffd901] fill-current mx-1.5 sm:mx-2" />
+                        <div className="flex-1 bg-gray-200 rounded-full h-2 mx-1.5 sm:mx-2">
                           <div 
                             className={`h-2 rounded-full ${rating >= 4 ? 'bg-[#ff6b35]' : 'bg-gray-400'}`}
                             style={{ width: `${percentage}%` }}
                           ></div>
                         </div>
-                        <span className="text-sm text-[#030105] w-8 text-right font-alice">{count}</span>
+                        <span className="text-xs sm:text-sm text-[#030105] w-6 sm:w-8 text-right font-alice">{count}</span>
                       </div>
                     );
                   })}
@@ -213,11 +212,11 @@ const RatingsPage = () => {
               {/* View Filters */}
               <div className="mt-4 space-y-3">
                 <div>
-                  <label className="block text-sm font-semibold text-[#030105] mb-2 font-alice">Filter by Rating</label>
+                  <label className="block text-xs sm:text-sm font-semibold text-[#030105] mb-2 font-alice">Filter by Rating</label>
                   <select
                     value={ratingFilter}
                     onChange={(e) => handleFilterChange('rating', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice text-sm"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice text-xs sm:text-sm"
                   >
                     <option value="">All Ratings</option>
                     <option value="5">5 Stars</option>
@@ -229,11 +228,11 @@ const RatingsPage = () => {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-semibold text-[#030105] mb-2 font-alice">Filter by Product</label>
+                  <label className="block text-xs sm:text-sm font-semibold text-[#030105] mb-2 font-alice">Filter by Product</label>
                   <select
                     value={productFilter}
                     onChange={(e) => handleFilterChange('product', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice text-sm"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice text-xs sm:text-sm"
                   >
                     <option value="">All Products</option>
                     <option value="pork">Pork Products</option>
@@ -244,13 +243,13 @@ const RatingsPage = () => {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-semibold text-[#030105] mb-2 font-alice">Search Reviews</label>
+                  <label className="block text-xs sm:text-sm font-semibold text-[#030105] mb-2 font-alice">Search Reviews</label>
                   <input
                     type="text"
                     value={searchTerm}
                     onChange={(e) => handleFilterChange('search', e.target.value)}
                     placeholder="Search feedback..."
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice text-sm"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice text-xs sm:text-sm"
                   />
                 </div>
               </div>
@@ -264,10 +263,10 @@ const RatingsPage = () => {
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
-              className="bg-white rounded-xl p-6 shadow-lg mb-6"
+              className="bg-white rounded-xl p-4 sm:p-6 shadow-lg mb-4 sm:mb-6"
             >
-              <h3 className="text-lg font-semibold text-[#030105] mb-4 font-libre">Our Commitment to Quality</h3>
-              <div className="space-y-4 text-[#82695b] font-alice">
+              <h3 className="text-base sm:text-lg font-semibold text-[#030105] mb-3 sm:mb-4 font-libre">Our Commitment to Quality</h3>
+              <div className="space-y-3 sm:space-y-4 text-sm sm:text-base text-[#82695b] font-alice">
                 <p>
                   We like to get feedback, and we especially like hearing when our client thinks it was a job well done.
                 </p>
@@ -281,10 +280,10 @@ const RatingsPage = () => {
               </div>
               
               {/* Leave Feedback Button */}
-              <div className="mt-6">
+              <div className="mt-4 sm:mt-6">
                 <button 
                   onClick={handleOpenFeedbackModal}
-                  className="bg-[#ff6b35] text-white px-6 py-3 rounded-lg hover:bg-[#e55a2b] transition-colors font-alice font-semibold"
+                  className="bg-[#ff6b35] text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg hover:bg-[#e55a2b] transition-colors font-alice font-semibold text-sm sm:text-base"
                 >
                   Leave Us Feedback
                 </button>
@@ -296,12 +295,12 @@ const RatingsPage = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="space-y-4"
+              className="space-y-3 sm:space-y-4"
             >
               {isLoading ? (
                 // Loading state
                 Array.from({ length: 5 }).map((_, index) => (
-                  <div key={`loading-${index}`} className="bg-white rounded-xl p-6 shadow-lg">
+                  <div key={`loading-${index}`} className="bg-white rounded-xl p-4 sm:p-6 shadow-lg">
                     <div className="animate-pulse">
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center">
@@ -327,21 +326,20 @@ const RatingsPage = () => {
               ) : reviews.length > 0 ? (
                 // Dynamic reviews
                 reviews.map((review, index) => (
-                  <div key={review._id} className="bg-white rounded-xl p-6 shadow-lg">
-                    <div className="flex items-start justify-between mb-3">
+                  <div key={review._id} className="bg-white rounded-xl p-4 sm:p-6 shadow-lg">
+                    <div className="flex items-start justify-between mb-2 sm:mb-3">
                       <div className="flex items-center">
-                        <div className="flex text-[#ffd901] mr-3">
+                        <div className="flex text-[#ffd901] mr-2 sm:mr-3">
                           {[...Array(5)].map((_, i) => (
                             <Star 
                               key={i} 
-                              size={16} 
-                              className={i < review.rating ? "fill-current" : "text-gray-300"} 
+                              className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${i < review.rating ? "fill-current" : "text-gray-300"}`}
                             />
                           ))}
                         </div>
                         <div>
-                          <p className="font-semibold text-[#030105] font-alice">{review.userName}</p>
-                          <p className="text-sm text-[#82695b] font-libre">
+                          <p className="text-sm sm:text-base font-semibold text-[#030105] font-alice">{review.userName}</p>
+                          <p className="text-xs sm:text-sm text-[#82695b] font-libre">
                             {new Date(review.createdAt).toLocaleDateString('en-US', {
                               year: 'numeric',
                               month: 'long',
@@ -351,12 +349,12 @@ const RatingsPage = () => {
                         </div>
                       </div>
                     </div>
-                    <p className="text-[#030105] font-alice">
+                    <p className="text-sm sm:text-base text-[#030105] font-alice">
                       {review.feedback}
                     </p>
                     {review.product && review.product !== 'general' && (
                       <div className="mt-2">
-                        <span className="inline-block px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full font-alice">
+                        <span className="inline-block px-2 py-1 bg-gray-100 text-gray-600 text-xs sm:text-sm rounded-full font-alice">
                           {review.product.charAt(0).toUpperCase() + review.product.slice(1)} Product
                         </span>
                       </div>
@@ -365,12 +363,12 @@ const RatingsPage = () => {
                 ))
               ) : (
                 // No reviews state
-                <div className="text-center py-12">
-                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Star className="w-8 h-8 text-gray-400" />
+                <div className="text-center py-8 sm:py-12">
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                    <Star className="w-7 h-7 sm:w-8 sm:h-8 text-gray-400" />
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-600 mb-2 font-libre">No Reviews Found</h3>
-                  <p className="text-gray-500 text-sm mb-4 font-alice">
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-600 mb-2 font-libre">No Reviews Found</h3>
+                  <p className="text-gray-500 text-xs sm:text-sm mb-3 sm:mb-4 font-alice">
                     {searchTerm || ratingFilter || productFilter 
                       ? 'No reviews match your current filters. Try adjusting your search criteria.'
                       : 'No reviews have been submitted yet.'
@@ -379,7 +377,7 @@ const RatingsPage = () => {
                   {!searchTerm && !ratingFilter && !productFilter && (
                     <Link
                       to="/ratings"
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-[#860809] text-white rounded-lg hover:bg-[#a31f17] transition-colors font-alice text-sm"
+                      className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 bg-[#860809] text-white rounded-lg hover:bg-[#a31f17] transition-colors font-alice text-xs sm:text-sm"
                     >
                       Leave Us Feedback
                     </Link>
@@ -389,21 +387,21 @@ const RatingsPage = () => {
 
               {/* Pagination */}
               {pagination && pagination.totalPages > 1 && (
-                <div className="flex items-center justify-center gap-2 mt-8">
+                <div className="flex items-center justify-center gap-2 mt-6 sm:mt-8">
                   <button
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={!pagination.hasPrevPage || isLoading}
-                    className="px-4 py-2 text-sm font-medium text-[#a31f17] border border-gray-300 rounded-md hover:bg-[#fffefc] disabled:opacity-50 disabled:cursor-not-allowed bg-[#fffefc] font-alice"
+                    className="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-[#a31f17] border border-gray-300 rounded-md hover:bg-[#fffefc] disabled:opacity-50 disabled:cursor-not-allowed bg-[#fffefc] font-alice"
                   >
                     Previous
                   </button>
-                  <span className="px-4 py-2 text-sm text-[#030105] font-libre">
+                  <span className="px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-[#030105] font-libre">
                     Page {pagination.currentPage} of {pagination.totalPages}
                   </span>
                   <button
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={!pagination.hasNextPage || isLoading}
-                    className="px-4 py-2 text-sm font-medium text-[#a31f17] border border-gray-300 rounded-md hover:bg-[#fffefc] disabled:opacity-50 disabled:cursor-not-allowed bg-[#fffefc] font-alice"
+                    className="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-[#a31f17] border border-gray-300 rounded-md hover:bg-[#fffefc] disabled:opacity-50 disabled:cursor-not-allowed bg-[#fffefc] font-alice"
                   >
                     Next
                   </button>

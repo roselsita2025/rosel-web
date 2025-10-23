@@ -7,6 +7,18 @@ import { CATEGORIES, PRODUCT_STATUSES } from "../constants/products.js";
 import { notificationService } from "../services/notificationService.js";
 import { createActivityLog } from "./activityLog.controller.js";
 
+// Helper function to check and send low stock alerts
+async function checkAndSendLowStockAlert(product, currentStock, threshold = 10) {
+    try {
+        // Send alert if stock is at or below threshold
+        if (currentStock <= threshold) {
+            await notificationService.sendLowStockAlert(product, currentStock, threshold);
+        }
+    } catch (error) {
+        console.error('Error sending low stock notification:', error);
+    }
+}
+
 export const getAllProducts = async (req, res) => {
     try {
         const products = await Product.find({});
@@ -50,10 +62,20 @@ export const getFeaturedProducts = async (req, res) => {
 
 export const createProduct = async (req, res) => {
     try {
-        const {name, description, basePricePerKg, image, images = [], category, quantity, barcode, weightKg, supplier} = req.body;
+        const {name, description, basePricePerKg, image, images = [], category, quantity, barcode, weightKg, weightBarcode, supplier} = req.body;
 
         if (!CATEGORIES.includes(String(category))) {
             return res.status(400).json({ message: "Invalid category" });
+        }
+
+        // Validate product barcode is required
+        if (!barcode || !barcode.trim()) {
+            return res.status(400).json({ message: "Product barcode is required" });
+        }
+
+        // Validate weight barcode is required if weightKg is provided
+        if (weightKg && (!weightBarcode || !weightBarcode.trim())) {
+            return res.status(400).json({ message: "Weight barcode is required when creating a weight-based product" });
         }
 
         const incomingImages = [];
@@ -72,6 +94,16 @@ export const createProduct = async (req, res) => {
 
         const mainImageUrl = uploadedUrls[0] || "";
 
+        // Build weight option with barcode if weightKg is provided
+        let weightOptionsData = null;
+        if (weightKg) {
+            weightOptionsData = [{
+                weightKg: Number(weightKg),
+                stockUnits: quantity || 0,
+                ...(weightBarcode && weightBarcode.trim() && { barcode: weightBarcode.trim() })
+            }];
+        }
+
         const product = await Product.create({
             name,
             description,
@@ -84,7 +116,7 @@ export const createProduct = async (req, res) => {
             status: PRODUCT_STATUSES.AVAILABLE,
             barcode: typeof barcode === 'string' && barcode.trim() ? barcode.trim() : undefined,
             supplier: supplier || "",
-            ...(weightKg && { weightOptions: [{ weightKg: Number(weightKg), stockUnits: quantity || 0 }] })
+            ...(weightOptionsData && { weightOptions: weightOptionsData })
         });
 
         try {
@@ -134,6 +166,18 @@ export const createProduct = async (req, res) => {
         res.status(201).json({product});
     } catch (error) {
         console.log("Error in createProduct controller", error.message);
+        
+        // Handle duplicate key errors
+        if (error.code === 11000) {
+            const field = Object.keys(error.keyPattern || {})[0];
+            if (field === 'name') {
+                return res.status(400).json({message: "A product with this name already exists. Please use a different name."});
+            } else if (field === 'barcode') {
+                return res.status(400).json({message: "This barcode is already in use. Please use a different barcode."});
+            }
+            return res.status(400).json({message: "A product with this information already exists."});
+        }
+        
         res.status(500).json({message: "Server error", error: error.message});
     }
 };
@@ -271,16 +315,15 @@ export const searchProducts = async (req, res) => {
             filter.category = String(category).trim();
         }
 
-        if (minPrice || maxPrice) {
-            filter.price = {};
-            if (minPrice) filter.price.$gte = Number(minPrice);
-            if (maxPrice) filter.price.$lte = Number(maxPrice);
-        }
+        // Note: Price filtering is done post-query since priceMin is a virtual field
+        // We fetch all matching products first, then filter by price
 
+        // Stock filtering: For weight-based products, we need to check if any weight option has stock
+        // For now, we'll do post-query filtering for accurate results
         if (inStock === "true") {
-            filter.quantity = { $gt: 0 };
+            // Will filter after query to check totalStockUnits
         } else if (inStock === "false") {
-            filter.quantity = { $lte: 0 };
+            // Will filter after query to check totalStockUnits
         }
 
         const sortField = ["price", "name", "createdAt", "category"].includes(sort) ? sort : "createdAt";
@@ -289,12 +332,36 @@ export const searchProducts = async (req, res) => {
 
         const pageNumber = Math.max(1, Number(page) || 1);
         const pageSize = Math.max(1, Math.min(100, Number(limit) || 20));
-        const skip = (pageNumber - 1) * pageSize;
 
-        const [total, products] = await Promise.all([
-            Product.countDocuments(filter),
-            Product.find(filter).sort(sortObj).skip(skip).limit(pageSize)
-        ]);
+        // Fetch more products initially to account for filtering
+        const fetchLimit = pageSize * 3; // Fetch 3x to ensure we have enough after filtering
+
+        let allProducts = await Product.find(filter).sort(sortObj).limit(fetchLimit);
+
+        // Convert to JSON to get virtual fields (priceMin, totalStockUnits)
+        allProducts = allProducts.map(p => p.toJSON());
+
+        // Apply price filtering on virtual priceMin field
+        if (minPrice || maxPrice) {
+            allProducts = allProducts.filter(p => {
+                const productPrice = p.priceMin || p.price || 0;
+                if (minPrice && productPrice < Number(minPrice)) return false;
+                if (maxPrice && productPrice > Number(maxPrice)) return false;
+                return true;
+            });
+        }
+
+        // Apply stock filtering on virtual totalStockUnits field
+        if (inStock === "true") {
+            allProducts = allProducts.filter(p => (p.totalStockUnits || p.quantity || 0) > 0);
+        } else if (inStock === "false") {
+            allProducts = allProducts.filter(p => (p.totalStockUnits || p.quantity || 0) <= 0);
+        }
+
+        // Apply pagination after filtering
+        const skip = (pageNumber - 1) * pageSize;
+        const products = allProducts.slice(skip, skip + pageSize);
+        const total = allProducts.length;
 
         res.json({ products, total, page: pageNumber, pageSize: products.length });
     } catch (error) {
@@ -314,10 +381,13 @@ export const suggestProducts = async (req, res) => {
             name: { $regex: String(q).trim(), $options: "i" },
             status: PRODUCT_STATUSES.AVAILABLE,
         })
-        .select("name image mainImageUrl price quantity category")
+        .select("name image mainImageUrl price quantity category basePricePerKg weightOptions")
         .limit(Math.max(1, Math.min(20, Number(limit) || 5)));
 
-        res.json({ suggestions });
+        // Convert to JSON to get virtual fields (priceMin, totalStockUnits)
+        const suggestionsWithVirtuals = suggestions.map(s => s.toJSON());
+
+        res.json({ suggestions: suggestionsWithVirtuals });
     } catch (error) {
         console.log("Error in suggestProducts controller", error.message);
         res.status(500).json({message: "Server error", error: error.message});
@@ -363,11 +433,39 @@ export const getProductByBarcode = async (req, res) => {
         if (!barcode || !String(barcode).trim()) {
             return res.status(400).json({ message: "Barcode is required" });
         }
-        const product = await Product.findOne({ barcode: String(barcode).trim() });
+        
+        const barcodeStr = String(barcode).trim();
+        
+        // First, try to find by product-level barcode
+        let product = await Product.findOne({ barcode: barcodeStr });
+        let matchedWeightOptionId = null;
+        
+        // If not found, search in weight option barcodes
+        if (!product) {
+            product = await Product.findOne({ 
+                'weightOptions.barcode': barcodeStr 
+            });
+            
+            // If found via weight option barcode, identify which weight option matched
+            if (product) {
+                const matchedOption = product.weightOptions.find(
+                    opt => opt.barcode === barcodeStr
+                );
+                if (matchedOption) {
+                    matchedWeightOptionId = matchedOption._id;
+                }
+            }
+        }
+        
         if (!product) {
             return res.status(404).json({ message: "Product not found" });
         }
-        res.json({ product });
+        
+        // Return product with optional matchedWeightOptionId
+        res.json({ 
+            product,
+            matchedWeightOptionId: matchedWeightOptionId ? String(matchedWeightOptionId) : null
+        });
     } catch (error) {
         console.log("Error in getProductByBarcode controller", error.message);
         res.status(500).json({ message: "Server error", error: error.message });
@@ -589,6 +687,18 @@ export const updateProduct = async (req, res) => {
         res.json({ product: updated });
     } catch (error) {
         console.log("Error in updateProduct controller", error.message);
+        
+        // Handle duplicate key errors
+        if (error.code === 11000) {
+            const field = Object.keys(error.keyPattern || {})[0];
+            if (field === 'name') {
+                return res.status(400).json({message: "A product with this name already exists. Please use a different name."});
+            } else if (field === 'barcode') {
+                return res.status(400).json({message: "This barcode is already in use. Please use a different barcode."});
+            }
+            return res.status(400).json({message: "A product with this information already exists."});
+        }
+        
         res.status(500).json({ message: "Server error", error: error.message });
     }
 };
@@ -610,13 +720,8 @@ export const updateProductQuantity = async (req, res) => {
         product.quantity = quantity;
         const updatedProduct = await product.save();
 
-        try {
-            if (quantity <= 10 && oldQuantity > 10) {
-                const result = await notificationService.sendLowStockAlert(updatedProduct, quantity, 10);
-            }
-        } catch (notificationError) {
-            console.error('❌ Error sending low stock notification:', notificationError);
-        }
+        // Check for low stock alert
+        await checkAndSendLowStockAlert(updatedProduct, quantity, 10);
 
         await updateFeaturedProductsCache();
         
@@ -666,13 +771,10 @@ export const addProductQuantity = async (req, res) => {
         } catch (logError) {
             console.error('Error logging stock in activity:', logError);
         }
-        try {
-            if (updatedProduct.quantity <= 10 && oldQuantity > 10) {
-                await notificationService.sendLowStockAlert(updatedProduct, updatedProduct.quantity, 10);
-            }
-        } catch (notificationError) {
-            console.error('Error sending low stock notification:', notificationError);
-        }
+        
+        // Check for low stock alert
+        await checkAndSendLowStockAlert(updatedProduct, updatedProduct.quantity, 10);
+        
         await updateFeaturedProductsCache();
         
         res.json({product: updatedProduct, message: "Quantity added successfully"});
@@ -726,13 +828,9 @@ export const removeProductQuantity = async (req, res) => {
         } catch (logError) {
             console.error('Error logging stock out activity:', logError);
         }
-        try {
-            if (updatedProduct.quantity <= 10 && oldQuantity > 10) {
-                await notificationService.sendLowStockAlert(updatedProduct, updatedProduct.quantity, 10);
-            }
-        } catch (notificationError) {
-            console.error('Error sending low stock notification:', notificationError);
-        }
+        
+        // Check for low stock alert
+        await checkAndSendLowStockAlert(updatedProduct, updatedProduct.quantity, 10);
 
         const message = reason 
             ? `Quantity removed successfully (Reason: ${reason})`
@@ -846,7 +944,7 @@ async function buildHybridFeaturedProducts() {
 export const addWeightOption = async (req, res) => {
     try {
         const { id } = req.params;
-        let { weightKg, stockUnits } = req.body || {};
+        let { weightKg, stockUnits, barcode } = req.body || {};
 
         if (typeof weightKg !== 'number' || weightKg <= 0) {
             return res.status(400).json({ message: "weightKg must be a positive number" });
@@ -864,14 +962,52 @@ export const addWeightOption = async (req, res) => {
         if (!product) return res.status(404).json({ message: "Product not found" });
 
         product.weightOptions = Array.isArray(product.weightOptions) ? product.weightOptions : [];
-        product.weightOptions.push({ weightKg, stockUnits });
+        
+        // Create new weight option with optional barcode
+        const newWeightOption = { weightKg, stockUnits };
+        if (barcode && barcode.trim()) {
+            newWeightOption.barcode = barcode.trim();
+        }
+        
+        product.weightOptions.push(newWeightOption);
         const updated = await product.save();
+
+        // Log activity
+        try {
+            const details = barcode 
+                ? `Added new weight option: ${weightKg}kg with ${stockUnits} units (Barcode: ${barcode})`
+                : `Added new weight option: ${weightKg}kg with ${stockUnits} units`;
+            
+            await createActivityLog({
+                productId: updated._id,
+                productName: updated.name,
+                action: 'updated',
+                details: details,
+                adminId: req.user.id,
+                adminName: req.user.name,
+                changes: {
+                    weightOptions: { 
+                        added: { weightKg, stockUnits, barcode: barcode || 'N/A' }
+                    }
+                }
+            });
+        } catch (logError) {
+            console.error('Error logging add weight option activity:', logError);
+        }
 
         try { await redis.del("featuredProducts"); } catch {}
 
         res.json({ product: updated });
     } catch (error) {
         console.log("Error in addWeightOption:", error.message);
+        
+        // Handle duplicate barcode errors from pre-save hook
+        if (error.code === 11000 && error.conflictingBarcode) {
+            return res.status(400).json({ 
+                message: `A weight option with barcode '${error.conflictingBarcode}' already exists` 
+            });
+        }
+        
         res.status(500).json({ message: "Server error", error: error.message });
     }
 };
@@ -879,12 +1015,14 @@ export const addWeightOption = async (req, res) => {
 export const updateWeightOption = async (req, res) => {
     try {
         const { id, weightOptionId } = req.params;
-        const { weightKg, stockUnits } = req.body || {};
+        const { weightKg, stockUnits, barcode } = req.body || {};
 
         const product = await Product.findById(id);
         if (!product) return res.status(404).json({ message: "Product not found" });
         const opt = product.weightOptions?.id(weightOptionId);
         if (!opt) return res.status(404).json({ message: "Weight option not found" });
+
+        let oldStock = opt.stockUnits;
 
         if (typeof weightKg !== 'undefined') {
             if (typeof weightKg !== 'number' || weightKg <= 0 || !Number.isFinite(weightKg)) {
@@ -892,16 +1030,25 @@ export const updateWeightOption = async (req, res) => {
             }
             opt.weightKg = Math.round(weightKg * 100) / 100;
         }
+        
+        if (typeof barcode !== 'undefined') {
+            // Allow setting barcode to empty/null or to a new value
+            opt.barcode = barcode && barcode.trim() ? barcode.trim() : undefined;
+        }
+        
         if (typeof stockUnits !== 'undefined') {
             if (typeof stockUnits !== 'number' || !Number.isInteger(stockUnits) || stockUnits < 0) {
                 return res.status(400).json({ message: "stockUnits must be an integer >= 0" });
             }
-            const oldStock = opt.stockUnits;
+            oldStock = opt.stockUnits;
             opt.stockUnits = stockUnits;
-            
-            const updated = await product.save();
-            try { await redis.del("featuredProducts"); } catch {}
-            
+        }
+        
+        const updated = await product.save();
+        try { await redis.del("featuredProducts"); } catch {}
+        
+        // Activity logging and stock alerts only if stockUnits was changed
+        if (typeof stockUnits !== 'undefined') {
             try {
                 const newStock = stockUnits;
                 const stockChange = newStock - oldStock;
@@ -943,14 +1090,21 @@ export const updateWeightOption = async (req, res) => {
                 console.error('Error logging weight option stock update:', logError);
             }
             
-            res.json({ product: updated });
-        } else {
-            const updated = await product.save();
-            try { await redis.del("featuredProducts"); } catch {}
-            res.json({ product: updated });
+            // Check for low stock alert for weight options
+            await checkAndSendLowStockAlert(updated, stockUnits, 10);
         }
+        
+        res.json({ product: updated });
     } catch (error) {
         console.log("Error in updateWeightOption:", error.message);
+        
+        // Handle duplicate barcode errors from pre-save hook
+        if (error.code === 11000 && error.conflictingBarcode) {
+            return res.status(400).json({ 
+                message: `A weight option with barcode '${error.conflictingBarcode}' already exists` 
+            });
+        }
+        
         res.status(500).json({ message: "Server error", error: error.message });
     }
 };

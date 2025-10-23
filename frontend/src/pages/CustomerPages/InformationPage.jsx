@@ -356,81 +356,81 @@ const InformationPage = () => {
     }
 
     return (
-        <div className='min-h-screen pt-32 pb-8 md:pt-32 md:pb-16 bg-[#f8f3ed]'>
-            <div className='mx-auto max-w-screen-xl px-4 2xl:px-0'>
+        <div className='min-h-screen pt-20 sm:pt-24 md:pt-28 lg:pt-32 pb-6 sm:pb-8 md:pb-12 lg:pb-16 bg-[#f8f3ed]'>
+            <div className='mx-auto max-w-screen-xl px-3 sm:px-4 md:px-6 lg:px-8 2xl:px-0'>
                 {/* Header */}
                 <motion.div
-                    className='mb-8'
+                    className='mb-4 sm:mb-6 md:mb-8'
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
                 >
                     <button
                         onClick={() => navigate('/carts')}
-                        className='inline-flex items-center gap-2 text-sm font-medium transition-colors hover:opacity-80 mb-4 text-[#860809] font-alice'
+                        className='inline-flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-medium transition-colors hover:opacity-80 mb-3 sm:mb-4 text-[#860809] font-alice'
                     >
-                        <ArrowLeft size={16} />
+                        <ArrowLeft className='w-3.5 h-3.5 sm:w-4 sm:h-4' />
                         Back to Cart
                     </button>
                     
-                    <h1 className='text-3xl font-bold text-[#860809] font-libre'>
+                    <h1 className='text-2xl sm:text-3xl font-bold text-[#860809] font-libre'>
                         Shipping Information
                     </h1>
-                    <p className='text-sm mt-2 text-[#a31f17] font-alice'>
+                    <p className='text-xs sm:text-sm mt-1.5 sm:mt-2 text-[#a31f17] font-alice'>
                         Step 1 of 3 - Enter your contact and shipping details
                     </p>
                 </motion.div>
 
-                <form onSubmit={handleSubmit} className='space-y-8'>
-                    <div className='grid grid-cols-1 gap-8 lg:grid-cols-3'>
+                <form onSubmit={handleSubmit} className='space-y-6 sm:space-y-8'>
+                    <div className='grid grid-cols-1 gap-6 sm:gap-8 lg:grid-cols-3'>
                         {/* Left Side - Form */}
                         <motion.div
-                            className='lg:col-span-2 space-y-6'
+                            className='lg:col-span-2 space-y-4 sm:space-y-6'
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.5, delay: 0.2 }}
                         >
                             {/* Contact Information */}
-                            <div className='rounded-lg border border-gray-300 p-6 bg-[#fffefc] shadow-md'>
-                                <h2 className='text-xl font-semibold mb-4 flex items-center gap-2 text-[#860809] font-libre'>
-                                    <User size={20} />
+                            <div className='rounded-lg border border-gray-300 p-4 sm:p-6 bg-[#fffefc] shadow-md'>
+                                <h2 className='text-lg sm:text-xl font-semibold mb-3 sm:mb-4 flex items-center gap-2 text-[#860809] font-libre'>
+                                    <User className='w-4 h-4 sm:w-5 sm:h-5' />
                                     Contact Information
                                 </h2>
                                 
-                                <div className='space-y-4'>
+                                <div className='space-y-3 sm:space-y-4'>
                                     <div>
-                                        <label className='block text-sm font-medium mb-2 text-[#a31f17] font-alice'>
+                                        <label className='block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 text-[#a31f17] font-alice'>
                                             Email Address *
                                         </label>
                                         <div className='relative'>
-                                            <Mail size={16} className='absolute left-3 top-1/2 transform -translate-y-1/2' style={{ color: '#a31f17' }} />
+                                            <Mail className='w-3.5 h-3.5 sm:w-4 sm:h-4 absolute left-3 top-1/2 transform -translate-y-1/2' style={{ color: '#a31f17' }} />
                                             <input
                                                 type='email'
                                                 name='email'
                                                 value={formData.email}
                                                 onChange={handleInputChange}
-                                                className={`w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#860809] ${
+                                                className={`w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 sm:py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#860809] text-sm sm:text-base ${
                                                     errors.email ? 'border-red-500' : 'border-gray-300'
                                                 }`}
                                                 style={{ backgroundColor: '#fffefc' }}
                                                 placeholder='your@email.com'
                                             />
                                         </div>
-                                        {errors.email && <p className='text-red-500 text-sm mt-1'>{errors.email}</p>}
+                                        {errors.email && <p className='text-red-500 text-xs sm:text-sm mt-1'>{errors.email}</p>}
                                     </div>
                                 </div>
                             </div>
 
                             {/* Shipping Address */}
-                            <div className='rounded-lg border border-gray-300 p-6 bg-[#fffefc] shadow-md'>
-                                <h2 className='text-xl font-semibold mb-4 flex items-center gap-2 text-[#860809] font-libre'>
-                                    <Home size={20} />
+                            <div className='rounded-lg border border-gray-300 p-4 sm:p-6 bg-[#fffefc] shadow-md'>
+                                <h2 className='text-lg sm:text-xl font-semibold mb-3 sm:mb-4 flex items-center gap-2 text-[#860809] font-libre'>
+                                    <Home className='w-4 h-4 sm:w-5 sm:h-5' />
                                     Shipping Address
                                 </h2>
                                 
-                                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                                <div className='grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4'>
                                     <div>
-                                        <label className='block text-sm font-medium mb-2 text-[#a31f17] font-alice'>
+                                        <label className='block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 text-[#a31f17] font-alice'>
                                             First Name *
                                         </label>
                                         <input
@@ -438,17 +438,17 @@ const InformationPage = () => {
                                             name='firstName'
                                             value={formData.firstName}
                                             onChange={handleInputChange}
-                                            className={`w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#860809] ${
+                                            className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#860809] text-sm sm:text-base ${
                                                 errors.firstName ? 'border-red-500' : 'border-gray-300'
                                             }`}
                                             style={{ backgroundColor: '#fffefc' }}
                                             placeholder='First Name'
                                         />
-                                        {errors.firstName && <p className='text-red-500 text-sm mt-1'>{errors.firstName}</p>}
+                                        {errors.firstName && <p className='text-red-500 text-xs sm:text-sm mt-1'>{errors.firstName}</p>}
                                     </div>
 
                                     <div>
-                                        <label className='block text-sm font-medium mb-2 text-[#a31f17] font-alice'>
+                                        <label className='block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 text-[#a31f17] font-alice'>
                                             Last Name *
                                         </label>
                                         <input
@@ -456,17 +456,17 @@ const InformationPage = () => {
                                             name='lastName'
                                             value={formData.lastName}
                                             onChange={handleInputChange}
-                                            className={`w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#860809] ${
+                                            className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#860809] text-sm sm:text-base ${
                                                 errors.lastName ? 'border-red-500' : 'border-gray-300'
                                             }`}
                                             style={{ backgroundColor: '#fffefc' }}
                                             placeholder='Last Name'
                                         />
-                                        {errors.lastName && <p className='text-red-500 text-sm mt-1'>{errors.lastName}</p>}
+                                        {errors.lastName && <p className='text-red-500 text-xs sm:text-sm mt-1'>{errors.lastName}</p>}
                                     </div>
 
-                                    <div className='md:col-span-2'>
-                                        <label className='block text-sm font-medium mb-2 text-[#a31f17] font-alice'>
+                                    <div className='sm:col-span-2'>
+                                        <label className='block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 text-[#a31f17] font-alice'>
                                             Address *
                                         </label>
                                         <input
@@ -474,17 +474,17 @@ const InformationPage = () => {
                                             name='address'
                                             value={formData.address}
                                             onChange={handleInputChange}
-                                            className={`w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#860809] ${
+                                            className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#860809] text-sm sm:text-base ${
                                                 errors.address ? 'border-red-500' : 'border-gray-300'
                                             }`}
                                             style={{ backgroundColor: '#fffefc' }}
                                             placeholder='Street Address'
                                         />
-                                        {errors.address && <p className='text-red-500 text-sm mt-1'>{errors.address}</p>}
+                                        {errors.address && <p className='text-red-500 text-xs sm:text-sm mt-1'>{errors.address}</p>}
                                     </div>
 
                                     <div>
-                                        <label className='block text-sm font-medium mb-2 text-[#a31f17] font-alice'>
+                                        <label className='block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 text-[#a31f17] font-alice'>
                                             Barangay *
                                         </label>
                                         <input
@@ -492,17 +492,17 @@ const InformationPage = () => {
                                             name='barangay'
                                             value={formData.barangay}
                                             onChange={handleInputChange}
-                                            className={`w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#860809] ${
+                                            className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#860809] text-sm sm:text-base ${
                                                 errors.barangay ? 'border-red-500' : 'border-gray-300'
                                             }`}
                                             style={{ backgroundColor: '#fffefc' }}
                                             placeholder='Barangay'
                                         />
-                                        {errors.barangay && <p className='text-red-500 text-sm mt-1'>{errors.barangay}</p>}
+                                        {errors.barangay && <p className='text-red-500 text-xs sm:text-sm mt-1'>{errors.barangay}</p>}
                                     </div>
 
                                     <div>
-                                        <label className='block text-sm font-medium mb-2 text-[#a31f17] font-alice'>
+                                        <label className='block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 text-[#a31f17] font-alice'>
                                             Postal Code *
                                         </label>
                                         <input
@@ -510,17 +510,17 @@ const InformationPage = () => {
                                             name='postalCode'
                                             value={formData.postalCode}
                                             onChange={handleInputChange}
-                                            className={`w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#860809] ${
+                                            className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#860809] text-sm sm:text-base ${
                                                 errors.postalCode ? 'border-red-500' : 'border-gray-300'
                                             }`}
                                             style={{ backgroundColor: '#fffefc' }}
                                             placeholder='1234'
                                         />
-                                        {errors.postalCode && <p className='text-red-500 text-sm mt-1'>{errors.postalCode}</p>}
+                                        {errors.postalCode && <p className='text-red-500 text-xs sm:text-sm mt-1'>{errors.postalCode}</p>}
                                     </div>
 
                                     <div>
-                                        <label className='block text-sm font-medium mb-2 text-[#a31f17] font-alice'>
+                                        <label className='block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 text-[#a31f17] font-alice'>
                                             City *
                                         </label>
                                         <input
@@ -528,24 +528,24 @@ const InformationPage = () => {
                                             name='city'
                                             value={formData.city}
                                             onChange={handleInputChange}
-                                            className={`w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#860809] ${
+                                            className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#860809] text-sm sm:text-base ${
                                                 errors.city ? 'border-red-500' : 'border-gray-300'
                                             }`}
                                             style={{ backgroundColor: '#fffefc' }}
                                             placeholder='City'
                                         />
-                                        {errors.city && <p className='text-red-500 text-sm mt-1'>{errors.city}</p>}
+                                        {errors.city && <p className='text-red-500 text-xs sm:text-sm mt-1'>{errors.city}</p>}
                                     </div>
 
                                     <div>
-                                        <label className='block text-sm font-medium mb-2 text-[#a31f17] font-alice'>
+                                        <label className='block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 text-[#a31f17] font-alice'>
                                             Province *
                                         </label>
                                         <select
                                             name='province'
                                             value={formData.province}
                                             onChange={handleInputChange}
-                                            className={`w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#860809] ${
+                                            className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#860809] text-sm sm:text-base ${
                                                 errors.province ? 'border-red-500' : 'border-gray-300'
                                             }`}
                                             style={{ backgroundColor: '#fffefc' }}
@@ -555,63 +555,63 @@ const InformationPage = () => {
                                                 <option key={province} value={province}>{province}</option>
                                             ))}
                                         </select>
-                                        {errors.province && <p className='text-red-500 text-sm mt-1'>{errors.province}</p>}
+                                        {errors.province && <p className='text-red-500 text-xs sm:text-sm mt-1'>{errors.province}</p>}
                                     </div>
 
-                                    <div className='md:col-span-2'>
-                                        <label className='block text-sm font-medium mb-2 text-[#a31f17] font-alice'>
+                                    <div className='sm:col-span-2'>
+                                        <label className='block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 text-[#a31f17] font-alice'>
                                             Phone Number *
                                         </label>
                                         <div className='relative'>
-                                            <Phone size={16} className='absolute left-3 top-1/2 transform -translate-y-1/2' style={{ color: '#a31f17' }} />
+                                            <Phone className='w-3.5 h-3.5 sm:w-4 sm:h-4 absolute left-3 top-1/2 transform -translate-y-1/2' style={{ color: '#a31f17' }} />
                                             <input
                                                 type='tel'
                                                 name='phone'
                                                 value={formData.phone}
                                                 onChange={handleInputChange}
-                                                className={`w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#860809] ${
+                                                className={`w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 sm:py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#860809] text-sm sm:text-base ${
                                                     errors.phone ? 'border-red-500' : 'border-gray-300'
                                                 }`}
                                                 style={{ backgroundColor: '#fffefc' }}
                                                 placeholder='+63xxx xxx xxxx'
                                             />
                                         </div>
-                                        {errors.phone && <p className='text-red-500 text-sm mt-1'>{errors.phone}</p>}
+                                        {errors.phone && <p className='text-red-500 text-xs sm:text-sm mt-1'>{errors.phone}</p>}
                                     </div>
                                 </div>
 
                                 {/* Save Information Toggle */}
-                                <div className='mt-6 flex items-center gap-3'>
+                                <div className='mt-4 sm:mt-6 flex items-center gap-2 sm:gap-3'>
                                     <input
                                         type='checkbox'
                                         id='saveInfo'
                                         name='saveInfo'
                                         checked={formData.saveInfo}
                                         onChange={handleInputChange}
-                                        className='w-4 h-4 rounded border-gray-300'
+                                        className='w-3.5 h-3.5 sm:w-4 sm:h-4 rounded border-gray-300'
                                     />
-                                    <label htmlFor='saveInfo' className='text-sm font-medium text-[#a31f17] font-alice'>
+                                    <label htmlFor='saveInfo' className='text-xs sm:text-sm font-medium text-[#a31f17] font-alice'>
                                         Save this information for next time
                                     </label>
                                 </div>
                             </div>
 
                             {/* Google Maps Integration */}
-                            <div className={`rounded-lg border p-6 shadow-md transition-all duration-300 ${
+                            <div className={`rounded-lg border p-4 sm:p-6 shadow-md transition-all duration-300 ${
                                 locationRequired 
                                     ? 'border-red-500 bg-red-50 ring-2 ring-red-200' 
                                     : 'border-gray-300 bg-[#fffefc]'
                             }`} data-location-container>
-                                <h2 className={`text-xl font-semibold mb-4 flex items-center gap-2 font-libre ${
+                                <h2 className={`text-lg sm:text-xl font-semibold mb-3 sm:mb-4 flex flex-wrap items-center gap-2 font-libre ${
                                     locationRequired ? 'text-red-600' : 'text-[#860809]'
                                 }`}>
-                                    <MapPin size={20} />
+                                    <MapPin className='w-4 h-4 sm:w-5 sm:h-5' />
                                     Location Confirmation
-                                    {locationRequired && <span className="text-sm font-normal text-red-500 ml-2">(Required)</span>}
+                                    {locationRequired && <span className="text-xs sm:text-sm font-normal text-red-500">(Required)</span>}
                                 </h2>
                                 
-                                <div className='space-y-4'>
-                                    <p className={`text-sm font-libre ${
+                                <div className='space-y-3 sm:space-y-4'>
+                                    <p className={`text-xs sm:text-sm font-libre ${
                                         locationRequired 
                                             ? 'text-red-600 font-medium' 
                                             : 'text-[#a31f17]'
@@ -622,12 +622,12 @@ const InformationPage = () => {
                                         }
                                     </p>
                                     
-                                    <div className='flex gap-3'>
+                                    <div className='flex flex-col sm:flex-row gap-2 sm:gap-3'>
                                         <button
                                             type='button'
                                             onClick={handleGeocodeAddress}
                                             disabled={isGeocoding}
-                                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 font-alice ${
+                                            className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-300 font-alice ${
                                                 geocodeSuccess
                                                     ? 'bg-green-600 text-white'
                                                     : isGeocoding
@@ -636,8 +636,8 @@ const InformationPage = () => {
                                             }`}
                                         >
                                             {isGeocoding ? (
-                                                <div className="flex items-center gap-2">
-                                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                                <div className="flex items-center gap-2 justify-center">
+                                                    <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                                                     Locating...
                                                 </div>
                                             ) : geocodeSuccess ? (
@@ -652,7 +652,7 @@ const InformationPage = () => {
                                                 type='button'
                                                 onClick={handleLocationConfirm}
                                                 disabled={locationConfirmed}
-                                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 font-alice ${
+                                                className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-300 font-alice ${
                                                     locationConfirmed
                                                         ? 'bg-green-600 text-white cursor-default'
                                                         : 'bg-[#a31f17] text-white hover:opacity-90'
@@ -664,12 +664,12 @@ const InformationPage = () => {
                                     </div>
 
                                     {/* Google Maps */}
-                                    <div className='w-full h-64 border border-gray-300 rounded-lg overflow-hidden'>
+                                    <div className='w-full h-48 sm:h-56 md:h-64 border border-gray-300 rounded-lg overflow-hidden'>
                                         {mapError ? (
                                             <div className='w-full h-full flex items-center justify-center' style={{ backgroundColor: '#fef2f2' }}>
-                                                <div className='text-center'>
-                                                    <MapPin size={48} style={{ color: '#ef4444' }} className='mx-auto mb-2' />
-                                                    <p className='text-sm font-medium' style={{ color: '#ef4444' }}>
+                                                <div className='text-center px-4'>
+                                                    <MapPin className='w-10 h-10 sm:w-12 sm:h-12' style={{ color: '#ef4444' }} />
+                                                    <p className='text-xs sm:text-sm font-medium mt-2' style={{ color: '#ef4444' }}>
                                                         {mapError}
                                                     </p>
                                                     <p className='text-xs mt-1' style={{ color: '#dc2626' }}>
@@ -682,9 +682,9 @@ const InformationPage = () => {
                                                 <div id="google-map" className="w-full h-full"></div>
                                                 {!isMapLoaded && (
                                                     <div className='absolute inset-0 flex items-center justify-center' style={{ backgroundColor: '#f8f3ed' }}>
-                                                        <div className='text-center'>
-                                                            <MapPin size={48} style={{ color: '#a31f17' }} className='mx-auto mb-2' />
-                                                            <p className='text-sm' style={{ color: '#a31f17' }}>
+                                                        <div className='text-center px-4'>
+                                                            <MapPin className='w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-2' style={{ color: '#a31f17' }} />
+                                                            <p className='text-xs sm:text-sm' style={{ color: '#a31f17' }}>
                                                                 Loading Google Maps...
                                                             </p>
                                                             <p className='text-xs mt-1' style={{ color: '#860809' }}>
@@ -703,7 +703,7 @@ const InformationPage = () => {
 
                         {/* Right Side - Order Summary and Coupon */}
                         <motion.div
-                            className='space-y-6'
+                            className='space-y-4 sm:space-y-6'
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.5, delay: 0.4 }}
@@ -726,17 +726,19 @@ const InformationPage = () => {
                         <button
                             type='submit'
                             disabled={isSubmitting}
-                            className='flex items-center gap-2 px-8 py-3 rounded-lg text-white font-medium transition-colors hover:opacity-90 focus:outline-none focus:ring-4 disabled:opacity-50 bg-[#860809] font-alice'
+                            className='w-full sm:w-auto flex items-center justify-center gap-2 px-4 sm:px-6 md:px-8 py-2.5 sm:py-3 rounded-lg text-white font-medium transition-colors hover:opacity-90 focus:outline-none focus:ring-4 disabled:opacity-50 bg-[#860809] font-alice text-sm sm:text-base'
                         >
                             {isSubmitting ? (
                                 <>
-                                    <div className='w-4 h-4 border-2 border-[#feffff] border-t-[#ffd901] rounded-full animate-spin'></div>
-                                    Processing...
+                                    <div className='w-3.5 h-3.5 sm:w-4 sm:h-4 border-2 border-[#feffff] border-t-[#ffd901] rounded-full animate-spin'></div>
+                                    <span className='hidden sm:inline'>Processing...</span>
+                                    <span className='sm:hidden'>Processing...</span>
                                 </>
                             ) : (
                                 <>
-                                    Continue to Shipping Options
-                                    <ArrowLeft size={16} className='rotate-180' />
+                                    <span className='hidden sm:inline'>Continue to Shipping Options</span>
+                                    <span className='sm:hidden'>Continue</span>
+                                    <ArrowLeft className='w-3.5 h-3.5 sm:w-4 sm:h-4 rotate-180' />
                                 </>
                             )}
                         </button>

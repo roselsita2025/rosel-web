@@ -4,7 +4,9 @@ import { CATEGORIES, PRODUCT_STATUSES } from "../constants/products.js";
 const productSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: [true, 'Name is required']
+        required: [true, 'Name is required'],
+        unique: true,
+        trim: true
     },
     price: {
         type: Number,
@@ -58,7 +60,13 @@ const productSchema = new mongoose.Schema({
         {
             _id: { type: mongoose.Schema.Types.ObjectId, auto: true },
             weightKg: { type: Number, min: 0.01, required: true },
-            stockUnits: { type: Number, min: 0, default: 0, required: true }
+            stockUnits: { type: Number, min: 0, default: 0, required: true },
+            barcode: { 
+                type: String, 
+                trim: true, 
+                sparse: true,
+                default: undefined
+            }
         }
     ],
     status: {
@@ -128,6 +136,52 @@ const productSchema = new mongoose.Schema({
         return ret;
     }},
     toObject: { virtuals: true }
+});
+
+// Custom validation to ensure weight option barcodes are unique across all products
+productSchema.pre('save', async function(next) {
+    if (!this.isModified('weightOptions')) {
+        return next();
+    }
+    
+    try {
+        // Get all weight option barcodes from this product (excluding empty/undefined)
+        const weightBarcodes = (this.weightOptions || [])
+            .map(opt => opt.barcode)
+            .filter(barcode => barcode && barcode.trim());
+        
+        if (weightBarcodes.length === 0) {
+            return next();
+        }
+        
+        // Check for duplicates within this product's own weight options
+        const uniqueBarcodes = new Set(weightBarcodes);
+        if (uniqueBarcodes.size !== weightBarcodes.length) {
+            const error = new Error('Duplicate barcodes found within weight options of this product');
+            error.code = 11000;
+            return next(error);
+        }
+        
+        // Check if any of these barcodes exist in other products' weight options
+        const Product = this.constructor;
+        const conflictingProducts = await Product.find({
+            _id: { $ne: this._id },
+            'weightOptions.barcode': { $in: weightBarcodes }
+        });
+        
+        if (conflictingProducts.length > 0) {
+            const conflictingBarcode = conflictingProducts[0].weightOptions
+                .find(opt => weightBarcodes.includes(opt.barcode))?.barcode;
+            const error = new Error(`Weight option barcode '${conflictingBarcode}' already exists in another product`);
+            error.code = 11000;
+            error.conflictingBarcode = conflictingBarcode;
+            return next(error);
+        }
+        
+        next();
+    } catch (error) {
+        next(error);
+    }
 });
 
     const Product = mongoose.model('Product', productSchema);

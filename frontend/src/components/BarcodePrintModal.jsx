@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import JsBarcode from 'jsbarcode';
 import { Printer, X } from 'lucide-react';
 
-const BarcodePrintModal = ({ isOpen, onClose, barcode, productName }) => {
+const BarcodePrintModal = ({ isOpen, onClose, barcode, productName, weightKg = null }) => {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -38,11 +38,13 @@ const BarcodePrintModal = ({ isOpen, onClose, barcode, productName }) => {
       return;
     }
 
+    const displayName = weightKg ? `${productName} (${weightKg} kg)` : productName;
+
     printWindow.document.write(`
       <!DOCTYPE html>
       <html>
         <head>
-          <title>Barcode - ${productName}</title>
+          <title>Barcode - ${displayName}</title>
           <style>
             body { 
               font-family: Arial, sans-serif; 
@@ -62,6 +64,11 @@ const BarcodePrintModal = ({ isOpen, onClose, barcode, productName }) => {
               font-weight: bold; 
               margin-bottom: 15px;
               color: #333;
+            }
+            .weight-info {
+              font-size: 16px;
+              color: #860809;
+              margin-bottom: 10px;
             }
             .barcode-number { 
               font-size: 16px; 
@@ -83,6 +90,7 @@ const BarcodePrintModal = ({ isOpen, onClose, barcode, productName }) => {
         <body>
           <div class="barcode-container">
             <div class="product-name">${productName}</div>
+            ${weightKg ? `<div class="weight-info">${weightKg} kg</div>` : ''}
             <canvas id="barcode-canvas" width="400" height="120"></canvas>
             <div class="barcode-number">${barcode}</div>
             <div class="company-info">Rosel Frozen Meats</div>
@@ -135,7 +143,10 @@ const BarcodePrintModal = ({ isOpen, onClose, barcode, productName }) => {
         </div>
         
         <div className="text-center mb-6">
-          <div className="font-semibold mb-3 text-[#030105] font-alice">{productName}</div>
+          <div className="font-semibold mb-3 text-[#030105] font-alice">
+            {productName}
+            {weightKg && <span className="text-[#860809] ml-2">({weightKg} kg)</span>}
+          </div>
           <div className="border border-gray-300 rounded p-4 bg-white">
             <canvas 
               ref={canvasRef} 

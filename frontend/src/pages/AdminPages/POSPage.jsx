@@ -108,9 +108,10 @@ const POSPage = () => {
         setScanError('');
         
         // Find and add product to cart
-        const product = await productStore.getState().fetchProductByBarcode(digitsOnly);
-        if (product) {
-          addToCart(product);
+        const result = await productStore.getState().fetchProductByBarcode(digitsOnly);
+        if (result) {
+          const { product, matchedWeightOptionId } = result;
+          addToCart(product, matchedWeightOptionId);
         } else {
           setScanError('Product not found');
         }
@@ -173,9 +174,10 @@ const POSPage = () => {
     setScanError('');
     
     // Find and add product to cart
-    const product = await productStore.getState().fetchProductByBarcode(code);
-    if (product) {
-      addToCart(product);
+    const result = await productStore.getState().fetchProductByBarcode(code);
+    if (result) {
+      const { product, matchedWeightOptionId } = result;
+      addToCart(product, matchedWeightOptionId);
       // Stop camera after successful scan
       if (scanMode === 'camera') {
         stopCameraScan();
@@ -201,7 +203,7 @@ const POSPage = () => {
   // Calculate totals whenever cart changes
   useEffect(() => {
     const subtotal = cart.reduce((sum, item) => sum + ((item.unitPrice || item.price) * item.quantity), 0);
-    const tax = subtotal * 0.12; // 12% VAT
+    const tax = 0; // Tax removed
     let discount = 0;
     
     if (paymentInfo.discountType === 'percent') {
@@ -210,7 +212,7 @@ const POSPage = () => {
       discount = paymentInfo.discountValue;
     }
     
-    const total = subtotal + tax - discount;
+    const total = subtotal - discount;
     const change = paymentInfo.cashReceived - total;
     
     setPaymentInfo(prev => ({
@@ -236,10 +238,19 @@ const POSPage = () => {
   }) || [];
 
   // Cart functions
-  const addToCart = (product) => {
+  const addToCart = (product, matchedWeightOptionId = null) => {
     setCartError(''); // Clear any previous errors
     
-    // Check if product has weight options
+    // If a specific weight option was matched by barcode, add it directly
+    if (matchedWeightOptionId) {
+      const matchedOption = product.weightOptions?.find(opt => String(opt._id) === String(matchedWeightOptionId));
+      if (matchedOption) {
+        addProductToCart(product, matchedOption);
+        return;
+      }
+    }
+    
+    // Check if product has weight options (and no specific weight was matched)
     if (product.hasWeightOptions && product.weightOptions && product.weightOptions.length > 0) {
       // Show weight selection modal
       setSelectedProduct(product);
@@ -605,7 +616,7 @@ const POSPage = () => {
 
           <div class="totals">
             <div><strong>Subtotal:</strong> ${formatCurrency(transaction.payment.subtotal)}</div>
-            ${transaction.payment.tax > 0 ? `<div><strong>Tax (12%):</strong> ${formatCurrency(transaction.payment.tax)}</div>` : ''}
+            {/* Tax removed */}
             ${transaction.payment.discount > 0 ? `<div><strong>Discount:</strong> -${formatCurrency(transaction.payment.discount)}</div>` : ''}
             <div class="total"><strong>TOTAL:</strong> ${formatCurrency(transaction.payment.total)}</div>
           </div>
@@ -634,43 +645,43 @@ const POSPage = () => {
 
   return (
     <AdminLayout>
-      <div className="p-6 bg-[#f8f3ed] min-h-screen">
+      <div className="p-3 sm:p-4 md:p-6 bg-[#f8f3ed] min-h-screen">
         <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-2">
-            <h1 className="text-3xl font-bold text-[#860809] font-libre">Point of Sale</h1>
+        <div className="mb-4 md:mb-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-2">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#860809] font-libre">Point of Sale</h1>
             <Link
               to="/pos/history"
-              className="flex items-center gap-2 px-4 py-2 bg-[#a31f17] text-white rounded-lg hover:bg-[#860809] transition-colors font-alice"
+              className="flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-[#a31f17] text-white text-sm sm:text-base rounded-lg hover:bg-[#860809] transition-colors font-alice whitespace-nowrap"
             >
-              <History className="w-4 h-4" />
+              <History className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               Transaction History
             </Link>
           </div>
-            <p className="text-[#a31f17] font-alice">Process cash transactions and manage sales</p>
+            <p className="text-sm sm:text-base text-[#a31f17] font-alice">Process cash transactions and manage sales</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
           {/* Left Panel - Product Selection */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-3 sm:space-y-4 md:space-y-6">
             {/* Search and Filters */}
-            <div className="bg-[#fffefc] rounded-lg shadow-md border border-gray-300 p-4">
-              <div className="flex flex-col md:flex-row gap-4">
+            <div className="bg-[#fffefc] rounded-lg shadow-md border border-gray-300 p-3 sm:p-4">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 md:gap-4">
                 <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#a31f17] w-5 h-5" />
+                  <Search className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-[#a31f17] w-4 h-4 sm:w-5 sm:h-5" />
                   <input
                     type="text"
-                    placeholder="Search products by name or barcode..."
+                    placeholder="Search products..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice"
+                    className="w-full pl-8 sm:pl-10 pr-3 sm:pr-4 py-2 sm:py-2.5 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice"
                   />
                 </div>
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice"
+                  className="px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice"
                 >
                   <option value="">All Categories</option>
                   {categories.map(category => (
@@ -683,58 +694,58 @@ const POSPage = () => {
             </div>
 
             {/* Barcode Scanner */}
-            <div className="bg-[#fffefc] rounded-lg shadow-md border border-gray-300 p-4">
-              <h3 className="text-lg font-semibold text-[#860809] mb-4 flex items-center gap-2 font-libre">
-                <ScanLine className="w-5 h-5" />
+            <div className="bg-[#fffefc] rounded-lg shadow-md border border-gray-300 p-3 sm:p-4">
+              <h3 className="text-base sm:text-lg font-semibold text-[#860809] mb-3 sm:mb-4 flex items-center gap-1.5 sm:gap-2 font-libre">
+                <ScanLine className="w-4 h-4 sm:w-5 sm:h-5" />
                 Barcode Scanner
               </h3>
               
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {/* Scanner Mode Selection */}
                 <div className="flex gap-2">
                   <button
                     onClick={() => setScanMode('usb')}
-                    className={`flex-1 py-2 px-4 text-sm rounded-lg font-medium transition-colors font-alice ${
+                    className={`flex-1 py-2 px-2 sm:px-4 text-xs sm:text-sm rounded-lg font-medium transition-colors font-alice ${
                       scanMode === 'usb'
                         ? 'bg-[#860809] text-white'
                         : 'bg-[#f8f3ed] text-[#030105] hover:bg-[#a31f17] hover:text-white'
                     }`}
                   >
-                    <Hash className="w-4 h-4 inline mr-2" />
-                    USB Scanner
+                    <Hash className="w-3 h-3 sm:w-4 sm:h-4 inline mr-1 sm:mr-2" />
+                    <span className="hidden xs:inline">USB </span>Scanner
                   </button>
                   <button
                     onClick={() => setScanMode('camera')}
-                    className={`flex-1 py-2 px-4 text-sm rounded-lg font-medium transition-colors font-alice ${
+                    className={`flex-1 py-2 px-2 sm:px-4 text-xs sm:text-sm rounded-lg font-medium transition-colors font-alice ${
                       scanMode === 'camera'
                         ? 'bg-[#860809] text-white'
                         : 'bg-[#f8f3ed] text-[#030105] hover:bg-[#a31f17] hover:text-white'
                     }`}
                   >
-                    <Camera className="w-4 h-4 inline mr-2" />
+                    <Camera className="w-3 h-3 sm:w-4 sm:h-4 inline mr-1 sm:mr-2" />
                     Camera
                   </button>
                 </div>
 
                 {/* USB Scanner Info */}
                 {scanMode === 'usb' && (
-                  <div className="bg-[#f8f3ed] border border-gray-300 rounded-lg p-3">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Hash className="w-4 h-4 text-[#860809]" />
-                      <span className="text-sm font-medium text-[#860809] font-alice">USB Scanner Ready</span>
+                  <div className="bg-[#f8f3ed] border border-gray-300 rounded-lg p-2.5 sm:p-3">
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-2">
+                      <Hash className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#860809]" />
+                      <span className="text-xs sm:text-sm font-medium text-[#860809] font-alice">USB Scanner Ready</span>
                     </div>
                     <p className="text-xs text-[#a31f17] mb-2 font-libre">
                       Connect your USB barcode scanner and scan products directly. The scanner will automatically add items to cart.
                     </p>
                     {lastScannedCode && (
-                      <div className="text-xs text-[#860809] font-alice">
-                        Last scanned: <span className="font-mono bg-white px-2 py-1 rounded">{lastScannedCode}</span>
+                      <div className="text-xs text-[#860809] font-alice break-all">
+                        Last scanned: <span className="font-mono bg-white px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-xs">{lastScannedCode}</span>
                       </div>
                     )}
                     {scanError && (
                       <div className="text-xs text-red-600 mt-2 flex items-center gap-1">
                         <AlertCircle className="w-3 h-3" />
-                        {scanError}
+                        <span className="break-words">{scanError}</span>
                       </div>
                     )}
                   </div>
@@ -742,17 +753,17 @@ const POSPage = () => {
 
                 {/* Camera Scanner */}
                 {scanMode === 'camera' && (
-                  <div className="bg-[#f8f3ed] border border-gray-300 rounded-lg p-3">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-2">
-                        <Camera className="w-4 h-4 text-[#860809]" />
-                        <span className="text-sm font-medium text-[#860809] font-alice">Camera Scanner</span>
+                  <div className="bg-[#f8f3ed] border border-gray-300 rounded-lg p-2.5 sm:p-3">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0 mb-3">
+                      <div className="flex items-center gap-1.5 sm:gap-2">
+                        <Camera className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#860809]" />
+                        <span className="text-xs sm:text-sm font-medium text-[#860809] font-alice">Camera Scanner</span>
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 w-full sm:w-auto">
                         <button
                           onClick={startCameraScan}
                           disabled={isScanning}
-                          className="px-3 py-1 bg-[#860809] text-white text-xs rounded hover:bg-[#a31f17] disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-1 font-alice"
+                          className="flex-1 sm:flex-none px-2.5 sm:px-3 py-1 bg-[#860809] text-white text-xs rounded hover:bg-[#a31f17] disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-1 font-alice"
                         >
                           <ScanLine className="w-3 h-3" />
                           {isScanning ? 'Scanning...' : 'Start'}
@@ -760,7 +771,7 @@ const POSPage = () => {
                         <button
                           onClick={stopCameraScan}
                           disabled={!isScanning}
-                          className="px-3 py-1 bg-[#a31f17] text-white text-xs rounded hover:bg-[#8a1a14] disabled:bg-gray-400 disabled:cursor-not-allowed font-alice"
+                          className="flex-1 sm:flex-none px-2.5 sm:px-3 py-1 bg-[#a31f17] text-white text-xs rounded hover:bg-[#8a1a14] disabled:bg-gray-400 disabled:cursor-not-allowed font-alice"
                         >
                           Stop
                         </button>
@@ -771,24 +782,24 @@ const POSPage = () => {
                       <div className="mb-3">
                         <video 
                           id="pos-scan-video" 
-                          style={{ width: '100%', maxWidth: '300px', height: '200px' }} 
+                          style={{ width: '100%', maxWidth: '100%', height: 'auto', minHeight: '150px', maxHeight: '250px' }} 
                           muted 
                           playsInline 
-                          className="rounded border border-[#f7e9b8]"
+                          className="rounded border border-[#f7e9b8] mx-auto"
                         />
                       </div>
                     )}
                     
                     {lastScannedCode && (
-                      <div className="text-xs text-[#860809] mb-2">
-                        Last scanned: <span className="font-mono bg-white px-2 py-1 rounded">{lastScannedCode}</span>
+                      <div className="text-xs text-[#860809] mb-2 break-all">
+                        Last scanned: <span className="font-mono bg-white px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-xs">{lastScannedCode}</span>
                       </div>
                     )}
                     
                     {scanError && (
-                      <div className="text-xs text-red-600 flex items-center gap-1">
+                      <div className="text-xs text-red-600 flex items-center gap-1 mb-2">
                         <AlertCircle className="w-3 h-3" />
-                        {scanError}
+                        <span className="break-words">{scanError}</span>
                       </div>
                     )}
                     
@@ -801,26 +812,25 @@ const POSPage = () => {
             </div>
 
             {/* Products Grid */}
-            <div className="bg-[#fffefc] rounded-lg shadow-md border border-gray-300 p-4">
-              <h3 className="text-lg font-semibold text-[#860809] mb-4 font-libre">Products</h3>
+            <div className="bg-[#fffefc] rounded-lg shadow-md border border-gray-300 p-3 sm:p-4">
+              <h3 className="text-base sm:text-lg font-semibold text-[#860809] mb-3 sm:mb-4 font-libre">Products</h3>
               {productsLoading ? (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
                   {Array.from({ length: 8 }).map((_, index) => (
                     <div key={index} className="animate-pulse">
-                      <div className="bg-gray-200 h-32 rounded-lg mb-2"></div>
-                      <div className="h-4 bg-gray-200 rounded mb-1"></div>
-                      <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+                      <div className="bg-gray-200 h-24 sm:h-32 rounded-lg mb-2"></div>
+                      <div className="h-3 sm:h-4 bg-gray-200 rounded mb-1"></div>
+                      <div className="h-2 sm:h-3 bg-gray-200 rounded w-2/3"></div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-h-[600px] overflow-y-auto">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4 max-h-[400px] sm:max-h-[500px] md:max-h-[600px] overflow-y-auto">
                   {filteredProducts.map(product => (
                     <motion.div
                       key={product._id}
-                      whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className={`border border-gray-300 rounded-lg p-3 cursor-pointer hover:shadow-md transition-shadow relative ${
+                      className={`border border-gray-300 rounded-lg p-2 sm:p-3 cursor-pointer hover:shadow-md active:shadow-lg transition-shadow relative ${
                         addedToCart === product._id ? 'bg-green-50 border-green-300' : ''
                       }`}
                       onClick={() => addToCart(product)}
@@ -834,28 +844,28 @@ const POSPage = () => {
                           className="absolute inset-0 bg-green-500 bg-opacity-90 rounded-lg flex items-center justify-center z-10"
                         >
                           <div className="text-white text-center">
-                            <Check className="w-8 h-8 mx-auto mb-1" />
-                            <p className="text-sm font-medium">Added to cart</p>
+                            <Check className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-1" />
+                            <p className="text-xs sm:text-sm font-medium">Added to cart</p>
                           </div>
                         </motion.div>
                       )}
                       
-                      <div className="aspect-square mb-2 overflow-hidden rounded-lg">
+                      <div className="aspect-square mb-1.5 sm:mb-2 overflow-hidden rounded-lg">
                         <img
                           src={product.image}
                           alt={product.name}
                           className="w-full h-full object-cover"
                         />
                       </div>
-                      <h4 className="font-medium text-sm text-[#030105] line-clamp-2 mb-1 font-alice">
+                      <h4 className="font-medium text-xs sm:text-sm text-[#030105] line-clamp-2 mb-1 font-alice">
                         {product.name}
                       </h4>
-                      <p className="text-xs text-[#a31f17] capitalize mb-2 font-libre">
+                      <p className="text-xs text-[#a31f17] capitalize mb-1.5 sm:mb-2 font-libre">
                         {product.category}
                       </p>
                       <div className="flex justify-center items-center">
-                        <span className="text-sm font-semibold text-[#860809] font-alice">
-                          Total Stock: {product.totalStockUnits || product.quantity}
+                        <span className="text-xs sm:text-sm font-semibold text-[#860809] font-alice">
+                          Stock: {product.totalStockUnits || product.quantity}
                         </span>
                       </div>
                     </motion.div>
@@ -866,20 +876,20 @@ const POSPage = () => {
           </div>
 
           {/* Right Panel - Cart and Checkout */}
-          <div className="space-y-6">
+          <div className="space-y-3 sm:space-y-4 md:space-y-6">
             {/* Cart */}
-            <div className="bg-[#fffefc] rounded-lg shadow-md border border-gray-300 p-4">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-[#860809] flex items-center gap-2 font-libre">
-                  <ShoppingCart className="w-5 h-5" />
+            <div className="bg-[#fffefc] rounded-lg shadow-md border border-gray-300 p-3 sm:p-4">
+              <div className="flex items-center justify-between mb-3 sm:mb-4">
+                <h3 className="text-base sm:text-lg font-semibold text-[#860809] flex items-center gap-1.5 sm:gap-2 font-libre">
+                  <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" />
                   Cart ({cart.length})
                 </h3>
                 {cart.length > 0 && (
                   <button
                     onClick={clearCart}
-                    className="text-red-500 hover:text-red-700 text-sm flex items-center gap-1"
+                    className="text-red-500 hover:text-red-700 text-xs sm:text-sm flex items-center gap-1"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     Clear
                   </button>
                 )}
@@ -891,74 +901,74 @@ const POSPage = () => {
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2"
+                  className="mb-3 sm:mb-4 p-2 sm:p-3 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2"
                 >
-                  <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0" />
-                  <span className="text-sm text-red-700">{cartError || transactionError}</span>
+                  <AlertCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-xs sm:text-sm text-red-700 flex-1 break-words">{cartError || transactionError}</span>
                   <button
                     onClick={() => {
                       setCartError('');
                       usePOSStore.getState().clearError();
                     }}
-                    className="ml-auto text-red-500 hover:text-red-700"
+                    className="text-red-500 hover:text-red-700 flex-shrink-0"
                   >
-                    <X className="w-4 h-4" />
+                    <X className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   </button>
                 </motion.div>
               )}
 
               {cart.length === 0 ? (
-                <div className="text-center py-8 text-[#a31f17]">
-                  <ShoppingCart className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                  <p>Cart is empty</p>
-                  <p className="text-sm font-alice">Add products to get started</p>
+                <div className="text-center py-6 sm:py-8 text-[#a31f17]">
+                  <ShoppingCart className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-2 opacity-50" />
+                  <p className="text-sm sm:text-base">Cart is empty</p>
+                  <p className="text-xs sm:text-sm font-alice">Add products to get started</p>
                 </div>
               ) : (
-                <div className="space-y-3 max-h-64 overflow-y-auto">
+                <div className="space-y-2 sm:space-y-3 max-h-56 sm:max-h-64 overflow-y-auto">
                   {cart.map(item => {
                     const itemPrice = item.unitPrice || item.price;
                     const weightInfo = item.weightKg ? ` (${item.weightKg}kg)` : '';
                     return (
-                      <div key={`${item._id}-${item.weightOptionId || 'default'}`} className="flex items-center gap-3 p-2 border border-gray-300 rounded-lg">
+                      <div key={`${item._id}-${item.weightOptionId || 'default'}`} className="flex items-center gap-2 sm:gap-3 p-2 border border-gray-300 rounded-lg">
                         <img
                           src={item.image}
                           alt={item.name}
-                          className="w-12 h-12 object-cover rounded"
+                          className="w-10 h-10 sm:w-12 sm:h-12 object-cover rounded flex-shrink-0"
                         />
                         <div className="flex-1 min-w-0">
-                          <h4 className="font-medium text-sm text-[#030105] line-clamp-1 font-alice">
+                          <h4 className="font-medium text-xs sm:text-sm text-[#030105] line-clamp-1 font-alice">
                             {item.name}{weightInfo}
                           </h4>
                           <p className="text-xs text-[#a31f17] font-libre">
                             ₱{itemPrice.toFixed(2)} each
                           </p>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1 sm:gap-2">
                           <button
                             onClick={() => updateQuantity(item._id, item.quantity - 1, item.weightOptionId)}
-                            className="w-6 h-6 rounded-full bg-[#f8f3ed] flex items-center justify-center hover:bg-[#860809] hover:text-white transition-colors"
+                            className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#f8f3ed] flex items-center justify-center hover:bg-[#860809] hover:text-white active:bg-[#a31f17] transition-colors flex-shrink-0"
                           >
-                            <Minus className="w-3 h-3" />
+                            <Minus className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                           </button>
-                          <span className="w-8 text-center text-sm font-medium font-alice">
+                          <span className="w-6 sm:w-8 text-center text-xs sm:text-sm font-medium font-alice">
                             {item.quantity}
                           </span>
                           <button
                             onClick={() => updateQuantity(item._id, item.quantity + 1, item.weightOptionId)}
-                            className="w-6 h-6 rounded-full bg-[#f8f3ed] flex items-center justify-center hover:bg-[#860809] hover:text-white transition-colors"
+                            className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#f8f3ed] flex items-center justify-center hover:bg-[#860809] hover:text-white active:bg-[#a31f17] transition-colors flex-shrink-0"
                           >
-                            <Plus className="w-3 h-3" />
+                            <Plus className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                           </button>
                         </div>
-                        <div className="text-right">
-                          <p className="font-semibold text-[#860809]">
+                        <div className="text-right flex-shrink-0">
+                          <p className="font-semibold text-xs sm:text-sm text-[#860809] whitespace-nowrap">
                             ₱{(itemPrice * item.quantity).toFixed(2)}
                           </p>
                           <button
                             onClick={() => removeFromCart(item._id, item.weightOptionId)}
-                            className="text-red-500 hover:text-red-700 text-xs"
+                            className="text-red-500 hover:text-red-700 text-xs inline-flex items-center justify-center mt-0.5"
                           >
-                            <X className="w-3 h-3" />
+                            <X className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                           </button>
                         </div>
                       </div>
@@ -969,60 +979,60 @@ const POSPage = () => {
             </div>
 
             {/* Payment Method */}
-            <div className="bg-[#fffefc] rounded-lg shadow-md border border-gray-300 p-4">
-              <h3 className="text-lg font-semibold text-[#860809] mb-4 flex items-center gap-2 font-libre">
-                <CreditCard className="w-5 h-5" />
+            <div className="bg-[#fffefc] rounded-lg shadow-md border border-gray-300 p-3 sm:p-4">
+              <h3 className="text-base sm:text-lg font-semibold text-[#860809] mb-3 sm:mb-4 flex items-center gap-1.5 sm:gap-2 font-libre">
+                <CreditCard className="w-4 h-4 sm:w-5 sm:h-5" />
                 Payment Method
               </h3>
-              <div className="space-y-3">
+              <div className="space-y-2 sm:space-y-3">
                 <div className="grid grid-cols-1 gap-2">
                   <button
                     onClick={() => setPaymentMethod('cash')}
-                    className={`p-3 rounded-lg border-2 transition-colors font-alice ${
+                    className={`p-2.5 sm:p-3 rounded-lg border-2 transition-colors font-alice ${
                       paymentMethod === 'cash'
                         ? 'border-[#860809] bg-[#f8f3ed] text-[#860809]'
                         : 'border-gray-300 hover:border-[#860809] text-[#030105]'
                     }`}
                   >
-                    <div className="flex items-center gap-3">
-                      <span className="text-lg font-bold text-[#860809]">₱</span>
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <span className="text-base sm:text-lg font-bold text-[#860809]">₱</span>
                       <div className="text-left">
-                        <div className="font-medium">Cash</div>
-                        <div className="text-sm opacity-75">Customer info optional</div>
+                        <div className="text-sm sm:text-base font-medium">Cash</div>
+                        <div className="text-xs sm:text-sm opacity-75">Customer info optional</div>
                       </div>
                     </div>
                   </button>
                   
                   <button
                     onClick={() => setPaymentMethod('online')}
-                    className={`p-3 rounded-lg border-2 transition-colors font-alice ${
+                    className={`p-2.5 sm:p-3 rounded-lg border-2 transition-colors font-alice ${
                       paymentMethod === 'online'
                         ? 'border-[#860809] bg-[#f8f3ed] text-[#860809]'
                         : 'border-gray-300 hover:border-[#860809] text-[#030105]'
                     }`}
                   >
-                    <div className="flex items-center gap-3">
-                      <CreditCard className="w-5 h-5" />
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <CreditCard className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
                       <div className="text-left">
-                        <div className="font-medium">Online Payment</div>
-                        <div className="text-sm opacity-75">GCash / PayMaya - Customer info required</div>
+                        <div className="text-sm sm:text-base font-medium">Online Payment</div>
+                        <div className="text-xs sm:text-sm opacity-75">GCash / PayMaya</div>
                       </div>
                     </div>
                   </button>
                   
                   <button
                     onClick={() => setPaymentMethod('bank')}
-                    className={`p-3 rounded-lg border-2 transition-colors font-alice ${
+                    className={`p-2.5 sm:p-3 rounded-lg border-2 transition-colors font-alice ${
                       paymentMethod === 'bank'
                         ? 'border-[#860809] bg-[#f8f3ed] text-[#860809]'
                         : 'border-gray-300 hover:border-[#860809] text-[#030105]'
                     }`}
                   >
-                    <div className="flex items-center gap-3">
-                      <CreditCard className="w-5 h-5" />
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <CreditCard className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
                       <div className="text-left">
-                        <div className="font-medium">Bank Transfer</div>
-                        <div className="text-sm opacity-75">Customer info required</div>
+                        <div className="text-sm sm:text-base font-medium">Bank Transfer</div>
+                        <div className="text-xs sm:text-sm opacity-75">Info required</div>
                       </div>
                     </div>
                   </button>
@@ -1031,21 +1041,21 @@ const POSPage = () => {
             </div>
 
             {/* Customer Info */}
-            <div className="bg-[#fffefc] rounded-lg shadow-md border border-gray-300 p-4">
-              <h3 className="text-lg font-semibold text-[#860809] mb-4 flex items-center gap-2 font-libre">
-                <User className="w-5 h-5" />
+            <div className="bg-[#fffefc] rounded-lg shadow-md border border-gray-300 p-3 sm:p-4">
+              <h3 className="text-base sm:text-lg font-semibold text-[#860809] mb-3 sm:mb-4 flex flex-wrap items-center gap-1.5 sm:gap-2 font-libre">
+                <User className="w-4 h-4 sm:w-5 sm:h-5" />
                 Customer Info
                 {paymentMethod !== 'cash' && (
-                  <span className="text-sm text-red-600 font-normal font-alice">(Required)</span>
+                  <span className="text-xs sm:text-sm text-red-600 font-normal font-alice">(Required)</span>
                 )}
               </h3>
-              <div className="space-y-3">
+              <div className="space-y-2 sm:space-y-3">
                 <input
                   type="text"
                   placeholder={paymentMethod === 'cash' ? "Customer Name (Optional)" : "Customer Name (Required)"}
                   value={customerInfo.name}
                   onChange={(e) => setCustomerInfo(prev => ({ ...prev, name: e.target.value }))}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice ${
+                  className={`w-full px-3 py-2 text-sm sm:text-base border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice ${
                     paymentMethod !== 'cash' && !customerInfo.name.trim() 
                       ? 'border-red-300' 
                       : 'border-gray-300'
@@ -1056,7 +1066,7 @@ const POSPage = () => {
                   placeholder={paymentMethod === 'cash' ? "Phone Number (Optional)" : "Phone Number (Required)"}
                   value={customerInfo.phone}
                   onChange={(e) => setCustomerInfo(prev => ({ ...prev, phone: e.target.value }))}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice ${
+                  className={`w-full px-3 py-2 text-sm sm:text-base border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice ${
                     paymentMethod !== 'cash' && !customerInfo.phone.trim() 
                       ? 'border-red-300' 
                       : 'border-gray-300'
@@ -1067,7 +1077,7 @@ const POSPage = () => {
                   placeholder="Email (Optional)"
                   value={customerInfo.email}
                   onChange={(e) => setCustomerInfo(prev => ({ ...prev, email: e.target.value }))}
-                  className="w-full px-3 py-2 border border-[#f7e9b8] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#a31f17] focus:border-transparent"
+                  className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice"
                 />
                 {(paymentMethod === 'online' || paymentMethod === 'bank') && (
                   <input
@@ -1075,10 +1085,10 @@ const POSPage = () => {
                     placeholder="Reference Number (Required)"
                     value={customerInfo.referenceNumber}
                     onChange={(e) => setCustomerInfo(prev => ({ ...prev, referenceNumber: e.target.value }))}
-                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#a31f17] focus:border-transparent ${
+                    className={`w-full px-3 py-2 text-sm sm:text-base border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice ${
                       !customerInfo.referenceNumber.trim() 
                         ? 'border-red-300' 
-                        : 'border-[#f7e9b8]'
+                        : 'border-gray-300'
                     }`}
                   />
                 )}
@@ -1086,51 +1096,48 @@ const POSPage = () => {
             </div>
 
             {/* Order Summary */}
-            <div className="bg-[#fffefc] rounded-lg shadow-md border border-gray-300 p-4">
-              <h3 className="text-lg font-semibold text-[#860809] mb-4 flex items-center gap-2 font-libre">
-                <Calculator className="w-5 h-5" />
+            <div className="bg-[#fffefc] rounded-lg shadow-md border border-gray-300 p-3 sm:p-4">
+              <h3 className="text-base sm:text-lg font-semibold text-[#860809] mb-3 sm:mb-4 flex items-center gap-1.5 sm:gap-2 font-libre">
+                <Calculator className="w-4 h-4 sm:w-5 sm:h-5" />
                 Order Summary
               </h3>
               <div className="space-y-2">
-                <div className="flex justify-between">
+                <div className="flex justify-between text-sm sm:text-base">
                   <span className="text-[#a31f17] font-alice">Subtotal:</span>
                   <span className="font-medium font-libre">₱{paymentInfo.subtotal.toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-[#a31f17] font-alice">Tax (12%):</span>
-                  <span className="font-medium font-libre">₱{paymentInfo.tax.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between">
+                {/* Tax removed */}
+                <div className="flex justify-between text-sm sm:text-base">
                   <span className="text-[#a31f17] font-alice">Discount:</span>
                   <span className="font-medium text-green-600 font-libre">-₱{paymentInfo.discount.toFixed(2)}</span>
                 </div>
                 <hr className="border-gray-300" />
-                <div className="flex justify-between text-lg font-bold">
+                <div className="flex justify-between text-base sm:text-lg font-bold">
                   <span className="text-[#860809] font-libre">Total:</span>
                   <span className="text-[#860809] font-libre">₱{paymentInfo.total.toFixed(2)}</span>
                 </div>
               </div>
 
               {/* Discount Controls */}
-              <div className="mt-4 space-y-2">
+              <div className="mt-3 sm:mt-4 space-y-2">
                 <div className="flex gap-2">
                   <button
                     onClick={() => setPaymentInfo(prev => ({ ...prev, discountType: 'fixed' }))}
-                    className={`flex-1 py-1 px-2 text-xs rounded font-alice ${
+                    className={`flex-1 py-1.5 px-2 text-xs sm:text-sm rounded font-alice ${
                       paymentInfo.discountType === 'fixed'
                         ? 'bg-[#860809] text-white'
-                        : 'bg-[#f8f3ed] text-[#030105]'
+                        : 'bg-[#f8f3ed] text-[#030105] hover:bg-gray-200'
                     }`}
                   >
-                    <span className="text-sm font-bold mr-1">₱</span>
+                    <span className="text-sm sm:text-base font-bold mr-1">₱</span>
                     Fixed
                   </button>
                   <button
                     onClick={() => setPaymentInfo(prev => ({ ...prev, discountType: 'percent' }))}
-                    className={`flex-1 py-1 px-2 text-xs rounded font-alice ${
+                    className={`flex-1 py-1.5 px-2 text-xs sm:text-sm rounded font-alice ${
                       paymentInfo.discountType === 'percent'
                         ? 'bg-[#860809] text-white'
-                        : 'bg-[#f8f3ed] text-[#030105]'
+                        : 'bg-[#f8f3ed] text-[#030105] hover:bg-gray-200'
                     }`}
                   >
                     <Percent className="w-3 h-3 inline mr-1" />
@@ -1142,7 +1149,7 @@ const POSPage = () => {
                   placeholder={paymentInfo.discountType === 'percent' ? 'Discount %' : 'Discount Amount'}
                   value={paymentInfo.discountValue || ''}
                   onChange={(e) => setPaymentInfo(prev => ({ ...prev, discountValue: parseFloat(e.target.value) || 0 }))}
-                  className="w-full px-3 py-2 border border-[#f7e9b8] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#a31f17] focus:border-transparent"
+                  className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice"
                 />
               </div>
 
@@ -1150,9 +1157,9 @@ const POSPage = () => {
               <button
                 onClick={handlePayment}
                 disabled={cart.length === 0}
-                className="w-full mt-4 bg-[#860809] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#a31f17] disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 font-alice"
+                className="w-full mt-3 sm:mt-4 bg-[#860809] text-white py-2.5 sm:py-3 px-4 rounded-lg text-sm sm:text-base font-semibold hover:bg-[#a31f17] active:bg-[#a31f17] disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 font-alice"
               >
-                <CreditCard className="w-5 h-5" />
+                <CreditCard className="w-4 h-4 sm:w-5 sm:h-5" />
                 Process Payment
               </button>
             </div>
@@ -1161,67 +1168,67 @@ const POSPage = () => {
 
         {/* Payment Modal */}
         {showPaymentModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3 sm:p-4">
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="bg-white rounded-lg p-6 w-full max-w-md mx-4"
+              className="bg-white rounded-lg p-4 sm:p-6 w-full max-w-md"
             >
-              <h3 className="text-xl font-bold text-[#860809] mb-4">
+              <h3 className="text-lg sm:text-xl font-bold text-[#860809] mb-3 sm:mb-4 font-libre">
                 {paymentMethod === 'cash' ? 'Cash Payment' : 
                  paymentMethod === 'online' ? 'Online Payment' : 'Bank Transfer'}
               </h3>
               
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-[#860809]">
+                  <p className="text-xl sm:text-2xl font-bold text-[#860809] font-libre">
                     ₱{paymentInfo.total.toFixed(2)}
                   </p>
-                  <p className="text-[#a48674]">Amount to be paid</p>
+                  <p className="text-sm sm:text-base text-[#a48674] font-alice">Amount to be paid</p>
                 </div>
 
                 {paymentMethod === 'cash' ? (
                   <>
                     <div>
-                      <label className="block text-sm font-medium text-[#860809] mb-2">
+                      <label className="block text-xs sm:text-sm font-medium text-[#860809] mb-2 font-alice">
                         Cash Received
                       </label>
                       <input
                         type="number"
                         value={paymentInfo.cashReceived || ''}
                         onChange={(e) => setPaymentInfo(prev => ({ ...prev, cashReceived: parseFloat(e.target.value) || 0 }))}
-                        className="w-full px-3 py-2 border border-[#f7e9b8] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#a31f17] focus:border-transparent text-lg"
+                        className="w-full px-3 py-2 text-base sm:text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice"
                         placeholder="0.00"
                       />
                     </div>
 
                     {paymentInfo.cashReceived > 0 && (
                       <div className="text-center p-3 bg-[#f8f3ed] rounded-lg">
-                        <p className="text-sm text-[#a48674]">Change</p>
-                        <p className="text-xl font-bold text-[#860809]">
+                        <p className="text-xs sm:text-sm text-[#a48674] font-alice">Change</p>
+                        <p className="text-lg sm:text-xl font-bold text-[#860809] font-libre">
                           ₱{paymentInfo.change.toFixed(2)}
                         </p>
                       </div>
                     )}
 
                     {paymentInfo.cashReceived < paymentInfo.total && paymentInfo.cashReceived > 0 && (
-                      <div className="flex items-center gap-2 text-red-600 text-sm">
-                        <AlertCircle className="w-4 h-4" />
+                      <div className="flex items-center gap-2 text-red-600 text-xs sm:text-sm font-alice">
+                        <AlertCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
                         <span>Insufficient cash received</span>
                       </div>
                     )}
                   </>
                 ) : (
-                  <div className="text-center p-4 bg-[#f8f3ed] rounded-lg">
+                  <div className="text-center p-3 sm:p-4 bg-[#f8f3ed] rounded-lg">
                     <div className="mb-3">
-                      <CreditCard className="w-8 h-8 text-[#860809] mx-auto mb-2" />
-                      <p className="text-sm text-[#a48674] mb-2">
+                      <CreditCard className="w-6 h-6 sm:w-8 sm:h-8 text-[#860809] mx-auto mb-2" />
+                      <p className="text-xs sm:text-sm text-[#a48674] mb-2 font-alice">
                         {paymentMethod === 'online' 
                           ? 'Customer will pay via GCash or PayMaya' 
                           : 'Customer will pay via Bank Transfer'}
                       </p>
                     </div>
-                    <div className="text-sm text-[#030105]">
+                    <div className="text-xs sm:text-sm text-[#030105] space-y-1 font-alice">
                       <p><strong>Customer:</strong> {customerInfo.name}</p>
                       <p><strong>Phone:</strong> {customerInfo.phone}</p>
                       <p><strong>Reference:</strong> {customerInfo.referenceNumber}</p>
@@ -1230,10 +1237,10 @@ const POSPage = () => {
                 )}
               </div>
 
-              <div className="flex gap-3 mt-6">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mt-4 sm:mt-6">
                 <button
                   onClick={() => setShowPaymentModal(false)}
-                  className="flex-1 py-2 px-4 border border-[#f7e9b8] text-[#860809] rounded-lg hover:bg-[#f7e9b8] transition-colors"
+                  className="flex-1 py-2 px-4 text-sm sm:text-base border border-gray-300 text-[#860809] rounded-lg hover:bg-gray-100 active:bg-gray-200 transition-colors font-alice"
                 >
                   Cancel
                 </button>
@@ -1243,12 +1250,12 @@ const POSPage = () => {
                     (paymentMethod === 'cash' && paymentInfo.cashReceived < paymentInfo.total) || 
                     transactionLoading
                   }
-                  className="flex-1 py-2 px-4 bg-[#a31f17] text-white rounded-lg hover:bg-[#860809] disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+                  className="flex-1 py-2 px-4 text-sm sm:text-base bg-[#a31f17] text-white rounded-lg hover:bg-[#860809] active:bg-[#860809] disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 font-alice"
                 >
                   {transactionLoading ? (
                     <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      Processing...
+                      <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <span>Processing...</span>
                     </>
                   ) : (
                     'Complete Payment'
@@ -1261,75 +1268,75 @@ const POSPage = () => {
 
         {/* Receipt Modal */}
         {showReceipt && currentTransaction && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3 sm:p-4">
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="bg-white rounded-lg p-6 w-full max-w-md mx-4"
+              className="bg-white rounded-lg p-4 sm:p-6 w-full max-w-md"
             >
-              <div className="text-center mb-6">
-                <Receipt className="w-12 h-12 text-[#860809] mx-auto mb-2" />
-                <h3 className="text-xl font-bold text-[#860809]">Transaction Complete</h3>
-                <p className="text-[#a48674]">Transaction ID: {currentTransaction.id}</p>
+              <div className="text-center mb-4 sm:mb-6">
+                <Receipt className="w-10 h-10 sm:w-12 sm:h-12 text-[#860809] mx-auto mb-2" />
+                <h3 className="text-lg sm:text-xl font-bold text-[#860809] font-libre">Transaction Complete</h3>
+                <p className="text-xs sm:text-sm text-[#a48674] font-alice break-all">Transaction ID: {currentTransaction.id}</p>
               </div>
 
-              <div className="space-y-3 text-sm">
+              <div className="space-y-2 sm:space-y-3 text-xs sm:text-sm font-alice">
                 <div className="flex justify-between">
                   <span>Date:</span>
-                  <span>{currentTransaction.timestamp.toLocaleString()}</span>
+                  <span className="text-right">{currentTransaction.timestamp.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Cashier:</span>
-                  <span>{currentTransaction.cashier}</span>
+                  <span className="text-right">{currentTransaction.cashier}</span>
                 </div>
                 {currentTransaction.customer.name && (
                   <div className="flex justify-between">
                     <span>Customer:</span>
-                    <span>{currentTransaction.customer.name}</span>
+                    <span className="text-right">{currentTransaction.customer.name}</span>
                   </div>
                 )}
-                <hr className="border-[#f7e9b8]" />
+                <hr className="border-gray-300" />
                 <div className="flex justify-between">
                   <span>Payment Method:</span>
-                  <span className="capitalize">{currentTransaction.payment.method || 'cash'}</span>
+                  <span className="capitalize text-right">{currentTransaction.payment.method || 'cash'}</span>
                 </div>
                 <div className="flex justify-between font-bold">
                   <span>Total:</span>
-                  <span>₱{currentTransaction.payment.total.toFixed(2)}</span>
+                  <span className="text-right">₱{currentTransaction.payment.total.toFixed(2)}</span>
                 </div>
                 {currentTransaction.payment.method === 'cash' && (
                   <>
                     <div className="flex justify-between">
                       <span>Cash Received:</span>
-                      <span>₱{currentTransaction.payment.cashReceived.toFixed(2)}</span>
+                      <span className="text-right">₱{currentTransaction.payment.cashReceived.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Change:</span>
-                      <span>₱{currentTransaction.payment.change.toFixed(2)}</span>
+                      <span className="text-right">₱{currentTransaction.payment.change.toFixed(2)}</span>
                     </div>
                   </>
                 )}
                 {(currentTransaction.payment.method === 'online' || currentTransaction.payment.method === 'bank') && (
                   <div className="flex justify-between">
                     <span>Reference Number:</span>
-                    <span>{currentTransaction.customer.referenceNumber}</span>
+                    <span className="text-right break-all">{currentTransaction.customer.referenceNumber}</span>
                   </div>
                 )}
               </div>
 
-              <div className="flex gap-3 mt-6">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mt-4 sm:mt-6">
                 <button
                   onClick={handlePrintReceipt}
-                  className="flex-1 py-2 px-4 border border-[#f7e9b8] text-[#860809] rounded-lg hover:bg-[#f7e9b8] transition-colors flex items-center justify-center gap-2"
+                  className="flex-1 py-2 px-4 text-sm sm:text-base border border-gray-300 text-[#860809] rounded-lg hover:bg-gray-100 active:bg-gray-200 transition-colors flex items-center justify-center gap-2 font-alice"
                 >
-                  <Receipt className="w-4 h-4" />
+                  <Receipt className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   Print Receipt
                 </button>
                 <button
                   onClick={completeTransaction}
-                  className="flex-1 py-2 px-4 bg-[#a31f17] text-white rounded-lg hover:bg-[#860809] transition-colors flex items-center justify-center gap-2"
+                  className="flex-1 py-2 px-4 text-sm sm:text-base bg-[#a31f17] text-white rounded-lg hover:bg-[#860809] active:bg-[#860809] transition-colors flex items-center justify-center gap-2 font-alice"
                 >
-                  <Check className="w-4 h-4" />
+                  <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   New Sale
                 </button>
               </div>
@@ -1339,15 +1346,15 @@ const POSPage = () => {
 
         {/* Weight Selection Modal */}
         {showWeightModal && selectedProduct && !selectedWeightOption && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3 sm:p-4">
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="bg-white rounded-lg p-6 w-full max-w-md mx-4"
+              className="bg-white rounded-lg p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto"
             >
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-[#860809]">Select Weight Option</h3>
+              <div className="flex items-center justify-between mb-3 sm:mb-4">
+                <h3 className="text-base sm:text-lg font-semibold text-[#860809] font-libre">Select Weight Option</h3>
                 <button
                   onClick={() => {
                     setShowWeightModal(false);
@@ -1355,18 +1362,18 @@ const POSPage = () => {
                     setSelectedWeightOption(null);
                     setQuantityInput(1);
                   }}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-gray-400 hover:text-gray-600 active:text-gray-800"
                 >
-                  <X size={20} />
+                  <X size={18} className="sm:w-5 sm:h-5" />
                 </button>
               </div>
               
-              <div className="mb-4">
-                <p className="text-sm text-gray-600 mb-2">Product: <span className="font-medium">{selectedProduct.name}</span></p>
-                <p className="text-sm text-gray-600">Base Price: ₱{selectedProduct.basePricePerKg?.toFixed(2) || '0.00'} per kg</p>
+              <div className="mb-3 sm:mb-4">
+                <p className="text-xs sm:text-sm text-gray-600 mb-1 font-alice">Product: <span className="font-medium">{selectedProduct.name}</span></p>
+                <p className="text-xs sm:text-sm text-gray-600 font-alice">Base Price: ₱{selectedProduct.basePricePerKg?.toFixed(2) || '0.00'} per kg</p>
               </div>
               
-              <div className="space-y-3 mb-6">
+              <div className="space-y-2 sm:space-y-3 mb-4 sm:mb-6">
                 {selectedProduct.weightOptions?.map((option) => {
                   const price = option.price || (selectedProduct.basePricePerKg * option.weightKg);
                   return (
@@ -1377,23 +1384,23 @@ const POSPage = () => {
                         setQuantityInput(1);
                       }}
                       disabled={option.stockUnits <= 0}
-                      className={`w-full p-4 rounded-lg border-2 text-left transition-colors ${
+                      className={`w-full p-3 sm:p-4 rounded-lg border-2 text-left transition-colors font-alice ${
                         option.stockUnits <= 0
                           ? 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed'
-                          : 'border-[#f7e9b8] hover:border-[#860809] hover:bg-[#f8f3ed]'
+                          : 'border-gray-300 hover:border-[#860809] hover:bg-[#f8f3ed] active:bg-[#f8f3ed]'
                       }`}
                     >
                       <div className="flex justify-between items-center">
                         <div>
-                          <div className="font-medium text-[#030105]">
+                          <div className="text-sm sm:text-base font-medium text-[#030105]">
                             {option.weightKg} kg
                           </div>
-                          <div className="text-sm text-gray-600">
+                          <div className="text-xs sm:text-sm text-gray-600">
                             Stock: {option.stockUnits} units
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className="font-semibold text-[#860809]">
+                          <div className="text-sm sm:text-base font-semibold text-[#860809]">
                             ₱{price.toFixed(2)}
                           </div>
                           <div className="text-xs text-gray-500">
@@ -1406,7 +1413,7 @@ const POSPage = () => {
                 })}
               </div>
               
-              <div className="flex gap-3">
+              <div className="flex gap-2 sm:gap-3">
                 <button
                   onClick={() => {
                     setShowWeightModal(false);
@@ -1414,7 +1421,7 @@ const POSPage = () => {
                     setSelectedWeightOption(null);
                     setQuantityInput(1);
                   }}
-                  className="flex-1 py-2 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="flex-1 py-2 px-4 text-sm sm:text-base border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 active:bg-gray-200 transition-colors font-alice"
                 >
                   Cancel
                 </button>
@@ -1425,15 +1432,15 @@ const POSPage = () => {
 
         {/* Quantity Input Modal */}
         {showWeightModal && selectedProduct && selectedWeightOption && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3 sm:p-4">
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="bg-white rounded-lg p-6 w-full max-w-md mx-4"
+              className="bg-white rounded-lg p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto"
             >
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-[#860809]">Enter Quantity</h3>
+              <div className="flex items-center justify-between mb-3 sm:mb-4">
+                <h3 className="text-base sm:text-lg font-semibold text-[#860809] font-libre">Enter Quantity</h3>
                 <button
                   onClick={() => {
                     setShowWeightModal(false);
@@ -1441,65 +1448,65 @@ const POSPage = () => {
                     setSelectedWeightOption(null);
                     setQuantityInput(1);
                   }}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-gray-400 hover:text-gray-600 active:text-gray-800"
                 >
-                  <X size={20} />
+                  <X size={18} className="sm:w-5 sm:h-5" />
                 </button>
               </div>
               
-              <div className="mb-4">
-                <p className="text-sm text-gray-600 mb-2">Product: <span className="font-medium">{selectedProduct.name}</span></p>
-                <p className="text-sm text-gray-600">Weight: <span className="font-medium">{selectedWeightOption.weightKg} kg</span></p>
-                <p className="text-sm text-gray-600">Available Stock: <span className="font-medium">{selectedWeightOption.stockUnits} units</span></p>
-                <p className="text-sm text-gray-600">Price: <span className="font-medium">₱{(selectedWeightOption.price || (selectedProduct.basePricePerKg * selectedWeightOption.weightKg)).toFixed(2)} per unit</span></p>
+              <div className="mb-3 sm:mb-4 space-y-1">
+                <p className="text-xs sm:text-sm text-gray-600 font-alice">Product: <span className="font-medium">{selectedProduct.name}</span></p>
+                <p className="text-xs sm:text-sm text-gray-600 font-alice">Weight: <span className="font-medium">{selectedWeightOption.weightKg} kg</span></p>
+                <p className="text-xs sm:text-sm text-gray-600 font-alice">Available Stock: <span className="font-medium">{selectedWeightOption.stockUnits} units</span></p>
+                <p className="text-xs sm:text-sm text-gray-600 font-alice">Price: <span className="font-medium">₱{(selectedWeightOption.price || (selectedProduct.basePricePerKg * selectedWeightOption.weightKg)).toFixed(2)} per unit</span></p>
               </div>
               
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+              <div className="mb-4 sm:mb-6">
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 font-alice">
                   Quantity to Add:
                 </label>
-                <div className="flex items-center gap-3">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
                   <input
                     type="number"
                     min="1"
                     max={selectedWeightOption.stockUnits}
                     value={quantityInput}
                     onChange={(e) => setQuantityInput(Math.max(1, Math.min(selectedWeightOption.stockUnits, parseInt(e.target.value) || 1)))}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#860809] focus:border-transparent"
+                    className="w-full sm:flex-1 px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice"
                   />
                   <div className="flex gap-2">
                     <button
                       onClick={() => setQuantityInput(Math.min(selectedWeightOption.stockUnits, quantityInput + 1))}
-                      className="px-3 py-2 bg-[#860809] text-white rounded-lg hover:bg-[#a31f17] transition-colors text-sm"
+                      className="flex-1 sm:flex-none px-3 py-2 bg-[#860809] text-white rounded-lg hover:bg-[#a31f17] active:bg-[#a31f17] transition-colors text-xs sm:text-sm font-alice"
                     >
                       +1
                     </button>
                     <button
                       onClick={() => setQuantityInput(Math.min(selectedWeightOption.stockUnits, quantityInput + 2))}
-                      className="px-3 py-2 bg-[#860809] text-white rounded-lg hover:bg-[#a31f17] transition-colors text-sm"
+                      className="flex-1 sm:flex-none px-3 py-2 bg-[#860809] text-white rounded-lg hover:bg-[#a31f17] active:bg-[#a31f17] transition-colors text-xs sm:text-sm font-alice"
                     >
                       +2
                     </button>
                     <button
                       onClick={() => setQuantityInput(Math.min(selectedWeightOption.stockUnits, quantityInput + 5))}
-                      className="px-3 py-2 bg-[#860809] text-white rounded-lg hover:bg-[#a31f17] transition-colors text-sm"
+                      className="flex-1 sm:flex-none px-3 py-2 bg-[#860809] text-white rounded-lg hover:bg-[#a31f17] active:bg-[#a31f17] transition-colors text-xs sm:text-sm font-alice"
                     >
                       +5
                     </button>
                   </div>
                 </div>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 mt-1.5 sm:mt-2 font-alice">
                   Total: ₱{((selectedWeightOption.price || (selectedProduct.basePricePerKg * selectedWeightOption.weightKg)) * quantityInput).toFixed(2)}
                 </p>
               </div>
               
-              <div className="flex gap-3">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                 <button
                   onClick={() => {
                     setSelectedWeightOption(null);
                     setQuantityInput(1);
                   }}
-                  className="flex-1 py-2 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="flex-1 py-2 px-4 text-sm sm:text-base border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 active:bg-gray-200 transition-colors font-alice"
                 >
                   Back
                 </button>
@@ -1514,7 +1521,7 @@ const POSPage = () => {
                     setSelectedWeightOption(null);
                     setQuantityInput(1);
                   }}
-                  className="flex-1 py-2 px-4 bg-[#860809] text-white rounded-lg hover:bg-[#a31f17] transition-colors"
+                  className="flex-1 py-2 px-4 text-sm sm:text-base bg-[#860809] text-white rounded-lg hover:bg-[#a31f17] active:bg-[#a31f17] transition-colors font-alice"
                 >
                   Add to Cart
                 </button>

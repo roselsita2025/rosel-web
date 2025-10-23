@@ -3,8 +3,6 @@ import Product from "../models/product.model.js";
 
 export const getActivityLogs = async (req, res) => {
     try {
-        console.log("Activity logs request received:", req.query);
-        
         const {
             productId,
             adminId,
@@ -41,8 +39,6 @@ export const getActivityLogs = async (req, res) => {
             }
         }
 
-        console.log("Filter object:", filter);
-
         const sortObj = {};
         sortObj[sort] = order === 'asc' ? 1 : -1;
 
@@ -61,8 +57,6 @@ export const getActivityLogs = async (req, res) => {
             ActivityLog.countDocuments(filter)
         ]);
 
-        console.log("Activity logs found:", logs.length, "Total:", total);
-
         res.json({
             logs,
             total,
@@ -71,7 +65,6 @@ export const getActivityLogs = async (req, res) => {
             totalPages: Math.ceil(total / pageSize)
         });
     } catch (error) {
-        console.log("Error in getActivityLogs controller", error.message);
         res.status(500).json({ message: "Server error", error: error.message });
     }
 };
@@ -103,7 +96,6 @@ export const getActivityLogsByProduct = async (req, res) => {
             totalPages: Math.ceil(total / pageSize)
         });
     } catch (error) {
-        console.log("Error in getActivityLogsByProduct controller", error.message);
         res.status(500).json({ message: "Server error", error: error.message });
     }
 };
@@ -114,7 +106,6 @@ export const createActivityLog = async (logData) => {
         await activityLog.save();
         return activityLog;
     } catch (error) {
-        console.log("Error creating activity log", error.message);
         throw error;
     }
 };
@@ -156,7 +147,6 @@ export const getActivityStats = async (req, res) => {
             uniqueAdmins: uniqueAdmins.length
         });
     } catch (error) {
-        console.log("Error in getActivityStats controller", error.message);
         res.status(500).json({ message: "Server error", error: error.message });
     }
 };

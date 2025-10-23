@@ -98,7 +98,7 @@ export const createWriteOff = async (req, res) => {
         await writeOff.save();
 
         if (weightOptionId) {
-            await Product.findByIdAndUpdate(
+            const updatedProduct = await Product.findByIdAndUpdate(
                 productId,
                 { $inc: { 'weightOptions.$[elem].stockUnits': -quantity } },
                 { 
@@ -106,12 +106,33 @@ export const createWriteOff = async (req, res) => {
                     new: true 
                 }
             );
+            
+            // Check for low stock alert for weight options
+            if (updatedProduct) {
+                const weightOption = updatedProduct.weightOptions.id(weightOptionId);
+                if (weightOption && weightOption.stockUnits <= 10) {
+                    try {
+                        await notificationService.sendLowStockAlert(updatedProduct, weightOption.stockUnits, 10);
+                    } catch (notifError) {
+                        console.error('Error sending low stock notification:', notifError);
+                    }
+                }
+            }
         } else {
-            await Product.findByIdAndUpdate(
+            const updatedProduct = await Product.findByIdAndUpdate(
                 productId,
                 { $inc: { quantity: -quantity } },
                 { new: true }
             );
+            
+            // Check for low stock alert
+            if (updatedProduct && updatedProduct.quantity <= 10) {
+                try {
+                    await notificationService.sendLowStockAlert(updatedProduct, updatedProduct.quantity, 10);
+                } catch (notifError) {
+                    console.error('Error sending low stock notification:', notifError);
+                }
+            }
         }
 
         try {
@@ -153,7 +174,7 @@ export const createWriteOff = async (req, res) => {
                     adminName
                 },
                 priority: 'medium',
-                actionUrl: `/discrepancy-reports?writeOff=${writeOff._id}`
+                actionUrl: `/discrepancy-report?writeOff=${writeOff._id}`
             });
         } catch (notificationError) {
             console.error('Error sending write-off notification:', notificationError);

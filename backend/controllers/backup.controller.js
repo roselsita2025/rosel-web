@@ -261,14 +261,32 @@ export const previewRestore = async (req, res) => {
       products: await Product.countDocuments(),
       orders: await Order.countDocuments(),
       users: await User.countDocuments(),
-      reviews: await Review.countDocuments()
+      reviews: await Review.countDocuments(),
+      transactions: await Transaction.countDocuments(),
+      coupons: await Coupon.countDocuments(),
+      notifications: await Notification.countDocuments(),
+      activityLogs: await ActivityLog.countDocuments(),
+      replacementRequests: await ReplacementRequest.countDocuments(),
+      chats: await Chat.countDocuments(),
+      messages: await Message.countDocuments(),
+      faqs: await FAQ.countDocuments(),
+      writeOffs: await WriteOff.countDocuments()
     };
 
     const backupCounts = {
       products: backupData.data.products?.length || 0,
       orders: backupData.data.orders?.length || 0,
       users: backupData.data.users?.length || 0,
-      reviews: backupData.data.reviews?.length || 0
+      reviews: backupData.data.reviews?.length || 0,
+      transactions: backupData.data.transactions?.length || 0,
+      coupons: backupData.data.coupons?.length || 0,
+      notifications: backupData.data.notifications?.length || 0,
+      activityLogs: backupData.data.activityLogs?.length || 0,
+      replacementRequests: backupData.data.replacementRequests?.length || 0,
+      chats: backupData.data.chats?.length || 0,
+      messages: backupData.data.messages?.length || 0,
+      faqs: backupData.data.faqs?.length || 0,
+      writeOffs: backupData.data.writeOffs?.length || 0
     };
 
     const preview = {
@@ -295,6 +313,60 @@ export const previewRestore = async (req, res) => {
         backup: backupCounts.reviews,
         difference: backupCounts.reviews - currentCounts.reviews,
         willReplace: backupCounts.reviews > 0
+      },
+      transactions: {
+        current: currentCounts.transactions,
+        backup: backupCounts.transactions,
+        difference: backupCounts.transactions - currentCounts.transactions,
+        willReplace: backupCounts.transactions > 0
+      },
+      coupons: {
+        current: currentCounts.coupons,
+        backup: backupCounts.coupons,
+        difference: backupCounts.coupons - currentCounts.coupons,
+        willReplace: backupCounts.coupons > 0
+      },
+      notifications: {
+        current: currentCounts.notifications,
+        backup: backupCounts.notifications,
+        difference: backupCounts.notifications - currentCounts.notifications,
+        willReplace: backupCounts.notifications > 0
+      },
+      activityLogs: {
+        current: currentCounts.activityLogs,
+        backup: backupCounts.activityLogs,
+        difference: backupCounts.activityLogs - currentCounts.activityLogs,
+        willReplace: backupCounts.activityLogs > 0
+      },
+      replacementRequests: {
+        current: currentCounts.replacementRequests,
+        backup: backupCounts.replacementRequests,
+        difference: backupCounts.replacementRequests - currentCounts.replacementRequests,
+        willReplace: backupCounts.replacementRequests > 0
+      },
+      chats: {
+        current: currentCounts.chats,
+        backup: backupCounts.chats,
+        difference: backupCounts.chats - currentCounts.chats,
+        willReplace: backupCounts.chats > 0
+      },
+      messages: {
+        current: currentCounts.messages,
+        backup: backupCounts.messages,
+        difference: backupCounts.messages - currentCounts.messages,
+        willReplace: backupCounts.messages > 0
+      },
+      faqs: {
+        current: currentCounts.faqs,
+        backup: backupCounts.faqs,
+        difference: backupCounts.faqs - currentCounts.faqs,
+        willReplace: backupCounts.faqs > 0
+      },
+      writeOffs: {
+        current: currentCounts.writeOffs,
+        backup: backupCounts.writeOffs,
+        difference: backupCounts.writeOffs - currentCounts.writeOffs,
+        willReplace: backupCounts.writeOffs > 0
       }
     };
 
@@ -632,7 +704,16 @@ export const getBackupStats = async (req, res) => {
         products: 0,
         orders: 0,
         users: 0,
-        reviews: 0
+        reviews: 0,
+        transactions: 0,
+        coupons: 0,
+        notifications: 0,
+        activityLogs: 0,
+        replacementRequests: 0,
+        chats: 0,
+        messages: 0,
+        faqs: 0,
+        writeOffs: 0
       }
     };
 
@@ -684,6 +765,15 @@ export const getBackupStats = async (req, res) => {
             stats.collections.orders = backupData.data.orders?.length || 0;
             stats.collections.users = backupData.data.users?.length || 0;
             stats.collections.reviews = backupData.data.reviews?.length || 0;
+            stats.collections.transactions = backupData.data.transactions?.length || 0;
+            stats.collections.coupons = backupData.data.coupons?.length || 0;
+            stats.collections.notifications = backupData.data.notifications?.length || 0;
+            stats.collections.activityLogs = backupData.data.activityLogs?.length || 0;
+            stats.collections.replacementRequests = backupData.data.replacementRequests?.length || 0;
+            stats.collections.chats = backupData.data.chats?.length || 0;
+            stats.collections.messages = backupData.data.messages?.length || 0;
+            stats.collections.faqs = backupData.data.faqs?.length || 0;
+            stats.collections.writeOffs = backupData.data.writeOffs?.length || 0;
           }
         } catch (error) {
           console.warn('Could not read most recent backup for collection stats');

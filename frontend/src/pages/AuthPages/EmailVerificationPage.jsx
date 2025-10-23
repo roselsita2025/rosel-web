@@ -68,24 +68,24 @@ const EmailVerificationPage = () => {
 	}, [code]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen w-full px-4">
+    <div className="flex flex-col items-center justify-center min-h-screen w-full px-3 sm:px-4 md:px-6">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         className='max-w-md w-full bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden'
       >
-        <div className='p-7 pb-2'>
-          <h2 className='text-lg font-semibold text-center text-black flex items-center justify-center'>
-            <Mail className='w-5 h-5 mr-2' />
+        <div className='p-5 sm:p-6 md:p-7 pb-2'>
+          <h2 className='text-base sm:text-lg font-semibold text-center text-black flex items-center justify-center'>
+            <Mail className='w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2' />
             Verify Your Email
           </h2>
-          <p className='text-sm text-gray-500 mb-6 text-center'>
+          <p className='text-xs sm:text-sm text-gray-500 mb-5 sm:mb-6 text-center'>
             Enter the 6-digit verification code sent to your email address.
           </p>
 
-          <form onSubmit={handleSubmit} className='space-y-6'>
-            <div className='flex justify-center space-x-3'>
+          <form onSubmit={handleSubmit} className='space-y-4 sm:space-y-6'>
+            <div className='flex justify-center gap-2 sm:gap-3'>
               {code.map((digit, index) => (
                 <input
                   key={index}
@@ -95,19 +95,19 @@ const EmailVerificationPage = () => {
                   value={digit}
                   onChange={(e) => handleChange(index, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(index, e)}
-                  className='w-12 h-12 text-center text-xl font-bold bg-[#f8f3ed] text-[#82695b] border-2 border-[#82695b] rounded-lg focus:border-[#901414] focus:outline-none focus:ring-2 focus:ring-[#901414] focus:ring-opacity-20 transition-all duration-200'
+                  className='w-10 h-10 sm:w-12 sm:h-12 text-center text-lg sm:text-xl font-bold bg-[#f8f3ed] text-[#82695b] border-2 border-[#82695b] rounded-lg focus:border-[#901414] focus:outline-none focus:ring-2 focus:ring-[#901414] focus:ring-opacity-20 transition-all duration-200'
                 />
               ))}
             </div>
             
-            {error && <p className='text-[#901414] font-semibold text-center mt-2'>{error}</p>}
+            {error && <p className='text-[#901414] font-semibold text-center mt-2 text-xs sm:text-sm'>{error}</p>}
             
             <motion.button
               whileHover={!isVerified ? { scale: 1.02 } : {}}
               whileTap={!isVerified ? { scale: 0.98 } : {}}
               type='submit'
               disabled={isLoading || code.some((digit) => !digit) || isVerified}
-              className={`w-full mt-4 py-2 px-4 font-bold rounded-lg shadow-lg border transition duration-200 ${
+              className={`w-full mt-3 sm:mt-4 py-2 sm:py-2.5 px-4 font-bold rounded-lg shadow-lg border transition duration-200 text-sm sm:text-base ${
                 isVerified 
                   ? 'bg-green-600 text-white border-green-600 cursor-default' 
                   : 'bg-[#901414] text-[#feffff] border-[#901414] hover:bg-[#8F3333] hover:text-[#feffff] focus:outline-none focus:ring-2 focus:ring-[#901414] focus:ring-offset-2 disabled:opacity-50'
@@ -115,12 +115,12 @@ const EmailVerificationPage = () => {
             >
               {isVerified ? (
                 <div className="flex items-center justify-center">
-                  <CheckCircle className='w-5 h-5 mr-2' />
+                  <CheckCircle className='w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2' />
                   Email Verified!
                 </div>
               ) : isLoading ? (
                 <div className="flex items-center justify-center">
-                  <Loader className='w-5 h-5 animate-spin mr-2' />
+                  <Loader className='w-4 h-4 sm:w-5 sm:h-5 animate-spin mr-1.5 sm:mr-2' />
                   Verifying...
                 </div>
               ) : (
@@ -130,9 +130,9 @@ const EmailVerificationPage = () => {
           </form>
         </div>
 
-        <div className="px-8 py-5 bg-[#f8f3ed] flex flex-col items-center">
-          <hr className="w-full border-t border-[#82695b] mb-4" />
-          <p className='text-sm text-[#82695b] text-center'>
+        <div className="px-5 sm:px-6 md:px-8 py-4 sm:py-5 bg-[#f8f3ed] flex flex-col items-center">
+          <hr className="w-full border-t border-[#82695b] mb-3 sm:mb-4" />
+          <p className='text-xs sm:text-sm text-[#82695b] text-center'>
             Didn't receive the code?{" "}
             <button 
               className='text-[#901414] font-semibold hover:underline cursor-pointer'

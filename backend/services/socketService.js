@@ -25,8 +25,19 @@ class SocketService {
 
     async authenticateSocket(socket, next) {
         try {
-            const token = socket.handshake.auth.token || socket.handshake.headers.authorization?.split(' ')[1];
+            // Try to get token from: auth object, authorization header, or cookie
+            let token = socket.handshake.auth.token || socket.handshake.headers.authorization?.split(' ')[1];
             
+            // If no token in auth or header, try to get from cookie
+            if (!token) {
+                const cookies = socket.handshake.headers.cookie;
+                if (cookies) {
+                    const tokenMatch = cookies.split('; ').find(row => row.startsWith('token='));
+                    if (tokenMatch) {
+                        token = tokenMatch.split('=')[1];
+                    }
+                }
+            }
             
             if (!token) {
                 console.error('❌ No token provided for socket authentication');

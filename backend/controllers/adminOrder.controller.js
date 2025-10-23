@@ -21,7 +21,10 @@ export const getOrders = async (req, res) => {
             end
         } = req.query;
 
-        const filter = {};
+        const filter = {
+            paymentStatus: 'paid',
+            status: { $nin: ['cancelled', 'refunded'] }
+        };
 
         if (search) {
             filter.$or = [

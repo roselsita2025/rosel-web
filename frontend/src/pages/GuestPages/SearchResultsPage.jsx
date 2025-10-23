@@ -82,10 +82,10 @@ const SearchResultsPage = () => {
         <div className='min-h-screen bg-white w-full'>
             <div className='pt-20 sm:pt-24 md:pt-32 pb-8 bg-white w-full'>
                 <div className='max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8'>
-                    <h1 className='text-2xl sm:text-3xl font-bold text-[#860809] mb-4 sm:mb-6'>Search Results</h1>
+                    <h1 className='text-2xl sm:text-3xl md:text-4xl font-bold text-[#860809] mb-4 sm:mb-6'>Search Results</h1>
 
                     {/* Filters */}
-                    <div className='bg-[#f8f3ed] rounded-lg shadow p-4 sm:p-6 mb-8 sm:mb-10'>
+                    <div className='bg-[#f8f3ed] rounded-lg shadow p-4 sm:p-6 mb-6 sm:mb-8 md:mb-10'>
                         <div className='flex flex-col md:flex-row gap-4 items-center'>
                             <div className='flex flex-col md:flex-row gap-4 flex-1 w-full md:w-auto'>
                                 <div className='relative flex-1'>
@@ -149,28 +149,28 @@ const SearchResultsPage = () => {
 
                     {/* Results */}
                     {loading ? (
-                        <div className='text-center text-[#030105] py-10'>Loading...</div>
+                        <div className='text-center text-[#030105] py-6 sm:py-8 md:py-10'>Loading...</div>
                     ) : searchResults.length === 0 ? (
-                        <div className='text-center text-[#030105] py-10'>No products found.</div>
+                        <div className='text-center text-[#030105] py-6 sm:py-8 md:py-10'>No products found.</div>
                     ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6 md:gap-8 max-w-6xl mx-auto">
+                        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-4 md:gap-6 max-w-6xl mx-auto">
                             {searchResults.map((product) => (
-                                <div key={product._id} className='w-full'>
-                                    <div className='bg-white rounded-lg overflow-visible h-full transition-all duration-300 hover:bg-[#f8f3ed] hover:scale-110 hover:z-50 hover:border-2 hover:border-[#901414] group'>
+                                <div key={product._id} className='w-full max-w-[280px] mx-auto'>
+                                    <div className='bg-white rounded-lg overflow-visible h-full transition-all duration-300 hover:bg-[#f8f3ed] hover:scale-105 md:hover:scale-110 hover:z-50 hover:border-2 hover:border-[#901414] group'>
                                         <div className='overflow-hidden'>
                                             <img
                                                 src={product.image}
                                                 alt={product.name}
-                                                className='w-full h-32 object-contain transition-transform duration-300 ease-in-out hover:scale-110'
+                                                className='w-full h-28 sm:h-32 md:h-36 object-contain transition-transform duration-300 ease-in-out hover:scale-110'
                                             />
                                         </div>
-                                        <div className='p-3'>
-                                            <h3 className='text-base font-semibold mb-1 text-[#82695b]'>{product.name}</h3>
+                                        <div className='p-2.5 sm:p-3'>
+                                            <h3 className='text-sm sm:text-base font-semibold mb-1 text-[#82695b]'>{product.name}</h3>
                                             <p className='text-black font-bold mb-1'>
                                                 ₱{(product.priceMin || product.price || 0).toFixed(2)}
                                             </p>
                                             <div className='mb-2'>
-                                                <span className={`text-xs font-medium px-2 py-1 rounded-full ${
+                                                <span className={`text-xs sm:text-sm font-medium px-2 py-1 rounded-full ${
                                                     (product.totalStockUnits || product.quantity) > 10 
                                                         ? 'bg-green-100 text-green-800' 
                                                         : (product.totalStockUnits || product.quantity) > 0 
@@ -185,8 +185,8 @@ const SearchResultsPage = () => {
                                                     onClick={() => handleAddToCart(product)}
                                                     disabled={(product.totalStockUnits || product.quantity) === 0}
                                                     className={`w-full text-white font-semibold py-1.5 px-3 rounded transition-colors duration-300 
-                                                    flex items-center justify-center text-sm ${
-                                                        product.quantity > 0 
+                                                    flex items-center justify-center text-xs sm:text-sm ${
+                                                        (product.totalStockUnits || product.quantity) > 0 
                                                             ? buttonStateById[product._id] === 'added'
                                                                 ? 'bg-emerald-600'
                                                                 : buttonStateById[product._id] === 'maxed'
@@ -195,8 +195,8 @@ const SearchResultsPage = () => {
                                                             : 'bg-gray-400 cursor-not-allowed'
                                                     }`}
                                                 >
-                                                    <ShoppingCart className='w-4 h-4 mr-1.5' />
-                                                    {product.quantity > 0 
+                                                    <ShoppingCart className='w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5' />
+                                                    {(product.totalStockUnits || product.quantity) > 0 
                                                         ? buttonStateById[product._id] === 'added' 
                                                             ? 'Product Added'
                                                             : buttonStateById[product._id] === 'maxed'
@@ -207,10 +207,10 @@ const SearchResultsPage = () => {
                                                 <Link
                                                     to={`/product/${product._id}`}
                                                     className="w-full text-[#901414] font-semibold py-1.5 px-3 rounded transition-all duration-300 
-                                                    flex items-center justify-center border-2 border-[#901414] hover:bg-[#901414] hover:text-white text-sm
-                                                    opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0"
+                                                    flex items-center justify-center border-2 border-[#901414] hover:bg-[#901414] hover:text-white text-xs sm:text-sm
+                                                    md:opacity-0 md:group-hover:opacity-100 transform md:translate-y-2 md:group-hover:translate-y-0"
                                                 >
-                                                    <Eye className='w-4 h-4 mr-1.5' />
+                                                    <Eye className='w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5' />
                                                     View Product
                                                 </Link>
                                             </div>

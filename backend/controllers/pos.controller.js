@@ -118,7 +118,7 @@ export const createTransaction = async (req, res) => {
 
     for (const update of stockUpdates) {
       if (update.isWeightBased) {
-        await Product.findByIdAndUpdate(
+        const updatedProduct = await Product.findByIdAndUpdate(
           update.productId,
           { $inc: { 'weightOptions.$[elem].stockUnits': -update.requestedQuantity } },
           { 
@@ -126,12 +126,35 @@ export const createTransaction = async (req, res) => {
             new: true 
           }
         );
+        
+        // Check for low stock alert for weight options
+        if (updatedProduct) {
+          const weightOption = updatedProduct.weightOptions.id(update.weightOptionId);
+          if (weightOption && weightOption.stockUnits <= 10) {
+            try {
+              const { notificationService } = await import('../services/notificationService.js');
+              await notificationService.sendLowStockAlert(updatedProduct, weightOption.stockUnits, 10);
+            } catch (notifError) {
+              console.error('Error sending low stock notification:', notifError);
+            }
+          }
+        }
       } else {
-        await Product.findByIdAndUpdate(
+        const updatedProduct = await Product.findByIdAndUpdate(
           update.productId,
           { $inc: { quantity: -update.requestedQuantity } },
           { new: true }
         );
+        
+        // Check for low stock alert
+        if (updatedProduct && updatedProduct.quantity <= 10) {
+          try {
+            const { notificationService } = await import('../services/notificationService.js');
+            await notificationService.sendLowStockAlert(updatedProduct, updatedProduct.quantity, 10);
+          } catch (notifError) {
+            console.error('Error sending low stock notification:', notifError);
+          }
+        }
       }
     }
 

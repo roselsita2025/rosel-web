@@ -148,7 +148,7 @@ const WelcomePage = () => {
     <div className="w-full relative z-10">
       {/* Hero Section */}
       <motion.section
-        className="flex min-h-[80vh] md:h-screen relative px-4 pt-24 pb-4 lg:pt-24 lg:py-12"
+        className="flex min-h-[80vh] md:min-h-[70vh] relative px-4 pt-24 pb-8 md:pb-4 lg:pt-24 lg:py-12"
         style={{
           backgroundImage: `
             linear-gradient(135deg,rgba(144, 20, 20, 0.5),rgba(255, 217, 1, 0.5)),
@@ -162,10 +162,10 @@ const WelcomePage = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
       >
-        <div className="w-full max-w-8xl px-4 mx-auto flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12 ">
+        <div className="w-full max-w-7xl px-4 mx-auto flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12 ">
           {/* Left Side - Content */}
           <motion.div 
-            className="flex-1 flex flex-col justify-end lg:justify-center items-center lg:items-start text-center lg:text-left h-full pb-0 lg:pb-0"
+            className="flex-1 flex flex-col justify-center sm:justify-end lg:justify-center items-center lg:items-start text-center lg:text-left h-full pb-0 lg:pb-0"
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
@@ -232,7 +232,7 @@ const WelcomePage = () => {
                 animate={{ scale: 1, opacity: 0.5 }}
                 transition={{ duration: 1, delay: 1 }}
               >
-                <div className="w-full h-full rounded-full bg-[#ffd901] blur-3xl scale-105 sm:scale-110" />
+                <div className="w-full h-full rounded-full bg-[#ffd901] blur-3xl scale-90 sm:scale-95" />
               </motion.div>
             </div>
           </motion.div>
@@ -268,12 +268,12 @@ const WelcomePage = () => {
         </motion.h2>
         <div className="mt-8 max-w-7xl mx-auto px-4">
           {/* Desktop Grid View */}
-          <div className="hidden md:grid grid-cols-2 lg:grid-cols-5 gap-6">
+          <div className="hidden md:grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
             {premiumProducts.length > 0 ? (
               premiumProducts.map((product, index) => (
                 <motion.div
                   key={product._id}
-                  className="bg-white p-4 rounded-lg group hover:shadow-xl hover:border-2 hover:border-[#901414] hover:bg-[#f8f3ed] hover:scale-110 hover:z-10 hover:rounded-2xl relative transition-all duration-300 flex flex-col h-full"
+                  className="bg-white p-4 rounded-lg group hover:shadow-xl hover:border-2 hover:border-[#901414] hover:bg-[#f8f3ed] hover:scale-105 md:hover:scale-103 lg:hover:scale-105 hover:z-10 hover:rounded-2xl relative transition-all duration-300 flex flex-col h-full"
                   initial={{ opacity: 0, y: 50 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
@@ -291,7 +291,7 @@ const WelcomePage = () => {
                     <span className="text-xl text-[#901414] font-libre">₱{(product.priceMin || product.price || 0).toFixed(2)}</span>
                   </div>
                   <div className="flex justify-center items-center mb-3">
-                    <span className={`text-xs font-medium px-2 py-1 rounded-full ${
+                    <span className={`text-xs sm:text-sm font-medium px-2 py-1 rounded-full ${
                       (product.totalStockUnits || product.quantity) > 10 
                         ? 'bg-green-100 text-green-800' 
                         : (product.totalStockUnits || product.quantity) > 0 
@@ -371,7 +371,7 @@ const WelcomePage = () => {
                     <span className="text-xl text-[#901414] font-libre">₱{((premiumProducts[currentProductIndex]?.priceMin || premiumProducts[currentProductIndex]?.price) || 0).toFixed(2)}</span>
                   </div>
                   <div className="flex justify-center items-center mb-3">
-                    <span className={`text-xs font-medium px-2 py-1 rounded-full ${
+                    <span className={`text-xs sm:text-sm font-medium px-2 py-1 rounded-full ${
                       (premiumProducts[currentProductIndex]?.totalStockUnits || premiumProducts[currentProductIndex]?.quantity) > 10 
                         ? 'bg-green-100 text-green-800' 
                         : (premiumProducts[currentProductIndex]?.totalStockUnits || premiumProducts[currentProductIndex]?.quantity) > 0 
@@ -415,7 +415,7 @@ const WelcomePage = () => {
                 {/* Navigation Arrows */}
                 <motion.button
                   onClick={prevProduct}
-                  className="absolute left-2 top-1/3 transform -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg transition-all duration-300 z-40"
+                  className="absolute left-3 sm:left-2 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg transition-all duration-300 z-40"
                   initial={{ opacity: 0, x: -20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.6, delay: 0.3 }}
@@ -425,7 +425,7 @@ const WelcomePage = () => {
                 </motion.button>
                 <motion.button
                   onClick={nextProduct}
-                  className="absolute right-2 top-1/3 transform -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg transition-all duration-300 z-40"
+                  className="absolute right-3 sm:right-2 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg transition-all duration-300 z-40"
                   initial={{ opacity: 0, x: 20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.6, delay: 0.3 }}
@@ -446,7 +446,7 @@ const WelcomePage = () => {
                     <button
                       key={index}
                       onClick={() => setCurrentProductIndex(index)}
-                      className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                      className={`w-3 h-3 rounded-full transition-all duration-300 ${
                         index === currentProductIndex ? 'bg-[#901414]' : 'bg-gray-300'
                       }`}
                     />
@@ -507,7 +507,7 @@ const WelcomePage = () => {
           </motion.p>
 
           {/* Reviews Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {reviewsLoading ? (
               // Loading state
               Array.from({ length: 3 }).map((_, index) => (
@@ -611,7 +611,7 @@ const WelcomePage = () => {
 
           {/* Overall Rating */}
           <motion.div
-            className="mt-12 bg-white rounded-xl p-8 shadow-lg max-w-2xl mx-auto"
+            className="mt-12 bg-white rounded-xl p-6 sm:p-8 shadow-lg max-w-2xl mx-auto"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
@@ -627,7 +627,7 @@ const WelcomePage = () => {
                   />
                 ))}
               </div>
-              <span className="text-2xl font-bold text-[#030105] font-libre">
+              <span className="text-xl sm:text-2xl font-bold text-[#030105] font-libre">
                 {stats?.averageRating ? stats.averageRating.toFixed(1) : '0.0'}/5
               </span>
             </div>
@@ -665,7 +665,7 @@ const WelcomePage = () => {
         viewport={{ once: true }}
       >
         <motion.h2 
-          className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#ffd901] max-w-xs sm:max-w-2xl lg:max-w-none mx-auto font-libre"
+          className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#ffd901] max-w-xs sm:max-w-lg md:max-w-2xl lg:max-w-none mx-auto font-libre"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
@@ -674,7 +674,7 @@ const WelcomePage = () => {
           Ready to Experience Premium Quality?
         </motion.h2>
         <motion.p 
-          className="text-lg sm:text-xl text-[#fffefc] mt-4 max-w-xs sm:max-w-lg lg:max-w-2xl mx-auto font-libre"
+          className="text-lg sm:text-xl text-[#fffefc] mt-4 max-w-xs sm:max-w-md md:max-w-lg lg:max-w-2xl mx-auto font-libre"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}

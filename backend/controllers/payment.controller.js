@@ -34,20 +34,7 @@ export const createCheckoutSession = async (req, res) => {
             return res.status(500).json({ error: "Payment system not configured" });
         }
 
-        let discountAmount = 0;
-        if (couponCode) {
-            const couponDoc = await Coupon.findOne({ code: couponCode });
-            if (couponDoc) {
-                const productSubtotal = products.reduce((sum, product) => {
-                    const quantity = product.cartQuantity || product.quantity || 1;
-                    return sum + (product.price * quantity);
-                }, 0);
-                
-                discountAmount = couponDoc.type === 'percent' 
-                    ? (productSubtotal * couponDoc.amount / 100)
-                    : Math.min(couponDoc.amount, productSubtotal);
-            }
-        }
+        let discountAmount = 0; // in pesos
 
         let subtotalCents = 0;
         const lineItems = [];
@@ -65,11 +52,45 @@ export const createCheckoutSession = async (req, res) => {
                 const unit = Number((Number(doc.basePricePerKg || 0) * Number(opt.weightKg || 0)).toFixed(2));
                 return { unitPrice: unit, weightKg: Number(opt.weightKg || 0), weightOptionId: String(opt._id), stockUnits: Number(opt.stockUnits || 0) };
             }
-            const unit = Number(incoming.price);
+            // Prefer incoming.unitPrice when provided (weight-based items), fall back to incoming.price
+            const unit = incoming.unitPrice != null ? Number(incoming.unitPrice) : Number(incoming.price);
             return { unitPrice: unit, weightKg: undefined, weightOptionId: undefined, stockUnits: Number(doc.quantity || 0) };
         };
 
-        const totalCartValue = products.reduce((sum, p) => sum + (Number(p.price) * (p.cartQuantity || p.quantity || 1)), 0) || 0;
+        // Compute cart value based on actual unit prices that will be sent to Stripe
+        let totalCartValue = 0; // in pesos
+        for (const p of products) {
+            const cartQuantity = p.cartQuantity || p.quantity || 1;
+            const doc = productDocsById.get(String(p._id));
+            if (!doc) throw new Error("Product not found");
+            const { unitPrice: baseUnitPrice } = computeUnitPrice(doc, p);
+            totalCartValue += (baseUnitPrice * cartQuantity);
+        }
+
+        // Validate coupon and compute discount based on pre-discount subtotal
+        let appliedCouponCode = "";
+        if (couponCode) {
+            try {
+                const couponDoc = await Coupon.findOne({ code: couponCode });
+                if (!couponDoc) {
+                    return res.status(400).json({ message: "Coupon not found" });
+                }
+                const preDiscountSubtotalCents = Math.round(totalCartValue * 100);
+                const validation = validateCouponForCheckoutUtil(couponDoc, req.user, preDiscountSubtotalCents);
+                if (!validation.valid) {
+                    return res.status(400).json({ message: validation.message || "Invalid coupon" });
+                }
+                if (validation.discountType === 'percent') {
+                    discountAmount = (totalCartValue * (Number(couponDoc.amount || 0) / 100));
+                } else if (validation.discountType === 'fixed') {
+                    discountAmount = Math.min((validation.discountAmountCentsOrPercent || 0) / 100, totalCartValue);
+                }
+                appliedCouponCode = couponDoc.code;
+            } catch (couponError) {
+                console.error('Error validating coupon:', couponError);
+                return res.status(500).json({ message: "Error validating coupon", error: couponError.message });
+            }
+        }
 
         for (const p of products) {
             const cartQuantity = p.cartQuantity || p.quantity || 1;
@@ -77,17 +98,12 @@ export const createCheckoutSession = async (req, res) => {
             if (!doc) throw new Error("Product not found");
             if (doc.status !== 'available') throw new Error("Product unavailable");
 
-            const { unitPrice: originalUnitPrice, weightKg, weightOptionId, stockUnits } = computeUnitPrice(doc, p);
+            const { unitPrice: baseUnitPrice, weightKg, weightOptionId, stockUnits } = computeUnitPrice(doc, p);
             if (stockUnits < cartQuantity) {
                 throw new Error("Insufficient stock for selected option");
             }
 
-            const productTotal = Number(p.price) * cartQuantity;
-            const discountTotalForItem = discountAmount > 0 && totalCartValue > 0 ? (discountAmount * (productTotal / totalCartValue)) : 0;
-            const discountPerUnit = discountTotalForItem / cartQuantity;
-            const discountedUnitPrice = Math.max(0, Number((originalUnitPrice - discountPerUnit).toFixed(2)));
-
-            const unitAmount = Math.round(discountedUnitPrice * 100);
+            const unitAmount = Math.round(Number(baseUnitPrice) * 100);
             subtotalCents += unitAmount * cartQuantity;
 
             lineItems.push({
@@ -113,32 +129,7 @@ export const createCheckoutSession = async (req, res) => {
             shippingFeeCents = Math.round(deliveryFee * 100);
         }
 
-        let appliedCouponCode = "";
-        if (couponCode) {
-            try {
-                console.log('Validating coupon:', couponCode);
-                const couponDoc = await Coupon.findOne({ code: couponCode });
-                console.log('Coupon found:', !!couponDoc);
-                
-                if (!couponDoc) {
-                    return res.status(400).json({ message: "Coupon not found" });
-                }
-                
-                const validation = validateCouponForCheckoutUtil(couponDoc, req.user, subtotalCents);
-                console.log('Coupon validation result:', validation);
-                
-                if (!validation.valid) {
-                    console.log('Coupon validation failed:', validation.message);
-                    return res.status(400).json({ message: validation.message || "Invalid coupon" });
-                }
-                
-                appliedCouponCode = couponDoc.code;
-                console.log('Coupon validated successfully:', appliedCouponCode);
-            } catch (couponError) {
-                console.error('Error validating coupon:', couponError);
-                return res.status(500).json({ message: "Error validating coupon", error: couponError.message });
-            }
-        }
+        // (Coupon already validated above; appliedCouponCode set if any)
 
         const productSubtotal = products.reduce((sum, product) => {
             const quantity = product.cartQuantity || product.quantity || 1;
@@ -154,7 +145,8 @@ export const createCheckoutSession = async (req, res) => {
             );
         }
 
-        const calculatedTaxAmount = taxAmount || (productSubtotal * 0.12);
+        // Tax removed: always zero
+        const calculatedTaxAmount = 0;
 
         const tempOrderData = {
             user: req.user._id,
@@ -199,11 +191,10 @@ export const createCheckoutSession = async (req, res) => {
                 ),
                 status: 'pending'
             } : null,
-            coupon: couponCode ? { 
-                code: couponCode,
-                type: 'percent', // Default type
-                amount: 0, // Default amount
-                discount: 0 // Default discount
+            coupon: appliedCouponCode ? { 
+                code: appliedCouponCode,
+                // We do not persist type/amount from the coupon here; discount applied via prices and recorded on success
+                discount: Number(discountAmount.toFixed(2))
             } : null,
             status: 'pending', // Use valid enum value
             paymentStatus: 'pending'
@@ -228,22 +219,24 @@ export const createCheckoutSession = async (req, res) => {
             });
         }
 
-        // Add tax as a separate line item if applicable
-        if (calculatedTaxAmount && calculatedTaxAmount > 0) {
-            const taxCents = Math.round(calculatedTaxAmount * 100);
-            lineItems.push({
-                price_data: {
-                    currency: "php",
-                    product_data: {
-                        name: "Tax (12%)",
-                    },
-                    unit_amount: taxCents,
-                },
-                quantity: 1,
-            });
-            // Added tax line item
-        }
+        // Tax removed: no separate tax line item
 
+
+        // Create a Stripe coupon to show discount explicitly in Checkout
+        let discounts = undefined;
+        if (discountAmount > 0) {
+            try {
+                const stripeCoupon = await stripe.coupons.create({
+                    amount_off: Math.round(discountAmount * 100),
+                    currency: 'php',
+                    duration: 'once',
+                    name: appliedCouponCode ? `Voucher ${appliedCouponCode}` : 'Checkout Discount'
+                });
+                discounts = [{ coupon: stripeCoupon.id }];
+            } catch (e) {
+                console.error('Failed to create Stripe coupon for display:', e);
+            }
+        }
 
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ["card"],
@@ -251,7 +244,8 @@ export const createCheckoutSession = async (req, res) => {
             mode: "payment",
             success_url: `${process.env.CLIENT_URL}/purchase-success?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${process.env.CLIENT_URL}/purchase-cancel?session_id={CHECKOUT_SESSION_ID}`,
-            // Remove discounts array since we're handling discount manually
+            // Apply discount so Checkout shows a voucher/discount line
+            ...(discounts ? { discounts } : {}),
             metadata: {
                 userId: req.user._id.toString(),
                 couponCode: appliedCouponCode,
@@ -407,21 +401,42 @@ export const checkoutSuccess = async (req, res) => {
                 await recordCouponUsageUtil(session.metadata.couponCode, session.metadata.userId);
             }
             
-            // Update product quantities
+            // Update product quantities and check for low stock
             for (const product of orderToProcess.products) {
                 const prodDoc = await Product.findById(product.product);
                 if (!prodDoc) continue;
                 const hasWeightOption = product.weightOptionId && prodDoc.weightOptions?.id(product.weightOptionId);
                 if (hasWeightOption) {
                     const opt = prodDoc.weightOptions.id(product.weightOptionId);
-                    opt.stockUnits = Math.max(0, Number(opt.stockUnits || 0) - Number(product.quantity || 0));
+                    const newStock = Math.max(0, Number(opt.stockUnits || 0) - Number(product.quantity || 0));
+                    opt.stockUnits = newStock;
                     await prodDoc.save();
+                    
+                    // Check for low stock alert
+                    if (newStock <= 10) {
+                        try {
+                            const { notificationService } = await import('../services/notificationService.js');
+                            await notificationService.sendLowStockAlert(prodDoc, newStock, 10);
+                        } catch (notifError) {
+                            console.error('Error sending low stock notification:', notifError);
+                        }
+                    }
                 } else {
-                    await Product.findByIdAndUpdate(
+                    const updatedProd = await Product.findByIdAndUpdate(
                         product.product,
                         { $inc: { quantity: -product.quantity } },
                         { new: true }
                     );
+                    
+                    // Check for low stock alert
+                    if (updatedProd && updatedProd.quantity <= 10) {
+                        try {
+                            const { notificationService } = await import('../services/notificationService.js');
+                            await notificationService.sendLowStockAlert(updatedProd, updatedProd.quantity, 10);
+                        } catch (notifError) {
+                            console.error('Error sending low stock notification:', notifError);
+                        }
+                    }
                 }
             }
             
@@ -435,7 +450,8 @@ export const checkoutSuccess = async (req, res) => {
                 deliveryFee = orderToProcess.lalamoveDetails.deliveryFee || 0;
             }
 
-            const taxAmount = productSubtotal * 0.12;
+            // Tax removed: always zero
+            const taxAmount = 0;
 
             // Update the order with payment details
             orderToProcess.stripeSessionId = sessionId;

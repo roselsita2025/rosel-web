@@ -93,10 +93,10 @@ export default function CouponsPage() {
 
   return (
     <AdminLayout>
-      <div className='p-6 bg-[#f8f3ed] min-h-screen'>
-        <h1 className='text-2xl font-semibold mb-4 text-[#860809] font-libre'>Coupons</h1>
+      <div className='p-3 sm:p-4 md:p-6 bg-[#f8f3ed] min-h-screen'>
+        <h1 className='text-xl sm:text-2xl md:text-3xl font-semibold mb-4 sm:mb-6 text-[#860809] font-libre'>Coupons</h1>
 
-      <form onSubmit={editingId ? handleUpdate : handleCreate} className='grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 bg-[#fffefc] p-6 rounded-lg border border-gray-300 shadow-md'>
+      <form onSubmit={editingId ? handleUpdate : handleCreate} className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8 bg-[#fffefc] p-3 sm:p-4 md:p-6 rounded-lg border border-gray-300 shadow-md'>
         <Input label='Code' value={form.code} onChange={(v)=>setForm(f=>({...f, code:v}))} disabled={!!editingId} required />
         <Select label='Type' value={form.type} onChange={(v)=>setForm(f=>({...f, type:v}))} options={[{value:'percent',label:'Percent'},{value:'fixed',label:'Fixed (₱)'}]} />
         <Input label={form.type==='percent'?'Amount (%)':'Amount (₱)'} type='number' value={form.amount} onChange={(v)=>setForm(f=>({...f, amount:Number(v)}))} required />
@@ -106,13 +106,15 @@ export default function CouponsPage() {
         <Input label='Use Limit (total uses)' type='number' value={form.useLimit} onChange={(v)=>setForm(f=>({...f, useLimit: v === '' ? '' : Number(v)}))} />
         <Input label='Per-User Use Limit' type='number' value={form.perUserUseLimit} onChange={(v)=>setForm(f=>({...f, perUserUseLimit:Number(v)}))} />
         <Select label='Manual Status' value={form.manualStatus} onChange={(v)=>setForm(f=>({...f, manualStatus:v}))} options={["Active","Inactive","Used","Expired","Removed"].map(s=>({value:s,label:s}))} />
-        <div className='md:col-span-3'>
-          <button className='px-4 py-2 bg-[#860809] hover:bg-[#7a0f0f] text-white rounded transition-colors disabled:opacity-50 font-alice' disabled={creating}>
-            {editingId ? 'Update Coupon' : 'Create Coupon'}
-          </button>
-          {editingId && (
-            <button type='button' className='ml-2 px-4 py-2 bg-[#a31f17] hover:bg-[#8a1a14] text-white rounded transition-colors font-alice' onClick={()=>{ setEditingId(null); setForm(initialForm); }}>Cancel</button>
-          )}
+        <div className='sm:col-span-2 md:col-span-3'>
+          <div className='flex flex-col sm:flex-row gap-2 sm:gap-3'>
+            <button className='px-3 sm:px-4 py-2 text-sm sm:text-base bg-[#860809] hover:bg-[#7a0f0f] active:bg-[#7a0f0f] text-white rounded transition-colors disabled:opacity-50 font-alice active:scale-95' disabled={creating}>
+              {editingId ? 'Update Coupon' : 'Create Coupon'}
+            </button>
+            {editingId && (
+              <button type='button' className='px-3 sm:px-4 py-2 text-sm sm:text-base bg-[#a31f17] hover:bg-[#8a1a14] active:bg-[#8a1a14] text-white rounded transition-colors font-alice active:scale-95' onClick={()=>{ setEditingId(null); setForm(initialForm); }}>Cancel</button>
+            )}
+          </div>
         </div>
       </form>
 
@@ -131,9 +133,9 @@ export default function CouponsPage() {
           </thead>
           <tbody>
             {loading ? (
-              <tr><td className='p-3 text-[#a31f17] font-alice' colSpan={7}>Loading...</td></tr>
+              <tr><td className='p-2 sm:p-3 text-xs sm:text-sm text-[#a31f17] font-alice' colSpan={7}>Loading...</td></tr>
             ) : coupons.length === 0 ? (
-              <tr><td className='p-3 text-[#a31f17] font-alice' colSpan={7}>No coupons</td></tr>
+              <tr><td className='p-2 sm:p-3 text-xs sm:text-sm text-[#a31f17] font-alice' colSpan={7}>No coupons</td></tr>
             ) : (
               coupons.map(c => (
                 <tr key={c._id} className='border-t border-gray-300 hover:bg-[#f8f3ed] transition-colors'>
@@ -144,7 +146,7 @@ export default function CouponsPage() {
                   <Td>{c.useLimit ?? '—'}</Td>
                   <Td>{c.usage?.totalUses ?? 0}</Td>
                   <Td>
-                    <button className='px-3 py-1 text-sm bg-[#860809] hover:bg-[#7a0f0f] text-white rounded transition-colors font-alice' onClick={()=>startEdit(c)}>Edit</button>
+                    <button className='px-2 sm:px-3 py-1 text-xs sm:text-sm bg-[#860809] hover:bg-[#7a0f0f] active:bg-[#7a0f0f] text-white rounded transition-colors font-alice active:scale-95 whitespace-nowrap' onClick={()=>startEdit(c)}>Edit</button>
                   </Td>
                 </tr>
               ))
@@ -161,8 +163,8 @@ function Input({ label, type='text', value, onChange, required, disabled }) {
   const controlledValue = value === undefined || value === null ? '' : value;
   return (
     <label className='flex flex-col gap-1'>
-      <span className='text-sm text-[#a31f17] font-medium font-alice'>{label}</span>
-      <input className='border border-gray-300 rounded px-3 py-2 bg-[#fffefc] text-[#030105] focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice' type={type} value={controlledValue}
+      <span className='text-xs sm:text-sm text-[#a31f17] font-medium font-alice'>{label}</span>
+      <input className='border border-gray-300 rounded px-2 sm:px-3 py-2 text-xs sm:text-sm bg-[#fffefc] text-[#030105] focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice' type={type} value={controlledValue}
         onChange={(e)=>onChange(e.target.value)} required={required} disabled={disabled} />
     </label>
   );
@@ -172,8 +174,8 @@ function Select({ label, value, onChange, options }) {
   const controlledValue = value === undefined || value === null ? '' : value;
   return (
     <label className='flex flex-col gap-1'>
-      <span className='text-sm text-[#a31f17] font-medium font-alice'>{label}</span>
-      <select className='border border-gray-300 rounded px-3 py-2 bg-[#fffefc] text-[#030105] focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice' value={controlledValue} onChange={(e)=>onChange(e.target.value)}>
+      <span className='text-xs sm:text-sm text-[#a31f17] font-medium font-alice'>{label}</span>
+      <select className='border border-gray-300 rounded px-2 sm:px-3 py-2 text-xs sm:text-sm bg-[#fffefc] text-[#030105] focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice' value={controlledValue} onChange={(e)=>onChange(e.target.value)}>
         {options.map(opt => typeof opt === 'string' ? (
           <option key={opt} value={opt}>{opt}</option>
         ) : (
@@ -184,8 +186,8 @@ function Select({ label, value, onChange, options }) {
   );
 }
 
-function Th({ children }) { return <th className='text-left p-3 border-b border-gray-300 text-white font-medium font-alice'>{children}</th>; }
-function Td({ children }) { return <td className='p-3 text-[#030105] font-libre'>{children}</td>; }
+function Th({ children }) { return <th className='text-left p-2 sm:p-3 border-b border-gray-300 text-white font-medium font-alice text-xs sm:text-sm'>{children}</th>; }
+function Td({ children }) { return <td className='p-2 sm:p-3 text-[#030105] font-libre text-xs sm:text-sm'>{children}</td>; }
 
 function normalizePayload(form) {
   const safeType = form.type || 'percent';

@@ -184,18 +184,18 @@ const OrderSummary = ({ hideActions = false }) => {
 
     return (
         <motion.div
-			className='space-y-4 rounded-lg border border-gray-300 p-4 shadow-md sm:p-6 bg-[#fffefc]'
+			className='space-y-3 sm:space-y-4 rounded-lg border border-gray-300 p-3 sm:p-4 md:p-6 shadow-md bg-[#fffefc]'
 			initial={{ opacity: 0, y: 20 }}
 			animate={{ opacity: 1, y: 0 }}
 			transition={{ duration: 0.5 }}
 		>
-            <p className='text-xl font-bold text-[#860809] font-libre'>Order Summary</p>
+            <p className='text-lg sm:text-xl font-bold text-[#860809] font-libre'>Order Summary</p>
 
-            <div className='space-y-4'>
+            <div className='space-y-3 sm:space-y-4'>
                 {/* Item Breakdown */}
-                <div className='space-y-3'>
-                    <h4 className='text-sm font-medium text-[#a31f17] font-alice'>Items ({cart.length})</h4>
-                    <div className='space-y-2 max-h-48 overflow-y-auto'>
+                <div className='space-y-2 sm:space-y-3'>
+                    <h4 className='text-xs sm:text-sm font-medium text-[#a31f17] font-alice'>Items ({cart.length})</h4>
+                    <div className='space-y-1.5 sm:space-y-2 max-h-40 sm:max-h-48 overflow-y-auto'>
                         {cart.map((item) => {
                             const itemQuantity = item.cartQuantity || item.quantity;
                             const itemPrice = item.unitPrice || item.price; // Use unitPrice for weight-based products
@@ -205,7 +205,7 @@ const OrderSummary = ({ hideActions = false }) => {
                             const weightInfo = item.weightKg ? ` (${item.weightKg}kg)` : '';
                             
                             return (
-                                <div key={`${item._id}-${item.weightOptionId || 'default'}`} className='flex items-center justify-between text-sm'>
+                                <div key={`${item._id}-${item.weightOptionId || 'default'}`} className='flex items-center justify-between text-xs sm:text-sm'>
                                     <div className='flex-1 min-w-0'>
                                         <p className='font-medium truncate text-[#030105] font-alice'>
                                             {item.name}{weightInfo}
@@ -223,15 +223,15 @@ const OrderSummary = ({ hideActions = false }) => {
                     </div>
                 </div>
 
-                <div className='space-y-2 border-t border-[#860809] pt-3'>
+                <div className='space-y-1.5 sm:space-y-2 border-t border-[#860809] pt-2 sm:pt-3'>
                     <dl className='flex items-center justify-between gap-4'>
-                        <dt className='text-base font-normal text-[#a31f17] font-alice'>Subtotal</dt>
-							<dd className='text-base font-medium text-[#030105] font-libre'>₱{formattedSubtotal}</dd>
+                        <dt className='text-sm sm:text-base font-normal text-[#a31f17] font-alice'>Subtotal</dt>
+							<dd className='text-sm sm:text-base font-medium text-[#030105] font-libre'>₱{formattedSubtotal}</dd>
                     </dl>
 
-                    <dl className='flex items-center justify-between gap-4 border-t border-[#860809] pt-2'>
-							<dt className='text-base font-bold text-[#030105] font-alice'>Total</dt>
-							<dd className='text-base font-bold text-[#860809] font-libre'>₱{formattedTotal}</dd>
+                    <dl className='flex items-center justify-between gap-4 border-t border-[#860809] pt-1.5 sm:pt-2'>
+							<dt className='text-sm sm:text-base font-bold text-[#030105] font-alice'>Total</dt>
+							<dd className='text-sm sm:text-base font-bold text-[#860809] font-libre'>₱{formattedTotal}</dd>
 					</dl>
 
                 </div>
@@ -239,7 +239,7 @@ const OrderSummary = ({ hideActions = false }) => {
                 {!hideActions && (
                     <>
                         <motion.button
-                            className={`flex w-full items-center justify-center rounded-lg px-5 py-2.5 text-sm font-medium text-white transition-colors focus:outline-none focus:ring-4 focus:ring-[#a31f17] font-alice ${
+                            className={`flex w-full items-center justify-center rounded-lg px-4 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-medium text-white transition-colors focus:outline-none focus:ring-4 focus:ring-[#a31f17] font-alice ${
                                 isValidatingStock || cart.length === 0 || user?.role === 'admin'
                                     ? 'bg-gray-400 cursor-not-allowed'
                                     : 'bg-[#860809] hover:opacity-90'
@@ -251,7 +251,7 @@ const OrderSummary = ({ hideActions = false }) => {
                         >
                             {isValidatingStock ? (
                                 <>
-                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                                    <div className="animate-spin rounded-full h-3.5 w-3.5 sm:h-4 sm:w-4 border-b-2 border-white mr-2"></div>
                                     Checking Stock...
                                 </>
                             ) : (
@@ -259,14 +259,14 @@ const OrderSummary = ({ hideActions = false }) => {
                             )}
                         </motion.button>
                         
-                        <div className='flex items-center justify-center gap-2'>
-                            <span className='text-sm font-normal text-[#a31f17] font-libre'>or</span>
+                        <div className='flex items-center justify-center gap-1.5 sm:gap-2'>
+                            <span className='text-xs sm:text-sm font-normal text-[#a31f17] font-libre'>or</span>
                             <Link
                                 to='/products'
-                                className='inline-flex items-center gap-2 text-sm font-medium underline transition-colors hover:opacity-80 text-[#860809] font-alice'
+                                className='inline-flex items-center gap-1 sm:gap-2 text-xs sm:text-sm font-medium underline transition-colors hover:opacity-80 text-[#860809] font-alice'
                             >
                                 Continue Shopping
-                                <MoveRight size={16} />
+                                <MoveRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                             </Link>
                         </div>
                     </>

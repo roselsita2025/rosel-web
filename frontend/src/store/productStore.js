@@ -17,6 +17,62 @@ export const productStore = create((set, get) => ({
     setProducts: (products) => set({ products }),
     setLastScannedBarcode: (code) => set({ lastScannedBarcode: code }),
     
+    // Validation helpers
+    checkNameExists: (name, excludeProductId = null) => {
+        const { products } = get();
+        const trimmedName = String(name || '').trim().toLowerCase();
+        if (!trimmedName) return false;
+        return products.some(p => 
+            p.name.toLowerCase() === trimmedName && 
+            p._id !== excludeProductId
+        );
+    },
+    
+    checkBarcodeExists: (barcode, excludeProductId = null) => {
+        const { products } = get();
+        const trimmedBarcode = String(barcode || '').trim();
+        if (!trimmedBarcode) return false;
+        return products.some(p => 
+            p.barcode && 
+            p.barcode === trimmedBarcode && 
+            p._id !== excludeProductId
+        );
+    },
+    
+    checkWeightOptionBarcodeExists: (barcode, excludeProductId = null, excludeWeightOptionId = null) => {
+        const { products } = get();
+        const trimmedBarcode = String(barcode || '').trim();
+        if (!trimmedBarcode) return false;
+        
+        // Check in all products' weight options
+        for (const product of products) {
+            if (product._id === excludeProductId) {
+                // For the same product, check excluding the specific weight option
+                if (product.weightOptions && Array.isArray(product.weightOptions)) {
+                    const conflict = product.weightOptions.some(opt => 
+                        opt.barcode === trimmedBarcode && 
+                        String(opt._id) !== String(excludeWeightOptionId)
+                    );
+                    if (conflict) return true;
+                }
+            } else {
+                // For other products, check all weight options
+                if (product.weightOptions && Array.isArray(product.weightOptions)) {
+                    const conflict = product.weightOptions.some(opt => 
+                        opt.barcode === trimmedBarcode
+                    );
+                    if (conflict) return true;
+                }
+            }
+        }
+        
+        // Also check if it conflicts with any product-level barcode
+        return products.some(p => 
+            p.barcode === trimmedBarcode && 
+            p._id !== excludeProductId
+        );
+    },
+    
     createProduct: async (productData) => {
         set({ loading: true });
         try {
@@ -25,9 +81,12 @@ export const productStore = create((set, get) => ({
                 products: [...prevState.products, res.data.product],
                 loading: false,
             }));
+            return { success: true, product: res.data.product };
         } catch (error) {
-            toast.error(error.response.data.error);
             set({ loading: false });
+            const errorMessage = error.response?.data?.message || error.response?.data?.error || "Failed to create product";
+            toast.error(errorMessage);
+            return { success: false, error: errorMessage };
         }
     },
 
@@ -37,15 +96,24 @@ export const productStore = create((set, get) => ({
         try {
             const response = await axios.get(`${API_URL}/products/barcode/${encodeURIComponent(String(barcode).trim())}`);
             const product = response.data?.product;
+            const matchedWeightOptionId = response.data?.matchedWeightOptionId || null;
+            
             if (product) {
                 set((prevState) => {
                     const exists = prevState.products.some((p) => p._id === product._id);
-                    return { products: exists ? prevState.products.map(p => p._id===product._id?product:p) : [product, ...prevState.products], loading: false };
+                    return { 
+                        products: exists 
+                            ? prevState.products.map(p => p._id === product._id ? product : p) 
+                            : [product, ...prevState.products], 
+                        loading: false 
+                    };
                 });
             } else {
                 set({ loading: false });
             }
-            return product || null;
+            
+            // Return both product and matchedWeightOptionId
+            return product ? { product, matchedWeightOptionId } : null;
         } catch (error) {
             set({ loading: false });
             return null;
@@ -292,6 +360,7 @@ export const productStore = create((set, get) => ({
 					loading: false
 				}));
 				toast.success("Product updated");
+				return { success: true, product: response.data.product };
 			} else {
 				// Possibly trashed (deleted)
 				set((prevState) => ({
@@ -299,18 +368,26 @@ export const productStore = create((set, get) => ({
 					loading: false
 				}));
 				toast.success(response.data?.message || "Product removed");
+				return { success: true };
 			}
 		} catch (error) {
 			set({ loading: false });
-			toast.error(error.response?.data?.message || "Failed to update product");
+			const errorMessage = error.response?.data?.message || "Failed to update product";
+			toast.error(errorMessage);
+			return { success: false, error: errorMessage };
 		}
 	},
 
     // ==================== Weight Options (Admin) ====================
-    addWeightOption: async (productId, { weightKg, stockUnits }) => {
+    addWeightOption: async (productId, { weightKg, stockUnits, barcode }) => {
         set({ loading: true });
         try {
-            const response = await axios.post(`${API_URL}/products/${productId}/weights`, { weightKg, stockUnits });
+            const payload = { weightKg, stockUnits };
+            if (barcode && barcode.trim()) {
+                payload.barcode = barcode.trim();
+            }
+            
+            const response = await axios.post(`${API_URL}/products/${productId}/weights`, payload);
             const updated = response.data?.product;
             if (updated) {
                 set((prevState) => ({
@@ -318,12 +395,16 @@ export const productStore = create((set, get) => ({
                     loading: false,
                 }));
                 toast.success("Weight option added");
+                return { success: true };
             } else {
                 set({ loading: false });
+                return { success: false };
             }
         } catch (error) {
             set({ loading: false });
-            toast.error(error.response?.data?.message || "Failed to add weight option");
+            const errorMessage = error.response?.data?.message || "Failed to add weight option";
+            toast.error(errorMessage);
+            return { success: false, error: errorMessage };
         }
     },
 
@@ -358,12 +439,47 @@ export const productStore = create((set, get) => ({
                     loading: false,
                 }));
                 toast.success("Stock updated");
+                return { success: true };
             } else {
                 set({ loading: false });
+                return { success: false };
             }
         } catch (error) {
             set({ loading: false });
-            toast.error(error.response?.data?.message || "Failed to update stock");
+            const errorMessage = error.response?.data?.message || "Failed to update stock";
+            toast.error(errorMessage);
+            return { success: false, error: errorMessage };
+        }
+    },
+    
+    updateWeightOption: async (productId, weightOptionId, updates) => {
+        set({ loading: true });
+        try {
+            const payload = {};
+            if (typeof updates.weightKg !== 'undefined') payload.weightKg = updates.weightKg;
+            if (typeof updates.stockUnits !== 'undefined') payload.stockUnits = updates.stockUnits;
+            if (typeof updates.barcode !== 'undefined') {
+                payload.barcode = updates.barcode && updates.barcode.trim() ? updates.barcode.trim() : undefined;
+            }
+            
+            const response = await axios.patch(`${API_URL}/products/${productId}/weights/${weightOptionId}`, payload);
+            const updated = response.data?.product;
+            if (updated) {
+                set((prevState) => ({
+                    products: prevState.products.map((p) => (p._id === productId ? updated : p)),
+                    loading: false,
+                }));
+                toast.success("Weight option updated");
+                return { success: true };
+            } else {
+                set({ loading: false });
+                return { success: false };
+            }
+        } catch (error) {
+            set({ loading: false });
+            const errorMessage = error.response?.data?.message || "Failed to update weight option";
+            toast.error(errorMessage);
+            return { success: false, error: errorMessage };
         }
     },
 

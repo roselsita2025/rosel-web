@@ -28,6 +28,7 @@ const ManageProductsPage = () => {
 		loading,
 		createProduct,
 		fetchAllProducts,
+		checkWeightOptionBarcodeExists,
 		updateProduct,
 		updateProductQuantity,
 		addProductQuantity,
@@ -36,9 +37,12 @@ const ManageProductsPage = () => {
         addWeightOption,
         updateWeightOptionStock,
         updateBasePricePerKg,
+        checkNameExists,
+        checkBarcodeExists,
 	} = productStore();
 
 	const [activeTab, setActiveTab] = useState("monitor"); // create | update | monitor
+	const [updateSubTab, setUpdateSubTab] = useState("select"); // select | price | stocks
 
 	// Create product state
 	const [newProduct, setNewProduct] = useState({
@@ -50,6 +54,7 @@ const ManageProductsPage = () => {
 		weightKg: "",
 		images: [], // base64 strings
 		barcode: "",
+		weightBarcode: "",
 		supplier: "",
 	});
 
@@ -87,6 +92,13 @@ const ManageProductsPage = () => {
     const [showBarcodeModal, setShowBarcodeModal] = useState(false);
     const [selectedBarcode, setSelectedBarcode] = useState('');
     const [selectedProductName, setSelectedProductName] = useState('');
+    const [selectedWeightKg, setSelectedWeightKg] = useState(null);
+
+	// Update tab filters and sort (moved here before useMemo hooks)
+	const [updateFilterText, setUpdateFilterText] = useState("");
+	const [updateFilterCategory, setUpdateFilterCategory] = useState("");
+	const [updateFilterStatus, setUpdateFilterStatus] = useState("");
+	const [updateSortKey, setUpdateSortKey] = useState("nameAsc");
 
     // Stocks Updates UI state
     const [showAddWeight, setShowAddWeight] = useState(false);
@@ -102,6 +114,9 @@ const ManageProductsPage = () => {
     const [editingRowId, setEditingRowId] = useState(null);
     const [draftPriceById, setDraftPriceById] = useState({});
     const [expandedRows, setExpandedRows] = useState(new Set());
+    const [priceCurrentPage, setPriceCurrentPage] = useState(1);
+    const [weightCurrentPage, setWeightCurrentPage] = useState(1);
+    const ITEMS_PER_PAGE = 10;
 
     // Header renderer for sorting
     const renderWeightHeader = (label, field) => (
@@ -121,9 +136,19 @@ const ManageProductsPage = () => {
     );
 
     // Flatten rows from products
-    const weightRows = (products || [])
-        .filter(p => !weightFilterCategory || p.category === weightFilterCategory)
-        .filter(p => !weightFilterText || p.name.toLowerCase().includes(weightFilterText.toLowerCase()))
+    const allWeightRows = useMemo(() => (products || [])
+        .filter(p => !updateFilterCategory || p.category === updateFilterCategory)
+        .filter(p => {
+            if (!updateFilterText) return true;
+            const searchLower = updateFilterText.toLowerCase();
+            // Check product name
+            if (p.name.toLowerCase().includes(searchLower)) return true;
+            // Check product-level barcode
+            if (p.barcode?.toLowerCase().includes(searchLower)) return true;
+            // Check weight option barcodes
+            if (p.weightOptions?.some(opt => opt.barcode?.toLowerCase().includes(searchLower))) return true;
+            return false;
+        })
         .flatMap(p => {
             const hasOpts = Array.isArray(p.weightOptions) && p.weightOptions.length > 0;
             if (!hasOpts) {
@@ -136,6 +161,7 @@ const ManageProductsPage = () => {
                     weightLabel: '—',
                     weightOptionId: null,
                     stocks: p.quantity ?? 0,
+                    barcode: p.barcode || '',
                 }];
             }
             return p.weightOptions.map(opt => ({
@@ -146,6 +172,7 @@ const ManageProductsPage = () => {
                 weightLabel: typeof opt.weightKg === 'number' ? opt.weightKg.toFixed(2) : String(opt.weightKg),
                 weightOptionId: opt._id,
                 stocks: opt.stockUnits ?? 0,
+                barcode: opt.barcode || '',
             }));
         })
         .sort((a,b)=>{
@@ -160,7 +187,13 @@ const ManageProductsPage = () => {
                 case 'stocksDesc': return (b.stocks||0) - (a.stocks||0);
                 default: return a.name.localeCompare(b.name);
             }
-        });
+        }), [products, updateFilterCategory, updateFilterText, weightSortKey]);
+
+    const weightTotalPages = Math.ceil(allWeightRows.length / ITEMS_PER_PAGE);
+    const weightRows = allWeightRows.slice(
+        (weightCurrentPage - 1) * ITEMS_PER_PAGE,
+        weightCurrentPage * ITEMS_PER_PAGE
+    );
 
     // Helpers for Price Updates
     const renderPriceHeader = (label, field) => (
@@ -179,9 +212,19 @@ const ManageProductsPage = () => {
         </th>
     );
 
-    const priceRows = (products || [])
-        .filter(p => !priceFilterCategory || p.category === priceFilterCategory)
-        .filter(p => !priceFilterText || p.name.toLowerCase().includes(priceFilterText.toLowerCase()))
+    const allPriceRows = useMemo(() => (products || [])
+        .filter(p => !updateFilterCategory || p.category === updateFilterCategory)
+        .filter(p => {
+            if (!updateFilterText) return true;
+            const searchLower = updateFilterText.toLowerCase();
+            // Check product name
+            if (p.name.toLowerCase().includes(searchLower)) return true;
+            // Check product-level barcode
+            if (p.barcode?.toLowerCase().includes(searchLower)) return true;
+            // Check weight option barcodes
+            if (p.weightOptions?.some(opt => opt.barcode?.toLowerCase().includes(searchLower))) return true;
+            return false;
+        })
         .map((p) => ({
             productId: p._id,
             name: p.name,
@@ -198,19 +241,20 @@ const ManageProductsPage = () => {
                 case 'priceDesc': return (b.basePrice||0) - (a.basePrice||0);
                 default: return a.name.localeCompare(b.name);
             }
-        });
+        }), [products, updateFilterCategory, updateFilterText, priceSortKey]);
+
+    const priceTotalPages = Math.ceil(allPriceRows.length / ITEMS_PER_PAGE);
+    const priceRows = allPriceRows.slice(
+        (priceCurrentPage - 1) * ITEMS_PER_PAGE,
+        priceCurrentPage * ITEMS_PER_PAGE
+    );
 
 	// Monitor filters
 	const [filterText, setFilterText] = useState("");
 	const [filterCategory, setFilterCategory] = useState("");
 	const [filterStatus, setFilterStatus] = useState("");
-	const [sortKey, setSortKey] = useState("nameAsc");
-	
-	// Update tab filters and sort
-	const [updateFilterText, setUpdateFilterText] = useState("");
-	const [updateFilterCategory, setUpdateFilterCategory] = useState("");
-	const [updateFilterStatus, setUpdateFilterStatus] = useState("");
-	const [updateSortKey, setUpdateSortKey] = useState("nameAsc");
+	const [sortKey, setSortKey] = useState("qtyAsc"); // Default: lowest stock first
+	const [monitorCurrentPage, setMonitorCurrentPage] = useState(1);
 	
 	// Activity log state
 	const [activityLogs, setActivityLogs] = useState([]);
@@ -224,6 +268,21 @@ const ManageProductsPage = () => {
 			fetchAllProducts();
 		}
 	}, [isAuthenticated, isCheckingAuth, fetchAllProducts]);
+
+	// Reset price pagination when filters change
+	useEffect(() => {
+		setPriceCurrentPage(1);
+	}, [updateFilterCategory, updateFilterText, priceSortKey]);
+
+	// Reset weight pagination when filters change
+	useEffect(() => {
+		setWeightCurrentPage(1);
+	}, [updateFilterCategory, updateFilterText, weightSortKey]);
+
+	// Reset monitor pagination when filters change
+	useEffect(() => {
+		setMonitorCurrentPage(1);
+	}, [filterText, filterCategory, filterStatus, sortKey]);
 
 	useEffect(() => {
 		if (activeTab === 'activity' && isAuthenticated && !isCheckingAuth) {
@@ -279,27 +338,78 @@ const ManageProductsPage = () => {
 
 	const onCreate = async (e) => {
 		e.preventDefault();
-		await createProduct({
+		
+		// Validate product name
+		if (checkNameExists(newProduct.name)) {
+			toast.error("A product with this name already exists. Please use a different name.");
+			return;
+		}
+		
+		// Validate product barcode (required)
+		if (!newProduct.barcode?.trim()) {
+			toast.error("Product barcode is required.");
+			return;
+		}
+		
+		// Validate product barcode uniqueness
+		if (checkBarcodeExists(newProduct.barcode)) {
+			toast.error("This product barcode is already in use. Please use a different barcode.");
+			return;
+		}
+		
+		// Validate weight barcode (required)
+		if (!newProduct.weightBarcode?.trim()) {
+			toast.error("Weight barcode is required.");
+			return;
+		}
+		
+		// Validate weight barcode uniqueness
+		if (checkWeightOptionBarcodeExists(newProduct.weightBarcode.trim())) {
+			toast.error("This weight barcode is already in use. Please use a different barcode.");
+			return;
+		}
+		
+		const result = await createProduct({
 			name: newProduct.name,
 			description: newProduct.description,
 			basePricePerKg: Number(newProduct.price), // base price per kg
 			category: newProduct.category,
 			quantity: Number(newProduct.quantity),
 			weightKg: Number(newProduct.weightKg),
+			weightBarcode: newProduct.weightBarcode.trim(), // weight-specific barcode
 			images: newProduct.images,
-			barcode: newProduct.barcode?.trim() || undefined,
+			barcode: newProduct.barcode?.trim() || undefined, // product-level barcode (optional)
 			supplier: newProduct.supplier?.trim() || "",
 		});
-		setNewProduct({ name: "", description: "", price: "", category: "", quantity: "", weightKg: "", images: [], barcode: "", supplier: "" });
+		
+		if (result?.success) {
+			setNewProduct({ name: "", description: "", price: "", category: "", quantity: "", weightKg: "", images: [], barcode: "", supplier: "", weightBarcode: "" });
+		}
 	};
 
 	const onUpdate = async (e) => {
 		e.preventDefault();
 		if (!selectedProduct) return;
+		
+		const newName = editFields.name || selectedProduct.name;
+		const newBarcode = editFields.barcode || selectedProduct.barcode;
+		
+		// Validate product name (exclude current product from check)
+		if (newName !== selectedProduct.name && checkNameExists(newName, selectedProduct._id)) {
+			toast.error("A product with this name already exists. Please use a different name.");
+			return;
+		}
+		
+		// Validate barcode if changed (exclude current product from check)
+		if (newBarcode && newBarcode !== selectedProduct.barcode && checkBarcodeExists(newBarcode, selectedProduct._id)) {
+			toast.error("This barcode is already in use. Please use a different barcode.");
+			return;
+		}
+		
 		const payload = {
-			name: editFields.name || selectedProduct.name,
+			name: newName,
 			category: editFields.category || selectedProduct.category,
-			barcode: editFields.barcode || selectedProduct.barcode,
+			barcode: newBarcode,
 			description: editFields.description,
 			status: editFields.status,
 			isFeatured: !!editFields.isFeatured,
@@ -310,13 +420,14 @@ const ManageProductsPage = () => {
 			mainImageUrl: mainImageUrl || undefined,
 		};
 		
+		const result = await updateProduct(selectedProduct._id, payload);
 		
-		await updateProduct(selectedProduct._id, payload);
-		
-		// Clear the removal list and new images after successful update
-		setRemoveImageUrls([]);
-		setNewImages([]);
-		setMainImageUrl("");
+		if (result?.success) {
+			// Clear the removal list and new images after successful update
+			setRemoveImageUrls([]);
+			setNewImages([]);
+			setMainImageUrl("");
+		}
 	};
 
 	const onUpdateQuantity = async (e) => {
@@ -432,8 +543,11 @@ const ManageProductsPage = () => {
 				return;
 			}
 			
-			// Transform the response data to match the expected format
-			const transformedLogs = logs.map(log => ({
+		// Transform the response data to match the expected format
+		// Filter out write_off and stock_out actions
+		const transformedLogs = logs
+			.filter(log => log.action !== 'write_off' && log.action !== 'stock_out')
+			.map(log => ({
 				id: log._id,
 				productId: log.productId,
 				productName: log.productName,
@@ -447,8 +561,8 @@ const ManageProductsPage = () => {
 				newQuantity: log.newQuantity,
 				reason: log.reason
 			}));
-			
-			setActivityLogs(transformedLogs);
+		
+		setActivityLogs(transformedLogs);
 		} catch (error) {
 			toast.error('Failed to fetch activity logs');
 			setActivityLogs([]);
@@ -465,14 +579,22 @@ const ManageProductsPage = () => {
         return p?.quantity || 0;
     };
 
-const filteredProducts = useMemo(() => {
+    // Get stock status based on quantity
+    const getStockStatus = (product) => {
+        const totalStocks = getTotalStocks(product);
+        if (totalStocks === 0) return 'out of stock';
+        if (totalStocks <= 10) return 'low stock'; // Low stock threshold: 10 or fewer
+        return 'in stock';
+    };
+
+const allFilteredProducts = useMemo(() => {
 		return (products || [])
 			.filter(p => !filterText || 
 				p.name.toLowerCase().includes(filterText.toLowerCase()) ||
 				p.barcode?.toLowerCase().includes(filterText.toLowerCase())
 			)
 			.filter(p => !filterCategory || p.category === filterCategory)
-			.filter(p => !filterStatus || p.status === filterStatus)
+			.filter(p => !filterStatus || getStockStatus(p) === filterStatus)
 			.slice()
 			.sort((a,b)=>{
 				switch(sortKey){
@@ -488,8 +610,8 @@ const filteredProducts = useMemo(() => {
 					case 'priceDesc': return (b.price||0)-(a.price||0);
 					case 'barcodeAsc': return (a.barcode||'').localeCompare(b.barcode||'');
 					case 'barcodeDesc': return (b.barcode||'').localeCompare(a.barcode||'');
-					case 'statusAsc': return (a.status||'').localeCompare(b.status||'');
-					case 'statusDesc': return (b.status||'').localeCompare(a.status||'');
+					case 'statusAsc': return getStockStatus(a).localeCompare(getStockStatus(b));
+					case 'statusDesc': return getStockStatus(b).localeCompare(getStockStatus(a));
 					case 'featuredAsc': return (a.isFeatured ? 1 : 0) - (b.isFeatured ? 1 : 0);
 					case 'featuredDesc': return (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0);
                     case 'valueAsc': return ((a.price||0)*getTotalStocks(a))-((b.price||0)*getTotalStocks(b));
@@ -498,6 +620,12 @@ const filteredProducts = useMemo(() => {
 				}
 			});
 	}, [products, filterText, filterCategory, filterStatus, sortKey]);
+
+	const monitorTotalPages = Math.ceil(allFilteredProducts.length / ITEMS_PER_PAGE);
+	const filteredProducts = allFilteredProducts.slice(
+		(monitorCurrentPage - 1) * ITEMS_PER_PAGE,
+		monitorCurrentPage * ITEMS_PER_PAGE
+	);
 
 const filteredUpdateProducts = useMemo(() => {
 		return (products || [])
@@ -556,7 +684,11 @@ const filteredUpdateProducts = useMemo(() => {
 
 	// Debounced USB (keyboard wedge) handlers per mode
 	useEffect(() => {
-		const activeUsb = createBarcodeMode === 'usb' || updateSearchMode === 'usb' || qtyScanMode === 'usb' || monitorSearchMode === 'usb';
+		// Don't activate main scanner if Add Weight modal is open
+		if (showAddWeight) return;
+		
+		// Always enable USB scanning in Monitor and Update tabs, or when explicitly enabled in other modes
+		const activeUsb = createBarcodeMode === 'usb' || updateSearchMode === 'usb' || qtyScanMode === 'usb' || monitorSearchMode === 'usb' || activeTab === 'monitor' || activeTab === 'update';
 		if (!activeUsb) return;
 		let buffer = '';
 		let lastTs = 0;
@@ -567,8 +699,22 @@ const filteredUpdateProducts = useMemo(() => {
 				const code = buffer;
 				buffer = '';
 				if (!code) { lastTs = now; return; }
-				// route scan by active mode precedence: quantity > update search > create > monitor
-				if (qtyScanMode === 'usb' && selectedProduct) {
+				// route scan by active mode precedence: monitor/update (when active) > quantity > update search > create
+				if (activeTab === 'monitor') {
+					// Use raw code without formatting
+					setLastScannedMonitor(code);
+					setFilterText(code);
+			} else if (activeTab === 'update') {
+				// Use raw code without formatting for Update tab
+				setUpdateFilterText(code);
+				// Also try to select the product if found by barcode (product-level or weight-level)
+				const result = await productStore.getState().fetchProductByBarcode(code);
+				if (result) {
+					const { product } = result;
+					setSelectedProductId(product._id);
+					setUpdateSubTab('select'); // Switch to Update Details tab
+				}
+			} else if (qtyScanMode === 'usb' && selectedProduct) {
 					// Format the scanned code to match expected barcode format (JKLjkl3456 -> JKL-jkl-3456)
 					let formattedCode = code;
 					if (code.length >= 9 && /^[A-Za-z0-9]+$/.test(code)) {
@@ -606,15 +752,6 @@ const filteredUpdateProducts = useMemo(() => {
 					}
 					setLastScannedCreate(formattedCode);
 					setNewProduct((prev)=> ({ ...prev, barcode: formattedCode }));
-				} else if (monitorSearchMode === 'usb') {
-					// Format the scanned code to match expected barcode format (ABCabc1234 -> ABC-abc-1234)
-					let formattedCode = code;
-					if (code.length >= 9 && /^[A-Za-z0-9]+$/.test(code)) {
-						// Insert hyphens at positions 3 and 6 (0-indexed: after 3rd and 6th characters)
-						formattedCode = code.slice(0, 3) + '-' + code.slice(3, 6) + '-' + code.slice(6);
-					}
-					setLastScannedMonitor(formattedCode);
-					setFilterText(formattedCode);
 				}
 				lastTs = now;
 				return;
@@ -624,7 +761,7 @@ const filteredUpdateProducts = useMemo(() => {
 		};
 		window.addEventListener('keydown', onKey);
 		return () => window.removeEventListener('keydown', onKey);
-	}, [createBarcodeMode, updateSearchMode, qtyScanMode, monitorSearchMode, selectedProduct, qtyAction]);
+	}, [createBarcodeMode, updateSearchMode, qtyScanMode, monitorSearchMode, selectedProduct, qtyAction, activeTab, showAddWeight]);
 
 	if (isCheckingAuth) {
 		return (
@@ -652,83 +789,117 @@ const filteredUpdateProducts = useMemo(() => {
 
 	return (
 		<AdminLayout>
-			<div className='py-8 px-4 bg-[#f8f3ed] min-h-screen'>
+			<div className='py-4 sm:py-6 md:py-8 px-3 sm:px-4 bg-[#f8f3ed] min-h-screen'>
 				<div className='max-w-7xl mx-auto'>
 				{/* Page Title */}
-				<div className='mb-6'>
-					<h1 className='text-3xl font-bold text-[#860809] font-libre mb-2'>Product Management</h1>
-					<p className='text-[#a31f17] font-alice'>Manage your product inventory, create new products, and track product activity</p>
+				<div className='mb-4 sm:mb-6'>
+					<h1 className='text-xl sm:text-2xl md:text-3xl font-bold text-[#860809] font-libre mb-2'>Product Management</h1>
+					<p className='text-[#a31f17] font-alice text-sm sm:text-base'>Manage your product inventory, create new products, and track product activity</p>
 				</div>
 				
-				<div className='mb-6 flex items-center gap-2'>
-					<button onClick={()=>setActiveTab('monitor')} className={`px-3 py-2 rounded font-alice ${activeTab==='monitor' ? 'bg-[#860809] text-white' : 'bg-[#a31f17] text-white'}`}><Eye className='inline mr-2' />Monitor</button>
-					<button onClick={()=>setActiveTab('create')} className={`px-3 py-2 rounded font-alice ${activeTab==='create' ? 'bg-[#860809] text-white' : 'bg-[#a31f17] text-white'}`}><PlusCircle className='inline mr-2' />Create</button>
-					<button onClick={()=>setActiveTab('update')} className={`px-3 py-2 rounded font-alice ${activeTab==='update' ? 'bg-[#860809] text-white' : 'bg-[#a31f17] text-white'}`}><Edit3 className='inline mr-2' />Update</button>
-					<button onClick={()=>setActiveTab('activity')} className={`px-3 py-2 rounded font-alice ${activeTab==='activity' ? 'bg-[#860809] text-white' : 'bg-[#a31f17] text-white'}`}><History className='inline mr-2' />Activity Log</button>
+				<div className='mb-4 sm:mb-6 flex flex-wrap items-center gap-2'>
+					<button onClick={()=>setActiveTab('monitor')} className={`px-2.5 sm:px-3 py-1.5 sm:py-2 rounded font-alice text-xs sm:text-sm active:scale-95 transition-all ${activeTab==='monitor' ? 'bg-[#860809] text-white' : 'bg-[#a31f17] text-white'}`}><Eye className='inline mr-1.5 sm:mr-2 w-3.5 h-3.5 sm:w-4 sm:h-4' /><span className='whitespace-nowrap'>Monitor</span></button>
+					<button onClick={()=>setActiveTab('create')} className={`px-2.5 sm:px-3 py-1.5 sm:py-2 rounded font-alice text-xs sm:text-sm active:scale-95 transition-all ${activeTab==='create' ? 'bg-[#860809] text-white' : 'bg-[#a31f17] text-white'}`}><PlusCircle className='inline mr-1.5 sm:mr-2 w-3.5 h-3.5 sm:w-4 sm:h-4' /><span className='whitespace-nowrap'>Create</span></button>
+					<button onClick={()=>setActiveTab('update')} className={`px-2.5 sm:px-3 py-1.5 sm:py-2 rounded font-alice text-xs sm:text-sm active:scale-95 transition-all ${activeTab==='update' ? 'bg-[#860809] text-white' : 'bg-[#a31f17] text-white'}`}><Edit3 className='inline mr-1.5 sm:mr-2 w-3.5 h-3.5 sm:w-4 sm:h-4' /><span className='whitespace-nowrap'>Update</span></button>
+					<button onClick={()=>setActiveTab('activity')} className={`px-2.5 sm:px-3 py-1.5 sm:py-2 rounded font-alice text-xs sm:text-sm active:scale-95 transition-all ${activeTab==='activity' ? 'bg-[#860809] text-white' : 'bg-[#a31f17] text-white'}`}><History className='inline mr-1.5 sm:mr-2 w-3.5 h-3.5 sm:w-4 sm:h-4' /><span className='whitespace-nowrap'>Activity Log</span></button>
 				</div>
 
 				{/* Create Tab */}
 				{activeTab === 'create' && (
-					<motion.div className='bg-[#fffefc] shadow-lg rounded-lg p-6 border border-gray-300' initial={{opacity:0,y:20}} animate={{opacity:1,y:0}}>
-						<form onSubmit={onCreate} className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+					<motion.div className='bg-[#fffefc] shadow-lg rounded-lg p-3 sm:p-4 md:p-6 border border-gray-300' initial={{opacity:0,y:20}} animate={{opacity:1,y:0}}>
+						<form onSubmit={onCreate} className='grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4'>
+							{/* Row 1: Product Barcode | Product Name */}
 							<div>
-									<label className='block text-sm text-[#a31f17] mb-1 font-medium font-alice'>Product Name</label>
-									<input value={newProduct.name} onChange={(e)=>setNewProduct({...newProduct, name: e.target.value})} className='w-full bg-[#fffefc] border border-gray-300 rounded px-3 py-2 text-[#030105] focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice' required />
-							</div>
-							<div>
-									<label className='block text-sm text-[#a31f17] mb-1 font-medium font-alice'>Category</label>
-									<select value={newProduct.category} onChange={(e)=>setNewProduct({...newProduct, category: e.target.value})} className='w-full bg-[#fffefc] border border-gray-300 rounded px-3 py-2 text-[#030105] focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice' required>
-									<option value=''>Select</option>
-									{FIXED_CATEGORIES.map(c=> <option key={c} value={c}>{c}</option>)}
-								</select>
-							</div>
-						<div>
-								<label className='block text-sm text-[#a31f17] mb-1 font-medium font-alice'>Base Price per Kilogram</label>
-								<input type='number' step='0.01' value={newProduct.price} onChange={(e)=>setNewProduct({...newProduct, price: e.target.value})} className='w-full bg-[#fffefc] border border-gray-300 rounded px-3 py-2 text-[#030105] focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice' required />
-						</div>
-						<div>
-									<label className='block text-sm text-[#a31f17] mb-1 font-medium font-alice'>Stocks (quantity)</label>
-									<input type='number' min='0' value={newProduct.quantity} onChange={(e)=>setNewProduct({...newProduct, quantity: e.target.value})} className='w-full bg-[#fffefc] border border-gray-300 rounded px-3 py-2 text-[#030105] focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice' required />
-							</div>
-						<div>
-								<label className='block text-sm text-[#a31f17] mb-1 font-medium font-alice'>Weight (kg)</label>
-								<input type='number' min='0.01' step='0.01' value={newProduct.weightKg} onChange={(e)=>setNewProduct({...newProduct, weightKg: e.target.value})} placeholder='Enter weight in kilograms' className='w-full bg-[#fffefc] border border-gray-300 rounded px-3 py-2 text-[#030105] focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice' required />
-						</div>
-						<div>
-								<label className='block text-sm text-[#a31f17] mb-1 font-medium font-alice'>Supplier</label>
-								<input value={newProduct.supplier} onChange={(e)=>setNewProduct({...newProduct, supplier: e.target.value})} placeholder='Enter supplier name' className='w-full bg-[#fffefc] border border-gray-300 rounded px-3 py-2 text-[#030105] focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice' />
-						</div>
-							<div>
-								<label className='block text-sm text-[#82695b] mb-1 font-medium'>Barcode</label>
+								<label className='block text-sm text-[#a31f17] mb-1 font-medium font-alice'>
+									Product Barcode <span className='text-red-500'>*</span>
+								</label>
 								<div className='flex items-center gap-2 mb-2'>
-											<select value={createBarcodeMode} onChange={(e)=>setCreateBarcodeMode(e.target.value)} className='bg-[#fffefc] border border-gray-300 rounded px-2 py-2 text-[#030105] focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice'>
+									<select value={createBarcodeMode} onChange={(e)=>setCreateBarcodeMode(e.target.value)} className='bg-[#fffefc] border border-gray-300 rounded px-2 py-2 text-[#030105] focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice'>
 										<option value='manual'>Manual</option>
 										<option value='usb'>USB Scanner</option>
 										<option value='camera'>Camera</option>
 									</select>
 								</div>
-									{createBarcodeMode !== 'camera' && (
-											<input value={newProduct.barcode} onChange={(e)=>setNewProduct({...newProduct, barcode: e.target.value})} placeholder='Scan or enter barcode' className='w-full bg-[#fffefc] border border-gray-300 rounded px-3 py-2 text-[#030105] focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice' />
-									)}
-									{createBarcodeMode === 'camera' && (
-											<div className='bg-[#fffefc] border border-gray-300 rounded p-3'>
-											<div className='flex items-center gap-2 mb-2'>
-													<button type='button' onClick={async()=>{ try{ const reader = new BrowserMultiFormatReader(); const controls = await reader.decodeFromVideoDevice(null, document.getElementById('create-scan-video'), (result)=>{ if(result){ const code = result.getText(); setLastScannedCreate(code); setNewProduct((prev)=>({ ...prev, barcode: code })); } }); window.__createScanControls = controls; }catch{}}} className='px-3 py-2 bg-[#860809] border border-[#860809] rounded text-white hover:bg-[#7a0f0f] flex items-center gap-2 font-alice'><ScanLine className='h-4 w-4'/> Start Camera</button>
-													<button type='button' onClick={()=>{ try{ window.__createScanControls?.stop?.(); }catch{} }} className='px-3 py-2 bg-[#a31f17] border border-[#a31f17] rounded text-white hover:bg-[#8a1a14] font-alice'>Stop</button>
-											</div>
-											<video id='create-scan-video' style={{ width: 240, height: 160 }} muted playsInline />
-												<div className='text-xs text-[#a31f17] mt-2 font-alice'>Last scanned: {lastScannedCreate || '—'}</div>
+								{createBarcodeMode !== 'camera' && (
+									<input 
+										value={newProduct.barcode} 
+										onChange={(e)=>setNewProduct({...newProduct, barcode: e.target.value})} 
+										placeholder='Scan or enter product barcode' 
+										className='w-full bg-[#fffefc] border border-gray-300 rounded px-3 py-2 text-[#030105] focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice'
+										required
+									/>
+								)}
+								{createBarcodeMode === 'camera' && (
+									<div className='bg-[#fffefc] border border-gray-300 rounded p-3'>
+										<div className='flex items-center gap-2 mb-2'>
+											<button type='button' onClick={async()=>{ try{ const reader = new BrowserMultiFormatReader(); const controls = await reader.decodeFromVideoDevice(null, document.getElementById('create-scan-video'), (result)=>{ if(result){ const code = result.getText(); setLastScannedCreate(code); setNewProduct((prev)=>({ ...prev, barcode: code })); } }); window.__createScanControls = controls; }catch{}}} className='px-3 py-2 bg-[#860809] border border-[#860809] rounded text-white hover:bg-[#7a0f0f] flex items-center gap-2 font-alice'><ScanLine className='h-4 w-4'/> Start Camera</button>
+											<button type='button' onClick={()=>{ try{ window.__createScanControls?.stop?.(); }catch{} }} className='px-3 py-2 bg-[#a31f17] border border-[#a31f17] rounded text-white hover:bg-[#8a1a14] font-alice'>Stop</button>
 										</div>
-									)}
+										<video id='create-scan-video' style={{ width: 240, height: 160 }} muted playsInline />
+										<div className='text-xs text-[#a31f17] mt-2 font-alice'>Last scanned: {lastScannedCreate || '—'}</div>
+									</div>
+								)}
+								<p className='text-xs text-[#82695b] mt-1'>Required: Product-level barcode</p>
 							</div>
-							<div className='md:col-span-2'>
-									<label className='block text-sm text-[#a31f17] mb-1 font-medium font-alice'>Description</label>
-									<textarea rows='3' value={newProduct.description} onChange={(e)=>setNewProduct({...newProduct, description: e.target.value})} className='w-full bg-[#fffefc] border border-gray-300 rounded px-3 py-2 text-[#030105] focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice' required />
+							<div>
+								<label className='block text-sm text-[#a31f17] mb-1 font-medium font-alice'>Product Name</label>
+								<input value={newProduct.name} onChange={(e)=>setNewProduct({...newProduct, name: e.target.value})} className='w-full bg-[#fffefc] border border-gray-300 rounded px-3 py-2 text-[#030105] focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice' required />
 							</div>
+
+							{/* Row 2: Category | Supplier */}
+							<div>
+								<label className='block text-sm text-[#a31f17] mb-1 font-medium font-alice'>Category</label>
+								<select value={newProduct.category} onChange={(e)=>setNewProduct({...newProduct, category: e.target.value})} className='w-full bg-[#fffefc] border border-gray-300 rounded px-3 py-2 text-[#030105] focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice' required>
+									<option value=''>Select</option>
+									{FIXED_CATEGORIES.map(c=> <option key={c} value={c}>{c}</option>)}
+								</select>
+							</div>
+							<div>
+								<label className='block text-sm text-[#a31f17] mb-1 font-medium font-alice'>Supplier</label>
+								<input value={newProduct.supplier} onChange={(e)=>setNewProduct({...newProduct, supplier: e.target.value})} placeholder='Enter supplier name' className='w-full bg-[#fffefc] border border-gray-300 rounded px-3 py-2 text-[#030105] focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice' />
+							</div>
+
+							{/* Row 3: Weight Barcode | Weight (kg) */}
+							<div>
+								<label className='block text-sm text-[#a31f17] mb-1 font-medium font-alice'>
+									Weight Barcode <span className='text-red-500'>*</span>
+								</label>
+								<input 
+									type='text'
+									value={newProduct.weightBarcode || ''} 
+									onChange={(e)=>setNewProduct({...newProduct, weightBarcode: e.target.value})} 
+									placeholder='Scan or enter weight-specific barcode' 
+									className='w-full bg-[#fffefc] border border-gray-300 rounded px-3 py-2 text-[#030105] focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice' 
+									required
+								/>
+								<p className='text-xs text-[#82695b] mt-1'>Required: Unique barcode for this weight</p>
+							</div>
+							<div>
+								<label className='block text-sm text-[#a31f17] mb-1 font-medium font-alice'>Weight (kg)</label>
+								<input type='number' min='0.01' step='0.01' value={newProduct.weightKg} onChange={(e)=>setNewProduct({...newProduct, weightKg: e.target.value})} placeholder='Enter weight in kilograms' className='w-full bg-[#fffefc] border border-gray-300 rounded px-3 py-2 text-[#030105] focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice' required />
+							</div>
+
+							{/* Row 4: Base Price per Kilogram | Stocks */}
+							<div>
+								<label className='block text-sm text-[#a31f17] mb-1 font-medium font-alice'>Base Price per Kilogram</label>
+								<input type='number' step='0.01' value={newProduct.price} onChange={(e)=>setNewProduct({...newProduct, price: e.target.value})} className='w-full bg-[#fffefc] border border-gray-300 rounded px-3 py-2 text-[#030105] focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice' required />
+							</div>
+							<div>
+								<label className='block text-sm text-[#a31f17] mb-1 font-medium font-alice'>Stocks (quantity)</label>
+								<input type='number' min='0' value={newProduct.quantity} onChange={(e)=>setNewProduct({...newProduct, quantity: e.target.value})} className='w-full bg-[#fffefc] border border-gray-300 rounded px-3 py-2 text-[#030105] focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice' required />
+							</div>
+
+							{/* Row 5: Description (full width) */}
 							<div className='md:col-span-2'>
-									<label className='block text-sm text-[#a31f17] mb-2 font-medium font-alice'>Images</label>
+								<label className='block text-sm text-[#a31f17] mb-1 font-medium font-alice'>Description</label>
+								<textarea rows='3' value={newProduct.description} onChange={(e)=>setNewProduct({...newProduct, description: e.target.value})} className='w-full bg-[#fffefc] border border-gray-300 rounded px-3 py-2 text-[#030105] focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice' required />
+							</div>
+
+							{/* Row 6: Images (full width) */}
+							<div className='md:col-span-2'>
+								<label className='block text-sm text-[#a31f17] mb-2 font-medium font-alice'>Images</label>
 								<input type='file' accept='image/*' multiple onChange={handleCreateImageChange} className='hidden' id='create-images' />
-										<label htmlFor='create-images' className='inline-flex items-center gap-2 px-3 py-2 bg-[#a31f17] border border-[#a31f17] rounded text-white cursor-pointer hover:bg-[#8a1a14] transition-colors font-alice'><Upload className='h-4 w-4' /> Upload Images</label>
+								<label htmlFor='create-images' className='inline-flex items-center gap-2 px-3 py-2 bg-[#a31f17] border border-[#a31f17] rounded text-white cursor-pointer hover:bg-[#8a1a14] transition-colors font-alice'><Upload className='h-4 w-4' /> Upload Images</label>
 								<div className='mt-2 flex flex-wrap gap-2'>
 									{newProduct.images.map((img, idx)=> (
 										<div key={idx} className='relative group'>
@@ -745,8 +916,10 @@ const filteredUpdateProducts = useMemo(() => {
 									))}
 								</div>
 							</div>
+
+							{/* Submit Button */}
 							<div className='md:col-span-2'>
-									<button type='submit' disabled={loading} className='w-full bg-[#860809] hover:bg-[#7a0f0f] text-white font-semibold py-2 rounded flex items-center justify-center transition-colors disabled:opacity-50 font-alice'>
+								<button type='submit' disabled={loading} className='w-full bg-[#860809] hover:bg-[#7a0f0f] text-white font-semibold py-2 rounded flex items-center justify-center transition-colors disabled:opacity-50 font-alice'>
 									{loading ? (<><Loader className='h-5 w-5 mr-2 animate-spin' />Creating...</>) : (<><PlusCircle className='h-5 w-5 mr-2' />Create Product</>)}
 								</button>
 							</div>
@@ -756,60 +929,59 @@ const filteredUpdateProducts = useMemo(() => {
 
 				{/* Update Tab */}
 				{activeTab === 'update' && (
-					<motion.div className='bg-[#fffefc] shadow-lg rounded-lg p-6 border border-gray-300' initial={{opacity:0,y:20}} animate={{opacity:1,y:0}}>
-						<div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
-				
-							{/* Product selector */}
-							<div className='lg:col-span-1'>
-									<h3 className='text-lg font-semibold text-[#860809] mb-3 font-libre'>Select Product</h3>
+					<>
+					{/* Global Filters for Update Tab */}
+					<div className='mb-4 bg-[#fffefc] shadow-lg rounded-lg p-3 sm:p-4 border border-gray-300'>
+						<div className='grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3'>
+							<input
+								placeholder='Search by name or barcode'
+								value={updateFilterText}
+								onChange={(e)=>setUpdateFilterText(e.target.value)}
+								onKeyDown={async (e)=>{ if(e.key==='Enter' && updateFilterText.trim()){ const p = await productStore.getState().fetchProductByBarcode(updateFilterText.trim()); if(p){ setSelectedProductId(p._id); setUpdateSubTab('select'); } } }}
+								className='w-full bg-[#f8f3ed] border border-gray-300 rounded px-2 sm:px-3 py-2 text-xs sm:text-sm text-[#030105] focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice'
+							/>
+							<select 
+								value={updateFilterCategory} 
+								onChange={(e)=>setUpdateFilterCategory(e.target.value)} 
+								className='bg-[#f8f3ed] border border-gray-300 rounded px-2 sm:px-3 py-2 text-xs sm:text-sm text-[#030105] focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice'
+							>
+								<option value=''>All Categories</option>
+								{FIXED_CATEGORIES.map(c=> <option key={c} value={c}>{c}</option>)}
+							</select>
+						</div>
+					</div>
+
+					{/* Sub-tabs for Update */}
+					<div className='mb-4 sm:mb-6 flex flex-wrap items-center gap-2'>
+						<button 
+							onClick={()=>setUpdateSubTab('select')} 
+							className={`px-2.5 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded font-alice transition-colors text-xs sm:text-sm active:scale-95 ${updateSubTab==='select' ? 'bg-[#860809] text-white' : 'bg-[#a31f17] text-white hover:bg-[#860809]'}`}
+						>
+							<span className='whitespace-nowrap'>Update Details</span>
+						</button>
+						<button 
+							onClick={()=>setUpdateSubTab('price')} 
+							className={`px-2.5 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded font-alice transition-colors text-xs sm:text-sm active:scale-95 ${updateSubTab==='price' ? 'bg-[#860809] text-white' : 'bg-[#a31f17] text-white hover:bg-[#860809]'}`}
+						>
+							<span className='whitespace-nowrap'>Update Price</span>
+						</button>
+						<button 
+							onClick={()=>setUpdateSubTab('stocks')} 
+							className={`px-2.5 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded font-alice transition-colors text-xs sm:text-sm active:scale-95 ${updateSubTab==='stocks' ? 'bg-[#860809] text-white' : 'bg-[#a31f17] text-white hover:bg-[#860809]'}`}
+						>
+							<span className='whitespace-nowrap'>Update Stocks</span>
+						</button>
+					</div>
+
+						{/* Select Product Sub-Tab */}
+						{updateSubTab === 'select' && (
+							<motion.div className='bg-[#fffefc] shadow-lg rounded-lg p-6 border border-gray-300' initial={{opacity:0,y:20}} animate={{opacity:1,y:0}}>
+								<div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
+						
+									{/* Product selector */}
+									<div className='lg:col-span-1'>
+											<h3 className='text-lg font-semibold text-[#860809] mb-3 font-libre'>Update Details</h3>
 								
-								{/* Filter Controls */}
-								<div className='mb-3 space-y-2'>
-								<input
-										placeholder='Search by name or barcode'
-										value={updateFilterText}
-										onChange={(e)=>setUpdateFilterText(e.target.value)}
-										onKeyDown={async (e)=>{ if(e.key==='Enter' && updateFilterText.trim()){ const p = await productStore.getState().fetchProductByBarcode(updateFilterText.trim()); if(p){ setSelectedProductId(p._id); } } }}
-												className='w-full bg-[#fffefc] border border-gray-300 rounded px-3 py-2 text-[#030105] focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice'
-									/>
-									<div className='grid grid-cols-2 gap-2'>
-										<select 
-											value={updateFilterCategory} 
-											onChange={(e)=>setUpdateFilterCategory(e.target.value)} 
-														className='bg-[#fffefc] border border-gray-300 rounded px-2 py-2 text-[#030105] focus:ring-2 focus:ring-[#860809] focus:border-transparent text-sm font-alice'
-										>
-											<option value=''>All Categories</option>
-											{FIXED_CATEGORIES.map(c=> <option key={c} value={c}>{c}</option>)}
-										</select>
-										<select 
-											value={updateFilterStatus} 
-											onChange={(e)=>setUpdateFilterStatus(e.target.value)} 
-														className='bg-[#fffefc] border border-gray-300 rounded px-2 py-2 text-[#030105] focus:ring-2 focus:ring-[#860809] focus:border-transparent text-sm font-alice'
-										>
-											<option value=''>All Status</option>
-											<option value='available'>Available</option>
-											<option value='unavailable'>Unavailable</option>
-										</select>
-									</div>
-								</div>
-								<div className='flex items-center gap-2 mb-2'>
-												<label className='text-xs text-[#a31f17] font-alice'>Search mode</label>
-												<select value={updateSearchMode} onChange={(e)=>setUpdateSearchMode(e.target.value)} className='bg-[#fffefc] border border-gray-300 rounded px-2 py-1 text-[#030105] focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice'>
-										<option value='manual'>Manual</option>
-										<option value='usb'>USB Scanner</option>
-										<option value='camera'>Camera</option>
-									</select>
-								</div>
-								{updateSearchMode === 'camera' && (
-												<div className='bg-[#fffefc] border border-gray-300 rounded p-3 mb-2'>
-										<div className='flex items-center gap-2 mb-2'>
-														<button type='button' onClick={async()=>{ try{ const reader = new BrowserMultiFormatReader(); const controls = await reader.decodeFromVideoDevice(null, document.getElementById('search-scan-video'), async (result)=>{ if(result){ const code = result.getText(); setLastScannedSearch(code); const p = await productStore.getState().fetchProductByBarcode(code); if(p){ setSelectedProductId(p._id); } } }); window.__searchScanControls = controls; }catch{}}} className='px-3 py-2 bg-[#860809] border border-[#860809] rounded text-white hover:bg-[#7a0f0f] flex items-center gap-2 font-alice'><ScanLine className='h-4 w-4'/> Start Camera</button>
-														<button type='button' onClick={()=>{ try{ window.__searchScanControls?.stop?.(); }catch{} }} className='px-3 py-2 bg-[#a31f17] border border-[#a31f17] rounded text-white hover:bg-[#8a1a14] font-alice'>Stop</button>
-										</div>
-										<video id='search-scan-video' style={{ width: 240, height: 160 }} muted playsInline />
-													<div className='text-xs text-[#a31f17] mt-2 font-alice'>Last scanned: {lastScannedSearch || '—'}</div>
-									</div>
-								)}
 								{/* Sort Controls */}
 								<div className='mb-2 flex items-center justify-between'>
 												<span className='text-xs text-[#a31f17] font-alice'>Sort by:</span>
@@ -891,8 +1063,9 @@ const filteredUpdateProducts = useMemo(() => {
 												<label className='block text-sm text-[#a31f17] mb-1 font-medium font-alice'>Barcode</label>
 												<input 
 													value={editFields.barcode || selectedProduct.barcode || ''} 
-													onChange={(e)=>setEditFields({...editFields, barcode: e.target.value})} 
-													className='w-full bg-[#f8f3ed] border border-[#82695b] rounded px-3 py-2 text-[#82695b] focus:ring-2 focus:ring-[#901414] focus:border-transparent' 
+													readOnly
+													className='w-full bg-gray-100 border border-[#82695b] rounded px-3 py-2 text-[#82695b] cursor-not-allowed opacity-75' 
+													title='Barcode cannot be edited'
 												/>
 											</div>
 										</div>
@@ -1022,21 +1195,12 @@ const filteredUpdateProducts = useMemo(() => {
 					</motion.div>
 				)}
 
-                {/* Price Updates Section (above Stocks Updates) */}
-                {activeTab === 'update' && (
-                    <motion.div className='bg-[#fffefc] shadow-lg rounded-lg p-6 border border-gray-300 mt-6' initial={{opacity:0,y:20}} animate={{opacity:1,y:0}}>
-                        <div className='flex items-center justify-between mb-4'>
-                            <h3 className='text-lg font-semibold text-[#860809] font-libre'>Price Updates</h3>
-                        </div>
-
-                        {/* Filters */}
-                        <div className='flex flex-wrap gap-2 mb-3'>
-                            <select value={priceFilterCategory} onChange={(e)=>setPriceFilterCategory(e.target.value)} className='bg-[#f8f3ed] border border-[#82695b] rounded px-3 py-2 text-[#82695b]'>
-                                <option value=''>All Categories</option>
-                                {FIXED_CATEGORIES.map(c=> <option key={c} value={c}>{c}</option>)}
-                            </select>
-                            <input placeholder='Search product name' value={priceFilterText} onChange={(e)=>setPriceFilterText(e.target.value)} className='bg-[#f8f3ed] border border-[#82695b] rounded px-3 py-2 text-[#82695b]' />
-                        </div>
+			{/* Price Updates Sub-Tab */}
+			{updateSubTab === 'price' && (
+				<motion.div className='bg-[#fffefc] shadow-lg rounded-lg p-6 border border-gray-300' initial={{opacity:0,y:20}} animate={{opacity:1,y:0}}>
+					<div className='flex items-center justify-between mb-4'>
+						<h3 className='text-lg font-semibold text-[#860809] font-libre'>Update Price</h3>
+					</div>
 
                         <div className='overflow-x-auto'>
                             <table className='min-w-full divide-y divide-[#82695b]'>
@@ -1104,25 +1268,59 @@ const filteredUpdateProducts = useMemo(() => {
                                 </tbody>
                             </table>
                         </div>
+
+                        {/* Pagination Controls */}
+                        {priceTotalPages > 1 && (
+                            <div className='flex flex-col sm:flex-row items-center justify-between gap-3 mt-4'>
+                                <div className='text-xs sm:text-sm text-[#82695b] text-center sm:text-left'>
+                                    Showing {((priceCurrentPage - 1) * ITEMS_PER_PAGE) + 1} to {Math.min(priceCurrentPage * ITEMS_PER_PAGE, allPriceRows.length)} of {allPriceRows.length} products
+                                </div>
+                                <div className='flex flex-wrap items-center justify-center gap-1.5 sm:gap-2'>
+                                    <button
+                                        onClick={() => setPriceCurrentPage(prev => Math.max(1, prev - 1))}
+                                        disabled={priceCurrentPage === 1}
+                                        className='px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm bg-[#82695b] text-white rounded hover:bg-[#6b5649] active:bg-[#6b5649] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all'
+                                    >
+                                        Previous
+                                    </button>
+                                    <div className='flex items-center gap-1'>
+                                        {Array.from({ length: Math.min(5, priceTotalPages) }, (_, i) => {
+                                            const start = Math.max(1, Math.min(priceCurrentPage - 2, priceTotalPages - 4));
+                                            return start + i;
+                                        }).map(page => (
+                                            <button
+                                                key={page}
+                                                onClick={() => setPriceCurrentPage(page)}
+                                                className={`min-w-[32px] px-2 sm:px-3 py-1.5 text-xs sm:text-sm rounded active:scale-95 transition-all ${
+                                                    priceCurrentPage === page
+                                                        ? 'bg-[#901414] text-white'
+                                                        : 'bg-[#f8f3ed] text-[#82695b] hover:bg-[#82695b] hover:text-white'
+                                                }`}
+                                            >
+                                                {page}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <button
+                                        onClick={() => setPriceCurrentPage(prev => Math.min(priceTotalPages, prev + 1))}
+                                        disabled={priceCurrentPage === priceTotalPages}
+                                        className='px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm bg-[#82695b] text-white rounded hover:bg-[#6b5649] active:bg-[#6b5649] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all'
+                                    >
+                                        Next
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                     </motion.div>
                 )}
 
-                {/* Stocks Updates Section (below Update tab content visually) */}
-                {activeTab === 'update' && (
-                    <motion.div className='bg-[#fffefc] shadow-lg rounded-lg p-6 border border-gray-300 mt-6' initial={{opacity:0,y:20}} animate={{opacity:1,y:0}}>
-                        <div className='flex items-center justify-between mb-4'>
-                            <h3 className='text-lg font-semibold text-[#860809] font-libre'>Stocks Updates</h3>
-                            <button onClick={()=>setShowAddWeight(true)} className='px-3 py-2 bg-[#901414] text-white rounded hover:bg-[#7a0f0f] font-alice'>Add New Weight</button>
-                        </div>
-
-                        {/* Filters */}
-                        <div className='flex flex-wrap gap-2 mb-3'>
-                            <select value={weightFilterCategory} onChange={(e)=>setWeightFilterCategory(e.target.value)} className='bg-[#f8f3ed] border border-[#82695b] rounded px-3 py-2 text-[#82695b]'>
-                                <option value=''>All Categories</option>
-                                {FIXED_CATEGORIES.map(c=> <option key={c} value={c}>{c}</option>)}
-                            </select>
-                            <input placeholder='Search product name' value={weightFilterText} onChange={(e)=>setWeightFilterText(e.target.value)} className='bg-[#f8f3ed] border border-[#82695b] rounded px-3 py-2 text-[#82695b]' />
-                        </div>
+			{/* Stocks Updates Sub-Tab */}
+			{updateSubTab === 'stocks' && (
+				<motion.div className='bg-[#fffefc] shadow-lg rounded-lg p-6 border border-gray-300' initial={{opacity:0,y:20}} animate={{opacity:1,y:0}}>
+					<div className='flex items-center justify-between mb-4'>
+						<h3 className='text-lg font-semibold text-[#860809] font-libre'>Update Stocks</h3>
+						<button onClick={()=>setShowAddWeight(true)} className='px-3 py-2 bg-[#901414] text-white rounded hover:bg-[#7a0f0f] font-alice'>Add New Weight</button>
+					</div>
 
                         {/* Table */}
                         <div className='overflow-x-auto'>
@@ -1133,6 +1331,7 @@ const filteredUpdateProducts = useMemo(() => {
                                         {renderWeightHeader('Product Category','category')}
                                         {renderWeightHeader('Weight (kg)','weight')}
                                         {renderWeightHeader('Stocks','stocks')}
+                                        <th className='px-4 py-3 text-left text-xs font-medium text-[#feffff] uppercase tracking-wider'>Barcode</th>
                                         <th className='px-4 py-3 text-left text-xs font-medium text-[#feffff] uppercase tracking-wider'>Add Stock</th>
                                         <th className='px-4 py-3 text-left text-xs font-medium text-[#feffff] uppercase tracking-wider'>Action</th>
                                     </tr>
@@ -1145,51 +1344,120 @@ const filteredUpdateProducts = useMemo(() => {
                                             <td className='px-4 py-3 text-[#82695b] text-sm'>{row.weightLabel}</td>
                                             <td className='px-4 py-3 text-[#82695b] text-sm'>{row.stocks}</td>
                                             <td className='px-4 py-3 text-[#82695b] text-sm'>
+                                                {row.barcode ? (
+                                                    <span className='font-mono'>{row.barcode}</span>
+                                                ) : (
+                                                    <span className='text-gray-400 text-xs'>—</span>
+                                                )}
+                                            </td>
+                                            <td className='px-4 py-3 text-[#82695b] text-sm'>
                                                 <input type='number' min='1' step='1' value={addByKey[row.key] || ''} onChange={(e)=> setAddByKey(prev=>({ ...prev, [row.key]: e.target.value }))} className='w-28 bg-[#f8f3ed] border border-[#82695b] rounded px-2 py-1 text-[#82695b]' placeholder='Qty' />
                                             </td>
                                             <td className='px-4 py-3 text-[#82695b] text-sm'>
-                                                <button
-                                                    type='button'
-                                                    disabled={loading || !addByKey[row.key] || Number(addByKey[row.key]) <= 0}
-                                                    onClick={async()=>{
-                                                        const delta = parseInt(addByKey[row.key], 10);
-                                                        if (!Number.isInteger(delta) || delta <= 0) return;
-                                                        if (row.weightOptionId) {
-                                                            const newTotal = Number(row.stocks) + delta;
-                                                            await updateWeightOptionStock(row.productId, row.weightOptionId, newTotal);
-                                                        } else {
-                                                            await addProductQuantity(row.productId, delta);
-                                                        }
-                                                        setAddByKey(prev=> ({ ...prev, [row.key]: '' }));
-                                                    }}
-                                                    className='px-3 py-2 bg-[#901414] text-white rounded hover:bg-[#7a0f0f] disabled:opacity-50'
-                                                >Add</button>
+                                                <div className='flex gap-2'>
+                                                    <button
+                                                        type='button'
+                                                        disabled={loading || !addByKey[row.key] || Number(addByKey[row.key]) <= 0}
+                                                        onClick={async()=>{
+                                                            const delta = parseInt(addByKey[row.key], 10);
+                                                            if (!Number.isInteger(delta) || delta <= 0) return;
+                                                            if (row.weightOptionId) {
+                                                                const newTotal = Number(row.stocks) + delta;
+                                                                await updateWeightOptionStock(row.productId, row.weightOptionId, newTotal);
+                                                            } else {
+                                                                await addProductQuantity(row.productId, delta);
+                                                            }
+                                                            setAddByKey(prev=> ({ ...prev, [row.key]: '' }));
+                                                        }}
+                                                        className='px-3 py-2 bg-[#901414] text-white rounded hover:bg-[#7a0f0f] disabled:opacity-50'
+                                                    >Add</button>
+                                                    {row.barcode && row.weightOptionId && (
+                                                        <button
+                                                            type='button'
+                                                            onClick={() => {
+                                                                setSelectedBarcode(row.barcode);
+                                                                setSelectedProductName(row.name);
+                                                                setSelectedWeightKg(parseFloat(row.weightLabel));
+                                                                setShowBarcodeModal(true);
+                                                            }}
+                                                            className='px-3 py-2 bg-[#82695b] text-white rounded hover:bg-[#6b5649] flex items-center gap-1'
+                                                            title='Print barcode'
+                                                        >
+                                                            <Printer className='h-4 w-4' />
+                                                        </button>
+                                                    )}
+                                                </div>
                                             </td>
                                         </tr>
                                     ))}
                                     {weightRows.length === 0 && (
-                                        <tr><td colSpan='6' className='px-4 py-6 text-center text-[#82695b]'>No products found</td></tr>
+                                        <tr><td colSpan='7' className='px-4 py-6 text-center text-[#82695b]'>No products found</td></tr>
                                     )}
                                 </tbody>
                             </table>
                         </div>
+
+                        {/* Pagination Controls */}
+                        {weightTotalPages > 1 && (
+                            <div className='flex flex-col sm:flex-row items-center justify-between gap-3 mt-4'>
+                                <div className='text-xs sm:text-sm text-[#82695b] text-center sm:text-left'>
+                                    Showing {((weightCurrentPage - 1) * ITEMS_PER_PAGE) + 1} to {Math.min(weightCurrentPage * ITEMS_PER_PAGE, allWeightRows.length)} of {allWeightRows.length} products
+                                </div>
+                                <div className='flex flex-wrap items-center justify-center gap-1.5 sm:gap-2'>
+                                    <button
+                                        onClick={() => setWeightCurrentPage(prev => Math.max(1, prev - 1))}
+                                        disabled={weightCurrentPage === 1}
+                                        className='px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm bg-[#82695b] text-white rounded hover:bg-[#6b5649] active:bg-[#6b5649] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all'
+                                    >
+                                        Previous
+                                    </button>
+                                    <div className='flex items-center gap-1'>
+                                        {Array.from({ length: Math.min(5, weightTotalPages) }, (_, i) => {
+                                            const start = Math.max(1, Math.min(weightCurrentPage - 2, weightTotalPages - 4));
+                                            return start + i;
+                                        }).map(page => (
+                                            <button
+                                                key={page}
+                                                onClick={() => setWeightCurrentPage(page)}
+                                                className={`min-w-[32px] px-2 sm:px-3 py-1.5 text-xs sm:text-sm rounded active:scale-95 transition-all ${
+                                                    weightCurrentPage === page
+                                                        ? 'bg-[#901414] text-white'
+                                                        : 'bg-[#f8f3ed] text-[#82695b] hover:bg-[#82695b] hover:text-white'
+                                                }`}
+                                            >
+                                                {page}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <button
+                                        onClick={() => setWeightCurrentPage(prev => Math.min(weightTotalPages, prev + 1))}
+                                        disabled={weightCurrentPage === weightTotalPages}
+                                        className='px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm bg-[#82695b] text-white rounded hover:bg-[#6b5649] active:bg-[#6b5649] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all'
+                                    >
+                                        Next
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                     </motion.div>
                 )}
+		</>
+	)}
 
 				{/* Monitor Tab */}
                 {activeTab === 'monitor' && (
-					<motion.div className='bg-[#feffff] shadow-lg rounded-lg p-6 border border-[#82695b]' initial={{opacity:0,y:20}} animate={{opacity:1,y:0}}>
-                        <div className='grid grid-cols-1 md:grid-cols-3 gap-3 mb-4'>
-							<input placeholder='Search product or scan barcode then press Enter' value={filterText} onChange={(e)=>setFilterText(e.target.value)} className='bg-[#f8f3ed] border border-[#82695b] rounded px-3 py-2 text-[#82695b] focus:ring-2 focus:ring-[#901414] focus:border-transparent' />
-							<select value={filterCategory} onChange={(e)=>setFilterCategory(e.target.value)} className='bg-[#f8f3ed] border border-[#82695b] rounded px-3 py-2 text-[#82695b] focus:ring-2 focus:ring-[#901414] focus:border-transparent'>
+					<motion.div className='bg-[#feffff] shadow-lg rounded-lg p-3 sm:p-4 md:p-6 border border-[#82695b]' initial={{opacity:0,y:20}} animate={{opacity:1,y:0}}>
+						<div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3 mb-3 sm:mb-4'>
+							<input placeholder='Search or scan barcode' value={filterText} onChange={(e)=>setFilterText(e.target.value)} className='bg-[#f8f3ed] border border-[#82695b] rounded px-2 sm:px-3 py-2 text-xs sm:text-sm text-[#82695b] focus:ring-2 focus:ring-[#901414] focus:border-transparent' />
+							<select value={filterCategory} onChange={(e)=>setFilterCategory(e.target.value)} className='bg-[#f8f3ed] border border-[#82695b] rounded px-2 sm:px-3 py-2 text-xs sm:text-sm text-[#82695b] focus:ring-2 focus:ring-[#901414] focus:border-transparent'>
 								<option value=''>All categories</option>
 								{FIXED_CATEGORIES.map(c=> <option key={c} value={c}>{c}</option>)}
 							</select>
-							<select value={filterStatus} onChange={(e)=>setFilterStatus(e.target.value)} className='bg-[#f8f3ed] border border-[#82695b] rounded px-3 py-2 text-[#82695b] focus:ring-2 focus:ring-[#901414] focus:border-transparent'>
-								<option value=''>All status</option>
-								<option value='available'>Available</option>
-								<option value='unavailable'>Unavailable</option>
-								<option value='trashed'>Trashed</option>
+							<select value={filterStatus} onChange={(e)=>setFilterStatus(e.target.value)} className='bg-[#f8f3ed] border border-[#82695b] rounded px-2 sm:px-3 py-2 text-xs sm:text-sm text-[#82695b] focus:ring-2 focus:ring-[#901414] focus:border-transparent'>
+								<option value=''>All Stock Status</option>
+								<option value='in stock'>In Stock</option>
+								<option value='low stock'>Low Stock</option>
+								<option value='out of stock'>Out of Stock</option>
 							</select>
 						</div>
                         <div className='mb-4'>
@@ -1205,7 +1473,7 @@ const filteredUpdateProducts = useMemo(() => {
                                         };
                                         const header = ['ProductName','ProductCategory','Stocks','Barcode'];
                                         const lines = [header.join(',')];
-                                        (filteredProducts || []).forEach((p)=>{
+                                        (allFilteredProducts || []).forEach((p)=>{
                                             const name = csvEscape(p?.name);
                                             const cat = csvEscape(p?.category);
                                         const qty = csvEscape(getTotalStocks(p));
@@ -1319,7 +1587,7 @@ const filteredUpdateProducts = useMemo(() => {
 										</th>
 										<th className='px-4 py-3 text-left text-xs font-medium text-[#feffff] uppercase tracking-wider'>
 											<div className='flex items-center justify-between'>
-												<span>Status</span>
+												<span>Stock Status</span>
 												<div className='flex flex-col ml-2'>
 													<button onClick={() => handleSort('status', 'asc')} className='hover:text-[#ffd901] transition-colors'>
 														<ChevronUp className='h-3 w-3' />
@@ -1383,7 +1651,21 @@ const filteredUpdateProducts = useMemo(() => {
 														)}
 													</div>
 												</td>
-												<td className='px-4 py-3 text-[#82695b] text-sm capitalize'>{p.status || 'available'}</td>
+												<td className='px-4 py-3'>
+													{(() => {
+														const status = getStockStatus(p);
+														const badgeClasses = status === 'in stock' 
+															? 'bg-green-100 text-green-800' 
+															: status === 'low stock' 
+															? 'bg-yellow-100 text-yellow-800' 
+															: 'bg-red-100 text-red-800';
+														return (
+															<span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full capitalize ${badgeClasses}`}>
+																{status}
+															</span>
+														);
+													})()}
+												</td>
 											</tr>
 											{expandedRows.has(p._id) && p.hasWeightOptions && p.weightOptions && p.weightOptions.length > 0 && (
 												<tr key={`${p._id}-details`} className='bg-[#f8f3ed]'>
@@ -1398,6 +1680,7 @@ const filteredUpdateProducts = useMemo(() => {
 																			<th className='px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Stocks/Units</th>
 																			<th className='px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Price per unit</th>
 																			<th className='px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Total price</th>
+																			<th className='px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Weight Barcode</th>
 																		</tr>
 																	</thead>
 																	<tbody className='bg-white divide-y divide-gray-200'>
@@ -1410,6 +1693,27 @@ const filteredUpdateProducts = useMemo(() => {
 																					<td className='px-4 py-2 text-sm text-gray-900'>{option.stockUnits} units</td>
 																					<td className='px-4 py-2 text-sm text-gray-900'>₱{pricePerUnit.toFixed(2)}</td>
 																					<td className='px-4 py-2 text-sm text-gray-900 font-semibold'>₱{totalPrice.toFixed(2)}</td>
+																					<td className='px-4 py-2 text-sm text-gray-900'>
+																						{option.barcode ? (
+																							<div className='flex items-center gap-2'>
+																								<span className='font-mono'>{option.barcode}</span>
+																								<button
+																									onClick={() => {
+																										setSelectedBarcode(option.barcode);
+																										setSelectedProductName(p.name);
+																										setSelectedWeightKg(option.weightKg);
+																										setShowBarcodeModal(true);
+																									}}
+																									className='text-[#860809] hover:text-[#a31f17]'
+																									title='Print barcode'
+																								>
+																									<Printer className='h-4 w-4' />
+																								</button>
+																							</div>
+																						) : (
+																							<span className='text-gray-400 text-xs'>No barcode</span>
+																						)}
+																					</td>
 																				</tr>
 																			);
 																		})}
@@ -1425,6 +1729,46 @@ const filteredUpdateProducts = useMemo(() => {
 								</tbody>
 							</table>
 						</div>
+
+						{/* Pagination Controls */}
+						{monitorTotalPages > 1 && (
+							<div className='flex items-center justify-between mt-4'>
+								<div className='text-sm text-[#82695b]'>
+									Showing {((monitorCurrentPage - 1) * ITEMS_PER_PAGE) + 1} to {Math.min(monitorCurrentPage * ITEMS_PER_PAGE, allFilteredProducts.length)} of {allFilteredProducts.length} products
+								</div>
+								<div className='flex items-center gap-2'>
+									<button
+										onClick={() => setMonitorCurrentPage(prev => Math.max(1, prev - 1))}
+										disabled={monitorCurrentPage === 1}
+										className='px-3 py-1.5 bg-[#82695b] text-white rounded hover:bg-[#6b5649] disabled:opacity-50 disabled:cursor-not-allowed transition-colors'
+									>
+										Previous
+									</button>
+									<div className='flex items-center gap-1'>
+										{Array.from({ length: monitorTotalPages }, (_, i) => i + 1).map(page => (
+											<button
+												key={page}
+												onClick={() => setMonitorCurrentPage(page)}
+												className={`px-3 py-1.5 rounded transition-colors ${
+													monitorCurrentPage === page
+														? 'bg-[#901414] text-white'
+														: 'bg-[#f8f3ed] text-[#82695b] hover:bg-[#82695b] hover:text-white'
+												}`}
+											>
+												{page}
+											</button>
+										))}
+									</div>
+									<button
+										onClick={() => setMonitorCurrentPage(prev => Math.min(monitorTotalPages, prev + 1))}
+										disabled={monitorCurrentPage === monitorTotalPages}
+										className='px-3 py-1.5 bg-[#82695b] text-white rounded hover:bg-[#6b5649] disabled:opacity-50 disabled:cursor-not-allowed transition-colors'
+									>
+										Next
+									</button>
+								</div>
+							</div>
+						)}
 					</motion.div>
 				)}
 
@@ -1444,18 +1788,17 @@ const filteredUpdateProducts = useMemo(() => {
 								onChange={(e)=>setActivityFilter(e.target.value)} 
 								className='bg-[#f8f3ed] border border-[#82695b] rounded px-3 py-2 text-[#82695b] focus:ring-2 focus:ring-[#901414] focus:border-transparent' 
 							/>
-							<select 
-								value={activityTypeFilter} 
-								onChange={(e)=>setActivityTypeFilter(e.target.value)} 
-								className='bg-[#f8f3ed] border border-[#82695b] rounded px-3 py-2 text-[#82695b] focus:ring-2 focus:ring-[#901414] focus:border-transparent'
-							>
-								<option value=''>All Activity Types</option>
-								<option value='created'>Product Created</option>
-								<option value='updated'>Product Updated</option>
-								<option value='stock_in'>Stock In</option>
-								<option value='stock_out'>Stock Out</option>
-								<option value='deleted'>Product Deleted</option>
-							</select>
+						<select 
+							value={activityTypeFilter} 
+							onChange={(e)=>setActivityTypeFilter(e.target.value)} 
+							className='bg-[#f8f3ed] border border-[#82695b] rounded px-3 py-2 text-[#82695b] focus:ring-2 focus:ring-[#901414] focus:border-transparent'
+						>
+							<option value=''>All Activity Types</option>
+							<option value='created'>Product Created</option>
+							<option value='updated'>Product Updated</option>
+							<option value='stock_in'>Stock In</option>
+							<option value='deleted'>Product Deleted</option>
+						</select>
 							<button 
 								onClick={fetchActivityLogs}
 								disabled={activityLoading}
@@ -1580,93 +1923,93 @@ const filteredUpdateProducts = useMemo(() => {
 				</div>
 			</div>
 
-			{/* Stock Out Confirmation Dialog */}
-			{showStockOutConfirm && (
-				<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-					<div className="bg-[#feffff] rounded-lg p-6 max-w-md w-full mx-4 border border-[#82695b]">
-						<div className="flex items-center gap-3 mb-4">
-							<Minus className="h-6 w-6 text-[#dc2626]" />
-							<h3 className="text-lg font-semibold text-[#82695b]">Confirm Stock Removal</h3>
-						</div>
-						<div className="space-y-3 mb-6">
-							<p className="text-[#82695b]">
-								<strong>Product:</strong> {selectedProduct?.name}
-							</p>
-							<p className="text-[#82695b]">
-								<strong>Current Stock:</strong> {selectedProduct?.quantity} units
-							</p>
-							<p className="text-[#82695b]">
-								<strong>Quantity to Remove:</strong> {stockOutQuantity} units
-							</p>
-							<p className="text-[#82695b]">
-								<strong>Reason:</strong> {STOCK_OUT_REASONS.find(r => r.value === stockOutReason)?.label}
-							</p>
-							<p className="text-[#82695b]">
-								<strong>Remaining Stock:</strong> {selectedProduct?.quantity - parseInt(stockOutQuantity)} units
-							</p>
-						</div>
-						<div className="flex gap-3 justify-end">
-							<button
-								onClick={() => setShowStockOutConfirm(false)}
-								className="px-4 py-2 bg-[#82695b] hover:bg-[#6b5649] text-[#feffff] rounded transition-colors"
-							>
-								Cancel
-							</button>
-							<button
-								onClick={confirmStockOut}
-								disabled={loading}
-								className="px-4 py-2 bg-[#dc2626] hover:bg-[#b91c1c] text-[#feffff] rounded transition-colors disabled:opacity-50"
-							>
-								{loading ? 'Removing...' : 'Confirm Removal'}
-							</button>
-						</div>
+		{/* Stock Out Confirmation Dialog */}
+		{showStockOutConfirm && (
+			<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3 sm:p-4">
+				<div className="bg-[#feffff] rounded-lg p-4 sm:p-6 max-w-md w-full border border-[#82695b] max-h-[90vh] overflow-y-auto">
+					<div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+						<Minus className="h-5 w-5 sm:h-6 sm:w-6 text-[#dc2626] flex-shrink-0" />
+						<h3 className="text-base sm:text-lg font-semibold text-[#82695b]">Confirm Stock Removal</h3>
 					</div>
-				</div>
-			)}
-
-			{/* Delete Confirmation Dialog */}
-			{showDeleteConfirm && (
-				<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-					<div className="bg-[#feffff] rounded-lg p-6 max-w-md w-full mx-4 border border-[#82695b]">
-						<div className="flex items-center gap-3 mb-4">
-							<Trash2 className="h-6 w-6 text-[#901414]" />
-							<h3 className="text-lg font-semibold text-[#82695b]">Delete Product</h3>
-						</div>
-						<p className="text-[#82695b] mb-6">
-							Are you sure you want to delete "{selectedProduct?.name}"? This action cannot be undone.
+					<div className="space-y-2 sm:space-y-3 mb-4 sm:mb-6">
+						<p className="text-xs sm:text-sm text-[#82695b] break-words">
+							<strong>Product:</strong> {selectedProduct?.name}
 						</p>
-						<div className="flex gap-3 justify-end">
-							<button
-								onClick={() => setShowDeleteConfirm(false)}
-								className="px-4 py-2 bg-[#82695b] hover:bg-[#6b5649] text-[#feffff] rounded transition-colors"
-							>
-								Cancel
-							</button>
-							<button
-								onClick={handleDeleteProduct}
-								disabled={loading}
-								className="px-4 py-2 bg-[#901414] hover:bg-[#7a0f0f] text-[#feffff] rounded transition-colors disabled:opacity-50"
-							>
-								{loading ? 'Deleting...' : 'Delete'}
-							</button>
-						</div>
+						<p className="text-xs sm:text-sm text-[#82695b]">
+							<strong>Current Stock:</strong> {selectedProduct?.quantity} units
+						</p>
+						<p className="text-xs sm:text-sm text-[#82695b]">
+							<strong>Quantity to Remove:</strong> {stockOutQuantity} units
+						</p>
+						<p className="text-xs sm:text-sm text-[#82695b]">
+							<strong>Reason:</strong> {STOCK_OUT_REASONS.find(r => r.value === stockOutReason)?.label}
+						</p>
+						<p className="text-xs sm:text-sm text-[#82695b]">
+							<strong>Remaining Stock:</strong> {selectedProduct?.quantity - parseInt(stockOutQuantity)} units
+						</p>
+					</div>
+					<div className="flex flex-col sm:flex-row gap-2 sm:gap-3 justify-end">
+						<button
+							onClick={() => setShowStockOutConfirm(false)}
+							className="px-3 sm:px-4 py-2 text-xs sm:text-sm bg-[#82695b] hover:bg-[#6b5649] active:bg-[#6b5649] text-[#feffff] rounded transition-colors active:scale-95"
+						>
+							Cancel
+						</button>
+						<button
+							onClick={confirmStockOut}
+							disabled={loading}
+							className="px-3 sm:px-4 py-2 text-xs sm:text-sm bg-[#dc2626] hover:bg-[#b91c1c] active:bg-[#b91c1c] text-[#feffff] rounded transition-colors disabled:opacity-50 active:scale-95"
+						>
+							{loading ? 'Removing...' : 'Confirm Removal'}
+						</button>
 					</div>
 				</div>
-			)}
+			</div>
+		)}
+
+		{/* Delete Confirmation Dialog */}
+		{showDeleteConfirm && (
+			<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3 sm:p-4">
+				<div className="bg-[#feffff] rounded-lg p-4 sm:p-6 max-w-md w-full border border-[#82695b]">
+					<div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+						<Trash2 className="h-5 w-5 sm:h-6 sm:w-6 text-[#901414] flex-shrink-0" />
+						<h3 className="text-base sm:text-lg font-semibold text-[#82695b]">Delete Product</h3>
+					</div>
+					<p className="text-xs sm:text-sm text-[#82695b] mb-4 sm:mb-6 break-words">
+						Are you sure you want to delete "{selectedProduct?.name}"? This action cannot be undone.
+					</p>
+					<div className="flex flex-col sm:flex-row gap-2 sm:gap-3 justify-end">
+						<button
+							onClick={() => setShowDeleteConfirm(false)}
+							className="px-3 sm:px-4 py-2 text-xs sm:text-sm bg-[#82695b] hover:bg-[#6b5649] active:bg-[#6b5649] text-[#feffff] rounded transition-colors active:scale-95"
+						>
+							Cancel
+						</button>
+						<button
+							onClick={handleDeleteProduct}
+							disabled={loading}
+							className="px-3 sm:px-4 py-2 text-xs sm:text-sm bg-[#901414] hover:bg-[#7a0f0f] active:bg-[#7a0f0f] text-[#feffff] rounded transition-colors disabled:opacity-50 active:scale-95"
+						>
+							{loading ? 'Deleting...' : 'Delete'}
+						</button>
+					</div>
+				</div>
+			</div>
+		)}
 
             {/* Add New Weight Modal */}
             {showAddWeight && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-[#feffff] rounded-lg p-6 max-w-lg w-full mx-4 border border-[#82695b]">
-                        <div className='mb-4'>
-                            <h3 className='text-lg font-semibold text-[#82695b]'>Add New Weight</h3>
-                            <p className='text-sm text-[#82695b]'>Select category and product, then enter weight and initial stock.</p>
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3 sm:p-4">
+                    <div className="bg-[#feffff] rounded-lg p-4 sm:p-6 max-w-lg w-full border border-[#82695b] max-h-[90vh] overflow-y-auto">
+                        <div className='mb-3 sm:mb-4'>
+                            <h3 className='text-base sm:text-lg font-semibold text-[#82695b]'>Add New Weight</h3>
+                            <p className='text-xs sm:text-sm text-[#82695b]'>Select category and product, then enter weight and initial stock.</p>
                         </div>
                         <AddWeightForm 
                             products={products}
                             onCancel={()=>setShowAddWeight(false)}
                             onSubmit={async (payload)=>{
-                                await addWeightOption(payload.productId, { weightKg: payload.weightKg, stockUnits: payload.stockUnits });
+                                await addWeightOption(payload.productId, { weightKg: payload.weightKg, stockUnits: payload.stockUnits, barcode: payload.barcode });
                                 setShowAddWeight(false);
                             }}
                         />
@@ -1678,9 +2021,13 @@ const filteredUpdateProducts = useMemo(() => {
             {showBarcodeModal && (
                 <BarcodePrintModal
                     isOpen={showBarcodeModal}
-                    onClose={() => setShowBarcodeModal(false)}
+                    onClose={() => {
+                        setShowBarcodeModal(false);
+                        setSelectedWeightKg(null);
+                    }}
                     barcode={selectedBarcode}
                     productName={selectedProductName}
+                    weightKg={selectedWeightKg}
                 />
             )}
 		</AdminLayout>
@@ -1693,38 +2040,223 @@ export default ManageProductsPage;
 
 // Lightweight inline form component for adding weight
 const AddWeightForm = ({ products, onCancel, onSubmit }) => {
+    const [mode, setMode] = useState("manual"); // manual | scanner
     const [category, setCategory] = useState("");
     const [productId, setProductId] = useState("");
     const [weightKg, setWeightKg] = useState("");
     const [stockUnits, setStockUnits] = useState("");
+    const [barcode, setBarcode] = useState("");
+    const [lastScanned, setLastScanned] = useState("");
 
     const productChoices = useMemo(()=> (products||[]).filter(p => !category || p.category === category), [products, category]);
-    const selected = useMemo(()=> (products||[]).find(p => p._id === productId), [products, productId]);
+    const selected = useMemo(()=> {
+        const found = (products||[]).find(p => p._id === productId);
+        return found;
+    }, [products, productId]);
+
+    // USB Scanner handler for this modal
+    useEffect(() => {
+        if (mode !== 'scanner') return;
+        
+        let buffer = '';
+        let lastTs = 0;
+        
+        const onKey = async (e) => {
+            const now = Date.now();
+            if (now - lastTs > 50) buffer = '';
+            
+            // Check if the Weight Barcode input field is focused
+            const activeElement = document.activeElement;
+            const isBarcodeInputFocused = activeElement && activeElement.type === 'text' && activeElement.placeholder?.includes('barcode');
+            
+            // If Weight Barcode field is focused, let the browser handle the input naturally (no product search)
+            if (isBarcodeInputFocused) {
+                lastTs = now;
+                return;
+            }
+            
+            if (e.key === 'Enter') {
+                e.preventDefault(); // Prevent form submission
+                e.stopPropagation(); // Stop event bubbling
+                const code = buffer;
+                buffer = '';
+                if (!code) { lastTs = now; return; }
+                
+                setLastScanned(code);
+                
+                // Find product by product-level barcode (try exact match first, then try without dashes)
+                let product = (products || []).find(p => p.barcode === code);
+                
+                // If not found, try removing dashes from scanned code
+                if (!product) {
+                    const codeNoDashes = code.replace(/-/g, '');
+                    product = (products || []).find(p => p.barcode === codeNoDashes);
+                }
+                
+                // If still not found, try comparing without dashes on both sides
+                if (!product) {
+                    const codeNoDashes = code.replace(/-/g, '');
+                    product = (products || []).find(p => p.barcode?.replace(/-/g, '') === codeNoDashes);
+                }
+                
+                // If still not found, check if it's a weight option barcode
+                if (!product) {
+                    const codeNoDashes = code.replace(/-/g, '');
+                    product = (products || []).find(p => 
+                        p.weightOptions?.some(opt => 
+                            opt.barcode === code || 
+                            opt.barcode === codeNoDashes || 
+                            opt.barcode?.replace(/-/g, '') === codeNoDashes
+                        )
+                    );
+                    if (product) {
+                        // Found product by weight option barcode - auto-fill the weight barcode field
+                        setCategory(product.category);
+                        setProductId(product._id);
+                        setBarcode(code);
+                        toast.success(`Product selected: ${product.name} (weight barcode detected)`);
+                    }
+                } else {
+                    // Found by product-level barcode
+                    setCategory(product.category);
+                    setProductId(product._id);
+                    toast.success(`Product selected: ${product.name}`);
+                }
+                
+                // Only show error if no product found at all
+                if (!product) {
+                    toast.error('Product not found with barcode: ' + code);
+                }
+                
+                lastTs = now;
+                return;
+            }
+            if (/^[0-9A-Za-z]$/.test(e.key)) buffer += e.key;
+            lastTs = now;
+        };
+        
+        window.addEventListener('keydown', onKey);
+        return () => window.removeEventListener('keydown', onKey);
+    }, [mode, products]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
         const w = parseFloat(weightKg);
         const s = parseInt(stockUnits, 10);
-        if (!productId || !Number.isFinite(w) || w <= 0 || !Number.isInteger(s) || s < 0) return;
-        onSubmit({ productId, weightKg: Math.round(w*100)/100, stockUnits: s });
+        const b = barcode.trim();
+        
+        // Validate required fields
+        if (!productId || !Number.isFinite(w) || w <= 0 || !Number.isInteger(s) || s < 0 || !b) {
+            if (!b) toast.error('Barcode is required');
+            return;
+        }
+        
+        const payload = { 
+            productId, 
+            weightKg: Math.round(w*100)/100, 
+            stockUnits: s,
+            barcode: b
+        };
+        
+        onSubmit(payload);
     };
 
     return (
         <form onSubmit={handleSubmit} className='space-y-3'>
+            {/* Mode Selector */}
+            <div>
+                <label className='block text-sm text-[#82695b] mb-1 font-medium'>Selection Mode</label>
+                <div className='flex gap-2'>
+                    <button
+                        type='button'
+                        onClick={() => { setMode('manual'); setCategory(''); setProductId(''); setLastScanned(''); }}
+                        className={`flex-1 px-4 py-2 rounded font-medium transition-colors ${
+                            mode === 'manual' 
+                                ? 'bg-[#901414] text-white' 
+                                : 'bg-[#f8f3ed] text-[#82695b] hover:bg-[#82695b] hover:text-white'
+                        }`}
+                    >
+                        Manual
+                    </button>
+                    <button
+                        type='button'
+                        onClick={() => { setMode('scanner'); setCategory(''); setProductId(''); setLastScanned(''); }}
+                        className={`flex-1 px-4 py-2 rounded font-medium transition-colors ${
+                            mode === 'scanner' 
+                                ? 'bg-[#901414] text-white' 
+                                : 'bg-[#f8f3ed] text-[#82695b] hover:bg-[#82695b] hover:text-white'
+                        }`}
+                    >
+                        Scanner
+                    </button>
+                </div>
+                {mode === 'scanner' && (
+                    <p className='text-xs text-[#82695b] mt-1'>Scan product barcode to auto-select product</p>
+                )}
+            </div>
+
+            {/* Category Selection */}
             <div>
                 <label className='block text-sm text-[#82695b] mb-1 font-medium'>Product Category</label>
-                <select value={category} onChange={(e)=>{ setCategory(e.target.value); setProductId(""); }} className='w-full bg-[#f8f3ed] border border-[#82695b] rounded px-3 py-2 text-[#82695b]'>
-                    <option value=''>Select Category</option>
-                    {FIXED_CATEGORIES.map(c=> <option key={c} value={c}>{c}</option>)}
-                </select>
+                {mode === 'scanner' && category ? (
+                    <div className='w-full bg-gray-100 border border-[#82695b] rounded px-3 py-2 text-[#82695b] capitalize'>
+                        {category}
+                    </div>
+                ) : (
+                    <select 
+                        value={category} 
+                        onChange={(e)=>{ setCategory(e.target.value); setProductId(""); }} 
+                        disabled={mode === 'scanner'}
+                        className='w-full bg-[#f8f3ed] border border-[#82695b] rounded px-3 py-2 text-[#82695b] disabled:opacity-50 disabled:cursor-not-allowed'
+                    >
+                        <option value=''>{mode === 'scanner' ? 'Will be auto-selected' : 'Select Category'}</option>
+                        {FIXED_CATEGORIES.map(c=> <option key={c} value={c}>{c}</option>)}
+                    </select>
+                )}
             </div>
+
+            {/* Product Name Selection */}
             <div>
                 <label className='block text-sm text-[#82695b] mb-1 font-medium'>Product Name</label>
-                <select value={productId} onChange={(e)=>setProductId(e.target.value)} disabled={!category} className='w-full bg-[#f8f3ed] border border-[#82695b] rounded px-3 py-2 text-[#82695b] disabled:opacity-50'>
-                    <option value=''>{category ? 'Select Product' : 'Select category first'}</option>
-                    {productChoices.map(p=> <option key={p._id} value={p._id}>{p.name}</option>)}
-                </select>
+                {mode === 'scanner' && selected ? (
+                    <div className='w-full bg-gray-100 border border-[#82695b] rounded px-3 py-2 text-[#82695b]'>
+                        {selected.name}
+                    </div>
+                ) : (
+                    <select 
+                        value={productId} 
+                        onChange={(e)=>setProductId(e.target.value)} 
+                        disabled={mode === 'scanner' || (mode === 'manual' && !category)} 
+                        className='w-full bg-[#f8f3ed] border border-[#82695b] rounded px-3 py-2 text-[#82695b] disabled:opacity-50 disabled:cursor-not-allowed'
+                    >
+                        <option value=''>
+                            {mode === 'scanner' ? 'Will be auto-selected' : (category ? 'Select Product' : 'Select category first')}
+                        </option>
+                        {productChoices.map(p=> <option key={p._id} value={p._id}>{p.name}</option>)}
+                    </select>
+                )}
+                {mode === 'scanner' && lastScanned && (
+                    <p className='text-xs text-[#82695b] mt-1'>Last scanned: {lastScanned}</p>
+                )}
             </div>
+
+            {/* Weight Barcode */}
+            <div>
+                <label className='block text-sm text-[#82695b] mb-1 font-medium'>
+                    Weight Barcode <span className='text-red-500'>*</span>
+                </label>
+                <input 
+                    type='text' 
+                    value={barcode} 
+                    onChange={(e)=>setBarcode(e.target.value)} 
+                    placeholder='Scan or enter unique barcode for this weight'
+                    disabled={!productId}
+                    required
+                    className='w-full bg-[#f8f3ed] border border-[#82695b] rounded px-3 py-2 text-[#82695b] disabled:opacity-50 disabled:cursor-not-allowed'
+                />
+                <p className='text-xs text-[#82695b] mt-1'>Required: Each weight must have a unique barcode</p>
+            </div>
+
             <div className='grid grid-cols-2 gap-3'>
                 <div>
                     <label className='block text-sm text-[#82695b] mb-1 font-medium'>Weight (kg)</label>
@@ -1735,12 +2267,13 @@ const AddWeightForm = ({ products, onCancel, onSubmit }) => {
                     <input type='number' step='1' min='0' value={stockUnits} onChange={(e)=>setStockUnits(e.target.value)} disabled={!productId} className='w-full bg-[#f8f3ed] border border-[#82695b] rounded px-3 py-2 text-[#82695b] disabled:opacity-50' />
                 </div>
             </div>
+
             {selected && (
                 <div className='text-xs text-[#82695b]'>Current weight options: {(selected.weightOptions||[]).map(o=>`${o.weightKg}kg (${o.stockUnits})`).join(', ') || 'none'}</div>
             )}
             <div className='flex justify-end gap-2 pt-2'>
                 <button type='button' onClick={onCancel} className='px-3 py-2 bg-[#82695b] hover:bg-[#6b5649] text-white rounded'>Cancel</button>
-                <button type='submit' disabled={!productId || !weightKg || !stockUnits} className='px-3 py-2 bg-[#901414] hover:bg-[#7a0f0f] text-white rounded disabled:opacity-50'>Add</button>
+                <button type='submit' disabled={!productId || !weightKg || !stockUnits || !barcode.trim()} className='px-3 py-2 bg-[#901414] hover:bg-[#7a0f0f] text-white rounded disabled:opacity-50'>Add</button>
             </div>
         </form>
     );

@@ -26,6 +26,21 @@ import {
 
 const router = express.Router();
 
+// Helper function to parse date strings consistently in Philippines timezone
+// Input: "2025-10-15" → Output: Date object for 2025-10-15 00:00:00 Philippines time
+function parseDateInPhilippines(dateStr) {
+    const parts = dateStr.split('-');
+    const year = parseInt(parts[0]);
+    const month = parseInt(parts[1]) - 1; // JS months are 0-indexed
+    const day = parseInt(parts[2]);
+    
+    // Create date in Philippines timezone (UTC+8)
+    // Note: This creates the date in server's local time, assuming server is in Philippines
+    // For production, consider using a library like moment-timezone or date-fns-tz
+    const date = new Date(year, month, day);
+    return date;
+}
+
 router.get("/", verifyToken, verifyAdmin, async (req, res) => {
 	try {
 		const analyticsData = await getAnalyticsData();
@@ -52,13 +67,13 @@ router.get("/new-orders", verifyToken, verifyAdmin, async (req, res) => {
         const start = req.query.start ? String(req.query.start) : '';
         const end = req.query.end ? String(req.query.end) : '';
         if (start && end) {
-            const startDate = new Date(start); startDate.setHours(0,0,0,0);
-            const endDate = new Date(end); endDate.setHours(23,59,59,999);
+            const startDate = parseDateInPhilippines(start); startDate.setHours(0,0,0,0);
+            const endDate = parseDateInPhilippines(end); endDate.setHours(23,59,59,999);
             const newOrders = await (await import('../models/order.model.js')).default.countDocuments({ createdAt: { $gte: startDate, $lte: endDate } });
             return res.json({ newOrders, startDate, endDate, range: { start, end } });
         }
         if (dateStr) {
-            const d = new Date(dateStr);
+            const d = parseDateInPhilippines(dateStr);
             const startDate = new Date(d); startDate.setHours(0,0,0,0);
             const endDate = new Date(d); endDate.setHours(23,59,59,999);
             const newOrders = await (await import('../models/order.model.js')).default.countDocuments({ createdAt: { $gte: startDate, $lte: endDate } });
@@ -79,13 +94,13 @@ router.get("/total-sales", verifyToken, verifyAdmin, async (req, res) => {
         const start = req.query.start ? String(req.query.start) : '';
         const end = req.query.end ? String(req.query.end) : '';
         if (start && end) {
-            const startDate = new Date(start); startDate.setHours(0,0,0,0);
-            const endDate = new Date(end); endDate.setHours(23,59,59,999);
+            const startDate = parseDateInPhilippines(start); startDate.setHours(0,0,0,0);
+            const endDate = parseDateInPhilippines(end); endDate.setHours(23,59,59,999);
             const totalSalesQuantity = await getTotalSalesQuantity(startDate, endDate);
             return res.json({ totalSalesQuantity, startDate, endDate, range: { start, end } });
         }
         if (dateStr) {
-            const d = new Date(dateStr);
+            const d = parseDateInPhilippines(dateStr);
             const startDate = new Date(d); startDate.setHours(0,0,0,0);
             const endDate = new Date(d); endDate.setHours(23,59,59,999);
             const totalSalesQuantity = await getTotalSalesQuantity(startDate, endDate);
@@ -106,13 +121,13 @@ router.get("/revenue", verifyToken, verifyAdmin, async (req, res) => {
         const start = req.query.start ? String(req.query.start) : '';
         const end = req.query.end ? String(req.query.end) : '';
         if (start && end) {
-            const startDate = new Date(start); startDate.setHours(0,0,0,0);
-            const endDate = new Date(end); endDate.setHours(23,59,59,999);
+            const startDate = parseDateInPhilippines(start); startDate.setHours(0,0,0,0);
+            const endDate = parseDateInPhilippines(end); endDate.setHours(23,59,59,999);
             const { revenue } = await getRevenueForRange(startDate, endDate);
             return res.json({ revenue, startDate, endDate, range: { start, end } });
         }
         if (dateStr) {
-            const d = new Date(dateStr);
+            const d = parseDateInPhilippines(dateStr);
             const startDate = new Date(d); startDate.setHours(0,0,0,0);
             const endDate = new Date(d); endDate.setHours(23,59,59,999);
             const { revenue } = await getRevenueForRange(startDate, endDate);
@@ -134,13 +149,13 @@ router.get("/top-categories", verifyToken, verifyAdmin, async (req, res) => {
         const start = req.query.start ? String(req.query.start) : '';
         const end = req.query.end ? String(req.query.end) : '';
         if (start && end) {
-            const startDate = new Date(start); startDate.setHours(0,0,0,0);
-            const endDate = new Date(end); endDate.setHours(23,59,59,999);
+            const startDate = parseDateInPhilippines(start); startDate.setHours(0,0,0,0);
+            const endDate = parseDateInPhilippines(end); endDate.setHours(23,59,59,999);
             const { results } = await getTopCategoriesByRange(startDate, endDate, limit);
             return res.json({ categories: results, startDate, endDate, range: { start, end } });
         }
         if (dateStr) {
-            const d = new Date(dateStr);
+            const d = parseDateInPhilippines(dateStr);
             const startDate = new Date(d); startDate.setHours(0,0,0,0);
             const endDate = new Date(d); endDate.setHours(23,59,59,999);
             const { results } = await getTopCategoriesByRange(startDate, endDate, limit);
@@ -162,13 +177,13 @@ router.get("/top-products", verifyToken, verifyAdmin, async (req, res) => {
         const start = req.query.start ? String(req.query.start) : '';
         const end = req.query.end ? String(req.query.end) : '';
         if (start && end) {
-            const startDate = new Date(start); startDate.setHours(0,0,0,0);
-            const endDate = new Date(end); endDate.setHours(23,59,59,999);
+            const startDate = parseDateInPhilippines(start); startDate.setHours(0,0,0,0);
+            const endDate = parseDateInPhilippines(end); endDate.setHours(23,59,59,999);
             const { results } = await getTopProductsByRange(startDate, endDate, limit);
             return res.json({ products: results, startDate, endDate, range: { start, end } });
         }
         if (dateStr) {
-            const d = new Date(dateStr);
+            const d = parseDateInPhilippines(dateStr);
             const startDate = new Date(d); startDate.setHours(0,0,0,0);
             const endDate = new Date(d); endDate.setHours(23,59,59,999);
             const { results } = await getTopProductsByRange(startDate, endDate, limit);
@@ -186,16 +201,55 @@ router.get("/top-products", verifyToken, verifyAdmin, async (req, res) => {
 router.get("/by-source", verifyToken, verifyAdmin, async (req, res) => {
     try {
         const dataSource = String(req.query.source || 'combined');
+        const timeframe = String(req.query.timeframe || '').toLowerCase();
+        const start = req.query.start ? String(req.query.start) : '';
+        const end = req.query.end ? String(req.query.end) : '';
+
         const analyticsData = await getAnalyticsDataBySource(dataSource);
 
-        const endDate = new Date();
-        const startDate = new Date(endDate.getTime() - 7 * 24 * 60 * 60 * 1000);
+        // Resolve date range
+        let startDate, endDate;
+        if (start && end) {
+            startDate = parseDateInPhilippines(start);
+            startDate.setHours(0,0,0,0);
+            endDate = parseDateInPhilippines(end);
+            endDate.setHours(23,59,59,999);
+        } else if (timeframe) {
+            const now = new Date();
+            endDate = now;
+            switch (timeframe) {
+                case 'today':
+                    startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                    break;
+                case 'week':
+                    startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                    break;
+                case 'month':
+                    startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                    break;
+                case 'year':
+                    startDate = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+                    break;
+                case 'custom':
+                    // If client sends timeframe=custom but without start/end, default to last 7 days
+                    startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                    break;
+                default:
+                    startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+            }
+        } else {
+            endDate = new Date();
+            startDate = new Date(endDate.getTime() - 7 * 24 * 60 * 60 * 1000);
+        }
+
         const dailySalesData = await getDailySalesDataBySource(startDate, endDate, dataSource);
 
         res.json({
             analyticsData,
             dailySalesData,
-            dataSource
+            dataSource,
+            startDate,
+            endDate
         });
     } catch (error) {
         console.log("Error in analytics by-source route", error.message);

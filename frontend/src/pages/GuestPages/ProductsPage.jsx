@@ -166,26 +166,26 @@ const ProductsPage = () => {
 						<>
 							<button
 								onClick={prevCategory}
-								className="absolute left-2 top-1/2 -translate-y-1/2 z-20 bg-white/95 hover:bg-white text-[#901414] p-2 rounded-full shadow-lg transition-colors duration-200"
+								className="absolute left-1 sm:left-2 md:left-4 top-1/2 -translate-y-1/2 z-30 bg-white/95 hover:bg-white text-[#901414] p-1.5 sm:p-2 rounded-full shadow-lg transition-colors duration-200"
 								aria-label="Previous categories"
 							>
-								<ChevronLeft size={20} />
+								<ChevronLeft size={18} className="sm:w-5 sm:h-5" />
 							</button>
 							<button
 								onClick={nextCategory}
-								className="absolute right-2 top-1/2 -translate-y-1/2 z-20 bg-white/95 hover:bg-white text-[#901414] p-2 rounded-full shadow-lg transition-colors duration-200"
+								className="absolute right-1 sm:right-2 md:right-4 top-1/2 -translate-y-1/2 z-30 bg-white/95 hover:bg-white text-[#901414] p-1.5 sm:p-2 rounded-full shadow-lg transition-colors duration-200"
 								aria-label="Next categories"
 							>
-								<ChevronRight size={20} />
+								<ChevronRight size={18} className="sm:w-5 sm:h-5" />
 							</button>
 						</>
 					)}
 
 					{/* Category Cards Container */}
-					<div className="overflow-hidden px-16 sm:px-20">
+					<div className="overflow-hidden px-16 sm:px-20 md:px-24 lg:px-28">
 						<div
 							className={`flex ${
-								itemsPerView === 6 ? 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4 md:gap-3' : 'gap-2 sm:gap-3'
+								itemsPerView === 6 ? 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6' : 'gap-4 sm:gap-6'
 							}`}
 							style={{
 								transform: itemsPerView < 6 ? `translate3d(-${currentCategoryIndex * (100 / itemsPerView)}%, 0, 0)` : 'none',
@@ -223,19 +223,19 @@ const ProductsPage = () => {
 							initial={{ opacity: 0, y: 10 }}
 							animate={{ opacity: 1, y: 0 }}
 							transition={{ duration: 0.6, delay: 0.1 }}
-							className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6 md:gap-8"
+							className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-4 md:gap-6"
 						>
 							{((products && products.length > 0) ? products : featuredProducts).map((product) => (
-								<div key={product._id} className='w-full'>
-									<div className='bg-white rounded-lg overflow-visible h-full transition-all duration-300 hover:bg-[#f8f3ed] hover:scale-110 hover:z-50 hover:border-2 hover:border-[#901414] group flex flex-col'>
+								<div key={product._id} className='w-full max-w-[280px] mx-auto'>
+									<div className='bg-white rounded-lg overflow-visible h-full transition-all duration-300 hover:bg-[#f8f3ed] hover:scale-105 lg:hover:scale-108 2xl:hover:scale-105 hover:z-50 hover:border-2 hover:border-[#901414] group flex flex-col'>
 										<div className='overflow-hidden'>
-											<img src={product.image} alt={product.name} className='w-full h-32 object-contain transition-transform duration-300 ease-in-out hover:scale-110' />
+											<img src={product.image} alt={product.name} className='w-full h-28 sm:h-32 lg:h-36 xl:h-40 object-contain transition-transform duration-300 ease-in-out hover:scale-110' />
 										</div>
 										<div className='p-3 flex flex-col flex-1'>
-											<h3 className='text-base font-semibold mb-1 text-[#82695b]'>{product.name}</h3>
+											<h3 className='text-sm sm:text-base font-semibold mb-1 text-[#82695b]'>{product.name}</h3>
 											<p className='text-black font-bold mb-1'>₱{(product.priceMin || product.price || 0).toFixed(2)}</p>
 											<div className='mb-2'>
-												<span className={`text-xs font-medium px-2 py-1 rounded-full ${
+												<span className={`text-xs sm:text-sm font-medium px-2 py-1 rounded-full ${
 													(product.totalStockUnits || product.quantity) > 10 ? 'bg-green-100 text-green-800' : (product.totalStockUnits || product.quantity) > 0 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'
 												}`}>{(product.totalStockUnits || product.quantity) > 0 ? `${product.totalStockUnits || product.quantity} in stock` : 'Out of stock'}</span>
 											</div>
@@ -243,14 +243,14 @@ const ProductsPage = () => {
 												<button
 													onClick={() => handleAddToCart(product)}
 													disabled={(product.totalStockUnits || product.quantity) === 0}
-													className={`w-full text-white font-semibold py-1.5 px-3 rounded transition-colors duration-300 flex items-center justify-center text-sm ${
+													className={`w-full text-white font-semibold py-1.5 px-3 rounded transition-colors duration-300 flex items-center justify-center text-xs sm:text-sm ${
 														(product.totalStockUnits || product.quantity) > 0 ? (buttonStateById[product._id] === 'added' ? 'bg-emerald-600' : buttonStateById[product._id] === 'maxed' ? 'bg-red-600' : 'bg-[#901414] hover:bg-[#a31f17]') : 'bg-gray-400 cursor-not-allowed'
 													}`}
 												>
 													<ShoppingCart className='w-4 h-4 mr-1.5' />
 													{(product.totalStockUnits || product.quantity) > 0 ? (buttonStateById[product._id] === 'added' ? 'Product Added' : buttonStateById[product._id] === 'maxed' ? 'Maxed item' : 'Add to Cart') : 'Out of Stock'}
 												</button>
-												<Link to={`/product/${product._id}`} className="w-full text-[#901414] font-semibold py-1.5 px-3 rounded transition-all duration-300 flex items-center justify-center border-2 border-[#901414] hover:bg-[#901414] hover:text-white text-sm opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0">
+												<Link to={`/product/${product._id}`} className="w-full text-[#901414] font-semibold py-1.5 px-3 rounded transition-all duration-300 flex items-center justify-center border-2 border-[#901414] hover:bg-[#901414] hover:text-white text-xs sm:text-sm md:opacity-0 md:group-hover:opacity-100 transform md:translate-y-2 md:group-hover:translate-y-0">
 													<Eye className='w-4 h-4 mr-1.5' />
 													View Product
 												</Link>

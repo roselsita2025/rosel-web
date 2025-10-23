@@ -20,7 +20,7 @@ export const getAnalyticsData = async () => {
             $group: {
                 _id: null,
                 totalSales: { $sum:1 },
-                totalRevenue: { $sum: "$productSubtotal" }
+                totalRevenue: { $sum: { $subtract: ["$productSubtotal", { $ifNull: ["$coupon.discount", 0] }] } }
             }
         }
     ]);
@@ -49,11 +49,11 @@ export const getDailySalesData = async (startDate, endDate) => {
 				},
 			},
 			{
-				$group: {
-					_id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
-					sales: { $sum: 1 },
-					revenue: { $sum: "$productSubtotal" },
-				},
+			$group: {
+				_id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+				sales: { $sum: 1 },
+				revenue: { $sum: { $subtract: ["$productSubtotal", { $ifNull: ["$coupon.discount", 0] }] } },
+			},
 			},
 			{ $sort: { _id: 1 } },
 		]);
@@ -79,7 +79,11 @@ function getDatesInRange(startDate, endDate) {
 	let currentDate = new Date(startDate);
 
 	while (currentDate <= endDate) {
-		dates.push(currentDate.toISOString().split("T")[0]);
+		// Format date as YYYY-MM-DD in local timezone (not UTC)
+		const year = currentDate.getFullYear();
+		const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+		const day = String(currentDate.getDate()).padStart(2, '0');
+		dates.push(`${year}-${month}-${day}`);
 		currentDate.setDate(currentDate.getDate() + 1);
 	}
 
@@ -167,7 +171,7 @@ export const getRevenueByTimeframe = async (timeframe) => {
 				status: { $nin: ['cancelled', 'refunded'] }
 			} 
 		},
-		{ $group: { _id: null, revenue: { $sum: "$productSubtotal" } } },
+		{ $group: { _id: null, revenue: { $sum: { $subtract: ["$productSubtotal", { $ifNull: ["$coupon.discount", 0] }] } } } },
 	]);
 	const revenue = result?.[0]?.revenue || 0;
 	return { revenue, startDate, endDate };
@@ -182,7 +186,7 @@ export const getRevenueForRange = async (startDate, endDate) => {
                 status: { $nin: ['cancelled', 'refunded'] }
             } 
         },
-        { $group: { _id: null, revenue: { $sum: "$productSubtotal" } } },
+        { $group: { _id: null, revenue: { $sum: { $subtract: ["$productSubtotal", { $ifNull: ["$coupon.discount", 0] }] } } } },
     ]);
     const revenue = result?.[0]?.revenue || 0;
     return { revenue, startDate, endDate };
@@ -397,7 +401,7 @@ export const getAnalyticsDataBySource = async (dataSource = 'combined') => {
                 $group: {
                     _id: null,
                     totalSales: { $sum: 1 },
-                    totalRevenue: { $sum: "$productSubtotal" }
+                    totalRevenue: { $sum: { $subtract: ["$productSubtotal", { $ifNull: ["$coupon.discount", 0] }] } }
                 }
             }
         ]);
@@ -412,7 +416,7 @@ export const getAnalyticsDataBySource = async (dataSource = 'combined') => {
                 $group: {
                     _id: null,
                     totalSales: { $sum: 1 },
-                    totalRevenue: { $sum: "$payment.productSubtotal" }
+                    totalRevenue: { $sum: { $subtract: ["$payment.productSubtotal", { $ifNull: ["$payment.discount", 0] }] } }
                 }
             }
         ]);
@@ -431,10 +435,32 @@ export const getAnalyticsDataBySource = async (dataSource = 'combined') => {
 
 export const getDailySalesDataBySource = async (startDate, endDate, dataSource = 'combined') => {
     try {
-        let dailySalesData = [];
+        const combinedData = {};
 
         if (dataSource === 'orders' || dataSource === 'combined') {
-            const orderData = await Order.aggregate([
+            // First get sales quantity (item count)
+            const orderSales = await Order.aggregate([
+                {
+                    $match: {
+                        createdAt: {
+                            $gte: startDate,
+                            $lte: endDate,
+                        },
+                        paymentStatus: 'paid',
+                        status: { $nin: ['cancelled', 'refunded'] }
+                    },
+                },
+                { $unwind: "$products" },
+                {
+                    $group: {
+                        _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt", timezone: "Asia/Manila" } },
+                        sales: { $sum: "$products.quantity" },
+                    },
+                },
+            ]);
+
+            // Then get revenue (order level, not per product)
+            const orderRevenue = await Order.aggregate([
                 {
                     $match: {
                         createdAt: {
@@ -447,17 +473,45 @@ export const getDailySalesDataBySource = async (startDate, endDate, dataSource =
                 },
                 {
                     $group: {
-                        _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
-                        sales: { $sum: 1 },
-                        revenue: { $sum: "$productSubtotal" },
+                        _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt", timezone: "Asia/Manila" } },
+                        revenue: { $sum: { $subtract: ["$productSubtotal", { $ifNull: ["$coupon.discount", 0] }] } },
                     },
                 },
             ]);
-            dailySalesData = [...dailySalesData, ...orderData];
+
+            // Combine sales and revenue
+            orderSales.forEach(item => {
+                if (!combinedData[item._id]) combinedData[item._id] = { sales: 0, revenue: 0 };
+                combinedData[item._id].sales += item.sales;
+            });
+            orderRevenue.forEach(item => {
+                if (!combinedData[item._id]) combinedData[item._id] = { sales: 0, revenue: 0 };
+                combinedData[item._id].revenue += item.revenue;
+            });
         }
 
         if (dataSource === 'pos' || dataSource === 'combined') {
-            const posData = await Transaction.aggregate([
+            // First get sales quantity (item count)
+            const posSales = await Transaction.aggregate([
+                {
+                    $match: {
+                        timestamp: {
+                            $gte: startDate,
+                            $lte: endDate,
+                        },
+                    },
+                },
+                { $unwind: "$items" },
+                {
+                    $group: {
+                        _id: { $dateToString: { format: "%Y-%m-%d", date: "$timestamp", timezone: "Asia/Manila" } },
+                        sales: { $sum: "$items.quantity" },
+                    },
+                },
+            ]);
+
+            // Then get revenue (transaction level, not per item)
+            const posRevenue = await Transaction.aggregate([
                 {
                     $match: {
                         timestamp: {
@@ -468,24 +522,22 @@ export const getDailySalesDataBySource = async (startDate, endDate, dataSource =
                 },
                 {
                     $group: {
-                        _id: { $dateToString: { format: "%Y-%m-%d", date: "$timestamp" } },
-                        sales: { $sum: 1 },
-                        revenue: { $sum: "$payment.productSubtotal" },
+                        _id: { $dateToString: { format: "%Y-%m-%d", date: "$timestamp", timezone: "Asia/Manila" } },
+                        revenue: { $sum: { $subtract: ["$payment.productSubtotal", { $ifNull: ["$payment.discount", 0] }] } },
                     },
                 },
             ]);
-            dailySalesData = [...dailySalesData, ...posData];
-        }
 
-        const combinedData = {};
-        dailySalesData.forEach(item => {
-            if (combinedData[item._id]) {
+            // Combine sales and revenue
+            posSales.forEach(item => {
+                if (!combinedData[item._id]) combinedData[item._id] = { sales: 0, revenue: 0 };
                 combinedData[item._id].sales += item.sales;
+            });
+            posRevenue.forEach(item => {
+                if (!combinedData[item._id]) combinedData[item._id] = { sales: 0, revenue: 0 };
                 combinedData[item._id].revenue += item.revenue;
-            } else {
-                combinedData[item._id] = { sales: item.sales, revenue: item.revenue };
-            }
-        });
+            });
+        }
 
         const dateArray = getDatesInRange(startDate, endDate);
 
@@ -581,7 +633,7 @@ export const getRevenueBySource = async (startDate, endDate, dataSource = 'combi
                     status: { $nin: ['cancelled', 'refunded'] }
                 } 
             },
-            { $group: { _id: null, revenue: { $sum: "$productSubtotal" } } },
+            { $group: { _id: null, revenue: { $sum: { $subtract: ["$productSubtotal", { $ifNull: ["$coupon.discount", 0] }] } } } },
         ]);
         revenue += orderResult?.[0]?.revenue || 0;
     }
@@ -589,7 +641,7 @@ export const getRevenueBySource = async (startDate, endDate, dataSource = 'combi
     if (dataSource === 'pos' || dataSource === 'combined') {
         const posResult = await Transaction.aggregate([
             { $match: { timestamp: { $gte: startDate, $lte: endDate } } },
-            { $group: { _id: null, revenue: { $sum: "$payment.productSubtotal" } } },
+            { $group: { _id: null, revenue: { $sum: { $subtract: ["$payment.productSubtotal", { $ifNull: ["$payment.discount", 0] }] } } } },
         ]);
         revenue += posResult?.[0]?.revenue || 0;
     }
@@ -750,7 +802,7 @@ export const getCustomerAnalytics = async (req, res) => {
                     customerName: { $first: { $concat: ['$shippingInfo.firstName', ' ', '$shippingInfo.lastName'] } },
                     customerEmail: { $first: '$shippingInfo.email' },
                     totalOrders: { $sum: 1 },
-                    totalSpent: { $sum: '$productSubtotal' }
+                    totalSpent: { $sum: { $subtract: ['$productSubtotal', { $ifNull: ['$coupon.discount', 0] }] } }
                 }
             },
             {

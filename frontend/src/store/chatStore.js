@@ -25,13 +25,11 @@ export const useChatStore = create((set, get) => ({
     typingUsers: [],
     
     // Actions
-    initializeSocket: (token) => {
+    initializeSocket: () => {
         // Initializing socket
         
         const socket = io(import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000', {
-            auth: {
-                token: token
-            }
+            withCredentials: true  // Use HTTP-only cookies for authentication
         });
 
         socket.on('connect', () => {

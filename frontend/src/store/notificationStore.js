@@ -5,6 +5,19 @@ import { io } from 'socket.io-client';
 const API_URL = (import.meta.env.VITE_API_URL || "http://localhost:5000/api") + "/notifications";
 axios.defaults.withCredentials = true;
 
+// Load sound settings from localStorage
+const loadSoundSettings = () => {
+    const soundEnabled = localStorage.getItem('notificationSoundEnabled');
+    const soundVolume = localStorage.getItem('notificationSoundVolume');
+    
+    return {
+        soundEnabled: soundEnabled !== null ? soundEnabled === 'true' : true,
+        soundVolume: soundVolume !== null ? parseFloat(soundVolume) : 0.5
+    };
+};
+
+const initialSoundSettings = loadSoundSettings();
+
 export const useNotificationStore = create((set, get) => ({
     // State
     socket: null,
@@ -38,39 +51,106 @@ export const useNotificationStore = create((set, get) => ({
         categoryCounts: {},
         totalUnread: 0
     },
+    
+    // Sound settings
+    soundEnabled: initialSoundSettings.soundEnabled,
+    soundVolume: initialSoundSettings.soundVolume,
 
     // Actions
-    initializeSocket: (token) => {
-        // Initializing notification socket
+    playNotificationSound: async () => {
+        const { soundEnabled, soundVolume } = get();
         
-        const socket = io(import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000', {
-            auth: {
-                token: token
+        if (!soundEnabled) return;
+
+        try {
+            // Create AudioContext
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (!AudioContext) return;
+            
+            const audioContext = new AudioContext();
+            
+            // Resume audio context if suspended (browser autoplay policy)
+            if (audioContext.state === 'suspended') {
+                await audioContext.resume();
             }
+            
+            // Create oscillators for a pleasant two-tone notification sound
+            const oscillator1 = audioContext.createOscillator();
+            const oscillator2 = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            // Configure first tone (higher pitch)
+            oscillator1.type = 'sine';
+            oscillator1.frequency.setValueAtTime(800, audioContext.currentTime);
+            
+            // Configure second tone (lower pitch)
+            oscillator2.type = 'sine';
+            oscillator2.frequency.setValueAtTime(600, audioContext.currentTime);
+            
+            // Connect to gain node for volume control
+            oscillator1.connect(gainNode);
+            oscillator2.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            // Set volume
+            gainNode.gain.setValueAtTime(soundVolume * 0.3, audioContext.currentTime);
+            
+            // Create envelope for smooth sound
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+            
+            // Play sound
+            oscillator1.start(audioContext.currentTime);
+            oscillator2.start(audioContext.currentTime);
+            
+            // Stop after short duration
+            oscillator1.stop(audioContext.currentTime + 0.3);
+            oscillator2.stop(audioContext.currentTime + 0.3);
+            
+            // Clean up
+            setTimeout(() => {
+                audioContext.close();
+            }, 500);
+        } catch (error) {
+            console.error('Error playing notification sound:', error);
+        }
+    },
+
+    setSoundEnabled: (enabled) => {
+        set({ soundEnabled: enabled });
+        localStorage.setItem('notificationSoundEnabled', enabled.toString());
+    },
+
+    setSoundVolume: (volume) => {
+        set({ soundVolume: Math.max(0, Math.min(1, volume)) });
+        localStorage.setItem('notificationSoundVolume', volume.toString());
+    },
+
+    initializeSocket: (existingSocket) => {
+        // If an existing socket is provided (from chat), use it
+        // Otherwise create a new one (fallback)
+        const socket = existingSocket || io(import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000', {
+            withCredentials: true
         });
 
         socket.on('connect', () => {
-            // Connected to notification server
             set({ isConnected: true });
         });
 
         socket.on('disconnect', (reason) => {
-            // Disconnected from notification server
             set({ isConnected: false });
         });
 
         socket.on('connect_error', (error) => {
-            console.error('❌ Notification socket connection error:', error);
+            console.error('Notification socket connection error:', error.message);
             set({ isConnected: false, error: error.message });
         });
 
         // Listen for new notifications
         socket.on('new_notification', (data) => {
-            // Received new notification via WebSocket
             const { notification } = data;
             
             // Add notification to the store
-            const { notifications, unreadCount, summary } = get();
+            const { notifications, unreadCount, summary, playNotificationSound } = get();
             
             // Add to main notifications list
             const updatedNotifications = [notification, ...notifications];
@@ -87,15 +167,21 @@ export const useNotificationStore = create((set, get) => ({
                 [notification.category]: (summary.categoryCounts[notification.category] || 0) + 1
             };
 
+            // Create new summary object to ensure React detects the change
+            const newSummary = {
+                recentNotifications: updatedRecentNotifications,
+                categoryCounts: updatedCategoryCounts,
+                totalUnread: newUnreadCount
+            };
+
             set({
                 notifications: updatedNotifications,
                 unreadCount: newUnreadCount,
-                summary: {
-                    recentNotifications: updatedRecentNotifications,
-                    categoryCounts: updatedCategoryCounts,
-                    totalUnread: newUnreadCount
-                }
+                summary: newSummary
             });
+
+            // Play notification sound
+            playNotificationSound();
         });
 
         set({ socket });
