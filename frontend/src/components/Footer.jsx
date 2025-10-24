@@ -44,7 +44,7 @@ const Footer = () => {
       <div className="border-t border-gray-300 shadow-md"></div>
       <footer className="bg-[#f8f3ed] text-[#030105] py-3">
         <div className="container mx-auto px-4 flex justify-center items-center">
-          <p className="text-xs sm:text-sm text-center">© 2024 Rosel Frozen Meat Supplier. All rights reserved.</p>
+          <p className="text-xs sm:text-sm text-center">© 2025 Rosel Frozen Meat Supplier. All rights reserved.</p>
         </div>
       </footer>
     </>

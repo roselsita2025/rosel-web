@@ -62,6 +62,10 @@ const ChatManagementPage = () => {
 
             socket.on('chat_assigned', (data) => {
                 console.log('Chat assigned:', data);
+                // Update the selected chat if it's the one being assigned
+                if (selectedChat && selectedChat.chatId === data.chat.chatId) {
+                    setSelectedChat(data.chat);
+                }
                 // Reload chats to show updated status
                 loadChats();
             });
@@ -73,10 +77,21 @@ const ChatManagementPage = () => {
                 loadChats();
             });
 
+            socket.on('chat_status_updated', (data) => {
+                console.log('Chat status updated:', data);
+                // Update the selected chat if it's the one being updated
+                if (selectedChat && selectedChat.chatId === data.chatId) {
+                    setSelectedChat(data.chat);
+                }
+                // Reload chats to show updated status
+                loadChats();
+            });
+
             return () => {
                 socket.off('new_support_message');
                 socket.off('chat_assigned');
                 socket.off('customer_left_chat');
+                socket.off('chat_status_updated');
             };
         }
     }, [socket]);
@@ -108,12 +123,22 @@ const ChatManagementPage = () => {
         }
     };
 
-    const handleChatSelect = (chat) => {
-        setSelectedChat(chat);
+    const handleChatSelect = async (chat) => {
         setSidebarOpen(false); // Close sidebar on mobile when chat is selected
+        
         if (!chat.admin) {
-            // Auto-assign chat to current admin
-            assignChatToAdmin(chat.chatId);
+            // Auto-assign chat to current admin and wait for completion
+            try {
+                const updatedChat = await assignChatToAdmin(chat.chatId);
+                setSelectedChat(updatedChat);
+            } catch (error) {
+                console.error('Error assigning chat:', error);
+                // Still set the chat even if assignment fails
+                setSelectedChat(chat);
+            }
+        } else {
+            // Chat already has an admin, just select it
+            setSelectedChat(chat);
         }
     };
 

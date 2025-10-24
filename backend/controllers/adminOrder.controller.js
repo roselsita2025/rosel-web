@@ -152,6 +152,11 @@ export const updateAdminOrderStatus = async (req, res) => {
         
         order.adminStatus = adminStatus;
         
+        // Set completion timestamp when order is completed
+        if (adminStatus === 'order_completed' && originalAdminStatus !== 'order_completed') {
+            order.completedAt = new Date();
+        }
+        
         if (notes) {
             if (!order.adminNotes) {
                 order.adminNotes = [];

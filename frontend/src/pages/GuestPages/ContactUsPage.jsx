@@ -271,11 +271,11 @@ const ContactUsPage = () => {
                     },
                     {
                       question: "How long does delivery take?",
-                      answer: "Standard delivery takes 1-2 business days for Metro Manila and 2-3 business days for provincial areas. Express delivery options are available."
+                      answer: "Standard delivery is 24 hours for Metro Manila and 1-2 business days for provincial areas. Express delivery options are available."
                     },
                     {
                       question: "What payment methods do you accept?",
-                      answer: "We accept cash on delivery, bank transfers, credit/debit cards, and digital wallets for your convenience."
+                      answer: "We accept credit/debit cards for more secured payments, ensuring your financial information is protected with advanced encryption and fraud protection measures."
                     }
                   ].map((faq, index) => (
                     <motion.div 

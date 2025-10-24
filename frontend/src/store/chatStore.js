@@ -95,6 +95,23 @@ export const useChatStore = create((set, get) => ({
             }
         });
 
+        socket.on('chat_status_updated', (data) => {
+            const { chats, currentChat } = get();
+            const updatedChats = chats.map(chat => 
+                chat.chatId === data.chatId ? data.chat : chat
+            );
+            
+            let updatedCurrentChat = currentChat;
+            if (currentChat && currentChat.chatId === data.chatId) {
+                updatedCurrentChat = data.chat;
+            }
+            
+            set({ 
+                chats: updatedChats,
+                currentChat: updatedCurrentChat
+            });
+        });
+
         socket.on('error', (error) => {
             set({ error: error.message });
         });

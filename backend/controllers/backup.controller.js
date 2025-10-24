@@ -61,7 +61,7 @@ export const generateBackup = async (req, res) => {
 
     const backup = {
       metadata: {
-        version: '2.1',
+        version: '2.2',
         timestamp: new Date().toISOString(),
         collections: [
           'products', 'orders', 'users', 'reviews', 'transactions', 
@@ -420,7 +420,17 @@ export const executeRestore = async (req, res) => {
     if (backupData.data.orders && backupData.data.orders.length > 0) {
       console.log(`📋 Restoring ${backupData.data.orders.length} orders...`);
       await Order.deleteMany({});
-      await Order.insertMany(backupData.data.orders);
+      
+      // Handle backward compatibility for completedAt field
+      const ordersWithCompletedAt = backupData.data.orders.map(order => {
+        // If completedAt doesn't exist but order is completed, set it to createdAt
+        if (!order.completedAt && order.adminStatus === 'order_completed') {
+          order.completedAt = order.createdAt || new Date();
+        }
+        return order;
+      });
+      
+      await Order.insertMany(ordersWithCompletedAt);
       restoreResults.orders = backupData.data.orders.length;
     }
 
@@ -586,6 +596,7 @@ export const validateBackup = async (req, res) => {
     }
 
     // Comprehensive validation
+    // Note: Backward compatibility is handled during restore for completedAt field
     const validationResult = validateBackupIntegrity(backupData);
     
     if (!validationResult.valid) {
@@ -614,7 +625,7 @@ export const validateBackup = async (req, res) => {
     const requiredCollections = [
       'products', 'orders', 'users', 'reviews', 'transactions', 
       'coupons', 'notifications', 'activityLogs', 'replacementRequests', 
-      'chats', 'messages', 'faqs'
+      'chats', 'messages', 'faqs', 'writeOffs'
     ];
     checks.dataStructureValid = requiredCollections.every(collection => 
       Array.isArray(backupData.data[collection])
@@ -665,7 +676,7 @@ const validateBackupIntegrity = (backupData) => {
     const requiredCollections = [
       'products', 'orders', 'users', 'reviews', 'transactions', 
       'coupons', 'notifications', 'activityLogs', 'replacementRequests', 
-      'chats', 'messages', 'faqs'
+      'chats', 'messages', 'faqs', 'writeOffs'
     ];
     for (const collection of requiredCollections) {
       if (!Array.isArray(backupData.data[collection])) {

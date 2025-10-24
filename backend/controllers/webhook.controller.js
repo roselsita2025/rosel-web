@@ -205,6 +205,10 @@ const handleOrderStatusChanged = async (webhookData) => {
         } else if (mappedStatus === 'delivered') {
             order.adminStatus = 'order_completed';
             order.status = 'delivered';
+            // Set completion timestamp when order is completed
+            if (!order.completedAt) {
+                order.completedAt = new Date();
+            }
         } else if (mappedStatus === 'cancelled') {
             order.status = 'cancelled';
             order.adminStatus = 'order_prepared';

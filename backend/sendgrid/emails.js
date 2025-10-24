@@ -28,7 +28,7 @@ export const sendWelcomeEmail = async (email, name) => {
             from: sender,
             to: recipient,
             subject: "Welcome email",
-            html: WELCOME_EMAIL_TEMPLATE.replace("{Name}", name),
+            html: WELCOME_EMAIL_TEMPLATE.replace("{Name}", name).replace("{supportEmail}", process.env.SENDGRID_SINGLE_SENDER),
             categories: ["Welcome email"],
         };
         const response = await sgMail.send(msg);

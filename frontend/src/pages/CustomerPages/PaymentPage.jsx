@@ -302,12 +302,12 @@ const PaymentPage = () => {
                                             <div className='flex-1 min-w-0'>
                                                 <h3 className='font-medium text-[#030105] font-alice text-sm sm:text-base'>{item.name}{weightInfo}</h3>
                                                 <p className='text-xs sm:text-sm text-[#a31f17] font-libre'>
-                                                    Quantity: {item.cartQuantity || item.quantity} • ₱{itemPrice} each
+                                                    Quantity: {item.cartQuantity || item.quantity} • ₱{itemPrice.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} each
                                                 </p>
                                             </div>
                                             <div className='text-right flex-shrink-0'>
                                                 <div className='font-semibold text-[#860809] font-libre text-sm sm:text-base'>
-                                                    ₱{(itemPrice * (item.cartQuantity || item.quantity)).toFixed(2)}
+                                                    ₱{(itemPrice * (item.cartQuantity || item.quantity)).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                                 </div>
                                             </div>
                                         </div>
@@ -343,7 +343,7 @@ const PaymentPage = () => {
                                                 <span className='text-[#030105] font-alice flex-1 min-w-0'>
                                                     {item.name}{weightInfo} × {item.cartQuantity || item.quantity}
                                                 </span>
-                                                <span className='text-[#030105] font-libre flex-shrink-0'>₱{itemTotal.toFixed(2)}</span>
+                                                <span className='text-[#030105] font-libre flex-shrink-0'>₱{itemTotal.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                                             </div>
                                         );
                                     })}
@@ -352,7 +352,7 @@ const PaymentPage = () => {
                                 {/* Subtotal */}
                                 <div className='flex justify-between text-xs sm:text-sm gap-2'>
                                     <span className='text-[#030105] font-alice'>subtotal</span>
-                                    <span className='text-[#030105] font-libre flex-shrink-0'>₱{subtotal.toFixed(2)}</span>
+                                    <span className='text-[#030105] font-libre flex-shrink-0'>₱{subtotal.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                                 </div>
 
                                 {/* Tax removed */}
@@ -364,7 +364,7 @@ const PaymentPage = () => {
                                             voucher {coupon ? `(${coupon.code})` : ''}
                                         </span>
                                         <span className='text-green-600 font-libre flex-shrink-0'>
-                                            -₱{voucherDiscount.toFixed(2)}
+                                            -₱{voucherDiscount.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                         </span>
                                     </div>
                                 ) : null}
@@ -374,7 +374,7 @@ const PaymentPage = () => {
                                     <div className='flex justify-between text-xs sm:text-sm gap-2'>
                                         <span className='text-[#030105] font-alice'>subtotal</span>
                                         <span className='text-[#030105] font-libre flex-shrink-0'>
-                                            ₱{(subtotal - voucherDiscount).toFixed(2)}
+                                            ₱{(subtotal - voucherDiscount).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                         </span>
                                     </div>
                                 ) : null}
@@ -383,7 +383,7 @@ const PaymentPage = () => {
                                 <div className='flex justify-between text-xs sm:text-sm gap-2'>
                                     <span className='text-[#030105] font-alice'>shipping</span>
                                     <span className='text-[#030105] font-libre flex-shrink-0'>
-                                        {selectedShipping === 'pickup' ? 'FREE' : `₱${deliveryFee.toFixed(2)}`}
+                                        {selectedShipping === 'pickup' ? 'FREE' : `₱${deliveryFee.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
                                     </span>
                                 </div>
 
@@ -392,7 +392,7 @@ const PaymentPage = () => {
                                     <div className='flex justify-between font-semibold text-base sm:text-lg gap-2'>
                                         <span className='text-[#030105] font-alice'>total</span>
                                         <span className='text-[#860809] font-libre flex-shrink-0'>
-                                            ₱{(subtotal - voucherDiscount + deliveryFee).toFixed(2)}
+                                            ₱{(subtotal - voucherDiscount + deliveryFee).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                         </span>
                                     </div>
                                 </div>

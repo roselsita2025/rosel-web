@@ -142,7 +142,7 @@ const POSHistoryPage = () => {
   };
 
   const generateReceiptHTML = (transaction) => {
-    const formatCurrency = (amount) => `₱${amount.toFixed(2)}`;
+    const formatCurrency = (amount) => `₱${amount.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     const formatDate = (date) => {
       const d = new Date(date);
       return d.toLocaleString('en-PH', {
@@ -508,12 +508,12 @@ const POSHistoryPage = () => {
                       const customer = csvEscape(t?.customer?.name || 'Walk-in Customer');
                       const method = csvEscape(t?.payment?.method || 'cash');
                       const itemsCount = csvEscape(Array.isArray(t?.items) ? t.items.length : 0);
-                      const total = csvEscape(Number(t?.payment?.total || 0).toFixed(2));
+                      const total = csvEscape(formatCurrency(Number(t?.payment?.total || 0)));
                       const details = (Array.isArray(t?.items) ? t.items : []).map(it => {
                         const name = it?.name || it?.productId?.name || '';
                         const qty = it?.quantity ?? 0;
-                        const price = Number(it?.price || 0).toFixed(2);
-                        const lineTotal = Number(it?.total || (qty * (it?.price||0))).toFixed(2);
+                        const price = formatCurrency(Number(it?.price || 0));
+                        const lineTotal = formatCurrency(Number(it?.total || (qty * (it?.price||0))));
                         return `${name} x${qty} @${price} = ${lineTotal}`;
                       }).join(' | ');
                       lines.push([

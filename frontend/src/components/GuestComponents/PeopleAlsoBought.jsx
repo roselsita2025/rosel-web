@@ -25,7 +25,7 @@ const PeopleAlsoBought = () => {
 			try {
 				const res = await axios.get(`${API_URL}/products/recommendations`);
 				const products = Array.isArray(res.data.products) ? res.data.products : [];
-				setRecommendations(products.slice(0, 6));
+				setRecommendations(products.slice(0, 10));
 				// API Response received
 			} catch (error) {
 				toast.error(error.response.data.message || "An error occurred while fetching recommendations");
@@ -42,7 +42,7 @@ const PeopleAlsoBought = () => {
   return (
     <div className='mt-8'>
 			<h3 className='text-2xl font-bold' style={{ color: '#901414' }}>People Also Bought</h3>
-			<div className='mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
+			<div className='mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'>
 				{Array.isArray(recommendations) && recommendations.map((product, index) => (
 					<div
 						key={product._id}
@@ -64,7 +64,7 @@ const PeopleAlsoBought = () => {
 						</div>
 						<h3 className="text-sm font-bold text-[#030105] mb-1 line-clamp-2">{product.name}</h3>
 						<div className="flex justify-center items-center mb-1">
-							<span className="text-base text-[#901414]">₱{(product.priceMin || product.price || 0).toFixed(2)}</span>
+							<span className="text-base text-[#901414]">₱{(product.priceMin || product.price || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
 						</div>
 						<div className="flex justify-center items-center mb-2">
 							<span className={`text-xs font-medium px-1.5 py-0.5 rounded-full ${

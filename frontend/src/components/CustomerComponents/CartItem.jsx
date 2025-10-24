@@ -71,7 +71,7 @@ const CartItem = ({ item }) => {
 			{/* Right Side - Price and Trash */}
 			<div className='flex flex-col items-end gap-1.5 sm:gap-2'>
 				<p className='text-base sm:text-lg font-bold text-[#860809]'>
-					₱{item.unitPrice || item.price}
+					₱{(item.unitPrice || item.price).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
 				</p>
 				<button
 					className='inline-flex items-center p-1.5 sm:p-2 rounded-md transition-colors hover:opacity-80 text-[#a31f17]'

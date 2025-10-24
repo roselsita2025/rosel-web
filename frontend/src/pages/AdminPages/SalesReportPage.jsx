@@ -88,6 +88,7 @@ const SalesReportPage = () => {
   const [discountsUsedSum, setDiscountsUsedSum] = useState(0);
   const [discrepancyTrends, setDiscrepancyTrends] = useState([]);
   const [discrepancyCostImpact, setDiscrepancyCostImpact] = useState(0);
+  const [paymentGatewayView, setPaymentGatewayView] = useState('revenue'); // 'revenue' or 'orders'
 
   // Modal states
   const [showDateModal, setShowDateModal] = useState(false);
@@ -156,13 +157,41 @@ const SalesReportPage = () => {
     
     return labels.map((label) => {
       const agg = sumByKey.get(String(label)) || { sales: 0, revenue: 0 };
-      const target = targetByKey.get(String(label)) || { sales: 0, revenue: 0 };
+      const previousYearSales = targetByKey.get(String(label)) || { sales: 0, revenue: 0 };
+      
+      // Calculate growth rate per data point
+      let salesGrowthRate = 0;
+      if (previousYearSales.sales > 0) {
+        salesGrowthRate = ((agg.sales - previousYearSales.sales) / previousYearSales.sales) * 100;
+      }
+      // Cap negative growth at 0%
+      salesGrowthRate = Math.max(salesGrowthRate, 0);
+      
+      // Calculate growth-adjusted target sales
+      const growthAdjustedTargetSales = previousYearSales.sales * (1 + (salesGrowthRate / 100));
+      
+      // Calculate growth rate for revenue per data point
+      let revenueGrowthRate = 0;
+      if (previousYearSales.revenue > 0) {
+        revenueGrowthRate = ((agg.revenue - previousYearSales.revenue) / previousYearSales.revenue) * 100;
+      }
+      // Cap negative growth at 0%
+      revenueGrowthRate = Math.max(revenueGrowthRate, 0);
+      
+      // Calculate growth-adjusted target revenue
+      const growthAdjustedTargetRevenue = previousYearSales.revenue * (1 + (revenueGrowthRate / 100));
+      
       return {
         date: label,
-        targetSales: target.sales,
+        targetSales: growthAdjustedTargetSales,
         actualSales: agg.sales,
-        targetRevenue: target.revenue,
+        targetRevenue: growthAdjustedTargetRevenue,
         actualRevenue: agg.revenue,
+        // Keep original previous year data for reference
+        previousYearSales: previousYearSales.sales,
+        previousYearRevenue: previousYearSales.revenue,
+        salesGrowthRate: salesGrowthRate,
+        revenueGrowthRate: revenueGrowthRate,
       };
     });
   }, [labels, dailySalesData, previousYearData, selectedYear, selectedMonth]);
@@ -173,6 +202,9 @@ const SalesReportPage = () => {
       date: d.date,
       targetProfit: d.targetRevenue * PRODUCT_MARKUP,
       actualProfit: d.actualRevenue * PRODUCT_MARKUP,
+      // Keep original previous year profit for reference
+      previousYearProfit: d.previousYearRevenue * PRODUCT_MARKUP,
+      profitGrowthRate: d.revenueGrowthRate, // Profit growth rate same as revenue growth rate
     }));
   }, [dailyData, PRODUCT_MARKUP]);
 
@@ -181,8 +213,11 @@ const SalesReportPage = () => {
     return dailyData.map((d) => ({
       date: d.date,
       revenue: d.actualRevenue,
-      revenueTarget: d.targetRevenue,
-      cost: d.actualRevenue - (d.actualRevenue * PRODUCT_MARKUP) // Cost = Revenue - Profit
+      revenueTarget: d.targetRevenue, // Already growth-adjusted from dailyData
+      cost: d.actualRevenue - (d.actualRevenue * PRODUCT_MARKUP), // Cost = Revenue - Profit
+      // Keep original previous year revenue for reference
+      previousYearRevenue: d.previousYearRevenue,
+      revenueGrowthRate: d.revenueGrowthRate,
     }));
   }, [dailyData, PRODUCT_MARKUP]);
 
@@ -200,16 +235,22 @@ const SalesReportPage = () => {
       if (mode === 'year') key = String(d.getFullYear());
       else if (mode === 'month') key = String(d.getMonth() + 1);
       else key = String(d.getDate());
-      const prev = mapByKey.get(key) || { cash: 0, bank: 0, online: 0 };
+      const prev = mapByKey.get(key) || { 
+        cash: 0, bank: 0, online: 0,
+        cashOrders: 0, bankOrders: 0, onlineOrders: 0
+      };
       const method = (t.payment?.method || '').toLowerCase();
       const amount = Number(t.payment?.productSubtotal || 0) - Number(t.payment?.discount || 0); // Net amount after discount
       
       if (method === 'cash') {
         prev.cash += amount;
+        prev.cashOrders += 1;
       } else if (method === 'bank transfer' || method === 'bank') {
         prev.bank += amount;
+        prev.bankOrders += 1;
       } else if (method === 'online payment' || method === 'online') {
         prev.online += amount;
+        prev.onlineOrders += 1;
       } else {
       }
       mapByKey.set(key, prev);
@@ -222,13 +263,23 @@ const SalesReportPage = () => {
       if (mode === 'year') key = String(d.getFullYear());
       else if (mode === 'month') key = String(d.getMonth() + 1);
       else key = String(d.getDate());
-      const prev = mapByKey.get(key) || { cash: 0, bank: 0, online: 0 };
+      const prev = mapByKey.get(key) || { 
+        cash: 0, bank: 0, online: 0,
+        cashOrders: 0, bankOrders: 0, onlineOrders: 0
+      };
       const amount = Number(order.totalAmount || 0); // Online orders total amount is already net
       prev.bank += amount;
+      prev.bankOrders += 1;
       mapByKey.set(key, prev);
     }
     
-    return labels.map((label) => ({ day: label, ...(mapByKey.get(String(label)) || { cash: 0, bank: 0, online: 0 }) }));
+    return labels.map((label) => ({ 
+      day: label, 
+      ...(mapByKey.get(String(label)) || { 
+        cash: 0, bank: 0, online: 0,
+        cashOrders: 0, bankOrders: 0, onlineOrders: 0
+      }) 
+    }));
   }, [labels, posTxns, onlineOrders, selectedYear, selectedMonth]);
 
   // Coupons/Discounts data combining online orders coupons and POS discounts
@@ -269,11 +320,27 @@ const SalesReportPage = () => {
     
     // Aggregate discrepancy data by date
     for (const item of discrepancyTrends || []) {
-      const d = new Date(item.date);
+      // Handle different date formats
       let key = '';
-      if (mode === 'year') key = String(d.getFullYear());
-      else if (mode === 'month') key = String(d.getMonth() + 1);
-      else key = String(d.getDate());
+      if (mode === 'year') {
+        // For year mode, extract year from date string or use item.date directly
+        if (typeof item.date === 'string' && item.date.includes('-')) {
+          key = String(new Date(item.date).getFullYear());
+        } else {
+          key = String(selectedYear);
+        }
+      } else if (mode === 'month') {
+        // For month mode, extract month from date string or use item.date directly
+        if (typeof item.date === 'string' && item.date.includes('-')) {
+          key = String(new Date(item.date).getMonth() + 1);
+        } else {
+          key = String(selectedMonth + 1);
+        }
+      } else {
+        // For day mode, use item.date directly (it's already the day number)
+        key = String(item.date);
+      }
+      
       const prevQuantity = quantityByKey.get(key) || 0;
       const prevCost = costByKey.get(key) || 0;
       quantityByKey.set(key, prevQuantity + (item.quantity || 0));
@@ -647,73 +714,64 @@ const SalesReportPage = () => {
       try {
         const useAllTime = selectedYear === -1 || (selectedYear !== -1 && selectedMonth === -1);
         
-        // Fetch all write-offs and replacement requests
-        const [writeOffsRes, replacementsRes] = await Promise.all([
-          axios.get(`${API_URL}/write-offs`, { params: { limit: 100000 } }),
-          axios.get(`${API_URL}/replacement-requests/admin/all`, { params: { limit: 100000 } })
-        ]);
-        
-        const allWriteOffs = writeOffsRes.data?.data?.writeOffs || [];
-        const allReplacements = replacementsRes.data?.data?.requests || [];
-        
-        // Filter by date range on frontend
-        let writeOffs = allWriteOffs;
-        let replacements = allReplacements;
+        // Use the analytics endpoint for discrepancy data (same as Discrepancy Report page)
+        const params = {
+          dataSource: 'combined',
+          timeframe: useAllTime ? 'all' : 'custom'
+        };
         
         if (!useAllTime) {
-          const startDate = new Date(start);
-          const endDate = new Date(end);
-          endDate.setHours(23, 59, 59, 999);
-          
-          writeOffs = allWriteOffs.filter(item => {
-            const itemDate = new Date(item.createdAt);
-            return itemDate >= startDate && itemDate <= endDate;
-          });
-          
-          replacements = allReplacements.filter(item => {
-            const itemDate = new Date(item.createdAt);
-            return itemDate >= startDate && itemDate <= endDate && item.status === 'approved';
-          });
-        } else {
-          // For all-time, only include approved replacements
-          replacements = allReplacements.filter(item => item.status === 'approved');
+          params.startDate = start;
+          params.endDate = end;
         }
         
-        // Combine and group by date for trends (track both quantity and cost)
-        const dateMap = {};
-        let totalCostImpact = 0;
+        const response = await axios.get(`${API_URL}/analytics/discrepancy`, { params });
         
-        writeOffs.forEach(item => {
-          const date = new Date(item.createdAt).toISOString().split('T')[0];
-          if (!dateMap[date]) dateMap[date] = { quantity: 0, cost: 0 };
-          dateMap[date].quantity += item.quantity || 1;
-          // Write-offs have a direct cost field
-          const costValue = Number(item.cost) || 0;
-          dateMap[date].cost += costValue;
-          totalCostImpact += costValue;
-        });
-        
-        replacements.forEach(item => {
-          const date = new Date(item.createdAt).toISOString().split('T')[0];
-          if (!dateMap[date]) dateMap[date] = { quantity: 0, cost: 0 };
-          dateMap[date].quantity += item.quantity || 1;
-          // Replacement requests: calculate cost from product price * quantity
-          const productPrice = Number(item.product?.price) || 0;
-          const quantity = Number(item.quantity) || 1;
-          const costValue = productPrice * quantity;
-          dateMap[date].cost += costValue;
-          totalCostImpact += costValue;
-        });
-        
-        // Convert to array format
-        const formatted = Object.entries(dateMap).map(([date, data]) => ({
-          date,
-          quantity: data.quantity,
-          cost: data.cost
-        })).sort((a, b) => new Date(a.date) - new Date(b.date));
-        
-        setDiscrepancyTrends(formatted);
-        setDiscrepancyCostImpact(totalCostImpact);
+        if (response.data.success) {
+          const analytics = response.data.data;
+          
+          // Extract trends data from analytics
+          const trendsData = analytics.trendsData || [];
+          
+          // Group trends by date for the chart
+          const dateMap = {};
+          let totalCostImpact = 0;
+          
+          trendsData.forEach(item => {
+            // Handle different possible data structures
+            let dayOfMonth;
+            if (item._id && item._id.day) {
+              // MongoDB aggregation format: { _id: { year: 2025, month: 10, day: 24 } }
+              dayOfMonth = item._id.day;
+            } else if (item.date) {
+              // Direct date format: "2025-10-24"
+              dayOfMonth = new Date(item.date).getDate();
+            } else if (item.day) {
+              // Direct day format: 24
+              dayOfMonth = item.day;
+            } else {
+              console.warn('Unknown trend item format:', item);
+              return;
+            }
+            
+            if (!dateMap[dayOfMonth]) dateMap[dayOfMonth] = { quantity: 0, cost: 0 };
+            dateMap[dayOfMonth].quantity += item.quantity || 0;
+            dateMap[dayOfMonth].cost += item.cost || 0;
+            totalCostImpact += item.cost || 0;
+          });
+          
+          // Convert to array format matching the chart labels
+          const formatted = Object.entries(dateMap).map(([day, data]) => ({
+            date: day,
+            quantity: data.quantity,
+            cost: data.cost
+          })).sort((a, b) => parseInt(a.date) - parseInt(b.date));
+          
+          setDiscrepancyTrends(formatted);
+          setDiscrepancyCostImpact(totalCostImpact);
+        } else {
+          throw new Error(response.data.message || 'Failed to fetch discrepancy data');
+        }
       } catch (error) { 
         console.error('Error fetching discrepancy:', error);
         setDiscrepancyTrends([]);
@@ -762,7 +820,7 @@ const SalesReportPage = () => {
                 {/* Column 1: Data Source */}
                 <div className='w-full flex justify-start'>
                   <div className='flex flex-wrap gap-1.5 sm:gap-2 items-center bg-white p-1 rounded-lg w-full'>
-                    <span className='text-xs sm:text-sm font-medium text-[#030105] mr-1 sm:mr-2 font-alice whitespace-nowrap'>Data Source:</span>
+                    <span className='text-xs sm:text-sm font-medium text-[#030105] mr-1 sm:mr-2 font-alice whitespace-nowrap'>Category:</span>
                     {[
                       { key: 'orders', label: 'Online' },
                       { key: 'pos', label: 'POS' },
@@ -840,11 +898,11 @@ const SalesReportPage = () => {
             <div className='w-full lg:basis-[15%]'>
               <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 lg:grid-cols-1 gap-3 sm:gap-4 lg:space-y-0 lg:sticky lg:top-24'>
                 <AnalyticsCard title='Sales' icon={ShoppingCart} value={Number(salesCount).toLocaleString()} color='from-[#860809] to-[#a31f17]' />
-                <AnalyticsCard title='Revenue' icon={PhilippinePeso} value={`₱${Math.round(Number(revenueSum) || 0).toLocaleString()}`} color='from-[#860809] to-[#a31f17]' />
-                <AnalyticsCard title='Cost' icon={DollarSign} value={`₱${Math.round(Number(costDerived) || 0).toLocaleString()}`} color='from-[#860809] to-[#a31f17]' />
-                <AnalyticsCard title='Profit' icon={TrendingUp} value={`₱${Math.round(Number(profitDerived) || 0).toLocaleString()}`} color='from-[#860809] to-[#a31f17]' />
-                <AnalyticsCard title='Discounts Used' icon={Ticket} value={`₱${Math.round(Number(discountsUsedSum) || 0).toLocaleString()}`} color='from-[#860809] to-[#a31f17]' />
-                <AnalyticsCard title='Discrepancies' icon={AlertTriangle} value={`₱${Math.round(Number(discrepancyCostImpact) || 0).toLocaleString()}`} color='from-[#860809] to-[#a31f17]' />
+                <AnalyticsCard title='Revenue' icon={PhilippinePeso} value={`₱${(Number(revenueSum) || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`} color='from-[#860809] to-[#a31f17]' />
+                <AnalyticsCard title='Cost' icon={DollarSign} value={`₱${(Number(costDerived) || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`} color='from-[#860809] to-[#a31f17]' />
+                <AnalyticsCard title='Profit' icon={TrendingUp} value={`₱${(Number(profitDerived) || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`} color='from-[#860809] to-[#a31f17]' />
+                <AnalyticsCard title='Discounts Used' icon={Ticket} value={`₱${(Number(discountsUsedSum) || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`} color='from-[#860809] to-[#a31f17]' />
+                <AnalyticsCard title='Discrepancies' icon={AlertTriangle} value={`₱${(Number(discrepancyCostImpact) || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`} color='from-[#860809] to-[#a31f17]' />
               </div>
             </div>
 
@@ -856,9 +914,9 @@ const SalesReportPage = () => {
                   <div id="sales-forecast-chart">
                     <h3 className='text-base sm:text-lg font-semibold text-[#860809] mb-2 font-libre'>Sales Forecast</h3>
                     <p className='text-xs sm:text-sm text-gray-600 mb-3'>
-                      Target Sales are from the previous {selectedYear === -1 ? 'years' : `year (${selectedYear - 1})`}.
+                      Target Sales are growth-adjusted based on previous {selectedYear === -1 ? 'years' : `year (${selectedYear - 1})`} performance.
                     </p>
-                    <ResponsiveContainer width='100%' height={200} className="sm:!h-[260px]">
+                    <ResponsiveContainer width='100%' height={300} className="sm:!h-[320px]">
                       <LineChart data={dailyData}>
                         <CartesianGrid strokeDasharray='3 3' stroke='black' strokeOpacity={0.1} />
                         <XAxis dataKey='date' stroke='#030105' />
@@ -873,14 +931,22 @@ const SalesReportPage = () => {
                   <div id="profit-forecast-chart">
                     <h3 className='text-base sm:text-lg font-semibold text-[#860809] mb-2 font-libre'>Profit Forecast</h3>
                     <p className='text-xs sm:text-sm text-gray-600 mb-3'>
-                      Target Profit are from the previous {selectedYear === -1 ? 'years' : `year (${selectedYear - 1})`}.
+                      Target Profit are growth-adjusted based on previous {selectedYear === -1 ? 'years' : `year (${selectedYear - 1})`} performance.
                     </p>
-                    <ResponsiveContainer width='100%' height={200} className="sm:!h-[260px]">
+                    <ResponsiveContainer width='100%' height={300} className="sm:!h-[320px]">
                       <ComposedChart data={profitComposedData}>
                         <CartesianGrid strokeDasharray='3 3' stroke='black' strokeOpacity={0.1} />
                         <XAxis dataKey='date' stroke='#030105' />
-                        <YAxis stroke='#030105' />
-                        <Tooltip />
+                        <YAxis 
+                          stroke='#030105' 
+                          tickFormatter={(value) => `₱${value.toLocaleString('en-PH', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`}
+                        />
+                        <Tooltip 
+                          formatter={(value, name) => [
+                            `₱${value.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+                            name
+                          ]}
+                        />
                         <Legend />
                         <Bar dataKey='targetProfit' fill='#a31f17' name='Target' radius={[4,4,0,0]} />
                         <Line type='monotone' dataKey='actualProfit' stroke='#3b82f6' strokeWidth={3} name='Actual' />
@@ -894,14 +960,22 @@ const SalesReportPage = () => {
             <div id="revenue-forecast-chart" className='bg-[#fffefc] rounded-lg shadow-lg border border-gray-300 p-3 sm:p-4 md:p-6 mb-4 sm:mb-6'>
               <h3 className='text-base sm:text-lg font-semibold text-[#860809] mb-2 font-libre'>Revenue Forecast</h3>
               <p className='text-xs sm:text-sm text-gray-600 mb-3'>
-                Target Revenue are from the previous {selectedYear === -1 ? 'years' : `year (${selectedYear - 1})`}.
+                Target Revenue are growth-adjusted based on previous {selectedYear === -1 ? 'years' : `year (${selectedYear - 1})`} performance.
               </p>
-              <ResponsiveContainer width='100%' height={200} className="sm:!h-[260px]">
+              <ResponsiveContainer width='100%' height={300} className="sm:!h-[320px]">
                 <ComposedChart data={revenueCostData}>
                   <CartesianGrid strokeDasharray='3 3' stroke='black' strokeOpacity={0.1} />
                   <XAxis dataKey='date' stroke='#030105' />
-                  <YAxis stroke='#030105' />
-                  <Tooltip />
+                  <YAxis 
+                    stroke='#030105' 
+                    tickFormatter={(value) => `₱${value.toLocaleString('en-PH', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`}
+                  />
+                  <Tooltip 
+                    formatter={(value, name) => [
+                      `₱${value.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+                      name
+                    ]}
+                  />
                   <Legend />
                   <ReferenceLine y={0} stroke='#9ca3af' />
                   <Bar dataKey='revenue' fill='#22c55e' name='Revenue' radius={[4,4,0,0]} />
@@ -949,17 +1023,79 @@ const SalesReportPage = () => {
                   )}
                 </div>
                 <div id="payment-gateway-chart" className='bg-[#fffefc] rounded-lg shadow-lg border border-gray-300 p-3 sm:p-4 md:p-6 w-full lg:basis-[60%]'>
-                  <h3 className='text-base sm:text-lg font-semibold text-[#860809] mb-2 font-libre'>Payment Gateway Performance</h3>
-                  <ResponsiveContainer width='100%' height={200} className="sm:!h-[260px]">
+                  <div className='flex justify-between items-center mb-2'>
+                    <h3 className='text-base sm:text-lg font-semibold text-[#860809] font-libre'>Payment Gateway Performance</h3>
+                    <div className='flex gap-1 bg-white p-1 rounded-lg'>
+                      <button
+                        onClick={() => setPaymentGatewayView('revenue')}
+                        className={`px-3 py-1 rounded-md text-xs sm:text-sm font-medium transition-colors duration-200 font-alice ${
+                          paymentGatewayView === 'revenue'
+                            ? 'bg-[#860809] text-white'
+                            : 'bg-transparent text-[#030105] hover:bg-[#860809] hover:text-white'
+                        }`}
+                      >
+                        Revenue
+                      </button>
+                      <button
+                        onClick={() => setPaymentGatewayView('orders')}
+                        className={`px-3 py-1 rounded-md text-xs sm:text-sm font-medium transition-colors duration-200 font-alice ${
+                          paymentGatewayView === 'orders'
+                            ? 'bg-[#860809] text-white'
+                            : 'bg-transparent text-[#030105] hover:bg-[#860809] hover:text-white'
+                        }`}
+                      >
+                        Orders
+                      </button>
+                    </div>
+                  </div>
+                  <ResponsiveContainer width='100%' height={300} className="sm:!h-[320px]">
                     <BarChart data={paymentGatewayData}>
                       <CartesianGrid strokeDasharray='3 3' stroke='black' strokeOpacity={0.1} />
                       <XAxis dataKey='day' stroke='#030105' />
-                      <YAxis stroke='#030105' />
-                      <Tooltip />
+                      <YAxis 
+                        stroke='#030105' 
+                        tickFormatter={(value) => 
+                          paymentGatewayView === 'revenue' 
+                            ? `₱${value.toLocaleString('en-PH', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
+                            : value.toLocaleString()
+                        }
+                      />
+                      <Tooltip 
+                        contentStyle={{
+                          backgroundColor: '#fffefc',
+                          border: '1px solid #f8f3ed',
+                          borderRadius: '8px',
+                          color: '#030105',
+                          fontSize: '12px',
+                          padding: '8px'
+                        }}
+                        labelFormatter={(label) => `Day ${label}`}
+                        formatter={(value, name) => [
+                          paymentGatewayView === 'revenue' 
+                            ? `₱${value.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                            : `${value} order${value !== 1 ? 's' : ''}`,
+                          name
+                        ]}
+                      />
                       <Legend />
-                      <Bar dataKey='cash' fill='#22c55e' name='Cash' radius={[4,4,0,0]} />
-                      <Bar dataKey='bank' fill='#a31f17' name='Bank' radius={[4,4,0,0]} />
-                      <Bar dataKey='online' fill='#3b82f6' name='Online' radius={[4,4,0,0]} />
+                      <Bar 
+                        dataKey={paymentGatewayView === 'revenue' ? 'cash' : 'cashOrders'} 
+                        fill='#22c55e' 
+                        name='Cash' 
+                        radius={[4,4,0,0]} 
+                      />
+                      <Bar 
+                        dataKey={paymentGatewayView === 'revenue' ? 'bank' : 'bankOrders'} 
+                        fill='#a31f17' 
+                        name='Bank' 
+                        radius={[4,4,0,0]} 
+                      />
+                      <Bar 
+                        dataKey={paymentGatewayView === 'revenue' ? 'online' : 'onlineOrders'} 
+                        fill='#3b82f6' 
+                        name='Online' 
+                        radius={[4,4,0,0]} 
+                      />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
@@ -969,14 +1105,14 @@ const SalesReportPage = () => {
               <div className='grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6'>
                 <div id="discrepancy-trends-chart" className='bg-[#fffefc] rounded-lg shadow-lg border border-gray-300 p-3 sm:p-4 md:p-6'>
                   <h3 className='text-base sm:text-lg font-semibold text-[#860809] mb-2 font-libre'>Discrepancy Trends</h3>
-                  <ResponsiveContainer width='100%' height={200} className="sm:!h-[260px]">
+                  <ResponsiveContainer width='100%' height={300} className="sm:!h-[320px]">
                     <LineChart data={formattedDiscrepancyTrends}>
                       <CartesianGrid strokeDasharray='3 3' stroke='black' strokeOpacity={0.1} />
                       <XAxis dataKey='date' stroke='#030105' />
                       <YAxis yAxisId="left" stroke='#030105' />
                       <YAxis yAxisId="right" orientation="right" stroke='#030105' />
                       <Tooltip formatter={(value, name) => {
-                        if (name === 'Cost Impact') return ['₱' + Number(value).toLocaleString(), name];
+                        if (name === 'Cost Impact') return ['₱' + Number(value).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }), name];
                         return [value, name];
                       }} />
                       <Legend />

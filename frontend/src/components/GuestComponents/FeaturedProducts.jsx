@@ -93,7 +93,7 @@ return (
 										<div className='p-3 flex flex-col flex-grow'>
 											<h3 className='text-sm sm:text-base font-semibold mb-1 text-[#82695b] font-alice'>{product.name}</h3>
 											<p className='text-black font-bold mb-1 font-libre'>
-												₱{(product.priceMin || product.price || 0).toFixed(2)}
+												₱{(product.priceMin || product.price || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
 											</p>
 											<div className='mb-2'>
 												<span className={`text-xs sm:text-sm font-medium px-2 py-1 rounded-full ${

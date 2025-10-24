@@ -243,7 +243,7 @@ const ReplacementRequestForm = ({ order, product, onSuccess, onCancel }) => {
                         value={formData.contactNumber}
                         onChange={handleInputChange}
                         className="w-full px-3 sm:px-4 py-2 sm:py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-[#860809] focus:border-[#860809] transition-all duration-200 text-sm sm:text-base"
-                        placeholder="+639123456789 or 09123456789"
+                        placeholder="09123456789"
                         required
                     />
                     <p className="text-xs sm:text-sm text-[#a31f17] mt-1 font-libre">

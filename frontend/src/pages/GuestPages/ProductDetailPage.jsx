@@ -332,7 +332,7 @@ const ProductDetailPage = () => {
                                 transition={{ duration: 0.8, delay: 0.6 }}
                                 className='text-2xl sm:text-3xl font-bold text-[#860809]'
                             >
-                                ₱{displayPrice}
+                                ₱{displayPrice.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                             </motion.div>
 
                             {/* Stock Status */}

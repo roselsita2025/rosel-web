@@ -176,9 +176,16 @@ const InformationPage = () => {
 
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
+        
+        // Restrict postal code to numbers only
+        let processedValue = value;
+        if (name === 'postalCode') {
+            processedValue = value.replace(/\D/g, ''); // Remove all non-digit characters
+        }
+        
         setFormData(prev => ({
             ...prev,
-            [name]: type === 'checkbox' ? checked : value
+            [name]: type === 'checkbox' ? checked : processedValue
         }));
 
         // Clear error when user starts typing
@@ -515,6 +522,8 @@ const InformationPage = () => {
                                             }`}
                                             style={{ backgroundColor: '#fffefc' }}
                                             placeholder='1234'
+                                            pattern='[0-9]*'
+                                            inputMode='numeric'
                                         />
                                         {errors.postalCode && <p className='text-red-500 text-xs sm:text-sm mt-1'>{errors.postalCode}</p>}
                                     </div>

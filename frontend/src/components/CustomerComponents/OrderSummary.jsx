@@ -13,8 +13,8 @@ const OrderSummary = ({ hideActions = false }) => {
     const navigate = useNavigate();
     const [isValidatingStock, setIsValidatingStock] = useState(false);
 
-    const formattedSubtotal = subtotal.toFixed(2);
-    const formattedTotal = total.toFixed(2);
+    const formattedSubtotal = subtotal.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const formattedTotal = total.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
     const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
   
@@ -211,11 +211,11 @@ const OrderSummary = ({ hideActions = false }) => {
                                             {item.name}{weightInfo}
                                         </p>
                                         <p className='text-xs text-[#a31f17] font-libre'>
-                                            {itemQuantity} × ₱{itemPrice.toFixed(2)}
+                                            {itemQuantity} × ₱{itemPrice.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                         </p>
                                     </div>
                                     <div className='ml-2 font-medium text-[#030105] font-libre'>
-                                        ₱{itemTotal.toFixed(2)}
+                                        ₱{itemTotal.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                     </div>
                                 </div>
                             );

@@ -275,9 +275,33 @@ export const sendMessage = async (req, res) => {
         chat.lastMessage = message._id;
         chat.lastMessageAt = message.createdAt;
         
-        if (chat.type === 'support' && chat.status === 'active' && isCustomer) {
-            chat.status = 'waiting';
-            
+        // Update chat status based on message sender
+        if (chat.type === 'support') {
+            if (isAdminUser) {
+                // Admin sent a message - set status to active
+                chat.status = 'active';
+            } else if (isCustomer) {
+                // Customer sent a message - check if admin responded recently
+                const threeMinutesAgo = new Date(Date.now() - 3 * 60 * 1000);
+                
+                // Find the last admin message before this customer message
+                const lastAdminMessage = await Message.findOne({
+                    chat: chat._id,
+                    senderType: 'admin',
+                    createdAt: { $lt: message.createdAt }
+                }).sort({ createdAt: -1 });
+                
+                if (!lastAdminMessage || lastAdminMessage.createdAt < threeMinutesAgo) {
+                    // No admin response in the last 3 minutes - set to waiting
+                    chat.status = 'waiting';
+                } else {
+                    // Admin responded recently - keep as active
+                    chat.status = 'active';
+                }
+            }
+        }
+        
+        if (chat.type === 'support' && chat.status === 'waiting' && isCustomer) {
             const previousCustomerMessages = await Message.find({
                 chat: chat._id,
                 senderType: 'customer'
@@ -332,6 +356,12 @@ export const sendMessage = async (req, res) => {
 
         socketService.emitToChat(chatId, 'new_message', {
             message,
+            chatId
+        });
+
+        // Emit chat status update if status changed
+        socketService.emitToChat(chatId, 'chat_status_updated', {
+            chat,
             chatId
         });
 

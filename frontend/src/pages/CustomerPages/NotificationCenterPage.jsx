@@ -308,7 +308,7 @@ const NotificationCenterPage = () => {
                     {/* Filters */}
                     {showFilters && (
                         <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-200">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                                 {/* Category Filter */}
                                 <div>
                                     <label className="block text-xs sm:text-sm font-medium text-[#a31f17] mb-1.5 sm:mb-2 font-alice">Category</label>
@@ -318,7 +318,6 @@ const NotificationCenterPage = () => {
                                         className="w-full px-2.5 sm:px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice text-sm sm:text-base"
                                     >
                                         <option value="">All Categories</option>
-                                        <option value="promotions">Promotions</option>
                                         <option value="orders">Orders</option>
                                         <option value="requests">Requests</option>
                                     </select>
@@ -338,21 +337,6 @@ const NotificationCenterPage = () => {
                                     </select>
                                 </div>
 
-                                {/* Priority Filter */}
-                                <div>
-                                    <label className="block text-xs sm:text-sm font-medium text-[#a31f17] mb-1.5 sm:mb-2 font-alice">Priority</label>
-                                    <select
-                                        value={filters.priority || ''}
-                                        onChange={(e) => handleFilterChange('priority', e.target.value || null)}
-                                        className="w-full px-2.5 sm:px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice text-sm sm:text-base"
-                                    >
-                                        <option value="">All Priorities</option>
-                                        <option value="low">Low</option>
-                                        <option value="medium">Medium</option>
-                                        <option value="high">High</option>
-                                        <option value="urgent">Urgent</option>
-                                    </select>
-                                </div>
                             </div>
                             <div className="mt-3 sm:mt-4">
                                 <button

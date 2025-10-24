@@ -88,18 +88,18 @@ const ReplacementRequestModal = ({ request, isOpen, onClose, isAdmin = false }) 
                                                         if (request.order && request.order.products) {
                                                             const orderProduct = request.order.products.find(p => p.product._id === request.product._id);
                                                             if (orderProduct && orderProduct.price) {
-                                                                return orderProduct.price.toFixed(2);
+                                                                return orderProduct.price.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                                                             }
                                                         }
                                                         // Fallback to current product price calculation
                                                         if (request.product?.basePricePerKg && request.product?.weightOptions && request.product.weightOptions.length > 0) {
                                                             const firstWeight = request.product.weightOptions[0];
                                                             if (firstWeight && firstWeight.weightKg) {
-                                                                return (request.product.basePricePerKg * firstWeight.weightKg).toFixed(2);
+                                                                return (request.product.basePricePerKg * firstWeight.weightKg).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                                                             }
                                                         }
                                                         // Final fallback to regular price
-                                                        return request.product?.price?.toFixed(2) || '0.00';
+                                                        return request.product?.price?.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00';
                                                     })()}
                                                 </p>
                                                 <p className="text-xs sm:text-sm text-gray-600">
@@ -288,11 +288,11 @@ const ReplacementRequestModal = ({ request, isOpen, onClose, isAdmin = false }) 
                                                                 if (request.replacementProduct?.basePricePerKg && request.replacementProduct?.weightOptions && request.replacementProduct.weightOptions.length > 0) {
                                                                     const firstWeight = request.replacementProduct.weightOptions[0];
                                                                     if (firstWeight && firstWeight.weightKg) {
-                                                                        return (request.replacementProduct.basePricePerKg * firstWeight.weightKg).toFixed(2);
+                                                                        return (request.replacementProduct.basePricePerKg * firstWeight.weightKg).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                                                                     }
                                                                 }
                                                                 // Fallback to regular price
-                                                                return request.replacementProduct?.price?.toFixed(2) || '0.00';
+                                                                return request.replacementProduct?.price?.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00';
                                                             })()}
                                                         </p>
                                                     </div>

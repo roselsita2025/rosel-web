@@ -32,6 +32,9 @@ const POSPage = () => {
   const { user } = useAuthStore();
   const { createTransaction, loading: transactionLoading, error: transactionError } = usePOSStore();
   
+  // Currency formatting function
+  const formatCurrency = (amount) => `₱${amount.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  
   // POS State
   const [cart, setCart] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -53,6 +56,8 @@ const POSPage = () => {
     cashReceived: 0,
     change: 0
   });
+  const [showPaymentMethodModal, setShowPaymentMethodModal] = useState(false);
+  const [showCustomerInfoModal, setShowCustomerInfoModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showReceipt, setShowReceipt] = useState(false);
   const [currentTransaction, setCurrentTransaction] = useState(null);
@@ -74,6 +79,9 @@ const POSPage = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedWeightOption, setSelectedWeightOption] = useState(null);
   const [quantityInput, setQuantityInput] = useState(1);
+  
+  // Product not found modal state
+  const [showProductNotFoundModal, setShowProductNotFoundModal] = useState(false);
 
   // Categories
   const categories = ['pork', 'beef', 'chicken', 'sliced', 'processed', 'seafood'];
@@ -184,6 +192,35 @@ const POSPage = () => {
       }
     } else {
       setScanError('Product not found');
+      // Show popup modal and play sound for camera scanner
+      if (scanMode === 'camera') {
+        setShowProductNotFoundModal(true);
+        
+        // Auto-close modal after 3 seconds
+        setTimeout(() => {
+          setShowProductNotFoundModal(false);
+        }, 3000);
+        
+        // Play error sound
+        try {
+          const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBS13yO/eizEIHWq+8+OWT');
+          audio.play().catch(() => {
+            // Fallback: create a simple beep sound
+            const context = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = context.createOscillator();
+            const gainNode = context.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(context.destination);
+            oscillator.frequency.setValueAtTime(800, context.currentTime);
+            gainNode.gain.setValueAtTime(0.3, context.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.3);
+            oscillator.start(context.currentTime);
+            oscillator.stop(context.currentTime + 0.3);
+          });
+        } catch (error) {
+          console.log('Could not play sound:', error);
+        }
+      }
     }
   };
 
@@ -351,12 +388,25 @@ const POSPage = () => {
       cashReceived: 0,
       change: 0
     }));
+    // Reset modal states
+    setShowPaymentMethodModal(false);
+    setShowCustomerInfoModal(false);
+    setShowPaymentModal(false);
   };
 
   // Payment functions
   const handlePayment = () => {
     if (cart.length === 0) return;
-    
+    setShowPaymentMethodModal(true);
+  };
+
+  const handlePaymentMethodSelect = (method) => {
+    setPaymentMethod(method);
+    setShowPaymentMethodModal(false);
+    setShowCustomerInfoModal(true);
+  };
+
+  const handleCustomerInfoSubmit = () => {
     // Validate customer info based on payment method
     if (paymentMethod !== 'cash') {
       if (!customerInfo.name.trim()) {
@@ -375,6 +425,7 @@ const POSPage = () => {
       }
     }
     
+    setShowCustomerInfoModal(false);
     setShowPaymentModal(true);
   };
 
@@ -474,7 +525,7 @@ const POSPage = () => {
   };
 
   const generateReceiptHTML = (transaction) => {
-    const formatCurrency = (amount) => `₱${amount.toFixed(2)}`;
+    const formatCurrency = (amount) => `₱${amount.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     const formatDate = (date) => date.toLocaleString('en-PH', {
       year: 'numeric',
       month: 'short',
@@ -616,7 +667,6 @@ const POSPage = () => {
 
           <div class="totals">
             <div><strong>Subtotal:</strong> ${formatCurrency(transaction.payment.subtotal)}</div>
-            {/* Tax removed */}
             ${transaction.payment.discount > 0 ? `<div><strong>Discount:</strong> -${formatCurrency(transaction.payment.discount)}</div>` : ''}
             <div class="total"><strong>TOTAL:</strong> ${formatCurrency(transaction.payment.total)}</div>
           </div>
@@ -690,124 +740,95 @@ const POSPage = () => {
                     </option>
                   ))}
                 </select>
+                <select
+                  value={scanMode}
+                  onChange={(e) => setScanMode(e.target.value)}
+                  className="px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice"
+                >
+                  <option value="usb">USB Scanner</option>
+                  <option value="camera">Camera</option>
+                </select>
               </div>
-            </div>
-
-            {/* Barcode Scanner */}
-            <div className="bg-[#fffefc] rounded-lg shadow-md border border-gray-300 p-3 sm:p-4">
-              <h3 className="text-base sm:text-lg font-semibold text-[#860809] mb-3 sm:mb-4 flex items-center gap-1.5 sm:gap-2 font-libre">
-                <ScanLine className="w-4 h-4 sm:w-5 sm:h-5" />
-                Barcode Scanner
-              </h3>
               
-              <div className="space-y-3 sm:space-y-4">
-                {/* Scanner Mode Selection */}
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setScanMode('usb')}
-                    className={`flex-1 py-2 px-2 sm:px-4 text-xs sm:text-sm rounded-lg font-medium transition-colors font-alice ${
-                      scanMode === 'usb'
-                        ? 'bg-[#860809] text-white'
-                        : 'bg-[#f8f3ed] text-[#030105] hover:bg-[#a31f17] hover:text-white'
-                    }`}
-                  >
-                    <Hash className="w-3 h-3 sm:w-4 sm:h-4 inline mr-1 sm:mr-2" />
-                    <span className="hidden xs:inline">USB </span>Scanner
-                  </button>
-                  <button
-                    onClick={() => setScanMode('camera')}
-                    className={`flex-1 py-2 px-2 sm:px-4 text-xs sm:text-sm rounded-lg font-medium transition-colors font-alice ${
-                      scanMode === 'camera'
-                        ? 'bg-[#860809] text-white'
-                        : 'bg-[#f8f3ed] text-[#030105] hover:bg-[#a31f17] hover:text-white'
-                    }`}
-                  >
-                    <Camera className="w-3 h-3 sm:w-4 sm:h-4 inline mr-1 sm:mr-2" />
-                    Camera
-                  </button>
+              {/* Scanner Status and Controls */}
+              {scanMode === 'usb' && (
+                <div className="mt-3 bg-[#f8f3ed] border border-gray-300 rounded-lg p-2.5 sm:p-3">
+                  <div className="flex items-center gap-1.5 sm:gap-2 mb-2">
+                    <Hash className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#860809]" />
+                    <span className="text-xs sm:text-sm font-medium text-[#860809] font-alice">USB Scanner Ready</span>
+                  </div>
+                  <p className="text-xs text-[#a31f17] mb-2 font-libre">
+                    Connect your USB barcode scanner and scan products directly. The scanner will automatically add items to cart.
+                  </p>
+                  {lastScannedCode && (
+                    <div className="text-xs text-[#860809] font-alice break-all">
+                      Last scanned: <span className="font-mono bg-white px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-xs">{lastScannedCode}</span>
+                    </div>
+                  )}
+                  {scanError && (
+                    <div className="text-xs text-red-600 mt-2 flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3" />
+                      <span className="break-words">{scanError}</span>
+                    </div>
+                  )}
                 </div>
+              )}
 
-                {/* USB Scanner Info */}
-                {scanMode === 'usb' && (
-                  <div className="bg-[#f8f3ed] border border-gray-300 rounded-lg p-2.5 sm:p-3">
-                    <div className="flex items-center gap-1.5 sm:gap-2 mb-2">
-                      <Hash className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#860809]" />
-                      <span className="text-xs sm:text-sm font-medium text-[#860809] font-alice">USB Scanner Ready</span>
+              {scanMode === 'camera' && (
+                <div className="mt-3 bg-[#f8f3ed] border border-gray-300 rounded-lg p-2.5 sm:p-3">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0 mb-3">
+                    <div className="flex items-center gap-1.5 sm:gap-2">
+                      <Camera className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#860809]" />
+                      <span className="text-xs sm:text-sm font-medium text-[#860809] font-alice">Camera Scanner</span>
                     </div>
-                    <p className="text-xs text-[#a31f17] mb-2 font-libre">
-                      Connect your USB barcode scanner and scan products directly. The scanner will automatically add items to cart.
-                    </p>
-                    {lastScannedCode && (
-                      <div className="text-xs text-[#860809] font-alice break-all">
-                        Last scanned: <span className="font-mono bg-white px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-xs">{lastScannedCode}</span>
-                      </div>
-                    )}
-                    {scanError && (
-                      <div className="text-xs text-red-600 mt-2 flex items-center gap-1">
-                        <AlertCircle className="w-3 h-3" />
-                        <span className="break-words">{scanError}</span>
-                      </div>
-                    )}
+                    <div className="flex gap-2 w-full sm:w-auto">
+                      <button
+                        onClick={startCameraScan}
+                        disabled={isScanning}
+                        className="flex-1 sm:flex-none px-2.5 sm:px-3 py-1 bg-[#860809] text-white text-xs rounded hover:bg-[#a31f17] disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-1 font-alice"
+                      >
+                        <ScanLine className="w-3 h-3" />
+                        {isScanning ? 'Scanning...' : 'Start'}
+                      </button>
+                      <button
+                        onClick={stopCameraScan}
+                        disabled={!isScanning}
+                        className="flex-1 sm:flex-none px-2.5 sm:px-3 py-1 bg-[#a31f17] text-white text-xs rounded hover:bg-[#8a1a14] disabled:bg-gray-400 disabled:cursor-not-allowed font-alice"
+                      >
+                        Stop
+                      </button>
+                    </div>
                   </div>
-                )}
-
-                {/* Camera Scanner */}
-                {scanMode === 'camera' && (
-                  <div className="bg-[#f8f3ed] border border-gray-300 rounded-lg p-2.5 sm:p-3">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0 mb-3">
-                      <div className="flex items-center gap-1.5 sm:gap-2">
-                        <Camera className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#860809]" />
-                        <span className="text-xs sm:text-sm font-medium text-[#860809] font-alice">Camera Scanner</span>
-                      </div>
-                      <div className="flex gap-2 w-full sm:w-auto">
-                        <button
-                          onClick={startCameraScan}
-                          disabled={isScanning}
-                          className="flex-1 sm:flex-none px-2.5 sm:px-3 py-1 bg-[#860809] text-white text-xs rounded hover:bg-[#a31f17] disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-1 font-alice"
-                        >
-                          <ScanLine className="w-3 h-3" />
-                          {isScanning ? 'Scanning...' : 'Start'}
-                        </button>
-                        <button
-                          onClick={stopCameraScan}
-                          disabled={!isScanning}
-                          className="flex-1 sm:flex-none px-2.5 sm:px-3 py-1 bg-[#a31f17] text-white text-xs rounded hover:bg-[#8a1a14] disabled:bg-gray-400 disabled:cursor-not-allowed font-alice"
-                        >
-                          Stop
-                        </button>
-                      </div>
-                    </div>
-                    
-                    <div className="mb-3">
-                      <video 
-                        id="pos-scan-video" 
-                        style={{ width: '100%', maxWidth: '100%', height: 'auto', minHeight: '150px', maxHeight: '250px' }} 
-                        muted 
-                        playsInline 
-                        autoPlay
-                        className="rounded border border-[#f7e9b8] mx-auto"
-                      />
-                    </div>
-                    
-                    {lastScannedCode && (
-                      <div className="text-xs text-[#860809] mb-2 break-all">
-                        Last scanned: <span className="font-mono bg-white px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-xs">{lastScannedCode}</span>
-                      </div>
-                    )}
-                    
-                    {scanError && (
-                      <div className="text-xs text-red-600 flex items-center gap-1 mb-2">
-                        <AlertCircle className="w-3 h-3" />
-                        <span className="break-words">{scanError}</span>
-                      </div>
-                    )}
-                    
-                    <p className="text-xs text-[#a48674] mt-2">
-                      Position the barcode in front of the camera. The scanner will automatically detect and add items to cart.
-                    </p>
+                  
+                  <div className="mb-3">
+                    <video 
+                      id="pos-scan-video" 
+                      style={{ width: '100%', maxWidth: '100%', height: 'auto', minHeight: '150px', maxHeight: '250px' }} 
+                      muted 
+                      playsInline 
+                      autoPlay
+                      className="rounded border border-[#f7e9b8] mx-auto"
+                    />
                   </div>
-                )}
-              </div>
+                  
+                  {lastScannedCode && (
+                    <div className="text-xs text-[#860809] mb-2 break-all">
+                      Last scanned: <span className="font-mono bg-white px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-xs">{lastScannedCode}</span>
+                    </div>
+                  )}
+                  
+                  {scanError && (
+                    <div className="text-xs text-red-600 flex items-center gap-1 mb-2">
+                      <AlertCircle className="w-3 h-3" />
+                      <span className="break-words">{scanError}</span>
+                    </div>
+                  )}
+                  
+                  <p className="text-xs text-[#a48674] mt-2">
+                    Position the barcode in front of the camera. The scanner will automatically detect and add items to cart.
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Products Grid */}
@@ -939,7 +960,7 @@ const POSPage = () => {
                             {item.name}{weightInfo}
                           </h4>
                           <p className="text-xs text-[#a31f17] font-libre">
-                            ₱{itemPrice.toFixed(2)} each
+                            {formatCurrency(itemPrice)} each
                           </p>
                         </div>
                         <div className="flex items-center gap-1 sm:gap-2">
@@ -961,7 +982,7 @@ const POSPage = () => {
                         </div>
                         <div className="text-right flex-shrink-0">
                           <p className="font-semibold text-xs sm:text-sm text-[#860809] whitespace-nowrap">
-                            ₱{(itemPrice * item.quantity).toFixed(2)}
+                            {formatCurrency(itemPrice * item.quantity)}
                           </p>
                           <button
                             onClick={() => removeFromCart(item._id, item.weightOptionId)}
@@ -977,122 +998,6 @@ const POSPage = () => {
               )}
             </div>
 
-            {/* Payment Method */}
-            <div className="bg-[#fffefc] rounded-lg shadow-md border border-gray-300 p-3 sm:p-4">
-              <h3 className="text-base sm:text-lg font-semibold text-[#860809] mb-3 sm:mb-4 flex items-center gap-1.5 sm:gap-2 font-libre">
-                <CreditCard className="w-4 h-4 sm:w-5 sm:h-5" />
-                Payment Method
-              </h3>
-              <div className="space-y-2 sm:space-y-3">
-                <div className="grid grid-cols-1 gap-2">
-                  <button
-                    onClick={() => setPaymentMethod('cash')}
-                    className={`p-2.5 sm:p-3 rounded-lg border-2 transition-colors font-alice ${
-                      paymentMethod === 'cash'
-                        ? 'border-[#860809] bg-[#f8f3ed] text-[#860809]'
-                        : 'border-gray-300 hover:border-[#860809] text-[#030105]'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2 sm:gap-3">
-                      <span className="text-base sm:text-lg font-bold text-[#860809]">₱</span>
-                      <div className="text-left">
-                        <div className="text-sm sm:text-base font-medium">Cash</div>
-                        <div className="text-xs sm:text-sm opacity-75">Customer info optional</div>
-                      </div>
-                    </div>
-                  </button>
-                  
-                  <button
-                    onClick={() => setPaymentMethod('online')}
-                    className={`p-2.5 sm:p-3 rounded-lg border-2 transition-colors font-alice ${
-                      paymentMethod === 'online'
-                        ? 'border-[#860809] bg-[#f8f3ed] text-[#860809]'
-                        : 'border-gray-300 hover:border-[#860809] text-[#030105]'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2 sm:gap-3">
-                      <CreditCard className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
-                      <div className="text-left">
-                        <div className="text-sm sm:text-base font-medium">Online Payment</div>
-                        <div className="text-xs sm:text-sm opacity-75">GCash / PayMaya</div>
-                      </div>
-                    </div>
-                  </button>
-                  
-                  <button
-                    onClick={() => setPaymentMethod('bank')}
-                    className={`p-2.5 sm:p-3 rounded-lg border-2 transition-colors font-alice ${
-                      paymentMethod === 'bank'
-                        ? 'border-[#860809] bg-[#f8f3ed] text-[#860809]'
-                        : 'border-gray-300 hover:border-[#860809] text-[#030105]'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2 sm:gap-3">
-                      <CreditCard className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
-                      <div className="text-left">
-                        <div className="text-sm sm:text-base font-medium">Bank Transfer</div>
-                        <div className="text-xs sm:text-sm opacity-75">Info required</div>
-                      </div>
-                    </div>
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Customer Info */}
-            <div className="bg-[#fffefc] rounded-lg shadow-md border border-gray-300 p-3 sm:p-4">
-              <h3 className="text-base sm:text-lg font-semibold text-[#860809] mb-3 sm:mb-4 flex flex-wrap items-center gap-1.5 sm:gap-2 font-libre">
-                <User className="w-4 h-4 sm:w-5 sm:h-5" />
-                Customer Info
-                {paymentMethod !== 'cash' && (
-                  <span className="text-xs sm:text-sm text-red-600 font-normal font-alice">(Required)</span>
-                )}
-              </h3>
-              <div className="space-y-2 sm:space-y-3">
-                <input
-                  type="text"
-                  placeholder={paymentMethod === 'cash' ? "Customer Name (Optional)" : "Customer Name (Required)"}
-                  value={customerInfo.name}
-                  onChange={(e) => setCustomerInfo(prev => ({ ...prev, name: e.target.value }))}
-                  className={`w-full px-3 py-2 text-sm sm:text-base border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice ${
-                    paymentMethod !== 'cash' && !customerInfo.name.trim() 
-                      ? 'border-red-300' 
-                      : 'border-gray-300'
-                  }`}
-                />
-                <input
-                  type="tel"
-                  placeholder={paymentMethod === 'cash' ? "Phone Number (Optional)" : "Phone Number (Required)"}
-                  value={customerInfo.phone}
-                  onChange={(e) => setCustomerInfo(prev => ({ ...prev, phone: e.target.value }))}
-                  className={`w-full px-3 py-2 text-sm sm:text-base border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice ${
-                    paymentMethod !== 'cash' && !customerInfo.phone.trim() 
-                      ? 'border-red-300' 
-                      : 'border-gray-300'
-                  }`}
-                />
-                <input
-                  type="email"
-                  placeholder="Email (Optional)"
-                  value={customerInfo.email}
-                  onChange={(e) => setCustomerInfo(prev => ({ ...prev, email: e.target.value }))}
-                  className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice"
-                />
-                {(paymentMethod === 'online' || paymentMethod === 'bank') && (
-                  <input
-                    type="text"
-                    placeholder="Reference Number (Required)"
-                    value={customerInfo.referenceNumber}
-                    onChange={(e) => setCustomerInfo(prev => ({ ...prev, referenceNumber: e.target.value }))}
-                    className={`w-full px-3 py-2 text-sm sm:text-base border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice ${
-                      !customerInfo.referenceNumber.trim() 
-                        ? 'border-red-300' 
-                        : 'border-gray-300'
-                    }`}
-                  />
-                )}
-              </div>
-            </div>
 
             {/* Order Summary */}
             <div className="bg-[#fffefc] rounded-lg shadow-md border border-gray-300 p-3 sm:p-4">
@@ -1103,17 +1008,17 @@ const POSPage = () => {
               <div className="space-y-2">
                 <div className="flex justify-between text-sm sm:text-base">
                   <span className="text-[#a31f17] font-alice">Subtotal:</span>
-                  <span className="font-medium font-libre">₱{paymentInfo.subtotal.toFixed(2)}</span>
+                  <span className="font-medium font-libre">{formatCurrency(paymentInfo.subtotal)}</span>
                 </div>
                 {/* Tax removed */}
                 <div className="flex justify-between text-sm sm:text-base">
                   <span className="text-[#a31f17] font-alice">Discount:</span>
-                  <span className="font-medium text-green-600 font-libre">-₱{paymentInfo.discount.toFixed(2)}</span>
+                  <span className="font-medium text-green-600 font-libre">-{formatCurrency(paymentInfo.discount)}</span>
                 </div>
                 <hr className="border-gray-300" />
                 <div className="flex justify-between text-base sm:text-lg font-bold">
                   <span className="text-[#860809] font-libre">Total:</span>
-                  <span className="text-[#860809] font-libre">₱{paymentInfo.total.toFixed(2)}</span>
+                  <span className="text-[#860809] font-libre">{formatCurrency(paymentInfo.total)}</span>
                 </div>
               </div>
 
@@ -1165,6 +1070,182 @@ const POSPage = () => {
           </div>
         </div>
 
+        {/* Product Not Found Modal */}
+        {showProductNotFoundModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3 sm:p-4">
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-lg p-4 sm:p-6 w-full max-w-sm"
+            >
+              <div className="text-center">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-3 sm:mb-4 bg-red-100 rounded-full flex items-center justify-center">
+                  <AlertCircle className="w-8 h-8 sm:w-10 sm:h-10 text-red-600" />
+                </div>
+                <h3 className="text-lg sm:text-xl font-bold text-[#860809] mb-2 font-libre">
+                  Product Not Found
+                </h3>
+                <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6 font-alice">
+                  The scanned barcode does not match any product in our system.
+                </p>
+                <button
+                  onClick={() => setShowProductNotFoundModal(false)}
+                  className="w-full py-2.5 sm:py-3 px-4 bg-[#860809] text-white rounded-lg hover:bg-[#a31f17] active:bg-[#a31f17] transition-colors font-alice"
+                >
+                  OK
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Payment Method Modal */}
+        {showPaymentMethodModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3 sm:p-4">
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="bg-white rounded-lg p-4 sm:p-6 w-full max-w-md"
+            >
+              <h3 className="text-lg sm:text-xl font-bold text-[#860809] mb-3 sm:mb-4 font-libre">
+                Payment Method
+              </h3>
+              
+              <div className="space-y-2 sm:space-y-3">
+                <button
+                  onClick={() => handlePaymentMethodSelect('cash')}
+                  className="w-full p-2.5 sm:p-3 rounded-lg border-2 border-gray-300 hover:border-[#860809] text-[#030105] transition-colors font-alice"
+                >
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <span className="text-base sm:text-lg font-bold text-[#860809]">₱</span>
+                    <div className="text-left">
+                      <div className="text-sm sm:text-base font-medium">Cash</div>
+                      <div className="text-xs sm:text-sm opacity-75">Customer info optional</div>
+                    </div>
+                  </div>
+                </button>
+                
+                <button
+                  onClick={() => handlePaymentMethodSelect('online')}
+                  className="w-full p-2.5 sm:p-3 rounded-lg border-2 border-gray-300 hover:border-[#860809] text-[#030105] transition-colors font-alice"
+                >
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <CreditCard className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                    <div className="text-left">
+                      <div className="text-sm sm:text-base font-medium">Online Payment</div>
+                      <div className="text-xs sm:text-sm opacity-75">GCash / PayMaya</div>
+                    </div>
+                  </div>
+                </button>
+                
+                <button
+                  onClick={() => handlePaymentMethodSelect('bank')}
+                  className="w-full p-2.5 sm:p-3 rounded-lg border-2 border-gray-300 hover:border-[#860809] text-[#030105] transition-colors font-alice"
+                >
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <CreditCard className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                    <div className="text-left">
+                      <div className="text-sm sm:text-base font-medium">Bank Transfer</div>
+                      <div className="text-xs sm:text-sm opacity-75">Info required</div>
+                    </div>
+                  </div>
+                </button>
+              </div>
+
+              <div className="flex gap-2 sm:gap-3 mt-4 sm:mt-6">
+                <button
+                  onClick={() => setShowPaymentMethodModal(false)}
+                  className="flex-1 py-2 px-4 text-sm sm:text-base border border-gray-300 text-[#860809] rounded-lg hover:bg-gray-100 active:bg-gray-200 transition-colors font-alice"
+                >
+                  Cancel
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Customer Info Modal */}
+        {showCustomerInfoModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3 sm:p-4">
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="bg-white rounded-lg p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto"
+            >
+              <h3 className="text-lg sm:text-xl font-bold text-[#860809] mb-3 sm:mb-4 font-libre">
+                Customer Info
+                {paymentMethod !== 'cash' && (
+                  <span className="text-xs sm:text-sm text-red-600 font-normal font-alice ml-2">(Required)</span>
+                )}
+              </h3>
+              
+              <div className="space-y-2 sm:space-y-3">
+                <input
+                  type="text"
+                  placeholder={paymentMethod === 'cash' ? "Customer Name (Optional)" : "Customer Name (Required)"}
+                  value={customerInfo.name}
+                  onChange={(e) => setCustomerInfo(prev => ({ ...prev, name: e.target.value }))}
+                  className={`w-full px-3 py-2 text-sm sm:text-base border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice ${
+                    paymentMethod !== 'cash' && !customerInfo.name.trim() 
+                      ? 'border-red-300' 
+                      : 'border-gray-300'
+                  }`}
+                />
+                <input
+                  type="tel"
+                  placeholder={paymentMethod === 'cash' ? "Phone Number (Optional)" : "Phone Number (Required)"}
+                  value={customerInfo.phone}
+                  onChange={(e) => setCustomerInfo(prev => ({ ...prev, phone: e.target.value }))}
+                  className={`w-full px-3 py-2 text-sm sm:text-base border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice ${
+                    paymentMethod !== 'cash' && !customerInfo.phone.trim() 
+                      ? 'border-red-300' 
+                      : 'border-gray-300'
+                  }`}
+                />
+                <input
+                  type="email"
+                  placeholder="Email (Optional)"
+                  value={customerInfo.email}
+                  onChange={(e) => setCustomerInfo(prev => ({ ...prev, email: e.target.value }))}
+                  className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice"
+                />
+                {(paymentMethod === 'online' || paymentMethod === 'bank') && (
+                  <input
+                    type="text"
+                    placeholder="Reference Number (Required)"
+                    value={customerInfo.referenceNumber}
+                    onChange={(e) => setCustomerInfo(prev => ({ ...prev, referenceNumber: e.target.value }))}
+                    className={`w-full px-3 py-2 text-sm sm:text-base border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice ${
+                      !customerInfo.referenceNumber.trim() 
+                        ? 'border-red-300' 
+                        : 'border-gray-300'
+                    }`}
+                  />
+                )}
+              </div>
+
+              <div className="flex gap-2 sm:gap-3 mt-4 sm:mt-6">
+                <button
+                  onClick={() => {
+                    setShowCustomerInfoModal(false);
+                    setShowPaymentMethodModal(true);
+                  }}
+                  className="flex-1 py-2 px-4 text-sm sm:text-base border border-gray-300 text-[#860809] rounded-lg hover:bg-gray-100 active:bg-gray-200 transition-colors font-alice"
+                >
+                  Back
+                </button>
+                <button
+                  onClick={handleCustomerInfoSubmit}
+                  className="flex-1 py-2 px-4 text-sm sm:text-base bg-[#860809] text-white rounded-lg hover:bg-[#a31f17] active:bg-[#a31f17] transition-colors font-alice"
+                >
+                  Continue
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
         {/* Payment Modal */}
         {showPaymentModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3 sm:p-4">
@@ -1181,7 +1262,7 @@ const POSPage = () => {
               <div className="space-y-3 sm:space-y-4">
                 <div className="text-center">
                   <p className="text-xl sm:text-2xl font-bold text-[#860809] font-libre">
-                    ₱{paymentInfo.total.toFixed(2)}
+                    {formatCurrency(paymentInfo.total)}
                   </p>
                   <p className="text-sm sm:text-base text-[#a48674] font-alice">Amount to be paid</p>
                 </div>
@@ -1205,7 +1286,7 @@ const POSPage = () => {
                       <div className="text-center p-3 bg-[#f8f3ed] rounded-lg">
                         <p className="text-xs sm:text-sm text-[#a48674] font-alice">Change</p>
                         <p className="text-lg sm:text-xl font-bold text-[#860809] font-libre">
-                          ₱{paymentInfo.change.toFixed(2)}
+                          {formatCurrency(paymentInfo.change)}
                         </p>
                       </div>
                     )}
@@ -1238,10 +1319,13 @@ const POSPage = () => {
 
               <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mt-4 sm:mt-6">
                 <button
-                  onClick={() => setShowPaymentModal(false)}
+                  onClick={() => {
+                    setShowPaymentModal(false);
+                    setShowCustomerInfoModal(true);
+                  }}
                   className="flex-1 py-2 px-4 text-sm sm:text-base border border-gray-300 text-[#860809] rounded-lg hover:bg-gray-100 active:bg-gray-200 transition-colors font-alice"
                 >
-                  Cancel
+                  Back
                 </button>
                 <button
                   onClick={processPayment}
@@ -1301,17 +1385,17 @@ const POSPage = () => {
                 </div>
                 <div className="flex justify-between font-bold">
                   <span>Total:</span>
-                  <span className="text-right">₱{currentTransaction.payment.total.toFixed(2)}</span>
+                  <span className="text-right">{formatCurrency(currentTransaction.payment.total)}</span>
                 </div>
                 {currentTransaction.payment.method === 'cash' && (
                   <>
                     <div className="flex justify-between">
                       <span>Cash Received:</span>
-                      <span className="text-right">₱{currentTransaction.payment.cashReceived.toFixed(2)}</span>
+                      <span className="text-right">{formatCurrency(currentTransaction.payment.cashReceived)}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Change:</span>
-                      <span className="text-right">₱{currentTransaction.payment.change.toFixed(2)}</span>
+                      <span className="text-right">{formatCurrency(currentTransaction.payment.change)}</span>
                     </div>
                   </>
                 )}
@@ -1369,7 +1453,7 @@ const POSPage = () => {
               
               <div className="mb-3 sm:mb-4">
                 <p className="text-xs sm:text-sm text-gray-600 mb-1 font-alice">Product: <span className="font-medium">{selectedProduct.name}</span></p>
-                <p className="text-xs sm:text-sm text-gray-600 font-alice">Base Price: ₱{selectedProduct.basePricePerKg?.toFixed(2) || '0.00'} per kg</p>
+                <p className="text-xs sm:text-sm text-gray-600 font-alice">Base Price: {formatCurrency(selectedProduct.basePricePerKg || 0)} per kg</p>
               </div>
               
               <div className="space-y-2 sm:space-y-3 mb-4 sm:mb-6">
@@ -1400,7 +1484,7 @@ const POSPage = () => {
                         </div>
                         <div className="text-right">
                           <div className="text-sm sm:text-base font-semibold text-[#860809]">
-                            ₱{price.toFixed(2)}
+                            {formatCurrency(price)}
                           </div>
                           <div className="text-xs text-gray-500">
                             per unit
@@ -1457,45 +1541,37 @@ const POSPage = () => {
                 <p className="text-xs sm:text-sm text-gray-600 font-alice">Product: <span className="font-medium">{selectedProduct.name}</span></p>
                 <p className="text-xs sm:text-sm text-gray-600 font-alice">Weight: <span className="font-medium">{selectedWeightOption.weightKg} kg</span></p>
                 <p className="text-xs sm:text-sm text-gray-600 font-alice">Available Stock: <span className="font-medium">{selectedWeightOption.stockUnits} units</span></p>
-                <p className="text-xs sm:text-sm text-gray-600 font-alice">Price: <span className="font-medium">₱{(selectedWeightOption.price || (selectedProduct.basePricePerKg * selectedWeightOption.weightKg)).toFixed(2)} per unit</span></p>
+                <p className="text-xs sm:text-sm text-gray-600 font-alice">Price: <span className="font-medium">{formatCurrency(selectedWeightOption.price || (selectedProduct.basePricePerKg * selectedWeightOption.weightKg))} per unit</span></p>
               </div>
               
               <div className="mb-4 sm:mb-6">
                 <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 font-alice">
                   Quantity to Add:
                 </label>
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <button
+                    onClick={() => setQuantityInput(Math.max(0, quantityInput - 1))}
+                    className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-[#860809] text-white hover:bg-[#a31f17] active:bg-[#a31f17] transition-colors flex items-center justify-center font-alice"
+                  >
+                    <Minus className="w-4 h-4 sm:w-5 sm:h-5" />
+                  </button>
                   <input
                     type="number"
-                    min="1"
+                    min="0"
                     max={selectedWeightOption.stockUnits}
                     value={quantityInput}
-                    onChange={(e) => setQuantityInput(Math.max(1, Math.min(selectedWeightOption.stockUnits, parseInt(e.target.value) || 1)))}
-                    className="w-full sm:flex-1 px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice"
+                    onChange={(e) => setQuantityInput(Math.max(0, Math.min(selectedWeightOption.stockUnits, parseInt(e.target.value) || 0)))}
+                    className="flex-1 px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice text-center"
                   />
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => setQuantityInput(Math.min(selectedWeightOption.stockUnits, quantityInput + 1))}
-                      className="flex-1 sm:flex-none px-3 py-2 bg-[#860809] text-white rounded-lg hover:bg-[#a31f17] active:bg-[#a31f17] transition-colors text-xs sm:text-sm font-alice"
-                    >
-                      +1
-                    </button>
-                    <button
-                      onClick={() => setQuantityInput(Math.min(selectedWeightOption.stockUnits, quantityInput + 2))}
-                      className="flex-1 sm:flex-none px-3 py-2 bg-[#860809] text-white rounded-lg hover:bg-[#a31f17] active:bg-[#a31f17] transition-colors text-xs sm:text-sm font-alice"
-                    >
-                      +2
-                    </button>
-                    <button
-                      onClick={() => setQuantityInput(Math.min(selectedWeightOption.stockUnits, quantityInput + 5))}
-                      className="flex-1 sm:flex-none px-3 py-2 bg-[#860809] text-white rounded-lg hover:bg-[#a31f17] active:bg-[#a31f17] transition-colors text-xs sm:text-sm font-alice"
-                    >
-                      +5
-                    </button>
-                  </div>
+                  <button
+                    onClick={() => setQuantityInput(Math.min(selectedWeightOption.stockUnits, quantityInput + 1))}
+                    className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-[#860809] text-white hover:bg-[#a31f17] active:bg-[#a31f17] transition-colors flex items-center justify-center font-alice"
+                  >
+                    <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
+                  </button>
                 </div>
                 <p className="text-xs text-gray-500 mt-1.5 sm:mt-2 font-alice">
-                  Total: ₱{((selectedWeightOption.price || (selectedProduct.basePricePerKg * selectedWeightOption.weightKg)) * quantityInput).toFixed(2)}
+                  Total: {formatCurrency((selectedWeightOption.price || (selectedProduct.basePricePerKg * selectedWeightOption.weightKg)) * quantityInput)}
                 </p>
               </div>
               
@@ -1511,16 +1587,19 @@ const POSPage = () => {
                 </button>
                 <button
                   onClick={() => {
-                    // Add multiple quantities to cart
-                    for (let i = 0; i < quantityInput; i++) {
-                      addProductToCart(selectedProduct, selectedWeightOption);
+                    if (quantityInput > 0) {
+                      // Add multiple quantities to cart
+                      for (let i = 0; i < quantityInput; i++) {
+                        addProductToCart(selectedProduct, selectedWeightOption);
+                      }
                     }
                     setShowWeightModal(false);
                     setSelectedProduct(null);
                     setSelectedWeightOption(null);
                     setQuantityInput(1);
                   }}
-                  className="flex-1 py-2 px-4 text-sm sm:text-base bg-[#860809] text-white rounded-lg hover:bg-[#a31f17] active:bg-[#a31f17] transition-colors font-alice"
+                  disabled={quantityInput === 0}
+                  className="flex-1 py-2 px-4 text-sm sm:text-base bg-[#860809] text-white rounded-lg hover:bg-[#a31f17] active:bg-[#a31f17] disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors font-alice"
                 >
                   Add to Cart
                 </button>

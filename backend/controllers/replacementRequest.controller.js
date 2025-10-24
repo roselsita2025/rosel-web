@@ -41,6 +41,40 @@ export const createReplacementRequest = async (req, res) => {
             });
         }
 
+        // Check if order was completed within the last 24 hours
+        if (order.adminStatus !== 'order_completed') {
+            return res.status(400).json({
+                success: false,
+                message: 'Replacement requests can only be made for completed orders'
+            });
+        }
+
+        // Additional check: ensure the order status is actually 'delivered' (completed)
+        if (order.status !== 'delivered') {
+            return res.status(400).json({
+                success: false,
+                message: 'Replacement requests can only be made for delivered orders'
+            });
+        }
+
+        if (!order.completedAt) {
+            return res.status(400).json({
+                success: false,
+                message: 'Order completion date not found'
+            });
+        }
+
+        const now = new Date();
+        const completedAt = new Date(order.completedAt);
+        const hoursSinceCompletion = (now - completedAt) / (1000 * 60 * 60);
+
+        if (hoursSinceCompletion > 24) {
+            return res.status(400).json({
+                success: false,
+                message: 'Replacement requests can only be made within 24 hours of order completion'
+            });
+        }
+
         const orderProduct = order.products.find(
             item => item.product._id.toString() === productId
         );

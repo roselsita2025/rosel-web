@@ -67,7 +67,7 @@ const ProductCard = ({ product, isHotPick = false }) => {
                 <h5 className='text-xl font-semibold tracking-tight text-[#030105]'>{product.name}</h5>
                 <div className='mt-2 mb-3 flex items-center justify-between'>
                     <p>
-                        <span className='text-3xl font-bold text-[#860809]'>₱{product.priceMin || product.price || 0}</span>
+                        <span className='text-3xl font-bold text-[#860809]'>₱{(product.priceMin || product.price || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                     </p>
                 </div>
                 <div className='mb-3'>

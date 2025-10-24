@@ -233,7 +233,7 @@ const ProductsPage = () => {
 										</div>
 										<div className='p-3 flex flex-col flex-1'>
 											<h3 className='text-sm sm:text-base font-semibold mb-1 text-[#82695b]'>{product.name}</h3>
-											<p className='text-black font-bold mb-1'>₱{(product.priceMin || product.price || 0).toFixed(2)}</p>
+											<p className='text-black font-bold mb-1'>₱{(product.priceMin || product.price || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
 											<div className='mb-2'>
 												<span className={`text-xs sm:text-sm font-medium px-2 py-1 rounded-full ${
 													(product.totalStockUnits || product.quantity) > 10 ? 'bg-green-100 text-green-800' : (product.totalStockUnits || product.quantity) > 0 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'

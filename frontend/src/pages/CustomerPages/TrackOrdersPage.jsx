@@ -280,7 +280,7 @@ const TrackOrdersPage = () => {
                                                     </span>
                                                 </div>
                                                 <div className="flex items-center gap-1">
-                                                    <span className="font-medium">₱{order.totalAmount.toFixed(2)}</span>
+                                                    <span className="font-medium">₱{order.totalAmount.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -744,8 +744,8 @@ const OrderDetailsModal = ({ order, onClose, getStatusColor, getStatusIcon, getS
                                         <p className="text-xs sm:text-sm text-[#a31f17] font-libre">Quantity: {item.quantity}</p>
                                     </div>
                                     <div className="text-right flex-shrink-0">
-                                        <p className="font-medium text-[#030105] font-libre text-xs sm:text-sm">₱{(item.price * item.quantity).toFixed(2)}</p>
-                                        <p className="text-xs text-[#a31f17] font-libre">₱{item.price.toFixed(2)} each</p>
+                                        <p className="font-medium text-[#030105] font-libre text-xs sm:text-sm">₱{(item.price * item.quantity).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                                        <p className="text-xs text-[#a31f17] font-libre">₱{item.price.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} each</p>
                                     </div>
                                 </div>
                             ))}
@@ -757,14 +757,14 @@ const OrderDetailsModal = ({ order, onClose, getStatusColor, getStatusIcon, getS
                         {/* Subtotal */}
                         <div className="flex justify-between items-center text-xs sm:text-sm mb-1.5 sm:mb-2">
                             <span className="text-[#030105] font-alice">Subtotal:</span>
-                            <span className="text-[#030105] font-libre">₱{order.productSubtotal?.toFixed(2) || order.products.reduce((sum, item) => sum + (item.price * item.quantity), 0).toFixed(2)}</span>
+                            <span className="text-[#030105] font-libre">₱{order.productSubtotal?.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || order.products.reduce((sum, item) => sum + (item.price * item.quantity), 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                         </div>
 
                         {/* Tax */}
                         {order.taxAmount && typeof order.taxAmount === 'number' && order.taxAmount > 0 ? (
                             <div className="flex justify-between items-center text-xs sm:text-sm mb-1.5 sm:mb-2">
                                 <span className="text-[#030105] font-alice">Tax (12%):</span>
-                                <span className="text-[#030105] font-libre">₱{order.taxAmount.toFixed(2)}</span>
+                                <span className="text-[#030105] font-libre">₱{order.taxAmount.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                             </div>
                         ) : null}
 
@@ -772,7 +772,7 @@ const OrderDetailsModal = ({ order, onClose, getStatusColor, getStatusIcon, getS
                         {order.coupon && order.coupon.code && order.coupon.discount ? (
                             <div className="flex justify-between items-center text-xs sm:text-sm text-green-600 mb-1.5 sm:mb-2">
                                 <span className="font-libre">Coupon Applied: {order.coupon.code}</span>
-                                <span className="font-libre">-₱{order.coupon.discount.toFixed(2)}</span>
+                                <span className="font-libre">-₱{order.coupon.discount.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                             </div>
                         ) : null}
 
@@ -780,14 +780,14 @@ const OrderDetailsModal = ({ order, onClose, getStatusColor, getStatusIcon, getS
                         {order.deliveryFee && typeof order.deliveryFee === 'number' && order.deliveryFee > 0 ? (
                             <div className="flex justify-between items-center text-xs sm:text-sm mb-1.5 sm:mb-2">
                                 <span className="text-[#030105] font-alice">Delivery Fee:</span>
-                                <span className="text-[#030105] font-libre">₱{order.deliveryFee.toFixed(2)}</span>
+                                <span className="text-[#030105] font-libre">₱{order.deliveryFee.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                             </div>
                         ) : null}
 
                         {/* Total Amount */}
                         <div className="flex justify-between items-center text-base sm:text-lg font-semibold border-t pt-1.5 sm:pt-2 mt-1.5 sm:mt-2">
                             <span className="text-[#860809] font-libre">Total Amount:</span>
-                            <span className="text-[#030105] font-libre">₱{order.totalAmount.toFixed(2)}</span>
+                            <span className="text-[#030105] font-libre">₱{order.totalAmount.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                         </div>
                     </div>
                 </div>

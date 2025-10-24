@@ -489,7 +489,7 @@ const DashboardPage = () => {
             {/* First Column: Data Source (Left aligned) */}
             <div className='w-full lg:w-auto'>
               <div className='flex flex-wrap gap-2 items-center bg-[#f8f3ed] p-1 rounded-lg'>
-                <span className='text-xs sm:text-sm font-medium text-[#030105] mr-1 sm:mr-2 font-alice whitespace-nowrap'>Data Source:</span>
+                <span className='text-xs sm:text-sm font-medium text-[#030105] mr-1 sm:mr-2 font-alice whitespace-nowrap'>Category:</span>
                 {[
                   { key: 'orders', label: 'Online Orders' },
                   { key: 'pos', label: 'POS' },
@@ -612,7 +612,7 @@ const DashboardPage = () => {
           <div>
             <AnalyticsCard
               title='Total Revenue'
-              value={`₱${timeframeRevenue.toLocaleString()}`}
+              value={`₱${timeframeRevenue.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
               icon={PhilippinePeso}
               color='from-[#860809] to-[#a31f17]'
             />
@@ -632,7 +632,7 @@ const DashboardPage = () => {
                 <h2 className='text-lg sm:text-xl md:text-2xl font-bold text-[#860809] font-libre'>
                 {dataSource === 'orders' ? 'Online Orders Sales & Revenue Trends' : 
                  dataSource === 'pos' ? 'POS Sales & Revenue Trends' : 
-                 'Combined Sales & Revenue Trends'}
+                 'Sales & Revenue Trends'}
                 </h2>
                 <div className='flex flex-wrap items-center gap-2'>
                   {selectedYear === -1 ? (
@@ -671,7 +671,7 @@ const DashboardPage = () => {
                 <div className='w-full lg:basis-1/2'>
                   <h4 className='text-center text-[#860809] font-libre font-semibold mb-2 text-sm sm:text-base'>Sales</h4>
                   <ResponsiveContainer width='100%' height={300}>
-                    <LineChart data={processedDailyData}>
+                    <LineChart data={processedDailyData} margin={{ top: 20, right: 20, left: 20, bottom: 5 }}>
                       <CartesianGrid strokeDasharray='3 3' stroke='black' strokeOpacity={0.2} />
                       <XAxis dataKey='day' stroke='#030105' />
                       <YAxis stroke='#030105' />
@@ -699,10 +699,14 @@ const DashboardPage = () => {
                 <div className='w-full lg:basis-1/2'>
                   <h4 className='text-center text-[#860809] font-libre font-semibold mb-2 text-sm sm:text-base'>Revenue</h4>
                   <ResponsiveContainer width='100%' height={300}>
-                    <LineChart data={processedDailyData}>
+                    <LineChart data={processedDailyData} margin={{ top: 20, right: 40, left: 20, bottom: 5 }}>
                       <CartesianGrid strokeDasharray='3 3' stroke='black' strokeOpacity={0.2} />
                       <XAxis dataKey='day' stroke='#030105' />
-                      <YAxis stroke='#030105' />
+                      <YAxis 
+                        stroke='#030105' 
+                        tickFormatter={(value) => `₱${value.toLocaleString('en-PH', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`}
+                        width={80}
+                      />
                       <Tooltip 
                         contentStyle={{
                           backgroundColor: '#fffefc',
@@ -710,6 +714,10 @@ const DashboardPage = () => {
                           borderRadius: '8px',
                           color: '#030105'
                         }}
+                        formatter={(value, name) => [
+                          `₱${value.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+                          name
+                        ]}
                       />
                       <Line
                         type='monotone'

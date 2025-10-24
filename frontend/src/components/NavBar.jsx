@@ -430,7 +430,7 @@ const Navbar = () => {
 						</button>
 										<Link
 											to="/dashboard"
-											className="text-lg sm:text-xl lg:text-2xl font-bold text-[#860809] flex items-center space-x-2 font-nexa"
+											className="text-lg sm:text-xl lg:text-2xl font-bold text-[#860809] flex items-center space-x-2 font-nexa hidden sm:flex"
 											style={{ letterSpacing: '0.01em' }}
 										>
 											<img src="/rosellogo.png" alt="Rosel Logo" className="h-8 w-12 sm:h-10 sm:w-16" />
@@ -554,7 +554,7 @@ const Navbar = () => {
 										{isMobileMenuOpen ? <X className={isAtTop ? "text-white" : "text-[#901414]"} size={isAtTop ? 20 : 20} /> : <Menu className={isAtTop ? "text-white" : "text-[#901414]"} size={isAtTop ? 20 : 20} />}
 									</button>
 									{/* Mobile logo - visible only on mobile/tablet */}
-									<Link to='/welcome' className='xl:hidden flex items-center'>
+									<Link to='/welcome' className='xl:hidden hidden sm:flex items-center'>
 										<img src="/rosellogo.png" alt="Rosel Logo" className={isAtTop ? "h-7 w-11 sm:h-8 sm:w-12" : "h-8 w-12 sm:h-9 sm:w-14"} />
 									</Link>
 									{/* Show logo and brand text only on desktop for customer/guest users */}
@@ -628,7 +628,7 @@ const Navbar = () => {
 														>
 															<img src={s.image} alt={s.name} className='w-8 h-8 object-cover rounded' />
 															<span className='text-sm text-[#030105]'>{s.name}</span>
-															<span className='ml-auto text-xs text-[#860809]'>₱{(s.priceMin || s.price || 0).toFixed(2)}</span>
+															<span className='ml-auto text-xs text-[#860809]'>₱{(s.priceMin || s.price || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
 														</button>
 													))}
 													<button onClick={handleSearchSubmit} className='w-full text-center px-3 py-2 text-[#860809] font-medium border-t border-[#f7e9b8]'>See all results</button>

@@ -290,7 +290,7 @@ const WelcomePage = () => {
                   </div>
                   <h3 className="text-lg font-bold text-[#030105] mb-2 line-clamp-2 font-alice">{product.name}</h3>
                   <div className="flex justify-center items-center mb-2">
-                    <span className="text-xl text-[#901414] font-libre">₱{(product.priceMin || product.price || 0).toFixed(2)}</span>
+                    <span className="text-xl text-[#901414] font-libre">₱{(product.priceMin || product.price || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                   </div>
                   <div className="flex justify-center items-center mb-3">
                     <span className={`text-xs sm:text-sm font-medium px-2 py-1 rounded-full ${

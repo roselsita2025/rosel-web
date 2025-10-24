@@ -48,9 +48,53 @@ const ReplacementRequestPage = () => {
     }, [orderId, productId, orders]);
 
     const handleOrderSelect = (order) => {
+        // Check if order is eligible for replacement request
+        if (!isOrderEligibleForReplacement(order)) {
+            return;
+        }
         setSelectedOrder(order);
         setSelectedProduct(null);
         setIsOrderSelected(true);
+    };
+
+    const isOrderEligibleForReplacement = (order) => {
+        // Check if order is completed (both adminStatus and status)
+        if (order.adminStatus !== 'order_completed' || order.status !== 'delivered') {
+            return false;
+        }
+
+        // Check if order has completion date
+        if (!order.completedAt) {
+            return false;
+        }
+
+        // Check if order was completed within the last 24 hours
+        const now = new Date();
+        const completedAt = new Date(order.completedAt);
+        const hoursSinceCompletion = (now - completedAt) / (1000 * 60 * 60);
+
+        return hoursSinceCompletion <= 24;
+    };
+
+    const getOrderStatusText = (order) => {
+        if (order.adminStatus !== 'order_completed' || order.status !== 'delivered') {
+            return 'Order not delivered';
+        }
+
+        if (!order.completedAt) {
+            return 'Completion date unavailable';
+        }
+
+        const now = new Date();
+        const completedAt = new Date(order.completedAt);
+        const hoursSinceCompletion = (now - completedAt) / (1000 * 60 * 60);
+
+        if (hoursSinceCompletion > 24) {
+            const daysSinceCompletion = Math.floor(hoursSinceCompletion / 24);
+            return `Completed ${daysSinceCompletion} day${daysSinceCompletion !== 1 ? 's' : ''} ago`;
+        }
+
+        return 'Eligible for replacement';
     };
 
     const handleProductSelect = (product) => {
@@ -97,7 +141,7 @@ const ReplacementRequestPage = () => {
                         Request Product Replacement
                     </h1>
                     <p className="text-[#030105] mt-1.5 sm:mt-2 font-alice text-sm sm:text-base">
-                        Select an order and product to request a replacement
+                        Select a delivered order and product to request a replacement (within 24 hours of delivery)
                     </p>
                 </motion.div>
 
@@ -152,9 +196,15 @@ const ReplacementRequestPage = () => {
                         <h2 className="text-lg sm:text-xl font-semibold text-[#860809] mb-3 sm:mb-4 font-libre">
                             Select an Order
                         </h2>
-                        <p className="text-[#a31f17] mb-4 sm:mb-6 font-libre text-sm sm:text-base">
+                        <p className="text-[#a31f17] mb-2 sm:mb-3 font-libre text-sm sm:text-base">
                             Choose an order to request a replacement for one of its products.
                         </p>
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
+                            <p className="text-blue-800 text-xs sm:text-sm font-libre">
+                                <strong>Note:</strong> Replacement requests can only be made for delivered orders within 24 hours of delivery completion. 
+                                Orders that are pending, ongoing, or completed more than 24 hours ago are not eligible for replacement requests.
+                            </p>
+                        </div>
 
                         {orders.length === 0 ? (
                             <div className="text-center py-6 sm:py-8">
@@ -168,33 +218,70 @@ const ReplacementRequestPage = () => {
                             </div>
                         ) : (
                             <div className="space-y-3 sm:space-y-4">
-                                {orders.map((order) => (
-                                    <motion.div
-                                        key={order._id}
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        whileHover={{ y: -2 }}
-                                        className="border border-gray-300 rounded-lg p-3 sm:p-4 hover:shadow-md transition-all cursor-pointer bg-[#fffefc]"
-                                        onClick={() => handleOrderSelect(order)}
-                                    >
-                                        <div className="flex items-center justify-between gap-2">
-                                            <div className="flex-1 min-w-0">
-                                                <h3 className="font-medium text-[#030105] font-alice text-sm sm:text-base">
-                                                    Order #{order._id.slice(-8).toUpperCase()}
-                                                </h3>
-                                                <p className="text-xs sm:text-sm text-[#a31f17] font-libre">
-                                                    {new Date(order.createdAt).toLocaleDateString()} • ₱{order.totalAmount.toFixed(2)}
-                                                </p>
-                                                <p className="text-xs sm:text-sm text-[#a31f17] font-libre">
-                                                    {order.products.length} item{order.products.length !== 1 ? 's' : ''}
-                                                </p>
+                                {orders.filter(order => order.adminStatus === 'order_completed' && order.status === 'delivered').map((order) => {
+                                    const isEligible = isOrderEligibleForReplacement(order);
+                                    const statusText = getOrderStatusText(order);
+                                    
+                                    return (
+                                        <motion.div
+                                            key={order._id}
+                                            initial={{ opacity: 0, y: 20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            whileHover={isEligible ? { y: -2 } : {}}
+                                            className={`border rounded-lg p-3 sm:p-4 transition-all bg-[#fffefc] ${
+                                                isEligible 
+                                                    ? 'border-gray-300 hover:shadow-md cursor-pointer' 
+                                                    : 'border-gray-200 cursor-not-allowed opacity-60'
+                                            }`}
+                                            onClick={() => handleOrderSelect(order)}
+                                        >
+                                            <div className="flex items-center justify-between gap-2">
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-center gap-2 mb-1">
+                                                        <h3 className="font-medium text-[#030105] font-alice text-sm sm:text-base">
+                                                            Order #{order._id.slice(-8).toUpperCase()}
+                                                        </h3>
+                                                        {!isEligible && (
+                                                            <span className="text-xs px-2 py-0.5 bg-gray-200 text-gray-600 rounded-full">
+                                                                Not Eligible
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <p className="text-xs sm:text-sm text-[#a31f17] font-libre">
+                                                        {new Date(order.createdAt).toLocaleDateString()} • ₱{order.totalAmount.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                    </p>
+                                                    <p className="text-xs sm:text-sm text-[#a31f17] font-libre">
+                                                        {order.products.length} item{order.products.length !== 1 ? 's' : ''}
+                                                    </p>
+                                                    <p className={`text-xs font-medium font-libre ${
+                                                        isEligible ? 'text-green-600' : 'text-red-600'
+                                                    }`}>
+                                                        {statusText}
+                                                    </p>
+                                                </div>
+                                                <div className={`flex-shrink-0 text-lg sm:text-xl ${
+                                                    isEligible ? 'text-gray-400' : 'text-gray-300'
+                                                }`}>
+                                                    {isEligible ? '→' : '✕'}
+                                                </div>
                                             </div>
-                                            <div className="text-gray-400 flex-shrink-0 text-lg sm:text-xl">
-                                                →
-                                            </div>
-                                        </div>
-                                    </motion.div>
-                                ))}
+                                        </motion.div>
+                                    );
+                                })}
+                                
+                                {orders.filter(order => order.adminStatus === 'order_completed' && order.status === 'delivered').length === 0 && (
+                                    <div className="text-center py-6 sm:py-8">
+                                        <p className="text-[#a31f17] mb-3 sm:mb-4 font-libre text-sm sm:text-base">
+                                            You don't have any delivered orders yet.
+                                        </p>
+                                        <Link
+                                            to="/products"
+                                            className="inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 bg-[#860809] text-white rounded-md hover:bg-[#a31f17] transition-colors font-alice text-xs sm:text-sm"
+                                        >
+                                            Start Shopping
+                                        </Link>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </motion.div>
@@ -257,10 +344,10 @@ const ReplacementRequestPage = () => {
                                                 })()}
                                             </h3>
                                             <p className="text-xs sm:text-sm text-[#a31f17] font-libre">
-                                                Quantity: {item.quantity} • ₱{item.price.toFixed(2)} each
+                                                Quantity: {item.quantity} • ₱{item.price.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} each
                                             </p>
                                             <p className="text-xs sm:text-sm text-[#a31f17] font-libre">
-                                                Total: ₱{(item.quantity * item.price).toFixed(2)}
+                                                Total: ₱{(item.quantity * item.price).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                             </p>
                                         </div>
                                         <div className="text-gray-400 flex-shrink-0 text-lg sm:text-xl">

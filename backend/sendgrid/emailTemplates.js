@@ -129,19 +129,19 @@ export const WELCOME_EMAIL_TEMPLATE = `
       <ul style="font-size: 16px; padding-left: 20px; margin-bottom: 25px;">
         <li>Browse and order our premium frozen products</li>
         <li>Track your orders and delivery schedules</li>
-        <li>Enjoy exclusive promos and seasonal discounts</li>
+        <li>Easy process of product replacement</li>
       </ul>
 
       <!-- CTA Button -->
       <div style="text-align: center; margin: 30px 0;">
-        <a href="https://yourwebsite.com/shop" target="_blank" style="background-color: #99452e; color: white; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-size: 16px; display: inline-block;">
+        <a href="https://roselfrozenmeats.store" target="_blank" style="background-color: #99452e; color: white; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-size: 16px; display: inline-block;">
           Start Shopping Now
         </a>
       </div>
 
       <p style="font-size: 14px; color: #555;">
         If you have any questions or need assistance, feel free to contact us at 
-        <a href="mailto:support@roselfrozenmeats.com" style="color: #99452e;">support@roselfrozenmeats.com</a>.
+        <a href="mailto:{supportEmail}" style="color: #99452e;">{supportEmail}</a>.
       </p>
 
       <p style="margin-top: 30px; font-size: 16px;">We look forward to serving you,</p>

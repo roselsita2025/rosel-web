@@ -110,15 +110,21 @@ export const exportToCSV = async (data, dateRange, dataSource) => {
     const dailySalesData = [
       ['DAILY SALES DATA'],
       [],
-      ['Date/Period', 'Target Sales', 'Actual Sales', 'Target Revenue', 'Actual Revenue', 'Target Profit', 'Actual Profit'],
+      ['Date/Period', 'Previous Year Sales', 'Target Sales (Growth-Adjusted)', 'Actual Sales', 'Sales Growth Rate (%)', 'Previous Year Revenue', 'Target Revenue (Growth-Adjusted)', 'Actual Revenue', 'Revenue Growth Rate (%)', 'Previous Year Profit', 'Target Profit (Growth-Adjusted)', 'Actual Profit', 'Profit Growth Rate (%)'],
       ...dailyData.map(d => [
         d.date,
-        d.targetSales,
-        d.actualSales,
+        d.previousYearSales || 0,
+        Math.round(d.targetSales || 0),
+        d.actualSales || 0,
+        `${(d.salesGrowthRate || 0).toFixed(2)}%`,
+        `₱${Math.round(d.previousYearRevenue || 0).toLocaleString()}`,
         `₱${Math.round(d.targetRevenue || 0).toLocaleString()}`,
         `₱${Math.round(d.actualRevenue || 0).toLocaleString()}`,
+        `${(d.revenueGrowthRate || 0).toFixed(2)}%`,
+        `₱${Math.round((d.previousYearRevenue || 0) * (data.PRODUCT_MARKUP || 0.10)).toLocaleString()}`,
         `₱${Math.round((d.targetRevenue || 0) * (data.PRODUCT_MARKUP || 0.10)).toLocaleString()}`,
-        `₱${Math.round((d.actualRevenue || 0) * (data.PRODUCT_MARKUP || 0.10)).toLocaleString()}`
+        `₱${Math.round((d.actualRevenue || 0) * (data.PRODUCT_MARKUP || 0.10)).toLocaleString()}`,
+        `${(d.revenueGrowthRate || 0).toFixed(2)}%`
       ])
     ];
     const ws2 = XLSX.utils.aoa_to_sheet(dailySalesData);
@@ -126,7 +132,7 @@ export const exportToCSV = async (data, dateRange, dataSource) => {
     
     // Make title and column headers bold
     if (ws2['A1']) ws2['A1'].s = { font: { bold: true } };
-    ['A3', 'B3', 'C3', 'D3', 'E3', 'F3', 'G3'].forEach(cell => {
+    ['A3', 'B3', 'C3', 'D3', 'E3', 'F3', 'G3', 'H3', 'I3', 'J3', 'K3', 'L3', 'M3'].forEach(cell => {
       if (ws2[cell]) ws2[cell].s = { font: { bold: true } };
     });
     

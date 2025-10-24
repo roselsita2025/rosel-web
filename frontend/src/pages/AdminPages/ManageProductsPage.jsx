@@ -878,17 +878,17 @@ const filteredUpdateProducts = useMemo(() => {
 							</div>
 							<div>
 								<label className='block text-sm text-[#a31f17] mb-1 font-medium font-alice'>Weight (kg)</label>
-								<input type='number' min='0.01' step='0.01' value={newProduct.weightKg} onChange={(e)=>setNewProduct({...newProduct, weightKg: e.target.value})} placeholder='Enter weight in kilograms' className='w-full bg-[#fffefc] border border-gray-300 rounded px-3 py-2 text-[#030105] focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice' required />
+								<input type='number' min='1' max='50' step='0.01' value={newProduct.weightKg} onChange={(e)=>setNewProduct({...newProduct, weightKg: e.target.value})} placeholder='Enter weight in kilograms' className='w-full bg-[#fffefc] border border-gray-300 rounded px-3 py-2 text-[#030105] focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice' required />
 							</div>
 
 							{/* Row 4: Base Price per Kilogram | Stocks */}
 							<div>
 								<label className='block text-sm text-[#a31f17] mb-1 font-medium font-alice'>Base Price per Kilogram</label>
-								<input type='number' step='0.01' value={newProduct.price} onChange={(e)=>setNewProduct({...newProduct, price: e.target.value})} className='w-full bg-[#fffefc] border border-gray-300 rounded px-3 py-2 text-[#030105] focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice' required />
+								<input type='number' min='1' max='10000' step='0.01' value={newProduct.price} onChange={(e)=>setNewProduct({...newProduct, price: e.target.value})} className='w-full bg-[#fffefc] border border-gray-300 rounded px-3 py-2 text-[#030105] focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice' required />
 							</div>
 							<div>
 								<label className='block text-sm text-[#a31f17] mb-1 font-medium font-alice'>Stocks (quantity)</label>
-								<input type='number' min='0' value={newProduct.quantity} onChange={(e)=>setNewProduct({...newProduct, quantity: e.target.value})} className='w-full bg-[#fffefc] border border-gray-300 rounded px-3 py-2 text-[#030105] focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice' required />
+								<input type='number' min='1' max='100' value={newProduct.quantity} onChange={(e)=>setNewProduct({...newProduct, quantity: e.target.value})} className='w-full bg-[#fffefc] border border-gray-300 rounded px-3 py-2 text-[#030105] focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice' required />
 							</div>
 
 							{/* Row 5: Description (full width) */}
