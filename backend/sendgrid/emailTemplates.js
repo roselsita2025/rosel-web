@@ -82,7 +82,7 @@ export const PASSWORD_RESET_REQUEST_TEMPLATE = `
     <p>We received a request to reset your password. If you didn't make this request, please ignore this email.</p>
     <p>To reset your password, click the button below:</p>
     <div style="text-align: center; margin: 30px 0;">
-      <a href="{resetURL}" style="background-color: #ecb232; color: white; padding: 12px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">Reset Password</a>
+      <a href="{resetURL}" target="_blank" rel="noopener noreferrer" style="background-color: #ecb232; color: white; padding: 12px 20px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">Reset Password</a>
     </div>
     <p>This link will expire in 1 hour for security reasons.</p>
     <p>Best regards,<br>Rosel Frozen Meat Supplier </p>
@@ -185,6 +185,50 @@ export const LOGIN_OTP_TEMPLATE = `
       <span style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #ecb232;">{otpCode}</span>
     </div>
     <p>This code expires in 10 minutes. If you didn't request this, you can safely ignore this email.</p>
+    <p>Best regards,<br>Rosel Frozen Meat Supplier</p>
+  </div>
+  <div style="text-align: center; margin-top: 20px; color: #888; font-size: 0.8em;">
+    <p>This is an automated message, please do not reply to this email.</p>
+  </div>
+</body>
+</html>
+`;
+
+export const ORDER_CONFIRMATION_TEMPLATE = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Confirmation</title>
+  <style>
+    @media (prefers-color-scheme: dark) {
+      body { background-color: #121212 !important; color: #eaeaea !important; }
+    }
+  </style>
+  </head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+  <div style="background: linear-gradient(to right, #ecb232, #99452e); padding: 20px; text-align: center;">
+    <h1 style="color: white; margin: 0;">Thank you for your order!</h1>
+  </div>
+  <div style="background-color: #f9f9f9; padding: 20px; border-radius: 0 0 5px 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+    <p>Hello {customerName},</p>
+    <p>We've received your order <strong>#{orderNumber}</strong>. Below are the details:</p>
+
+    <div style="background:#fff;border:1px solid #eee;border-left:4px solid #ecb232;border-radius:6px;padding:12px;margin:16px 0;">
+      <p style="margin:0;"><strong>Status:</strong> {orderStatus}</p>
+      <p style="margin:0;"><strong>Date:</strong> {orderDate}</p>
+      <p style="margin:0;"><strong>Total:</strong> ₱{orderTotal}</p>
+    </div>
+
+    <h3 style="margin:16px 0 8px; color:#99452e;">Items</h3>
+    <div>{orderItems}</div>
+
+    <div style="text-align:center; margin: 24px 0;">
+      <a href="{trackUrl}" target="_blank" rel="noopener noreferrer" style="background-color:#99452e;color:#fff;padding:12px 20px;text-decoration:none;border-radius:6px;font-weight:bold;display:inline-block;">Track Your Order</a>
+    </div>
+
+    <p>If you have any questions, reply to this email or contact support.</p>
     <p>Best regards,<br>Rosel Frozen Meat Supplier</p>
   </div>
   <div style="text-align: center; margin-top: 20px; color: #888; font-size: 0.8em;">

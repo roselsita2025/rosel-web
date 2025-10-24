@@ -778,17 +778,16 @@ const POSPage = () => {
                       </div>
                     </div>
                     
-                    {isScanning && (
-                      <div className="mb-3">
-                        <video 
-                          id="pos-scan-video" 
-                          style={{ width: '100%', maxWidth: '100%', height: 'auto', minHeight: '150px', maxHeight: '250px' }} 
-                          muted 
-                          playsInline 
-                          className="rounded border border-[#f7e9b8] mx-auto"
-                        />
-                      </div>
-                    )}
+                    <div className="mb-3">
+                      <video 
+                        id="pos-scan-video" 
+                        style={{ width: '100%', maxWidth: '100%', height: 'auto', minHeight: '150px', maxHeight: '250px' }} 
+                        muted 
+                        playsInline 
+                        autoPlay
+                        className="rounded border border-[#f7e9b8] mx-auto"
+                      />
+                    </div>
                     
                     {lastScannedCode && (
                       <div className="text-xs text-[#860809] mb-2 break-all">

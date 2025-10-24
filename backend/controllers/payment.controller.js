@@ -6,6 +6,7 @@ import { User } from "../models/user.model.js";
 import { validateCouponForCheckout as validateCouponForCheckoutUtil, recordCouponUsage as recordCouponUsageUtil } from "../utils/coupons.js";
 import lalamoveService from "../services/lalamove.service.js";
 import { notificationService } from "../services/notificationService.js";
+import { sendOrderConfirmationEmail } from "../sendgrid/emails.js";
 
 export const createCheckoutSession = async (req, res) => {
     try {
@@ -525,6 +526,28 @@ export const checkoutSuccess = async (req, res) => {
             } catch (notificationError) {
                 console.error('❌ Error sending new order notification:', notificationError);
                 // Don't fail the order creation if notification fails
+            }
+
+            // Send order confirmation email to customer (non-blocking)
+            try {
+                const user = await User.findById(orderToProcess.user);
+                if (user?.email) {
+                    await sendOrderConfirmationEmail(user.email, {
+                        customerName: `${orderToProcess.shippingInfo?.firstName || ''} ${orderToProcess.shippingInfo?.lastName || ''}`.trim() || user.name || 'Customer',
+                        orderNumber: orderToProcess._id.toString().slice(-8).toUpperCase(),
+                        orderStatus: orderToProcess.status,
+                        orderDate: new Date(orderToProcess.createdAt || Date.now()).toLocaleString(),
+                        orderTotal: Number(orderToProcess.totalAmount).toFixed(2),
+                        items: orderToProcess.products.map(p => ({
+                            name: String(p.product?.name || ''),
+                            quantity: Number(p.quantity || 1),
+                            total: Number(p.price || 0) * Number(p.quantity || 1)
+                        })),
+                        trackUrl: `${process.env.CLIENT_URL || ''}/track-orders`
+                    });
+                }
+            } catch (emailErr) {
+                console.error('❌ Error sending order confirmation email:', emailErr);
             }
             
             res.status(200).json({ 

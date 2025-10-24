@@ -198,7 +198,7 @@ const Chatbot = () => {
                 ]
             },
             'return-policy': {
-                content: "We offer a 7-day return policy for unopened products. Please contact our support team for return requests.",
+                content: "We accept returns within 24 hours from when the order is marked completed. Please contact our support team to initiate a return.",
                 options: [
                     { id: 'ask-question', text: 'Ask Another Question', icon: HelpCircle },
                     { id: 'browse-products', text: 'Back to Main Menu', icon: ArrowLeft }

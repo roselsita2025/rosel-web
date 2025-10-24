@@ -1,5 +1,5 @@
 import express from 'express';
-import { login, logout, signup, verifyEmail, forgotPassword, resetPassword, checkAuth, updateProfile, verifyLoginOtp, resendLoginOtp, changePassword, changeEmail, getSocketToken } from '../controllers/auth.controller.js';
+import { login, logout, signup, verifyEmail, forgotPassword, resetPassword, checkAuth, updateProfile, verifyLoginOtp, resendLoginOtp, changePassword, changeEmail, getSocketToken, resendVerificationEmail } from '../controllers/auth.controller.js';
 import { verifyCaptcha } from '../middleware/verifyCaptcha.js';
 import { verifyToken } from '../middleware/verifyToken.js';
 
@@ -14,6 +14,7 @@ router.post("/login/verify-otp", verifyLoginOtp);
 router.post("/login/resend-otp", resendLoginOtp);
 
 router.post("/verify-email", verifyEmail);
+router.post("/resend-verification", resendVerificationEmail);
 router.post("/forgot-password", forgotPassword);
 
 router.post("/reset-password/:token", resetPassword);

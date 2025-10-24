@@ -25,7 +25,8 @@ export const useAuthStore = create((set, get) => ({
         try {
             const captchaToken = await getRecaptchaToken("signup");
             const response = await axios.post(`${API_URL}/signup`, {email,password,name, captchaToken, captchaAction: "signup"});
-            set({user:response.data.user, isAuthenticated:true, isLoading: false});
+            // Do not authenticate on signup; send to verify email screen
+            set({ isLoading: false, pendingEmail: response.data.email || email, isAuthenticated: false, user: null, message: response.data.message });
         } catch (error) {
             set({error:error.response.data.message || "Error signing up", isLoading: false});
             throw error;
@@ -37,6 +38,11 @@ export const useAuthStore = create((set, get) => ({
         try {
             const captchaToken = await getRecaptchaToken("login");
             const response = await axios.post(`${API_URL}/login`, {email,password, captchaToken, captchaAction: "login"});
+            // If backend indicates verification is required, route to verify flow
+            if (response.data.verificationRequired) {
+                set({ pendingEmail: email, isLoading: false, message: response.data.message, otpRequired: false });
+                return response.data;
+            }
             // In OTP flow, backend returns otpRequired and no user yet
             if (response.data.otpRequired) {
                 set({ otpRequired: true, pendingEmail: email, isLoading: false, message: response.data.message });
@@ -90,11 +96,26 @@ export const useAuthStore = create((set, get) => ({
     verifyEmail: async (code) => {
         set({ isLoading: true, error: null });
         try {
-            const response = await axios.post(`${API_URL}/verify-email`, { code });
-            set({user:response.data.user, isAuthenticated:true, isLoading: false});
+            const email = get().pendingEmail;
+            const response = await axios.post(`${API_URL}/verify-email`, { code, email });
+            // After verification, keep user as guest; they can log in
+            set({ isLoading: false, message: response.data.message });
             return response.data;
         } catch (error) {
             set({error:error.response.data.message || "Error verifying email", isLoading: false});
+            throw error;
+        }
+    },
+
+    resendVerification: async () => {
+        set({ isLoading: true, error: null });
+        try {
+            const email = get().pendingEmail;
+            const response = await axios.post(`${API_URL}/resend-verification`, { email });
+            set({ isLoading: false, message: response.data.message });
+            return response.data;
+        } catch (error) {
+            set({ isLoading: false, error: error.response?.data?.message || "Error resending verification" });
             throw error;
         }
     },

@@ -313,8 +313,8 @@ const NotificationCenterPage = () => {
                                 <div>
                                     <label className="block text-xs sm:text-sm font-medium text-[#a31f17] mb-1.5 sm:mb-2 font-alice">Category</label>
                                     <select
-                                        value={filters.category || ''}
-                                        onChange={(e) => handleFilterChange('category', e.target.value || null)}
+                                        value={filters.category ?? ''}
+                                        onChange={(e) => handleFilterChange('category', e.target.value === '' ? null : e.target.value)}
                                         className="w-full px-2.5 sm:px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice text-sm sm:text-base"
                                     >
                                         <option value="">All Categories</option>

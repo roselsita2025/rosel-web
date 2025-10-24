@@ -112,6 +112,8 @@ const ManageProductsPage = () => {
     const [priceFilterText, setPriceFilterText] = useState("");
     const [priceSortKey, setPriceSortKey] = useState("nameAsc");
     const [editingRowId, setEditingRowId] = useState(null);
+    const [isBatchEditing, setIsBatchEditing] = useState(false);
+    const [isBatchStockEditing, setIsBatchStockEditing] = useState(false);
     const [draftPriceById, setDraftPriceById] = useState({});
     const [expandedRows, setExpandedRows] = useState(new Set());
     const [priceCurrentPage, setPriceCurrentPage] = useState(1);
@@ -813,22 +815,22 @@ const filteredUpdateProducts = useMemo(() => {
 								<label className='block text-sm text-[#a31f17] mb-1 font-medium font-alice'>
 									Product Barcode <span className='text-red-500'>*</span>
 								</label>
-								<div className='flex items-center gap-2 mb-2'>
-									<select value={createBarcodeMode} onChange={(e)=>setCreateBarcodeMode(e.target.value)} className='bg-[#fffefc] border border-gray-300 rounded px-2 py-2 text-[#030105] focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice'>
-										<option value='manual'>Manual</option>
-										<option value='usb'>USB Scanner</option>
-										<option value='camera'>Camera</option>
-									</select>
-								</div>
-								{createBarcodeMode !== 'camera' && (
-									<input 
-										value={newProduct.barcode} 
-										onChange={(e)=>setNewProduct({...newProduct, barcode: e.target.value})} 
-										placeholder='Scan or enter product barcode' 
-										className='w-full bg-[#fffefc] border border-gray-300 rounded px-3 py-2 text-[#030105] focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice'
-										required
-									/>
-								)}
+                                <div className='flex items-center gap-2 mb-2'>
+                                    <select value={createBarcodeMode} onChange={(e)=>setCreateBarcodeMode(e.target.value)} className='bg-[#fffefc] border border-gray-300 rounded px-2 py-2 text-[#030105] focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice'>
+                                        <option value='manual'>Manual</option>
+                                        <option value='usb'>USB Scanner</option>
+                                        <option value='camera'>Camera</option>
+                                    </select>
+                                    {createBarcodeMode !== 'camera' && (
+                                        <input 
+                                            value={newProduct.barcode} 
+                                            onChange={(e)=>setNewProduct({...newProduct, barcode: e.target.value})} 
+                                            placeholder='Scan or enter product barcode' 
+                                            className='flex-1 bg-[#fffefc] border border-gray-300 rounded px-3 py-2 text-[#030105] focus:ring-2 focus:ring-[#860809] focus:border-transparent font-alice'
+                                            required
+                                        />
+                                    )}
+                                </div>
 								{createBarcodeMode === 'camera' && (
 									<div className='bg-[#fffefc] border border-gray-300 rounded p-3'>
 										<div className='flex items-center gap-2 mb-2'>
@@ -1196,11 +1198,53 @@ const filteredUpdateProducts = useMemo(() => {
 				)}
 
 			{/* Price Updates Sub-Tab */}
-			{updateSubTab === 'price' && (
-				<motion.div className='bg-[#fffefc] shadow-lg rounded-lg p-6 border border-gray-300' initial={{opacity:0,y:20}} animate={{opacity:1,y:0}}>
-					<div className='flex items-center justify-between mb-4'>
-						<h3 className='text-lg font-semibold text-[#860809] font-libre'>Update Price</h3>
-					</div>
+            {updateSubTab === 'price' && (
+                <motion.div className='bg-[#fffefc] shadow-lg rounded-lg p-6 border border-gray-300' initial={{opacity:0,y:20}} animate={{opacity:1,y:0}}>
+                    <div className='flex items-center justify-between mb-4'>
+                        <h3 className='text-lg font-semibold text-[#860809] font-libre'>Update Price</h3>
+                        <div className='flex gap-2'>
+                            {!isBatchEditing ? (
+                                <button
+                                    type='button'
+                                    onClick={()=>{
+                                        setIsBatchEditing(true);
+                                        // seed all current rows into draft map
+                                        const next = {};
+                                        (priceRows||[]).forEach(r=>{ next[r.productId] = Number(r.basePrice).toFixed(2); });
+                                        setDraftPriceById(prev=>({ ...next, ...prev }));
+                                    }}
+                                    className='px-3 py-2 bg-[#901414] text-white rounded hover:bg-[#7a0f0f] font-alice'
+                                >Batch Update</button>
+                            ) : (
+                                <>
+                                    <button
+                                        type='button'
+                                        onClick={async()=>{
+                                            // apply all changed prices
+                                            const tasks = [];
+                                            (priceRows||[]).forEach(r=>{
+                                                const raw = draftPriceById[r.productId];
+                                                if (raw !== undefined && String(raw) !== String(r.basePrice)) {
+                                                    const val = Math.round(Number(raw) * 100) / 100;
+                                                    if (Number.isFinite(val) && val >= 0) {
+                                                        tasks.push(updateBasePricePerKg(r.productId, val));
+                                                    }
+                                                }
+                                            });
+                                            await Promise.all(tasks);
+                                            setIsBatchEditing(false);
+                                        }}
+                                        className='px-3 py-2 bg-[#901414] text-white rounded hover:bg-[#7a0f0f] font-alice'
+                                    >Update</button>
+                                    <button
+                                        type='button'
+                                        onClick={()=>{ setIsBatchEditing(false); setDraftPriceById({}); }}
+                                        className='px-3 py-2 bg-[#82695b] text-white rounded hover:bg-[#6b5649] font-alice'
+                                    >Cancel</button>
+                                </>
+                            )}
+                        </div>
+                    </div>
 
                         <div className='overflow-x-auto'>
                             <table className='min-w-full divide-y divide-[#82695b]'>
@@ -1218,7 +1262,7 @@ const filteredUpdateProducts = useMemo(() => {
                                             <td className='px-4 py-3 text-[#82695b] text-sm'>{row.name}</td>
                                             <td className='px-4 py-3 text-[#82695b] text-sm capitalize'>{row.category}</td>
                                             <td className='px-4 py-3 text-[#82695b] text-sm'>
-                                                {editingRowId === row.productId ? (
+                                                {(editingRowId === row.productId) || isBatchEditing ? (
                                                     <input
                                                         type='number'
                                                         min='0'
@@ -1232,7 +1276,9 @@ const filteredUpdateProducts = useMemo(() => {
                                                 )}
                                             </td>
                                             <td className='px-4 py-3 text-[#82695b] text-sm'>
-                                                {editingRowId === row.productId ? (
+                                                {isBatchEditing ? (
+                                                    <span className='text-xs text-[#82695b] opacity-70'>Batch editing…</span>
+                                                ) : editingRowId === row.productId ? (
                                                     <div className='flex gap-2'>
                                                         <button
                                                             type='button'
@@ -1319,7 +1365,52 @@ const filteredUpdateProducts = useMemo(() => {
 				<motion.div className='bg-[#fffefc] shadow-lg rounded-lg p-6 border border-gray-300' initial={{opacity:0,y:20}} animate={{opacity:1,y:0}}>
 					<div className='flex items-center justify-between mb-4'>
 						<h3 className='text-lg font-semibold text-[#860809] font-libre'>Update Stocks</h3>
-						<button onClick={()=>setShowAddWeight(true)} className='px-3 py-2 bg-[#901414] text-white rounded hover:bg-[#7a0f0f] font-alice'>Add New Weight</button>
+						<div className='flex gap-2'>
+							{!isBatchStockEditing ? (
+								<button
+									type='button'
+									onClick={()=>{
+										setIsBatchStockEditing(true);
+										// Initialize all stock input fields with empty values
+										const next = {};
+										(weightRows||[]).forEach(r=>{ next[r.key] = ''; });
+										setAddByKey(prev=>({ ...next, ...prev }));
+									}}
+									className='px-3 py-2 bg-[#901414] text-white rounded hover:bg-[#7a0f0f] font-alice'
+								>Batch Update</button>
+							) : (
+								<>
+									<button
+										type='button'
+										onClick={async()=>{
+											// Apply all stock additions
+											const tasks = [];
+											(weightRows||[]).forEach(r=>{
+												const delta = parseInt(addByKey[r.key], 10);
+												if (Number.isInteger(delta) && delta > 0) {
+													if (r.weightOptionId) {
+														const newTotal = Number(r.stocks) + delta;
+														tasks.push(updateWeightOptionStock(r.productId, r.weightOptionId, newTotal));
+													} else {
+														tasks.push(addProductQuantity(r.productId, delta));
+													}
+												}
+											});
+											await Promise.all(tasks);
+											setIsBatchStockEditing(false);
+											setAddByKey({});
+										}}
+										className='px-3 py-2 bg-[#901414] text-white rounded hover:bg-[#7a0f0f] font-alice'
+									>Update</button>
+									<button
+										type='button'
+										onClick={()=>{ setIsBatchStockEditing(false); setAddByKey({}); }}
+										className='px-3 py-2 bg-[#82695b] text-white rounded hover:bg-[#6b5649] font-alice'
+									>Cancel</button>
+								</>
+							)}
+							<button onClick={()=>setShowAddWeight(true)} className='px-3 py-2 bg-[#901414] text-white rounded hover:bg-[#7a0f0f] font-alice'>Add New Weight</button>
+						</div>
 					</div>
 
                         {/* Table */}
@@ -1354,39 +1445,43 @@ const filteredUpdateProducts = useMemo(() => {
                                                 <input type='number' min='1' step='1' value={addByKey[row.key] || ''} onChange={(e)=> setAddByKey(prev=>({ ...prev, [row.key]: e.target.value }))} className='w-28 bg-[#f8f3ed] border border-[#82695b] rounded px-2 py-1 text-[#82695b]' placeholder='Qty' />
                                             </td>
                                             <td className='px-4 py-3 text-[#82695b] text-sm'>
-                                                <div className='flex gap-2'>
-                                                    <button
-                                                        type='button'
-                                                        disabled={loading || !addByKey[row.key] || Number(addByKey[row.key]) <= 0}
-                                                        onClick={async()=>{
-                                                            const delta = parseInt(addByKey[row.key], 10);
-                                                            if (!Number.isInteger(delta) || delta <= 0) return;
-                                                            if (row.weightOptionId) {
-                                                                const newTotal = Number(row.stocks) + delta;
-                                                                await updateWeightOptionStock(row.productId, row.weightOptionId, newTotal);
-                                                            } else {
-                                                                await addProductQuantity(row.productId, delta);
-                                                            }
-                                                            setAddByKey(prev=> ({ ...prev, [row.key]: '' }));
-                                                        }}
-                                                        className='px-3 py-2 bg-[#901414] text-white rounded hover:bg-[#7a0f0f] disabled:opacity-50'
-                                                    >Add</button>
-                                                    {row.barcode && row.weightOptionId && (
+                                                {isBatchStockEditing ? (
+                                                    <span className='text-xs text-[#82695b] opacity-70'>Batch editing…</span>
+                                                ) : (
+                                                    <div className='flex gap-2'>
                                                         <button
                                                             type='button'
-                                                            onClick={() => {
-                                                                setSelectedBarcode(row.barcode);
-                                                                setSelectedProductName(row.name);
-                                                                setSelectedWeightKg(parseFloat(row.weightLabel));
-                                                                setShowBarcodeModal(true);
+                                                            disabled={loading || !addByKey[row.key] || Number(addByKey[row.key]) <= 0}
+                                                            onClick={async()=>{
+                                                                const delta = parseInt(addByKey[row.key], 10);
+                                                                if (!Number.isInteger(delta) || delta <= 0) return;
+                                                                if (row.weightOptionId) {
+                                                                    const newTotal = Number(row.stocks) + delta;
+                                                                    await updateWeightOptionStock(row.productId, row.weightOptionId, newTotal);
+                                                                } else {
+                                                                    await addProductQuantity(row.productId, delta);
+                                                                }
+                                                                setAddByKey(prev=> ({ ...prev, [row.key]: '' }));
                                                             }}
-                                                            className='px-3 py-2 bg-[#82695b] text-white rounded hover:bg-[#6b5649] flex items-center gap-1'
-                                                            title='Print barcode'
-                                                        >
-                                                            <Printer className='h-4 w-4' />
-                                                        </button>
-                                                    )}
-                                                </div>
+                                                            className='px-3 py-2 bg-[#901414] text-white rounded hover:bg-[#7a0f0f] disabled:opacity-50'
+                                                        >Add</button>
+                                                        {row.barcode && row.weightOptionId && (
+                                                            <button
+                                                                type='button'
+                                                                onClick={() => {
+                                                                    setSelectedBarcode(row.barcode);
+                                                                    setSelectedProductName(row.name);
+                                                                    setSelectedWeightKg(parseFloat(row.weightLabel));
+                                                                    setShowBarcodeModal(true);
+                                                                }}
+                                                                className='px-3 py-2 bg-[#82695b] text-white rounded hover:bg-[#6b5649] flex items-center gap-1'
+                                                                title='Print barcode'
+                                                            >
+                                                                <Printer className='h-4 w-4' />
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                )}
                                             </td>
                                         </tr>
                                     ))}

@@ -77,9 +77,12 @@ const TrackOrdersPage = () => {
 
     const handleRefresh = async () => {
         try {
-            await fetchOrders({ page: currentPage });
+            await Promise.all([
+                fetchOrders({ page: currentPage }),
+                fetchOrderStats()
+            ]);
         } catch (error) {
-            console.error('Error refreshing orders:', error);
+            console.error('Error refreshing orders and stats:', error);
         }
     };
 

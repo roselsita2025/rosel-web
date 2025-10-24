@@ -11,7 +11,7 @@ const EmailVerificationPage = () => {
 	const navigate = useNavigate();
 	const [isVerified, setIsVerified] = useState(false);
 
-	const {error,isLoading,verifyEmail} = useAuthStore()
+	const {error,isLoading,verifyEmail,resendVerification,message} = useAuthStore()
 
     const handleChange = (index, value) => {
         const newCode = [...code];
@@ -80,7 +80,7 @@ const EmailVerificationPage = () => {
             <Mail className='w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2' />
             Verify Your Email
           </h2>
-          <p className='text-xs sm:text-sm text-gray-500 mb-5 sm:mb-6 text-center'>
+            <p className='text-xs sm:text-sm text-gray-500 mb-5 sm:mb-6 text-center'>
             Enter the 6-digit verification code sent to your email address.
           </p>
 
@@ -101,6 +101,7 @@ const EmailVerificationPage = () => {
             </div>
             
             {error && <p className='text-[#901414] font-semibold text-center mt-2 text-xs sm:text-sm'>{error}</p>}
+            {message && <p className='text-green-600 font-semibold text-center mt-2 text-xs sm:text-sm'>{message}</p>}
             
             <motion.button
               whileHover={!isVerified ? { scale: 1.02 } : {}}
@@ -136,9 +137,11 @@ const EmailVerificationPage = () => {
             Didn't receive the code?{" "}
             <button 
               className='text-[#901414] font-semibold hover:underline cursor-pointer'
-              onClick={() => {
-                // Add resend functionality here if needed
-                toast.success("Verification code resent!");
+              onClick={async () => {
+                try {
+                  await resendVerification();
+                  toast.success("Verification code resent!");
+                } catch (_) {}
               }}
             >
               Resend Code

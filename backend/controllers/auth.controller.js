@@ -37,22 +37,18 @@ export const signup = async (req, res) => {
             password: hashedPassword,
             name,
             verificationToken,
-            verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000 // 24 hours  
+            // 15 minutes expiry to match email copy and improve security
+            verificationTokenExpiresAt: Date.now() + 15 * 60 * 1000  
         }); 
 
         await user.save();
-
-        generateTokenAndSetCookie(res, user._id);
 
         await sendVerificationEmail(user.email, verificationToken);
 
         res.status(201).json({
             success: true, 
-            message: "User created successfully",
-            user: {
-                ...user._doc,
-                password: undefined
-            },
+            message: "User created successfully. Please verify your email.",
+            email: user.email
         });
 
     } catch (error) {
@@ -61,13 +57,14 @@ export const signup = async (req, res) => {
 };
 
 export const verifyEmail = async (req, res) => {
-    const {code} = req.body;
+    const {code, email} = req.body;
 
     try {
-        const user = await User.findOne ({
-            verificationToken: code,
-            verificationTokenExpiresAt: { $gt: Date.now() }
-        });
+        const match = { verificationToken: code, verificationTokenExpiresAt: { $gt: Date.now() } };
+        if (email) {
+            match.email = String(email).toLowerCase();
+        }
+        const user = await User.findOne(match);
 
         if (!user) {
             return res.status(400).json({success: false, message: "Invalid or expired verification code"});
@@ -137,6 +134,21 @@ export const login = async (req, res) => {
 
         await redis.del(failKey);
         await redis.del(lockKey);
+
+        // If email is not verified, send a fresh verification code and direct user to verify flow
+        if (!user.isVerified) {
+            const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
+            user.verificationToken = verificationToken;
+            user.verificationTokenExpiresAt = Date.now() + 15 * 60 * 1000;
+            await user.save();
+            try { await sendVerificationEmail(user.email, verificationToken); } catch (_) {}
+            return res.status(200).json({
+                success: true,
+                verificationRequired: true,
+                email: user.email,
+                message: "Email verification required. A new code has been sent."
+            });
+        }
 
         const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
         const redisKey = `login_otp:${user._id.toString()}`;
@@ -209,6 +221,29 @@ export const resendLoginOtp = async (req, res) => {
         return res.status(200).json({ success: true, message: "OTP resent" });
     } catch (error) {
         console.log("Error in resendLoginOtp ", error);
+        return res.status(400).json({ success: false, message: error.message });
+    }
+};
+
+// Resend email verification code for unverified users
+export const resendVerificationEmail = async (req, res) => {
+    try {
+        const { email } = req.body || {};
+        if (!email) {
+            return res.status(400).json({ success: false, message: "Email is required" });
+        }
+        const user = await User.findOne({ email: String(email).toLowerCase() });
+        // Always respond 200 to avoid enumeration; only act if user exists and unverified
+        if (user && !user.isVerified) {
+            const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
+            user.verificationToken = verificationToken;
+            user.verificationTokenExpiresAt = Date.now() + 15 * 60 * 1000;
+            await user.save();
+            try { await sendVerificationEmail(user.email, verificationToken); } catch (_) {}
+        }
+        return res.status(200).json({ success: true, message: "If the account exists and is unverified, a new code has been sent." });
+    } catch (error) {
+        console.log("Error in resendVerificationEmail ", error);
         return res.status(400).json({ success: false, message: error.message });
     }
 };
@@ -448,7 +483,7 @@ export const changeEmail = async (req, res) => {
         user.email = newEmail.toLowerCase();
         user.isVerified = false; // User needs to verify new email
         user.verificationToken = verificationToken;
-        user.verificationTokenExpiresAt = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+        user.verificationTokenExpiresAt = Date.now() + 15 * 60 * 1000; // 15 minutes, consistent with signup
 
         await user.save();
 

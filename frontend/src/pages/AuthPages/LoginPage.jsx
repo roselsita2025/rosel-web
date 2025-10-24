@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { Mail, Lock, Loader, LucideShield, LucideTruck, LucideAward, LucideUser, Home } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Input from "../../components/Input";
 import { useAuthStore } from "../../store/authStore";
 
@@ -12,12 +12,17 @@ const LoginPage = () => {
   const [code, setCode] = useState("");
 
   const { login, verifyLoginOtp, resendLoginOtp, isLoading, error, otpRequired, pendingEmail, message } = useAuthStore();
+  const navigate = useNavigate();
 
 
   const handleLogin = async (e) => {
-		e.preventDefault();
-		await login(email, password);
-	};
+    		e.preventDefault();
+    		const res = await login(email, password);
+    		if (res && res.verificationRequired) {
+    			// Redirect unverified accounts to email verification screen
+    			navigate("/verify-email");
+    		}
+    	};
   
   const handleVerify = async (e) => {
     e.preventDefault();

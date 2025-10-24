@@ -374,14 +374,7 @@ const RatingsPage = () => {
                       : 'No reviews have been submitted yet.'
                     }
                   </p>
-                  {!searchTerm && !ratingFilter && !productFilter && (
-                    <Link
-                      to="/ratings"
-                      className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 bg-[#860809] text-white rounded-lg hover:bg-[#a31f17] transition-colors font-alice text-xs sm:text-sm"
-                    >
-                      Leave Us Feedback
-                    </Link>
-                  )}
+                  {/* Removed bottom "Leave Us Feedback" button for empty state */}
                 </div>
               )}
 

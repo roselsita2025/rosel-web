@@ -1,4 +1,4 @@
-import { PASSWORD_RESET_REQUEST_TEMPLATE, PASSWORD_RESET_SUCCESS_TEMPLATE, VERIFICATION_EMAIL_TEMPLATE, WELCOME_EMAIL_TEMPLATE, LOGIN_OTP_TEMPLATE } from "./emailTemplates.js"
+import { PASSWORD_RESET_REQUEST_TEMPLATE, PASSWORD_RESET_SUCCESS_TEMPLATE, VERIFICATION_EMAIL_TEMPLATE, WELCOME_EMAIL_TEMPLATE, LOGIN_OTP_TEMPLATE, ORDER_CONFIRMATION_TEMPLATE } from "./emailTemplates.js"
 import { sgMail, sender } from "./mail.config.js"
 
 export const sendVerificationEmail = async (email, verificationToken) => {
@@ -91,6 +91,42 @@ export const sendLoginOtpEmail = async (email, otpCode) => {
     } catch (error) {
         console.log("Error sending login OTP email", error);
         throw new Error(`Error sending login OTP email: ${error}`);
+    }
+};
+
+export const sendOrderConfirmationEmail = async (email, data) => {
+    const recipient = [{ email }];
+    try {
+        let itemsHtml = '';
+        if (Array.isArray(data.items)) {
+            itemsHtml = data.items.map(i => `
+              <div style="display:flex;justify-content:space-between;border-bottom:1px solid #eee;padding:6px 0;">
+                <span>${i.name} × ${i.quantity}</span>
+                <span>₱${Number(i.total).toFixed(2)}</span>
+              </div>
+            `).join('');
+        }
+        const html = ORDER_CONFIRMATION_TEMPLATE
+            .replace('{customerName}', data.customerName || 'Customer')
+            .replace('{orderNumber}', data.orderNumber)
+            .replace('{orderStatus}', data.orderStatus || 'Processing')
+            .replace('{orderDate}', data.orderDate)
+            .replace('{orderTotal}', String(data.orderTotal))
+            .replace('{orderItems}', itemsHtml)
+            .replace('{trackUrl}', data.trackUrl);
+
+        const msg = {
+            from: sender,
+            to: recipient,
+            subject: `Order Confirmation #${data.orderNumber}`,
+            html,
+            categories: ["Order Confirmation"],
+        };
+        const response = await sgMail.send(msg);
+        console.log("Order confirmation email sent", response?.[0]?.statusCode);
+    } catch (error) {
+        console.log("Error sending order confirmation email", error);
+        // Do not throw to avoid failing order flow on email issues
     }
 };
 

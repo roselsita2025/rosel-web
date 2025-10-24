@@ -175,7 +175,7 @@ function App() {
   const isAdmin = user?.role === "admin";
   const isAdminPage = ["/dashboard", "/discrepancy-report", "/analytics", "/profile", "/account-settings", "/coupons", "/manage-products", "/order-management", "/admin/replacement-requests", "/admin/chat-management"].includes(location.pathname) || location.pathname.startsWith("/admin/replacement-requests/");
 
-  const hideNavbar = ["/login", "/signup", "/forgot-password", "/verify-email", "/purchase-success", "/purchase-cancel"].includes(location.pathname);
+  const hideNavbar = ["/login", "/signup", "/forgot-password", "/verify-email", "/purchase-success", "/purchase-cancel"].includes(location.pathname) || location.pathname.startsWith("/reset-password/");
 
   // Scroll to top when location changes
   useEffect(() => {
@@ -286,7 +286,7 @@ function App() {
         <Route path = '/login' element = { <GuestRoute> <LoginPage /> </GuestRoute> } />
         <Route path = '/verify-email' element = { <GuestRoute> <EmailVerificationPage /> </GuestRoute> } />
         <Route path = '/forgot-password' element = { <GuestRoute> <ForgotPasswordPage /> </GuestRoute> } />
-        <Route path='/reset-password/:token' element = { <GuestRoute> <ResetPasswordPage /> </GuestRoute> } />
+        <Route path='/reset-password/:token' element = { <ResetPasswordPage /> } />
         </Routes>
       </MainContent>
 

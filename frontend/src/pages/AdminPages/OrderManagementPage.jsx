@@ -695,7 +695,6 @@ const OrderManagementPage = () => {
                                     >
                                         <RefreshCw size={14} className="sm:w-4 sm:h-4" />
                                         <span className="hidden xs:inline">Refresh</span>
-                                        <span className="xs:hidden">⟳</span>
                                     </button>
                                 </div>
                             </motion.div>
@@ -750,7 +749,6 @@ const OrderManagementPage = () => {
                                         >
                                             <RefreshCw size={14} className="sm:w-4 sm:h-4" />
                                             <span className="hidden sm:inline">Refresh</span>
-                                            <span className="sm:hidden">⟳</span>
                                         </button>
                                         <button
                                             onClick={handleGenerateOrdersCsv}

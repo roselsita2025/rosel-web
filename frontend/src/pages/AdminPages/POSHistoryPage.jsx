@@ -299,7 +299,6 @@ const POSHistoryPage = () => {
 
           <div class="totals">
             <div><strong>Subtotal:</strong> ${formatCurrency(transaction.payment.subtotal)}</div>
-            {/* Tax removed */}
             ${transaction.payment.discount > 0 ? `<div><strong>Discount:</strong> -${formatCurrency(transaction.payment.discount)}</div>` : ''}
             <div class="total"><strong>TOTAL:</strong> ${formatCurrency(transaction.payment.total)}</div>
           </div>
