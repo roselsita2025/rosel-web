@@ -4,6 +4,7 @@ import { useAuthStore } from "../../store/authStore";
 import Input from "../../components/Input";
 import { ArrowLeft, Loader, Mail, Home } from "lucide-react";
 import { Link } from "react-router-dom";
+import { validateEmailFormat } from "../../utils/emailValidation";
 
 
 const ForgotPasswordPage = () => {
@@ -14,6 +15,14 @@ const ForgotPasswordPage = () => {
 
     const handleSubmit = async (e) => {
 		e.preventDefault();
+		
+		// Email format validation
+		const emailError = validateEmailFormat(email);
+		if (emailError) {
+			// Email validation error will be handled by the auth store
+			return;
+		}
+		
 		await forgotPassword(email);
 		setIsSubmitted(true);
     };

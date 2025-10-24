@@ -4,6 +4,7 @@ import { Mail, Lock, Loader, LucideShield, LucideTruck, LucideAward, LucideUser,
 import { Link, useNavigate } from "react-router-dom";
 import Input from "../../components/Input";
 import { useAuthStore } from "../../store/authStore";
+import { validateEmailFormat } from "../../utils/emailValidation";
 
 const LoginPage = () => {
 
@@ -17,6 +18,14 @@ const LoginPage = () => {
 
   const handleLogin = async (e) => {
     		e.preventDefault();
+    		
+    		// Email format validation
+    		const emailError = validateEmailFormat(email);
+    		if (emailError) {
+    			// Email validation error will be handled by the auth store
+    			return;
+    		}
+    		
     		const res = await login(email, password);
     		if (res && res.verificationRequired) {
     			// Redirect unverified accounts to email verification screen

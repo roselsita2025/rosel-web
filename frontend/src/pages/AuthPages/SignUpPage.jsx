@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import PasswordStrengthMeter from "../../components/PasswordStrengthMeter";
 import { useAuthStore } from "../../store/authStore";
 import { useEffect } from "react";
+import { validateEmailFormat } from "../../utils/emailValidation";
 
 const SignUpPage = () => {
 
@@ -34,6 +35,13 @@ const SignUpPage = () => {
         e.preventDefault();
 
 		try {
+			// Email format validation
+			const emailError = validateEmailFormat(email);
+			if (emailError) {
+				setLocalError(emailError);
+				return;
+			}
+
 			const policyRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{6,}$/;
 			if (!policyRegex.test(password)) {
 				setLocalError("Password must be at least 6 chars and include uppercase, lowercase, number, and special character");

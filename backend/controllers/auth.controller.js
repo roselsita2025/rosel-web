@@ -7,6 +7,7 @@ import { sendPasswordResetEmail, sendResetSuccessEmail, sendVerificationEmail, s
 import { User } from "../models/user.model.js";
 import cloudinary from "../db/cloudinary.js";
 import { redis } from "../db/redis.js";
+import { validateEmailFormat } from "../utils/emailValidation.js";
 
 export const signup = async (req, res) => {
     const {email, password, name} = req.body;
@@ -14,6 +15,12 @@ export const signup = async (req, res) => {
     try {
         if (!email || !password || !name) {
             throw new Error ("All fields are required");
+        }
+
+        // Email format validation
+        const emailValidationError = validateEmailFormat(email);
+        if (emailValidationError) {
+            return res.status(400).json(emailValidationError);
         }
 
         const passwordPolicyRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{6,}$/;
@@ -96,6 +103,12 @@ export const login = async (req, res) => {
     const { email, password } = req.body;
 
     try {
+        // Email format validation
+        const emailValidationError = validateEmailFormat(email);
+        if (emailValidationError) {
+            return res.status(400).json(emailValidationError);
+        }
+
         const normalizedEmail = (email || "").toLowerCase();
         const failKey = `login_fail_count:${normalizedEmail}`;
         const lockKey = `login_lock:${normalizedEmail}`;
@@ -256,6 +269,12 @@ export const logout = async (req, res) => {
 export const forgotPassword = async (req, res) => {
     const { email } = req.body;
     try {
+        // Email format validation
+        const emailValidationError = validateEmailFormat(email);
+        if (emailValidationError) {
+            return res.status(400).json(emailValidationError);
+        }
+
         const user = await User.findOne({ email });
 
         if (!user) {
@@ -453,6 +472,12 @@ export const changeEmail = async (req, res) => {
                 success: false, 
                 message: "New email and current password are required" 
             });
+        }
+
+        // Email format validation
+        const emailValidationError = validateEmailFormat(newEmail);
+        if (emailValidationError) {
+            return res.status(400).json(emailValidationError);
         }
 
         const user = await User.findById(req.userId);
