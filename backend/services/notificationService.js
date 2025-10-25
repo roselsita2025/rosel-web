@@ -304,6 +304,45 @@ class NotificationService {
         return await this.notifyAdmins(notificationData);
     }
 
+    /**
+     * Send product price change notification to customers
+     * @param {Object} product - Product object
+     * @param {number} oldPrice - Old price
+     * @param {number} newPrice - New price
+     */
+    async sendProductPriceChangeNotification(product, oldPrice, newPrice) {
+        const priceChange = newPrice - oldPrice;
+        const changeType = priceChange > 0 ? 'increased' : 'decreased';
+        const changeAmount = Math.abs(priceChange);
+        
+        const notificationData = {
+            type: 'product_update',
+            category: 'products',
+            subcategory: 'price_change',
+            title: 'Product Price Update',
+            message: `The price of "${product.name}" has ${changeType} from ₱${oldPrice.toFixed(2)} to ₱${newPrice.toFixed(2)}`,
+            relatedEntity: {
+                type: 'product',
+                id: product._id
+            },
+            data: {
+                productName: product.name,
+                productCategory: product.category,
+                oldPrice: oldPrice,
+                newPrice: newPrice,
+                priceChange: priceChange,
+                changeType: changeType,
+                changeAmount: changeAmount,
+                productImage: product.image || product.mainImageUrl
+            },
+            priority: 'medium',
+            actionUrl: `/product/${product._id}`,
+            expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days
+        };
+
+        return await this.notifyCustomers(notificationData);
+    }
+
 
     /**
      * Send new order notification to admins

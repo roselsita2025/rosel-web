@@ -680,6 +680,15 @@ export const updateProduct = async (req, res) => {
             if (Object.keys(notificationChanges).length > 0) {
                 await notificationService.sendProductUpdatedNotification(updated, notificationChanges);
             }
+
+            // Send price change notification to customers if basePricePerKg changed
+            if (typeof basePricePerKg === 'number' && basePricePerKg !== originalValues.basePricePerKg) {
+                try {
+                    await notificationService.sendProductPriceChangeNotification(updated, originalValues.basePricePerKg, basePricePerKg);
+                } catch (notificationError) {
+                    console.error('Error sending price change notification:', notificationError);
+                }
+            }
         } catch (notificationError) {
             console.error('Error sending product updated notification:', notificationError);
         }
@@ -1158,6 +1167,13 @@ export const updateBasePricePerKg = async (req, res) => {
                 });
             } catch (logError) {
                 console.error('Error logging base price update:', logError);
+            }
+
+            // Send notification to customers about price change
+            try {
+                await notificationService.sendProductPriceChangeNotification(updated, originalPrice, basePricePerKg);
+            } catch (notificationError) {
+                console.error('Error sending price change notification:', notificationError);
             }
         }
         

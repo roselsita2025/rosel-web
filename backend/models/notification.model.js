@@ -24,7 +24,8 @@ const notificationSchema = new mongoose.Schema({
             'customer_alert',
             'promotion',
             'order_notification',
-            'request_notification'
+            'request_notification',
+            'product_update'
         ],
         required: true
     },
@@ -37,8 +38,8 @@ const notificationSchema = new mongoose.Schema({
             'orders',
             'customers',
             'promotions',
-            'orders',
-            'requests'
+            'requests',
+            'products'
         ],
         required: true
     },
@@ -62,7 +63,8 @@ const notificationSchema = new mongoose.Schema({
             'chat_message',
             'top_selling',
             'special_offer',
-            'discount_available'
+            'discount_available',
+            'price_change'
         ],
         required: true
     },
