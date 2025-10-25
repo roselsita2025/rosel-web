@@ -245,10 +245,9 @@ const DashboardPage = () => {
         const response = await axios.get(`${API_URL}/analytics/by-source?${params.toString()}`);
         setAnalyticsData(response.data.analyticsData);
         setDailySalesData(response.data.dailySalesData);
-        // Fetch distinct customers with completed orders in the same range
+        // Fetch total customers with completed orders (not filtered by date range)
         try {
-          const custParams = new URLSearchParams({ start, end, status: 'completed' });
-          const custRes = await axios.get(`${API_URL}/orders/distinct-customers?${custParams.toString()}`);
+          const custRes = await axios.get(`${API_URL}/orders/distinct-customers?status=completed`);
           if (typeof custRes.data?.count === 'number') {
             setAnalyticsData((prev) => ({ ...prev, users: custRes.data.count }));
           }
