@@ -820,7 +820,7 @@ const DashboardPage = () => {
               </h3>
               <div className='px-4 sm:px-5 pb-3 sm:pb-4'>
                 <div className='flex items-center justify-between mb-2'>
-                  <span className='text-xs font-semibold text-[#a31f17] uppercase tracking-wide font-alice'>Ingredient</span>
+                  <span className='text-xs font-semibold text-[#a31f17] uppercase tracking-wide font-alice'>Products</span>
                   <span className='text-xs font-semibold text-[#a31f17] uppercase tracking-wide font-alice'>Status</span>
                 </div>
                 <div className='mb-3'>
