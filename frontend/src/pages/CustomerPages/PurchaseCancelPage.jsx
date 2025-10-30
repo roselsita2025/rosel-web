@@ -18,7 +18,6 @@ const PurchaseCancelPage = () => {
 					console.log('Payment cancellation cleanup completed');
 				} catch (error) {
 					console.error('Error cleaning up cancelled payment:', error);
-					// Don't show error to user as this is background cleanup
 				}
 			}
 		};

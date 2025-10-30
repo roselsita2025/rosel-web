@@ -274,7 +274,6 @@ const ReplacementRequestDetailsPage = () => {
                                     <h4 className="font-medium text-[#030105] text-sm sm:text-base break-words">
                                         {currentRequest.product?.name}
                                         {(() => {
-                                            // Try to get weight info from product data
                                             if (currentRequest.product?.weightOptions && currentRequest.product.weightOptions.length > 0) {
                                                 const firstWeight = currentRequest.product.weightOptions[0];
                                                 if (firstWeight && firstWeight.weightKg) {

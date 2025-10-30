@@ -6,7 +6,6 @@ const API_URL = (import.meta.env.VITE_API_URL || "http://localhost:5000/api") + 
 axios.defaults.withCredentials = true;
 
 export const useReplacementRequestStore = create((set, get) => ({
-    // State
     requests: [],
     currentRequest: null,
     stats: null,
@@ -15,7 +14,6 @@ export const useReplacementRequestStore = create((set, get) => ({
     message: null,
     pagination: null,
 
-    // Customer Actions
     createReplacementRequest: async (requestData) => {
         set({ isLoading: true, error: null, message: null });
         try {
@@ -81,7 +79,6 @@ export const useReplacementRequestStore = create((set, get) => ({
                 message: response.data.message,
                 currentRequest: response.data.data
             });
-            // Update the request in the list
             const requests = get().requests;
             const updatedRequests = requests.map(req => 
                 req._id === requestId ? response.data.data : req
@@ -97,7 +94,6 @@ export const useReplacementRequestStore = create((set, get) => ({
         }
     },
 
-    // Admin Actions
     getAllRequests: async (params = {}) => {
         set({ isLoading: true, error: null });
         try {
@@ -144,7 +140,6 @@ export const useReplacementRequestStore = create((set, get) => ({
                 message: response.data.message,
                 currentRequest: response.data.data
             });
-            // Update the request in the list
             const requests = get().requests;
             const updatedRequests = requests.map(req => 
                 req._id === requestId ? response.data.data : req
@@ -178,7 +173,6 @@ export const useReplacementRequestStore = create((set, get) => ({
         }
     },
 
-    // Utility Functions
     getStatusColor: (status) => {
         const statusColors = {
             pending: 'bg-yellow-100 text-yellow-800',
@@ -230,11 +224,9 @@ export const useReplacementRequestStore = create((set, get) => ({
         return reasonTexts[reason] || reason;
     },
 
-    // Clear functions
     clearError: () => set({ error: null }),
     clearMessage: () => set({ message: null }),
     
-    // Get pending replacement requests count
     getPendingRequestsCount: () => {
         const { requests } = get();
         return requests.filter(request => 
@@ -242,13 +234,11 @@ export const useReplacementRequestStore = create((set, get) => ({
         ).length;
     },
     
-    // Fetch pending replacement requests count only
     fetchPendingRequestsCount: async () => {
         try {
             const response = await axios.get(`${API_URL}/admin/all?status=pending&limit=1`);
             const pendingCount = response.data.data.pagination?.totalRequests || response.data.data.pagination?.totalOrders || response.data.data.pagination?.total || 0;
             
-            // Also get under_review count
             const underReviewResponse = await axios.get(`${API_URL}/admin/all?status=under_review&limit=1`);
             const underReviewCount = underReviewResponse.data.data.pagination?.totalRequests || underReviewResponse.data.data.pagination?.totalOrders || underReviewResponse.data.data.pagination?.total || 0;
             
@@ -256,7 +246,6 @@ export const useReplacementRequestStore = create((set, get) => ({
             return totalCount;
         } catch (error) {
             console.error('Error fetching pending replacement requests count:', error);
-            // Fallback: try to get count from existing requests
             try {
                 const fallbackResponse = await axios.get(`${API_URL}/admin/all`);
                 const count = fallbackResponse.data.data.requests?.filter(request => 
@@ -272,7 +261,6 @@ export const useReplacementRequestStore = create((set, get) => ({
     clearCurrentRequest: () => set({ currentRequest: null }),
     clearRequests: () => set({ requests: [], pagination: null }),
 
-    // Reset store
     reset: () => set({
         requests: [],
         currentRequest: null,

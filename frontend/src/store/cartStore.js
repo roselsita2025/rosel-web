@@ -82,7 +82,6 @@ export const cartStore = create((set, get) => ({
     addToCart: async (product, weightOptionId = null) => {
         console.log('Adding to cart:', { product: product.name, weightOptionId, productData: product });
         
-        // Check if product is in stock
         const effectiveStock = weightOptionId
             ? (product?.weightOptions?.find(o => String(o._id) === String(weightOptionId))?.stockUnits || 0)
             : (product.quantity || 0);
@@ -90,7 +89,6 @@ export const cartStore = create((set, get) => ({
             return { status: 'out_of_stock' };
         }
 
-        // Check if adding this item would exceed available stock
         const existingItem = get().cart.find((item) => item._id === product._id && String(item.weightOptionId || '') === String(weightOptionId || ''));
         const currentCartQuantity = existingItem ? (existingItem.cartQuantity || existingItem.quantity) : 0;
         
@@ -119,7 +117,6 @@ export const cartStore = create((set, get) => ({
                                 const selectedOption = product.weightOptions.find(o => String(o._id) === String(weightOptionId));
                                 return selectedOption?.price || (product.basePricePerKg * selectedOption?.weightKg);
                             } else if (product.basePricePerKg && product.basePricePerKg > 0) {
-                                // Fallback: Use basePricePerKg with default 15kg weight
                                 return product.basePricePerKg * 15;
                             }
                             return product.price;
@@ -133,7 +130,6 @@ export const cartStore = create((set, get) => ({
             return { status: 'success' };
         } catch (error) {
             console.log('Backend error, using guest cart fallback:', error);
-            // Unauthorized or server not available -> guest cart fallback
             if (error?.response?.status === 401 || error?.response?.status === 403 || error?.response?.status === 404) {
                 set((prevState) => {
                     const existingItemLocal = prevState.cart.find((item) => item._id === product._id && String(item.weightOptionId || '') === String(weightOptionId || ''));
@@ -152,7 +148,6 @@ export const cartStore = create((set, get) => ({
                                     const selectedOption = product.weightOptions.find(o => String(o._id) === String(weightOptionId));
                                     return selectedOption?.price || (product.basePricePerKg * selectedOption?.weightKg);
                                 } else if (product.basePricePerKg && product.basePricePerKg > 0) {
-                                    // Fallback: Use basePricePerKg with default 15kg weight
                                     return product.basePricePerKg * 15;
                                 }
                                 return product.price;
@@ -165,7 +160,6 @@ export const cartStore = create((set, get) => ({
                 get().calculateTotals();
                 return { status: 'success' };
             } else {
-                // Error adding product to cart
                 return { status: 'error', message: error?.response?.data?.message || 'Error adding product to cart' };
             }
         }

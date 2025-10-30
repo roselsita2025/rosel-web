@@ -40,14 +40,11 @@ const DashboardPage = () => {
   const [totalSalesQty, setTotalSalesQty] = useState(0);
   const [topProducts, setTopProducts] = useState([]);
   const [timeframeRevenue, setTimeframeRevenue] = useState(0);
-  // Sorting and filtering states
   const [productSort, setProductSort] = useState('qtyDesc'); // qtyDesc | qtyAsc | revenueDesc | revenueAsc | recentDesc | recentAsc | nameAsc | nameDesc | catAsc | catDesc
   const [productNameFilter, setProductNameFilter] = useState('');
   const [productCategoryFilter, setProductCategoryFilter] = useState('');
-  // Pagination states for top selling products
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
-  // Inventory table UI state
   const [inventorySearch, setInventorySearch] = useState('');
   const [inventoryCategoryFilter, setInventoryCategoryFilter] = useState('');
   const [inventorySort, setInventorySort] = useState('nameAsc'); // nameAsc|nameDesc|catAsc|catDesc|qtyAsc|qtyDesc|priceAsc|priceDesc|valueAsc|valueDesc
@@ -65,7 +62,6 @@ const DashboardPage = () => {
     return Array.from(setCat).sort((a, b) => a.localeCompare(b));
   }, [products]);
 
-  // Inventory Status panel state
   const [inventoryStatusCategory, setInventoryStatusCategory] = useState('All');
   const [inventoryShowAll, setInventoryShowAll] = useState(false);
 
@@ -104,20 +100,16 @@ const DashboardPage = () => {
       .sort((a, b) => a.priority - b.priority || a.qty - b.qty || a.name.localeCompare(b.name));
   }, [products, inventoryStatusCategory]);
 
-  // Line chart month/year selection
   const MONTHS = [
     'January','February','March','April','May','June','July','August','September','October','November','December'
   ];
   const currentYear = new Date().getFullYear();
   const YEARS = Array.from({ length: currentYear - 2021 + 1 }, (_, i) => 2021 + i);
-  // selectedMonth: -1 means "All" months
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [selectedYear, setSelectedYear] = useState(currentYear);
 
   const processedDailyData = useMemo(() => {
-    // If user selects All years, aggregate per year across entire dataset
     if (selectedYear === -1) {
-      // Build a base list of years from 2021 up to the current year
       const base = YEARS.map((y) => ({ day: y, sales: 0, revenue: 0 }));
       const byIndex = new Map(base.map(e => [e.day, e]));
       (dailySalesData || []).forEach(row => {
@@ -133,7 +125,6 @@ const DashboardPage = () => {
     }
 
     if (selectedMonth === -1) {
-      // Aggregate per month for the selected year
       const base = Array.from({ length: 12 }, (_, i) => ({ day: i + 1, sales: 0, revenue: 0 }));
       (dailySalesData || []).forEach((row) => {
         const dt = new Date(row.date);
@@ -163,7 +154,6 @@ const DashboardPage = () => {
     return base;
   }, [dailySalesData, selectedMonth, selectedYear]);
 
-  // Simple list for Top Products (sorted by quantity sold)
   const simpleTopProducts = useMemo(() => {
     return (topProducts || [])
       .slice()
@@ -171,7 +161,6 @@ const DashboardPage = () => {
       .slice(0, 6);
   }, [topProducts]);
 
-  // Ensure bar chart shows all categories even if 0
   const completeCategoryData = useMemo(() => {
     const BASE = ['pork', 'beef', 'chicken', 'sliced', 'processed', 'seafood'];
     const qtyByCat = new Map((categorySalesData || []).map(i => [i.category, i.quantitySold || 0]));
@@ -183,7 +172,6 @@ const DashboardPage = () => {
     }));
   }, [categorySalesData]);
 
-  // Pagination logic for top selling products
   const filteredAndSortedProducts = useMemo(() => {
     return topProducts
       .filter(row => !productNameFilter || row.productName.toLowerCase().includes(productNameFilter.toLowerCase()))
@@ -211,7 +199,6 @@ const DashboardPage = () => {
   const endIndex = startIndex + itemsPerPage;
   const currentProducts = filteredAndSortedProducts.slice(startIndex, endIndex);
 
-  // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
   }, [productNameFilter, productCategoryFilter, productSort]);
@@ -219,19 +206,16 @@ const DashboardPage = () => {
   useEffect(() => {
     const pad = (n) => String(n).padStart(2, '0');
     const buildRange = () => {
-      // All years -> from 2021-01-01 to current-12-31
       if (selectedYear === -1) {
         const start = `2021-01-01`;
         const end = `${currentYear}-12-31`;
         return { start, end };
       }
-      // Specific year, All months
       if (selectedMonth === -1) {
         const start = `${selectedYear}-01-01`;
         const end = `${selectedYear}-12-31`;
         return { start, end };
       }
-      // Specific month of specific year
       const start = `${selectedYear}-${pad(selectedMonth + 1)}-01`;
       const endDate = new Date(selectedYear, selectedMonth + 1, 0).getDate();
       const end = `${selectedYear}-${pad(selectedMonth + 1)}-${pad(endDate)}`;
@@ -245,20 +229,14 @@ const DashboardPage = () => {
         const response = await axios.get(`${API_URL}/analytics/by-source?${params.toString()}`);
         setAnalyticsData(response.data.analyticsData);
         setDailySalesData(response.data.dailySalesData);
-        // Fetch total customers with completed orders (not filtered by date range)
         try {
           const custRes = await axios.get(`${API_URL}/orders/distinct-customers?status=completed`);
           if (typeof custRes.data?.count === 'number') {
             setAnalyticsData((prev) => ({ ...prev, users: custRes.data.count }));
           }
         } catch (_) {
-          // ignore customer count error to avoid blocking UI
         }
-        
-        // Note: topProducts data is fetched separately in another useEffect
-        // Category sales data will be processed when topProducts state updates
       } catch (error) {
-        // Error fetching analytics data
       } finally {
         setIsLoading(false);
       }
@@ -267,7 +245,6 @@ const DashboardPage = () => {
     fetchAnalyticsData();
   }, [dataSource, selectedYear, selectedMonth]);
 
-  // Process category sales data when topProducts changes
   useEffect(() => {
     if (topProducts && topProducts.length > 0) {
       const categoryMap = new Map();
@@ -286,7 +263,6 @@ const DashboardPage = () => {
         }
       });
       
-      // Color palette for different categories
       const colors = [
         '#860809', // Dark red for highest
         '#a31f17', // Medium red for second
@@ -313,7 +289,6 @@ const DashboardPage = () => {
     }
   }, [topProducts]);
 
-  // Fetch customer analytics data
   useEffect(() => {
     const fetchCustomerData = async () => {
       try {
@@ -329,14 +304,12 @@ const DashboardPage = () => {
     fetchCustomerData();
   }, [timeframe, dataSource]);
 
-  // Pagination logic for customer table
   const customerItemsPerPage = 5;
   const customerTotalPages = Math.ceil(customerData.length / customerItemsPerPage);
   const customerStartIndex = (customerCurrentPage - 1) * customerItemsPerPage;
   const customerEndIndex = customerStartIndex + customerItemsPerPage;
   const currentCustomers = customerData.slice(customerStartIndex, customerEndIndex);
 
-  // Reset to first page when customer data changes
   useEffect(() => {
     setCustomerCurrentPage(1);
   }, [customerData]);

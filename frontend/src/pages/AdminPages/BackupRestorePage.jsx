@@ -33,7 +33,6 @@ const BackupRestorePage = () => {
   const [isValidating, setIsValidating] = useState(false);
   const [isLoadingStats, setIsLoadingStats] = useState(false);
 
-  // Fetch backups list
   const fetchBackups = async () => {
     try {
       setIsLoading(true);
@@ -49,7 +48,6 @@ const BackupRestorePage = () => {
     }
   };
 
-  // Generate new backup
   const generateBackup = async () => {
     try {
       setIsGenerating(true);
@@ -67,14 +65,12 @@ const BackupRestorePage = () => {
     }
   };
 
-  // Download backup
   const downloadBackup = async (filename) => {
     try {
       const response = await axios.get(`${API_URL}/backup/download/${filename}`, {
         responseType: 'blob'
       });
       
-      // Create download link
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
@@ -91,7 +87,6 @@ const BackupRestorePage = () => {
     }
   };
 
-  // Delete backup
   const deleteBackup = async (filename) => {
     if (!window.confirm('Are you sure you want to delete this backup? This action cannot be undone.')) {
       return;
@@ -110,7 +105,6 @@ const BackupRestorePage = () => {
     }
   };
 
-  // Handle file upload for restore
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
@@ -125,7 +119,6 @@ const BackupRestorePage = () => {
       const fileContent = await file.text();
       const backupData = JSON.parse(fileContent);
       
-      // Validate backup structure
       if (!backupData.metadata || !backupData.data) {
         throw new Error('Invalid backup file format');
       }
@@ -140,7 +133,6 @@ const BackupRestorePage = () => {
     }
   };
 
-  // Preview restore
   const previewRestore = async () => {
     if (!selectedFile) {
       toast.error('Please select a backup file first');
@@ -162,7 +154,6 @@ const BackupRestorePage = () => {
     }
   };
 
-  // Execute restore
   const executeRestore = async () => {
     if (!selectedFile || !restorePreview) {
       toast.error('Please preview the restore first');
@@ -194,18 +185,15 @@ const BackupRestorePage = () => {
     }
   };
 
-  // Format file size
   const formatFileSize = (sizeInKB) => {
     if (sizeInKB < 1024) return `${sizeInKB} KB`;
     return `${(sizeInKB / 1024).toFixed(1)} MB`;
   };
 
-  // Format date
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleString();
   };
 
-  // Fetch backup statistics
   const fetchBackupStats = async () => {
     try {
       setIsLoadingStats(true);
@@ -221,7 +209,6 @@ const BackupRestorePage = () => {
     }
   };
 
-  // Validate backup file
   const validateBackupFile = async () => {
     if (!selectedFile) {
       toast.error('Please select a backup file first');
@@ -246,7 +233,6 @@ const BackupRestorePage = () => {
     }
   };
 
-  // Cleanup old backups
   const cleanupOldBackups = async (keepCount = 10) => {
     if (!window.confirm(`This will delete old backups, keeping only the most recent ${keepCount} backups. Continue?`)) {
       return;
@@ -421,6 +407,10 @@ const BackupRestorePage = () => {
                       <p className="text-lg sm:text-xl font-bold text-rose-600">{backupStats.collections.writeOffs || 0}</p>
                       <p className="text-xs text-gray-600">Write-Offs</p>
                     </div>
+                    <div className="text-center">
+                      <p className="text-lg sm:text-xl font-bold text-emerald-600">{backupStats.collections.purchaseOrders || 0}</p>
+                      <p className="text-xs text-gray-600">Purchase Orders</p>
+                    </div>
                   </div>
                 </div>
 
@@ -471,7 +461,7 @@ const BackupRestorePage = () => {
               <h2 className="text-base sm:text-lg md:text-xl font-semibold text-gray-900">Generate Backup</h2>
             </div>
             <p className="text-xs sm:text-sm text-gray-600 mb-4 sm:mb-6">
-              Create a complete backup of all database collections including products (with weight options and barcodes), orders, users, reviews, transactions, coupons, notifications, activity logs, replacement requests, chats, messages, FAQs, and write-offs.
+              Create a complete backup of all database collections including products (with weight options, barcodes, and expiration dates), purchase orders, orders, users, reviews, transactions, coupons, notifications, activity logs, replacement requests, chats, messages, FAQs, and write-offs.
             </p>
             <button
               onClick={generateBackup}
@@ -600,7 +590,6 @@ const BackupRestorePage = () => {
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
               {Object.entries(restorePreview).map(([collection, data]) => {
-                // Format collection name for display
                 const displayName = collection
                   .replace(/([A-Z])/g, ' $1')
                   .replace(/^./, str => str.toUpperCase())

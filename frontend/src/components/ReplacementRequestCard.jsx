@@ -40,7 +40,6 @@ const ReplacementRequestCard = ({ request, onClick, showCustomerInfo = false }) 
                                 <span className="truncate max-w-[120px] sm:max-w-none">
                                     {request.product?.name || 'Product'}
                                     {(() => {
-                                        // Try to get weight info from product data
                                         if (request.product?.weightOptions && request.product.weightOptions.length > 0) {
                                             const firstWeight = request.product.weightOptions[0];
                                             if (firstWeight && firstWeight.weightKg) {

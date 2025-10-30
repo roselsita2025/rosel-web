@@ -19,11 +19,8 @@ const ChatModal = () => {
     } = useChatStore();
     const { user, isAuthenticated } = useAuthStore();
 
-    // Socket connection is now handled globally in App.jsx
-
     useEffect(() => {
         if (isAuthenticated && isChatOpen) {
-            // Load customer chats when chat opens
             getCustomerChats();
         }
     }, [isAuthenticated, isChatOpen, getCustomerChats]);

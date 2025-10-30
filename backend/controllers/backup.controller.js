@@ -14,6 +14,7 @@ import { Chat } from '../models/chat.model.js';
 import { Message } from '../models/message.model.js';
 import { FAQ } from '../models/faq.model.js';
 import WriteOff from '../models/writeOff.model.js';
+import PurchaseOrder from '../models/purchaseOrder.model.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -42,7 +43,8 @@ export const generateBackup = async (req, res) => {
       chats,
       messages,
       faqs,
-      writeOffs
+      writeOffs,
+      purchaseOrders
     ] = await Promise.all([
       Product.find({}),
       Order.find({}),
@@ -56,22 +58,23 @@ export const generateBackup = async (req, res) => {
       Chat.find({}),
       Message.find({}),
       FAQ.find({}),
-      WriteOff.find({})
+      WriteOff.find({}),
+      PurchaseOrder.find({})
     ]);
 
     const backup = {
       metadata: {
-        version: '2.2',
+        version: '2.3',
         timestamp: new Date().toISOString(),
         collections: [
           'products', 'orders', 'users', 'reviews', 'transactions', 
           'coupons', 'notifications', 'activityLogs', 'replacementRequests', 
-          'chats', 'messages', 'faqs', 'writeOffs'
+          'chats', 'messages', 'faqs', 'writeOffs', 'purchaseOrders'
         ],
         totalRecords: products.length + orders.length + users.length + reviews.length + 
                      transactions.length + coupons.length + notifications.length + 
                      activityLogs.length + replacementRequests.length + chats.length + 
-                     messages.length + faqs.length + writeOffs.length,
+                     messages.length + faqs.length + writeOffs.length + purchaseOrders.length,
         generatedBy: req.user._id,
         generatedByEmail: req.user.email
       },
@@ -88,7 +91,8 @@ export const generateBackup = async (req, res) => {
         chats,
         messages,
         faqs,
-        writeOffs
+        writeOffs,
+        purchaseOrders
       }
     };
 
@@ -270,7 +274,8 @@ export const previewRestore = async (req, res) => {
       chats: await Chat.countDocuments(),
       messages: await Message.countDocuments(),
       faqs: await FAQ.countDocuments(),
-      writeOffs: await WriteOff.countDocuments()
+      writeOffs: await WriteOff.countDocuments(),
+      purchaseOrders: await PurchaseOrder.countDocuments()
     };
 
     const backupCounts = {
@@ -286,7 +291,8 @@ export const previewRestore = async (req, res) => {
       chats: backupData.data.chats?.length || 0,
       messages: backupData.data.messages?.length || 0,
       faqs: backupData.data.faqs?.length || 0,
-      writeOffs: backupData.data.writeOffs?.length || 0
+      writeOffs: backupData.data.writeOffs?.length || 0,
+      purchaseOrders: backupData.data.purchaseOrders?.length || 0
     };
 
     const preview = {
@@ -367,6 +373,12 @@ export const previewRestore = async (req, res) => {
         backup: backupCounts.writeOffs,
         difference: backupCounts.writeOffs - currentCounts.writeOffs,
         willReplace: backupCounts.writeOffs > 0
+      },
+      purchaseOrders: {
+        current: currentCounts.purchaseOrders,
+        backup: backupCounts.purchaseOrders,
+        difference: backupCounts.purchaseOrders - currentCounts.purchaseOrders,
+        willReplace: backupCounts.purchaseOrders > 0
       }
     };
 
@@ -511,6 +523,16 @@ export const executeRestore = async (req, res) => {
       restoreResults.writeOffs = backupData.data.writeOffs.length;
     }
 
+    if (backupData.data.purchaseOrders && backupData.data.purchaseOrders.length > 0) {
+      console.log(`🛒 Restoring ${backupData.data.purchaseOrders.length} purchase orders...`);
+      await PurchaseOrder.deleteMany({});
+      await PurchaseOrder.insertMany(backupData.data.purchaseOrders);
+      restoreResults.purchaseOrders = backupData.data.purchaseOrders.length;
+    } else if (backupData.data.purchaseOrders === undefined) {
+      // Backward compatibility: old backups (v2.2 and earlier) don't have purchaseOrders
+      console.log('⚠️ No purchase orders in backup (backward compatibility mode)');
+    }
+
     console.log('✅ Restore completed successfully');
 
     res.json({
@@ -548,11 +570,19 @@ export const uploadRestore = async (req, res) => {
       });
     }
 
+    const backupVersion = backupData.metadata?.version || '2.2';
+    const isVersion23OrHigher = parseFloat(backupVersion) >= 2.3;
+    
     const requiredCollections = [
       'products', 'orders', 'users', 'reviews', 'transactions', 
       'coupons', 'notifications', 'activityLogs', 'replacementRequests', 
       'chats', 'messages', 'faqs', 'writeOffs'
     ];
+    
+    if (isVersion23OrHigher) {
+      requiredCollections.push('purchaseOrders');
+    }
+    
     const missingCollections = requiredCollections.filter(
       collection => !backupData.data[collection]
     );
@@ -622,11 +652,19 @@ export const validateBackup = async (req, res) => {
     );
 
     // Check data structure
+    const backupVersion = backupData.metadata?.version || '2.2';
+    const isVersion23OrHigher = parseFloat(backupVersion) >= 2.3;
+    
     const requiredCollections = [
       'products', 'orders', 'users', 'reviews', 'transactions', 
       'coupons', 'notifications', 'activityLogs', 'replacementRequests', 
       'chats', 'messages', 'faqs', 'writeOffs'
     ];
+    
+    if (isVersion23OrHigher) {
+      requiredCollections.push('purchaseOrders');
+    }
+    
     checks.dataStructureValid = requiredCollections.every(collection => 
       Array.isArray(backupData.data[collection])
     );
@@ -673,11 +711,19 @@ const validateBackupIntegrity = (backupData) => {
     }
 
     // Check if data collections exist and are arrays
+    const backupVersion = backupData.metadata?.version || '2.2';
+    const isVersion23OrHigher = parseFloat(backupVersion) >= 2.3;
+    
     const requiredCollections = [
       'products', 'orders', 'users', 'reviews', 'transactions', 
       'coupons', 'notifications', 'activityLogs', 'replacementRequests', 
       'chats', 'messages', 'faqs', 'writeOffs'
     ];
+    
+    if (isVersion23OrHigher) {
+      requiredCollections.push('purchaseOrders');
+    }
+    
     for (const collection of requiredCollections) {
       if (!Array.isArray(backupData.data[collection])) {
         return { valid: false, error: `Invalid data structure for ${collection}` };
@@ -724,7 +770,8 @@ export const getBackupStats = async (req, res) => {
         chats: 0,
         messages: 0,
         faqs: 0,
-        writeOffs: 0
+        writeOffs: 0,
+        purchaseOrders: 0
       }
     };
 
@@ -785,6 +832,7 @@ export const getBackupStats = async (req, res) => {
             stats.collections.messages = backupData.data.messages?.length || 0;
             stats.collections.faqs = backupData.data.faqs?.length || 0;
             stats.collections.writeOffs = backupData.data.writeOffs?.length || 0;
+            stats.collections.purchaseOrders = backupData.data.purchaseOrders?.length || 0;
           }
         } catch (error) {
           console.warn('Could not read most recent backup for collection stats');

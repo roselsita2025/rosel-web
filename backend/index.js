@@ -30,6 +30,7 @@ import activityLogRoutes from './routes/activityLog.route.js';
 import reviewRoutes from './routes/reviews.js';
 import backupRoutes from './routes/backup.route.js';
 import writeOffRoutes from './routes/writeOff.route.js';
+import purchaseOrderRoutes from './routes/purchaseOrder.route.js';
 
 import './utils/env.js';
 
@@ -66,6 +67,7 @@ app.use("/api/activity-logs", activityLogRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/backup", backupRoutes);
 app.use("/api/write-offs", writeOffRoutes);
+app.use("/api/purchase-orders", purchaseOrderRoutes);
 
 app.use(express.static(path.join(__dirname, '../frontend/dist')));
 

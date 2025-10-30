@@ -15,7 +15,6 @@ const ShippingOptionsPage = () => {
     const { user, isAuthenticated } = useAuthStore();
     const { cart, coupon, isCouponApplied, total, subtotal } = cartStore();
 
-    // State
     const [shippingInfo, setShippingInfo] = useState(null);
     const [selectedShipping, setSelectedShipping] = useState('pickup'); // 'pickup' or 'lalamove'
     const [lalamoveQuote, setLalamoveQuote] = useState(null);
@@ -23,7 +22,6 @@ const ShippingOptionsPage = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
-        // Redirect if not authenticated or not customer
         if (!isAuthenticated) {
             navigate('/login');
             return;
@@ -33,7 +31,6 @@ const ShippingOptionsPage = () => {
             return;
         }
 
-        // Load shipping information from sessionStorage
         const savedShippingInfo = sessionStorage.getItem('shippingInfo');
         if (!savedShippingInfo) {
             toast.error('Shipping information not found. Please start over.');
@@ -44,7 +41,6 @@ const ShippingOptionsPage = () => {
         setShippingInfo(JSON.parse(savedShippingInfo));
     }, [isAuthenticated, user, navigate]);
 
-    // Fetch Lalamove quote when shippingInfo is available
     useEffect(() => {
         if (shippingInfo && cart.length > 0) {
             fetchLalamoveQuote();
@@ -97,7 +93,6 @@ const ShippingOptionsPage = () => {
         let finalTotal = total;
         
         if (selectedShipping === 'lalamove' && lalamoveQuote) {
-            // Add Lalamove delivery fee
             const deliveryFee = parseFloat(
                 lalamoveQuote.quotation?.priceBreakdown?.total || 
                 lalamoveQuote.quotation?.total || 

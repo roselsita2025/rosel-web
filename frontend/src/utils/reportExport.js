@@ -11,7 +11,6 @@ import autoTable from 'jspdf-autotable';
 const autofitColumns = (data, worksheet) => {
   const colWidths = [];
   
-  // Calculate max width for each column
   data.forEach(row => {
     row.forEach((cell, colIndex) => {
       const cellValue = cell?.toString() || '';
@@ -23,7 +22,6 @@ const autofitColumns = (data, worksheet) => {
     });
   });
   
-  // Set column widths (add some padding)
   worksheet['!cols'] = colWidths.map(width => ({ wch: Math.min(width + 2, 50) }));
 };
 
@@ -64,10 +62,8 @@ export const exportToCSV = async (data, dateRange, dataSource) => {
       discrepancyTrends
     } = data;
 
-    // Create workbook
     const wb = XLSX.utils.book_new();
 
-    // Sheet 1: Summary
     const summaryData = [
       ['ROSEL SITA - SALES REPORT', ''],
       [`Date Range: ${new Date(dateRange.start).toLocaleDateString()} - ${new Date(dateRange.end).toLocaleDateString()}`, ''],
@@ -85,10 +81,8 @@ export const exportToCSV = async (data, dateRange, dataSource) => {
     ];
     const ws1 = XLSX.utils.aoa_to_sheet(summaryData);
     
-    // Set column widths
     ws1['!cols'] = [{ wch: 20 }, { wch: 11 }];
     
-    // Merge cells for rows 1-4 and row 6
     ws1['!merges'] = [
       { s: { r: 0, c: 0 }, e: { r: 0, c: 1 } }, // Row 1 (A1:B1)
       { s: { r: 1, c: 0 }, e: { r: 1, c: 1 } }, // Row 2 (A2:B2)
@@ -97,7 +91,6 @@ export const exportToCSV = async (data, dateRange, dataSource) => {
       { s: { r: 5, c: 0 }, e: { r: 5, c: 1 } }, // Row 6 (A6:B6)
     ];
     
-    // Apply bold formatting
     ['A1', 'A2', 'A3', 'A4', 'A6', 'A7', 'B7'].forEach(cell => {
       if (ws1[cell]) {
         ws1[cell].s = { font: { bold: true } };
@@ -106,7 +99,6 @@ export const exportToCSV = async (data, dateRange, dataSource) => {
     
     XLSX.utils.book_append_sheet(wb, ws1, 'Summary');
 
-    // Sheet 2: Daily Sales Data
     const dailySalesData = [
       ['DAILY SALES DATA'],
       [],
@@ -130,7 +122,6 @@ export const exportToCSV = async (data, dateRange, dataSource) => {
     const ws2 = XLSX.utils.aoa_to_sheet(dailySalesData);
     autofitColumns(dailySalesData, ws2);
     
-    // Make title and column headers bold
     if (ws2['A1']) ws2['A1'].s = { font: { bold: true } };
     ['A3', 'B3', 'C3', 'D3', 'E3', 'F3', 'G3', 'H3', 'I3', 'J3', 'K3', 'L3', 'M3'].forEach(cell => {
       if (ws2[cell]) ws2[cell].s = { font: { bold: true } };
@@ -138,7 +129,6 @@ export const exportToCSV = async (data, dateRange, dataSource) => {
     
     XLSX.utils.book_append_sheet(wb, ws2, 'Daily Sales');
 
-    // Sheet 3: Top Products
     const topProductsData = [
       ['TOP SELLING PRODUCTS'],
       [],
@@ -152,7 +142,6 @@ export const exportToCSV = async (data, dateRange, dataSource) => {
     const ws3 = XLSX.utils.aoa_to_sheet(topProductsData);
     autofitColumns(topProductsData, ws3);
     
-    // Make title and column headers bold
     if (ws3['A1']) ws3['A1'].s = { font: { bold: true } };
     ['A3', 'B3', 'C3'].forEach(cell => {
       if (ws3[cell]) ws3[cell].s = { font: { bold: true } };
@@ -160,7 +149,6 @@ export const exportToCSV = async (data, dateRange, dataSource) => {
     
     XLSX.utils.book_append_sheet(wb, ws3, 'Top Products');
 
-    // Sheet 4: Payment Gateway
     const paymentData = [
       ['PAYMENT GATEWAY PERFORMANCE'],
       [],
@@ -175,7 +163,6 @@ export const exportToCSV = async (data, dateRange, dataSource) => {
     const ws4 = XLSX.utils.aoa_to_sheet(paymentData);
     autofitColumns(paymentData, ws4);
     
-    // Make title and column headers bold
     if (ws4['A1']) ws4['A1'].s = { font: { bold: true } };
     ['A3', 'B3', 'C3', 'D3'].forEach(cell => {
       if (ws4[cell]) ws4[cell].s = { font: { bold: true } };
@@ -183,7 +170,6 @@ export const exportToCSV = async (data, dateRange, dataSource) => {
     
     XLSX.utils.book_append_sheet(wb, ws4, 'Payment Gateway');
 
-    // Sheet 5: Discounts Used
     const discountsData = [
       ['DISCOUNTS USED'],
       [],
@@ -197,7 +183,6 @@ export const exportToCSV = async (data, dateRange, dataSource) => {
     const ws5 = XLSX.utils.aoa_to_sheet(discountsData);
     autofitColumns(discountsData, ws5);
     
-    // Make title and column headers bold
     if (ws5['A1']) ws5['A1'].s = { font: { bold: true } };
     ['A3', 'B3', 'C3'].forEach(cell => {
       if (ws5[cell]) ws5[cell].s = { font: { bold: true } };
@@ -205,7 +190,6 @@ export const exportToCSV = async (data, dateRange, dataSource) => {
     
     XLSX.utils.book_append_sheet(wb, ws5, 'Discounts');
 
-    // Sheet 6: Discrepancy Trends
     const discrepancyData = [
       ['DISCREPANCY TRENDS'],
       [],
@@ -219,7 +203,6 @@ export const exportToCSV = async (data, dateRange, dataSource) => {
     const ws6 = XLSX.utils.aoa_to_sheet(discrepancyData);
     autofitColumns(discrepancyData, ws6);
     
-    // Make title and column headers bold
     if (ws6['A1']) ws6['A1'].s = { font: { bold: true } };
     ['A3', 'B3', 'C3'].forEach(cell => {
       if (ws6[cell]) ws6[cell].s = { font: { bold: true } };
@@ -227,7 +210,6 @@ export const exportToCSV = async (data, dateRange, dataSource) => {
     
     XLSX.utils.book_append_sheet(wb, ws6, 'Discrepancies');
 
-    // Generate file
     const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
     const blob = new Blob([wbout], { type: 'application/octet-stream' });
     const fileName = `Sales_Report_${dateRange.start}_to_${dateRange.end}.xlsx`;
@@ -268,8 +250,7 @@ export const exportToPDF = async (data, dateRange, dataSource) => {
     const pageWidth = doc.internal.pageSize.width;
     const pageHeight = doc.internal.pageSize.height;
     let yPos = 20;
-
-    // Helper function to check if we need a new page
+    
     const checkPageBreak = (neededSpace) => {
       if (yPos + neededSpace > pageHeight - 20) {
         doc.addPage();
@@ -297,7 +278,6 @@ export const exportToPDF = async (data, dateRange, dataSource) => {
     
     doc.text(`Generated: ${new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}`, pageWidth / 2, 115, { align: 'center' });
 
-    // Add decorative line
     doc.setDrawColor(134, 8, 9);
     doc.setLineWidth(0.5);
     doc.line(40, 130, pageWidth - 40, 130);
@@ -312,7 +292,6 @@ export const exportToPDF = async (data, dateRange, dataSource) => {
     doc.text('EXECUTIVE SUMMARY', 20, yPos);
     yPos += 15;
 
-    // Key Metrics Cards
     const metrics = [
       { label: 'Total Sales', value: salesCount.toLocaleString() },
       { label: 'Total Revenue', value: `P${Math.round(revenueSum).toLocaleString()}` },
@@ -332,19 +311,16 @@ export const exportToPDF = async (data, dateRange, dataSource) => {
         cardY += cardHeight + 5;
         cardX = 20;
       }
-
-      // Draw card background
+      
       doc.setFillColor(255, 254, 252);
       doc.setDrawColor(200, 200, 200);
       doc.roundedRect(cardX, cardY, cardWidth - 5, cardHeight, 2, 2, 'FD');
 
-      // Add metric label
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(9);
       doc.setTextColor(134, 8, 9);
       doc.text(metric.label, cardX + 5, cardY + 8);
 
-      // Add metric value
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(12);
       doc.setTextColor(0, 0, 0);
@@ -394,14 +370,12 @@ export const exportToPDF = async (data, dateRange, dataSource) => {
         doc.setFont('helvetica', 'normal');
         doc.text(parts[1] || '', 75, yPos);
       } else if (line === '') {
-        // Empty line
       } else {
         doc.text(line, 20, yPos);
       }
       yPos += 6;
     });
-
-    // Calculate metrics for all forecast pages
+    
     const currentSales = dailyData.reduce((sum, d) => sum + d.actualSales, 0);
     const targetSales = dailyData.reduce((sum, d) => sum + d.targetSales, 0);
     const salesGrowth = targetSales > 0 ? (((currentSales - targetSales) / targetSales) * 100).toFixed(2) : 0;
@@ -424,7 +398,6 @@ export const exportToPDF = async (data, dateRange, dataSource) => {
     doc.text('SALES FORECAST', 20, yPos);
     yPos += 10;
 
-    // Add chart image if available
     if (chartImages && chartImages['sales-forecast-chart']) {
       doc.addImage(chartImages['sales-forecast-chart'], 'PNG', 20, yPos, pageWidth - 40, 70);
       yPos += 75;
@@ -491,7 +464,6 @@ export const exportToPDF = async (data, dateRange, dataSource) => {
     doc.text('PROFIT FORECAST', 20, yPos);
     yPos += 10;
 
-    // Add chart image if available
     if (chartImages && chartImages['profit-forecast-chart']) {
       doc.addImage(chartImages['profit-forecast-chart'], 'PNG', 20, yPos, pageWidth - 40, 70);
       yPos += 75;
@@ -560,7 +532,6 @@ export const exportToPDF = async (data, dateRange, dataSource) => {
     doc.text('REVENUE FORECAST', 20, yPos);
     yPos += 10;
 
-    // Add chart image if available
     if (chartImages && chartImages['revenue-forecast-chart']) {
       doc.addImage(chartImages['revenue-forecast-chart'], 'PNG', 20, yPos, pageWidth - 40, 70);
       yPos += 75;
@@ -703,7 +674,6 @@ export const exportToPDF = async (data, dateRange, dataSource) => {
     doc.text('PAYMENT GATEWAY PERFORMANCE', 20, yPos);
     yPos += 10;
 
-    // Add chart image if available
     if (chartImages && chartImages['payment-gateway-chart']) {
       doc.addImage(chartImages['payment-gateway-chart'], 'PNG', 20, yPos, pageWidth - 40, 70);
       yPos += 75;
@@ -800,7 +770,6 @@ export const exportToPDF = async (data, dateRange, dataSource) => {
     doc.text('DISCREPANCY TRENDS', 20, yPos);
     yPos += 10;
 
-    // Add chart image if available
     if (chartImages && chartImages['discrepancy-trends-chart']) {
       doc.addImage(chartImages['discrepancy-trends-chart'], 'PNG', 20, yPos, pageWidth - 40, 70);
       yPos += 75;
@@ -939,7 +908,6 @@ export const exportToPDF = async (data, dateRange, dataSource) => {
       doc.text(new Date().toLocaleDateString(), pageWidth - 20, pageHeight - 10, { align: 'right' });
     }
 
-    // Save the PDF
     const fileName = `Sales_Report_${dateRange.start}_to_${dateRange.end}.pdf`;
     doc.save(fileName);
 

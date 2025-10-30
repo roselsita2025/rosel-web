@@ -5,7 +5,6 @@ import { io } from 'socket.io-client';
 const API_URL = (import.meta.env.VITE_API_URL || "http://localhost:5000/api") + "/notifications";
 axios.defaults.withCredentials = true;
 
-// Load sound settings from localStorage
 const loadSoundSettings = () => {
     const soundEnabled = localStorage.getItem('notificationSoundEnabled');
     const soundVolume = localStorage.getItem('notificationSoundVolume');
@@ -19,7 +18,6 @@ const loadSoundSettings = () => {
 const initialSoundSettings = loadSoundSettings();
 
 export const useNotificationStore = create((set, get) => ({
-    // State
     socket: null,
     isConnected: false,
     notifications: [],
@@ -29,7 +27,6 @@ export const useNotificationStore = create((set, get) => ({
     error: null,
     message: null,
     
-    // Pagination state
     pagination: {
         currentPage: 1,
         totalPages: 0,
@@ -38,75 +35,60 @@ export const useNotificationStore = create((set, get) => ({
         hasPrevPage: false
     },
     
-    // Filters
     filters: {
         category: null,
         isRead: null,
         priority: null
     },
     
-    // Summary for dropdown
     summary: {
         recentNotifications: [],
         categoryCounts: {},
         totalUnread: 0
     },
     
-    // Sound settings
     soundEnabled: initialSoundSettings.soundEnabled,
     soundVolume: initialSoundSettings.soundVolume,
 
-    // Actions
     playNotificationSound: async () => {
         const { soundEnabled, soundVolume } = get();
         
         if (!soundEnabled) return;
 
         try {
-            // Create AudioContext
             const AudioContext = window.AudioContext || window.webkitAudioContext;
             if (!AudioContext) return;
             
             const audioContext = new AudioContext();
             
-            // Resume audio context if suspended (browser autoplay policy)
             if (audioContext.state === 'suspended') {
                 await audioContext.resume();
             }
             
-            // Create oscillators for a pleasant two-tone notification sound
             const oscillator1 = audioContext.createOscillator();
             const oscillator2 = audioContext.createOscillator();
             const gainNode = audioContext.createGain();
             
-            // Configure first tone (higher pitch)
             oscillator1.type = 'sine';
             oscillator1.frequency.setValueAtTime(800, audioContext.currentTime);
             
-            // Configure second tone (lower pitch)
             oscillator2.type = 'sine';
             oscillator2.frequency.setValueAtTime(600, audioContext.currentTime);
             
-            // Connect to gain node for volume control
             oscillator1.connect(gainNode);
             oscillator2.connect(gainNode);
             gainNode.connect(audioContext.destination);
             
-            // Set volume
             gainNode.gain.setValueAtTime(soundVolume * 0.3, audioContext.currentTime);
             
-            // Create envelope for smooth sound
             gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
             
-            // Play sound
             oscillator1.start(audioContext.currentTime);
             oscillator2.start(audioContext.currentTime);
             
-            // Stop after short duration
             oscillator1.stop(audioContext.currentTime + 0.3);
             oscillator2.stop(audioContext.currentTime + 0.3);
             
-            // Clean up
             setTimeout(() => {
                 audioContext.close();
             }, 500);
@@ -126,8 +108,6 @@ export const useNotificationStore = create((set, get) => ({
     },
 
     initializeSocket: (existingSocket) => {
-        // If an existing socket is provided (from chat), use it
-        // Otherwise create a new one (fallback)
         const socket = existingSocket || io(import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000', {
             withCredentials: true
         });
@@ -143,31 +123,24 @@ export const useNotificationStore = create((set, get) => ({
         socket.on('connect_error', (error) => {
             console.error('Notification socket connection error:', error.message);
             set({ isConnected: false, error: error.message });
-        });
+        });        
 
-        // Listen for new notifications
         socket.on('new_notification', (data) => {
             const { notification } = data;
             
-            // Add notification to the store
             const { notifications, unreadCount, summary, playNotificationSound } = get();
             
-            // Add to main notifications list
             const updatedNotifications = [notification, ...notifications];
             
-            // Update unread count
             const newUnreadCount = unreadCount + 1;
             
-            // Add to recent notifications in summary
             const updatedRecentNotifications = [notification, ...summary.recentNotifications].slice(0, 5);
             
-            // Update category counts
             const updatedCategoryCounts = {
                 ...summary.categoryCounts,
                 [notification.category]: (summary.categoryCounts[notification.category] || 0) + 1
             };
 
-            // Create new summary object to ensure React detects the change
             const newSummary = {
                 recentNotifications: updatedRecentNotifications,
                 categoryCounts: updatedCategoryCounts,
@@ -180,7 +153,6 @@ export const useNotificationStore = create((set, get) => ({
                 summary: newSummary
             });
 
-            // Play notification sound
             playNotificationSound();
         });
 
@@ -190,7 +162,6 @@ export const useNotificationStore = create((set, get) => ({
     disconnectSocket: () => {
         const { socket } = get();
         if (socket) {
-            // Disconnecting notification socket
             socket.disconnect();
             set({ socket: null, isConnected: false });
         }
@@ -214,8 +185,7 @@ export const useNotificationStore = create((set, get) => ({
                 unreadCount,
                 isLoading: false
             });
-
-            // Notifications updated successfully
+            
             return { notifications, pagination, unreadCount };
         } catch (error) {
             console.error('❌ Error fetching notifications:', error);
@@ -240,12 +210,10 @@ export const useNotificationStore = create((set, get) => ({
                 },
                 unreadCount: totalUnread
             });
-
-            // Notification summary updated successfully
+            
             return { recentNotifications, categoryCounts, totalUnread };
         } catch (error) {
             console.error('❌ Error fetching notification summary:', error);
-            // Don't throw error for summary fetch as it's not critical
         }
     },
 
@@ -267,7 +235,6 @@ export const useNotificationStore = create((set, get) => ({
             const response = await axios.patch(`${API_URL}/${notificationId}/read`);
             const updatedNotification = response.data.data;
 
-            // Update local state
             const { notifications, unreadCount } = get();
             const updatedNotifications = notifications.map(notification =>
                 notification.notificationId === notificationId
@@ -280,7 +247,6 @@ export const useNotificationStore = create((set, get) => ({
                 unreadCount: Math.max(0, unreadCount - 1)
             });
 
-            // Update summary if this notification was in recent notifications
             const { summary } = get();
             const updatedRecentNotifications = summary.recentNotifications.map(notification =>
                 notification.notificationId === notificationId
@@ -310,7 +276,6 @@ export const useNotificationStore = create((set, get) => ({
             const response = await axios.patch(`${API_URL}/mark-all-read`);
             const { modifiedCount } = response.data.data;
 
-            // Update local state
             const { notifications } = get();
             const updatedNotifications = notifications.map(notification => ({
                 ...notification,
@@ -345,7 +310,6 @@ export const useNotificationStore = create((set, get) => ({
         try {
             await axios.delete(`${API_URL}/${notificationId}`);
 
-            // Update local state
             const { notifications, unreadCount } = get();
             const notificationToDelete = notifications.find(n => n.notificationId === notificationId);
             const updatedNotifications = notifications.filter(
@@ -359,7 +323,6 @@ export const useNotificationStore = create((set, get) => ({
                     : unreadCount
             });
 
-            // Update summary
             const { summary } = get();
             const updatedRecentNotifications = summary.recentNotifications.filter(
                 notification => notification.notificationId !== notificationId
@@ -384,20 +347,15 @@ export const useNotificationStore = create((set, get) => ({
         }
     },
 
-    // Add new notification (for real-time updates)
     addNotification: (notification) => {
         const { notifications, unreadCount, summary } = get();
         
-        // Add to main notifications list
         const updatedNotifications = [notification, ...notifications];
         
-        // Update unread count
         const newUnreadCount = unreadCount + 1;
         
-        // Add to recent notifications in summary
         const updatedRecentNotifications = [notification, ...summary.recentNotifications].slice(0, 5);
         
-        // Update category counts
         const updatedCategoryCounts = {
             ...summary.categoryCounts,
             [notification.category]: (summary.categoryCounts[notification.category] || 0) + 1
@@ -414,14 +372,12 @@ export const useNotificationStore = create((set, get) => ({
         });
     },
 
-    // Update filters
     setFilters: (newFilters) => {
         set({
             filters: { ...get().filters, ...newFilters }
         });
     },
 
-    // Clear filters
     clearFilters: () => {
         set({
             filters: {
@@ -432,41 +388,34 @@ export const useNotificationStore = create((set, get) => ({
         });
     },
 
-    // Clear error
     clearError: () => {
         set({ error: null });
     },
 
-    // Clear message
     clearMessage: () => {
         set({ message: null });
     },
 
-    // Get notification by ID
     getNotificationById: (notificationId) => {
         const { notifications } = get();
         return notifications.find(notification => notification.notificationId === notificationId);
     },
 
-    // Get notifications by category
     getNotificationsByCategory: (category) => {
         const { notifications } = get();
         return notifications.filter(notification => notification.category === category);
     },
 
-    // Get unread notifications
     getUnreadNotifications: () => {
         const { notifications } = get();
         return notifications.filter(notification => !notification.isRead);
     },
 
-    // Get notifications by priority
     getNotificationsByPriority: (priority) => {
         const { notifications } = get();
         return notifications.filter(notification => notification.priority === priority);
     },
 
-    // Format time ago
     formatTimeAgo: (date) => {
         const now = new Date();
         const diffInSeconds = Math.floor((now - new Date(date)) / 1000);
@@ -478,7 +427,6 @@ export const useNotificationStore = create((set, get) => ({
         return new Date(date).toLocaleDateString();
     },
 
-    // Get priority color
     getPriorityColor: (priority) => {
         const colors = {
             low: 'text-green-600 bg-green-100',
@@ -489,7 +437,6 @@ export const useNotificationStore = create((set, get) => ({
         return colors[priority] || colors.medium;
     },
 
-    // Get category icon
     getCategoryIcon: (category) => {
         const icons = {
             inventory: 'Package',
@@ -502,7 +449,6 @@ export const useNotificationStore = create((set, get) => ({
         return icons[category] || 'Bell';
     },
 
-    // Get category color
     getCategoryColor: (category) => {
         const colors = {
             inventory: 'text-blue-600 bg-blue-100',

@@ -69,7 +69,6 @@ const ReplacementRequestModal = ({ request, isOpen, onClose, isAdmin = false }) 
                                                 <h4 className="font-medium text-gray-900 text-sm sm:text-base">
                                                     {request.product?.name}
                                                     {(() => {
-                                                        // Try to get weight info from product data
                                                         if (request.product?.weightOptions && request.product.weightOptions.length > 0) {
                                                             const firstWeight = request.product.weightOptions[0];
                                                             if (firstWeight && firstWeight.weightKg) {
@@ -84,21 +83,18 @@ const ReplacementRequestModal = ({ request, isOpen, onClose, isAdmin = false }) 
                                                 </p>
                                                 <p className="text-xs sm:text-sm text-gray-600">
                                                     Price: ₱{(() => {
-                                                        // Use the historical price from the order if available
                                                         if (request.order && request.order.products) {
                                                             const orderProduct = request.order.products.find(p => p.product._id === request.product._id);
                                                             if (orderProduct && orderProduct.price) {
                                                                 return orderProduct.price.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                                                             }
                                                         }
-                                                        // Fallback to current product price calculation
                                                         if (request.product?.basePricePerKg && request.product?.weightOptions && request.product.weightOptions.length > 0) {
                                                             const firstWeight = request.product.weightOptions[0];
                                                             if (firstWeight && firstWeight.weightKg) {
                                                                 return (request.product.basePricePerKg * firstWeight.weightKg).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                                                             }
                                                         }
-                                                        // Final fallback to regular price
                                                         return request.product?.price?.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00';
                                                     })()}
                                                 </p>
@@ -284,14 +280,12 @@ const ReplacementRequestModal = ({ request, isOpen, onClose, isAdmin = false }) 
                                                         </p>
                                                         <p className="text-xs sm:text-sm text-gray-600">
                                                             Price: ₱{(() => {
-                                                                // Calculate price for weight-based products
                                                                 if (request.replacementProduct?.basePricePerKg && request.replacementProduct?.weightOptions && request.replacementProduct.weightOptions.length > 0) {
                                                                     const firstWeight = request.replacementProduct.weightOptions[0];
                                                                     if (firstWeight && firstWeight.weightKg) {
                                                                         return (request.replacementProduct.basePricePerKg * firstWeight.weightKg).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                                                                     }
                                                                 }
-                                                                // Fallback to regular price
                                                                 return request.replacementProduct?.price?.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00';
                                                             })()}
                                                         </p>

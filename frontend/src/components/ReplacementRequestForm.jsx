@@ -58,7 +58,6 @@ const ReplacementRequestForm = ({ order, product, onSuccess, onCancel }) => {
 
         setImageFiles(prev => [...prev, ...validFiles]);
         
-        // Create preview URLs
         validFiles.forEach(file => {
             const reader = new FileReader();
             reader.onload = (e) => {
@@ -84,7 +83,6 @@ const ReplacementRequestForm = ({ order, product, onSuccess, onCancel }) => {
         }
 
         try {
-            // Convert images to base64 for upload
             const imagePromises = imageFiles.map(file => {
                 return new Promise((resolve) => {
                     const reader = new FileReader();
@@ -156,7 +154,6 @@ const ReplacementRequestForm = ({ order, product, onSuccess, onCancel }) => {
                             <p className="font-medium text-[#030105] font-alice text-sm sm:text-base">
                                 {product?.name}
                                 {(() => {
-                                    // Try to get weight info from product data
                                     if (product?.weightOptions && product.weightOptions.length > 0) {
                                         const firstWeight = product.weightOptions[0];
                                         if (firstWeight && firstWeight.weightKg) {

@@ -26,11 +26,9 @@ const ProductDetailPage = () => {
         const loadProduct = async () => {
             try {
                 setLoading(true);
-                // Try to find product in existing products first
                 const existingProduct = products.find(p => p._id === productId);
                 if (existingProduct) {
                     setProduct(existingProduct);
-                    // Auto-select the lowest weight option if available
                     if (existingProduct.hasWeightOptions && existingProduct.weightOptions && existingProduct.weightOptions.length > 0) {
                         const sortedOptions = [...existingProduct.weightOptions].sort((a, b) => a.weightKg - b.weightKg);
                         if (sortedOptions.length > 0) {
@@ -59,13 +57,11 @@ const ProductDetailPage = () => {
         }
     }, [productId, fetchProductById, products]);
 
-    // Update product when products change (after API fetch)
     useEffect(() => {
         if (products && products.length > 0) {
             const foundProduct = products.find(p => p._id === productId);
             if (foundProduct) {
                 setProduct(foundProduct);
-                // Auto-select the lowest weight option if available
                 if (foundProduct.hasWeightOptions && foundProduct.weightOptions && foundProduct.weightOptions.length > 0) {
                     const sortedOptions = [...foundProduct.weightOptions].sort((a, b) => a.weightKg - b.weightKg);
                     if (sortedOptions.length > 0) {
@@ -81,12 +77,10 @@ const ProductDetailPage = () => {
         if (!product) return [];
         const images = [];
         
-        // Add main image if it exists
         if (product.image) {
             images.push(product.image);
         }
         
-        // Add additional images from images array, avoiding duplicates
         if (product.images && product.images.length > 0) {
             product.images.forEach(image => {
                 if (image && !images.includes(image)) {
@@ -118,7 +112,6 @@ const ProductDetailPage = () => {
     const selectedWeightOption = weightOptions.find(o => String(o._id) === String(selectedWeightOptionId)) || null;
     const selectedStock = selectedWeightOption ? (selectedWeightOption.stockUnits || 0) : (product?.quantity || 0);
     
-    // Calculate display price - use selected option price, or lowest price if no selection
     const displayPrice = (() => {
         if (selectedWeightOption && typeof selectedWeightOption.price === 'number') {
             return selectedWeightOption.price;
@@ -155,7 +148,6 @@ const ProductDetailPage = () => {
 
         try {
             setAddingToCart(true);
-            // Add the product with the specified quantity
             let failureStatus = null;
             for (let i = 0; i < quantity; i++) {
                 const result = await addToCart(product, selectedWeightOptionId);

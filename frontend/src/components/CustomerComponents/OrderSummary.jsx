@@ -201,7 +201,6 @@ const OrderSummary = ({ hideActions = false }) => {
                             const itemPrice = item.unitPrice || item.price; // Use unitPrice for weight-based products
                             const itemTotal = itemPrice * itemQuantity;
                             
-                            // Display weight information for weight-based products
                             const weightInfo = item.weightKg ? ` (${item.weightKg}kg)` : '';
                             
                             return (

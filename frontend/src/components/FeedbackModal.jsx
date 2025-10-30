@@ -15,20 +15,17 @@ const FeedbackModal = ({ isOpen, onClose }) => {
   });
   const [hoveredStar, setHoveredStar] = useState(0);
 
-  // Auto-fill user name when modal opens
   useEffect(() => {
     if (isOpen && user?.name) {
       setFormData(prev => ({
         ...prev,
         name: user.name
       }));
-      // Clear any previous errors
       clearError();
       clearMessage();
     }
   }, [isOpen, user?.name, clearError, clearMessage]);
 
-  // Clear messages when modal closes
   useEffect(() => {
     if (!isOpen) {
       clearError();
@@ -62,7 +59,6 @@ const FeedbackModal = ({ isOpen, onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Clear previous messages
     clearError();
     clearMessage();
     
@@ -81,7 +77,6 @@ const FeedbackModal = ({ isOpen, onClose }) => {
         product: ''
       });
       
-      // Close modal after successful submission
       setTimeout(() => {
         onClose();
       }, 2000);

@@ -7,10 +7,8 @@ import { useAuthStore } from '../store/authStore.js';
 const NotificationBell = ({ isAtTop = false, debugId = 'unknown' }) => {
     const { user } = useAuthStore();
     
-    // Add unique identifier for debugging
     const bellId = useRef(`bell-${isAtTop ? 'top' : 'sidebar'}-${Math.random().toString(36).substr(2, 9)}`);
     
-    // Subscribe to notification store with proper reactivity
     const summary = useNotificationStore((state) => state.summary);
     const unreadCount = useNotificationStore((state) => state.unreadCount);
     const isLoading = useNotificationStore((state) => state.isLoading);
@@ -32,33 +30,24 @@ const NotificationBell = ({ isAtTop = false, debugId = 'unknown' }) => {
     const dropdownRef = useRef(null);
     const initializedRef = useRef(false);
 
-    // Memoize the initialization function to prevent unnecessary re-runs
     const initializeNotifications = useCallback(async () => {
         if (user && user.isVerified && !initializedRef.current) {
             initializedRef.current = true;
             
-            // Fetch initial notifications (socket is initialized globally in App.jsx)
             fetchNotificationSummary();
         } else if (!user || !user.isVerified) {
-            // Reset initialization flag when user logs out
             initializedRef.current = false;
-            // Disconnect socket if user is not authenticated
             disconnectSocket();
         }
     }, [user?.id, user?.isVerified, fetchNotificationSummary, disconnectSocket]); // Only depend on user ID and verification status
-
-    // Initialize socket and fetch notifications on component mount
     useEffect(() => {
         initializeNotifications();
         
-        // Cleanup on unmount
         return () => {
             disconnectSocket();
         };
     }, [initializeNotifications]);
 
-
-    // Close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -70,7 +59,6 @@ const NotificationBell = ({ isAtTop = false, debugId = 'unknown' }) => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    // Handle mark as read
     const handleMarkAsRead = async (notificationId, e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -85,7 +73,6 @@ const NotificationBell = ({ isAtTop = false, debugId = 'unknown' }) => {
         }
     };
 
-    // Handle mark all as read
     const handleMarkAllAsRead = async () => {
         setIsLoadingAction(true);
         try {
@@ -98,7 +85,6 @@ const NotificationBell = ({ isAtTop = false, debugId = 'unknown' }) => {
         }
     };
 
-    // Handle delete notification
     const handleDeleteNotification = async (notificationId, e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -113,7 +99,6 @@ const NotificationBell = ({ isAtTop = false, debugId = 'unknown' }) => {
         }
     };
 
-    // Get category icon component
     const getCategoryIconComponent = (category) => {
         const iconProps = { size: 16 };
         switch (category) {
@@ -134,13 +119,11 @@ const NotificationBell = ({ isAtTop = false, debugId = 'unknown' }) => {
         }
     };
 
-    // Get action URL based on notification type
     const getActionUrl = (notification) => {
         if (notification.actionUrl) {
             return notification.actionUrl;
         }
 
-        // Default URLs based on notification type
         switch (notification.type) {
             case 'inventory_alert':
                 return '/manage-products';
@@ -174,10 +157,8 @@ const NotificationBell = ({ isAtTop = false, debugId = 'unknown' }) => {
             {/* Notification Bell Button */}
             <button
                 onClick={() => {
-                    // Notification bell clicked
                     setIsDropdownOpen(!isDropdownOpen);
                     if (!isDropdownOpen) {
-                        // Fetching fresh notifications
                         fetchNotificationSummary();
                     }
                 }}
@@ -217,7 +198,6 @@ const NotificationBell = ({ isAtTop = false, debugId = 'unknown' }) => {
                                 )}
                                 <button
                                     onClick={() => {
-                                        // Refreshing notifications
                                         fetchNotificationSummary();
                                     }}
                                     className="p-1 hover:bg-gray-200 rounded text-gray-400 hover:text-blue-600"

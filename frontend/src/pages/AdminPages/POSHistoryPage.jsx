@@ -33,7 +33,6 @@ const POSHistoryPage = () => {
   const [rangeEnd, setRangeEnd] = useState('');
   const [customMode, setCustomMode] = useState('date');
 
-  // Load transactions on component mount and when time filters change
   useEffect(() => {
     loadTransactions();
   }, [timeframe, selectedDate, rangeStart, rangeEnd, customMode]);
@@ -58,12 +57,10 @@ const POSHistoryPage = () => {
       setTransactions(result.data || []);
     } else {
       console.error('Failed to load transactions:', result.error);
-      // Set empty array if there's an error, so the page doesn't break
       setTransactions([]);
     }
   };
 
-  // Filter transactions based on search and date
   const filteredTransactions = transactions.filter(transaction => {
     const matchesSearch = 
       transaction.transactionId.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -120,21 +117,17 @@ const POSHistoryPage = () => {
   const handlePrintReceipt = (transaction) => {
     if (!transaction) return;
     
-    // Create a new window for printing
     const printWindow = window.open('', '_blank', 'width=400,height=600');
     
-    // Generate the receipt HTML
     const receiptHTML = generateReceiptHTML(transaction);
     
     printWindow.document.write(receiptHTML);
     printWindow.document.close();
     
-    // Wait for content to load, then print
     printWindow.onload = () => {
       printWindow.focus();
       printWindow.print();
       
-      // Close the print window after printing
       printWindow.onafterprint = () => {
         printWindow.close();
       };
@@ -273,12 +266,10 @@ const POSHistoryPage = () => {
             ${transaction.items.map(item => {
               const itemPrice = item.unitPrice || item.price;
               
-              // Try to get weight info from stored data first, then from product data
               let weightInfo = '';
               if (item.weightKg) {
                 weightInfo = ` (${item.weightKg}kg)`;
               } else if (item.productId && item.productId.weightOptions && item.productId.weightOptions.length > 0) {
-                // If no stored weight info, try to get it from the product's weight options
                 const firstWeight = item.productId.weightOptions[0];
                 if (firstWeight && firstWeight.weightKg) {
                   weightInfo = ` (${firstWeight.weightKg}kg)`;
@@ -689,13 +680,10 @@ const POSHistoryPage = () => {
                     {selectedTransaction.items.map((item, index) => {
                       const itemPrice = item.unitPrice || item.price;
                       
-                      // Try to get weight info from stored data first, then from product data
                       let weightInfo = '';
                       if (item.weightKg) {
                         weightInfo = ` (${item.weightKg}kg)`;
                       } else if (item.productId && item.productId.weightOptions && item.productId.weightOptions.length > 0) {
-                        // If no stored weight info, try to get it from the product's weight options
-                        // For now, we'll show the first weight option as a fallback
                         const firstWeight = item.productId.weightOptions[0];
                         if (firstWeight && firstWeight.weightKg) {
                           weightInfo = ` (${firstWeight.weightKg}kg)`;

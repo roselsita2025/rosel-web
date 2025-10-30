@@ -6,7 +6,6 @@ const API_URL = (import.meta.env.VITE_API_URL || "http://localhost:5000/api") + 
 axios.defaults.withCredentials = true;
 
 export const useChatStore = create((set, get) => ({
-    // State
     socket: null,
     isConnected: false,
     chats: [],
@@ -17,28 +16,23 @@ export const useChatStore = create((set, get) => ({
     error: null,
     message: null,
     
-    // Chat UI state
     isChatOpen: false,
     isMinimized: false,
     chatType: null, // 'chatbot' or 'support'
     isTyping: false,
     typingUsers: [],
     
-    // Actions
     initializeSocket: () => {
-        // Initializing socket
         
         const socket = io(import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000', {
             withCredentials: true  // Use HTTP-only cookies for authentication
         });
 
         socket.on('connect', () => {
-            // Connected to chat server
             set({ isConnected: true });
         });
 
         socket.on('disconnect', (reason) => {
-            // Disconnected from chat server
             set({ isConnected: false });
         });
 
@@ -48,13 +42,11 @@ export const useChatStore = create((set, get) => ({
         });
 
         socket.on('connection_status', (data) => {
-            // Connection status update
             set({ isConnected: data.connected });
         });
 
         socket.on('new_message', (data) => {
             const { messages, currentChat } = get();
-            // Only add message if it's for the current chat
             if (currentChat && data.chatId === currentChat.chatId) {
                 set({ 
                     messages: [...messages, data.message]
@@ -117,7 +109,6 @@ export const useChatStore = create((set, get) => ({
         });
 
         set({ socket });
-        // Socket stored in state
     },
 
     disconnectSocket: () => {
@@ -128,11 +119,9 @@ export const useChatStore = create((set, get) => ({
         }
     },
 
-    // Chat management
     createChat: async (type, customerDetails = {}) => {
         set({ isLoading: true, error: null });
         try {
-            // For chatbot, we don't need to create a server-side chat
             if (type === 'chatbot') {
                 const mockChat = {
                     _id: `chatbot_${Date.now()}`,
@@ -223,7 +212,6 @@ export const useChatStore = create((set, get) => ({
                 isLoading: false 
             });
             
-            // Join chat room for real-time updates
             const { socket } = get();
             if (socket) {
                 socket.emit('join_chat', chatId);
@@ -248,9 +236,6 @@ export const useChatStore = create((set, get) => ({
             
             const newMessage = response.data.data;
             
-            // Don't add to local state here - let WebSocket handle it
-            // This prevents duplication when the new_message event fires
-            
             return newMessage;
         } catch (error) {
             set({ 
@@ -268,9 +253,6 @@ export const useChatStore = create((set, get) => ({
             
             const botMessage = response.data.data;
             
-            // Don't add to local state here - let WebSocket handle it
-            // This prevents duplication when the new_message event fires
-            
             return botMessage;
         } catch (error) {
             set({ 
@@ -280,7 +262,6 @@ export const useChatStore = create((set, get) => ({
         }
     },
 
-    // FAQ management
     getFAQs: async (category = null, search = null) => {
         set({ isLoading: true, error: null });
         try {
@@ -303,7 +284,6 @@ export const useChatStore = create((set, get) => ({
         }
     },
 
-    // Admin functions
     getAdminChats: async (status = null, page = 1, limit = 20) => {
         set({ isLoading: true, error: null });
         try {
@@ -379,7 +359,6 @@ export const useChatStore = create((set, get) => ({
         }
     },
 
-    // UI state management
     openChat: (type) => {
         set({ 
             isChatOpen: true, 
@@ -392,7 +371,6 @@ export const useChatStore = create((set, get) => ({
     closeChat: () => {
         const { socket, currentChat } = get();
         
-        // Leave chat room if in one
         if (socket && currentChat) {
             socket.emit('leave_chat', currentChat.chatId);
         }
@@ -425,7 +403,6 @@ export const useChatStore = create((set, get) => ({
         set({ messages: [] });
     },
 
-    // Typing indicators
     startTyping: (chatId) => {
         const { socket } = get();
         if (socket) {
@@ -440,7 +417,6 @@ export const useChatStore = create((set, get) => ({
         }
     },
 
-    // Utility functions
     clearError: () => {
         set({ error: null });
     },
@@ -449,29 +425,25 @@ export const useChatStore = create((set, get) => ({
         set({ message: null });
     },
 
-    // Get chat by ID
     getChatById: (chatId) => {
         const { chats } = get();
         return chats.find(chat => chat.chatId === chatId);
     },
 
-    // Get unread message count
     getUnreadCount: () => {
         const { chats } = get();
         return chats.filter(chat => 
-            chat.status !== 'ended' && // Exclude ended chats
+            chat.status !== 'ended' &&
             (chat.status === 'waiting' || 
             (chat.lastMessage && !chat.lastMessage.isRead))
         ).length;
     },
 
-    // Get pending chats count (waiting status)
     getPendingChatsCount: () => {
         const { chats } = get();
         return chats.filter(chat => chat.status === 'waiting').length;
     },
     
-    // Fetch pending chats count only
     fetchPendingChatsCount: async () => {
         try {
             const response = await axios.get(`${API_URL}/admin/chats?status=waiting&limit=1`);
@@ -479,7 +451,6 @@ export const useChatStore = create((set, get) => ({
             return count;
         } catch (error) {
             console.error('Error fetching pending chats count:', error);
-            // Fallback: try to get count from existing chats
             try {
                 const fallbackResponse = await axios.get(`${API_URL}/admin/chats`);
                 const count = fallbackResponse.data.data.chats?.filter(chat => 

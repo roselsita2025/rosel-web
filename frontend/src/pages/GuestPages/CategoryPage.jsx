@@ -24,7 +24,6 @@ const CategoryPage = () => {
     const { addToCart } = cartStore();
     const [buttonStateById, setButtonStateById] = useState({}); // { [productId]: 'idle' | 'added' | 'maxed' }
     
-    // Filter and sort state
     const [showFilter, setShowFilter] = useState(false);
     const [showSort, setShowSort] = useState(false);
     const [minPrice, setMinPrice] = useState(0);
@@ -32,11 +31,9 @@ const CategoryPage = () => {
     const [sortBy, setSortBy] = useState('latest');
     const [filteredProducts, setFilteredProducts] = useState([]);
     
-    // Pagination state
     const [currentPage, setCurrentPage] = useState(1);
     const productsPerPage = 20;
-
-    // Carousel state for category cards
+    
     const [currentCategoryIndex, setCurrentCategoryIndex] = useState(0);
     const [itemsPerView, setItemsPerView] = useState(6); // Default for large screens
 
@@ -44,7 +41,6 @@ const CategoryPage = () => {
 		fetchProductsByCategory(category);
 	}, [fetchProductsByCategory, category]);
 
-    // Carousel responsive logic
     useEffect(() => {
         const handleResize = () => {
             if (window.innerWidth < 640) {
@@ -74,7 +70,6 @@ const CategoryPage = () => {
         );
     };
 
-    // Close dropdowns when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (showFilter && !event.target.closest('.filter-dropdown')) {
@@ -91,14 +86,12 @@ const CategoryPage = () => {
         };
     }, [showFilter, showSort]);
 
-    // Filter and sort products
     useEffect(() => {
         if (products && products.length > 0) {
             let filtered = products.filter(product => 
                 (product.priceMin || product.price || 0) >= minPrice && (product.priceMin || product.price || 0) <= maxPrice
             );
 
-            // Sort products
             switch (sortBy) {
                 case 'price-low':
                     filtered.sort((a, b) => a.price - b.price);
@@ -120,7 +113,6 @@ const CategoryPage = () => {
     const handleAddToCart = async (product) => {
         if (user?.role === 'admin') return;
         
-        // For products with weight options, automatically select the lowest weight
         let weightOptionId = null;
         if (product.hasWeightOptions && product.weightOptions && product.weightOptions.length > 0) {
             console.log('CategoryPage: Original weight options:', product.weightOptions);
@@ -164,7 +156,6 @@ const CategoryPage = () => {
         }
     };
 
-    // Pagination functions
     const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
     const startIndex = (currentPage - 1) * productsPerPage;
     const endIndex = startIndex + productsPerPage;

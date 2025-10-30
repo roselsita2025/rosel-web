@@ -18,7 +18,6 @@ const WriteOffTable = ({
     pagination = {}, 
     onRefresh 
 }) => {
-    // Handle both writeOffs and discrepancy details data
     const data = writeOffs || [];
     const [searchTerm, setSearchTerm] = useState('');
     const [sortBy, setSortBy] = useState('createdAt');
@@ -62,7 +61,6 @@ const WriteOffTable = ({
 
 
     const filteredWriteOffs = data.filter(item => {
-        // Handle both writeOff and replacement data structures
         const productName = item.productName || item.product?.name || '';
         const productCategory = item.productCategory || item.product?.category || '';
         const reason = item.reason || '';
@@ -258,14 +256,12 @@ const WriteOffTable = ({
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                             {(() => {
-                                                // Try multiple possible weight fields
                                                 let weight = null;
                                                 
                                                 // Direct weight fields
                                                 if (writeOff.weightKg) weight = writeOff.weightKg;
                                                 else if (writeOff.weight) weight = writeOff.weight;
                                                 
-                                                // Product weight fields
                                                 else if (writeOff.product?.weightOptions?.[0]?.weightKg) {
                                                     weight = writeOff.product.weightOptions[0].weightKg;
                                                 }

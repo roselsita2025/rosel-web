@@ -25,7 +25,6 @@ const ContactUsPage = () => {
   });
 
 
-  // Load contact information on component mount
   useEffect(() => {
     const loadContactInfo = async () => {
       try {
@@ -63,7 +62,6 @@ const ContactUsPage = () => {
       
       if (response.data.success) {
         setSendState('success');
-        // Reset form
         setFormData({
           name: "",
           email: "",

@@ -36,16 +36,13 @@ const Chatbot = () => {
     }, []);
 
     useEffect(() => {
-        // Scroll to bottom when new messages arrive
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
 
     const initializeChatbot = async () => {
         try {
-            // Create a new chatbot chat session
             const chat = await createChat('chatbot');
             
-            // Add welcome message
             const welcomeMessage = {
                 id: Date.now(),
                 senderType: 'bot',
@@ -66,7 +63,6 @@ const Chatbot = () => {
     };
 
     const handleOptionClick = async (optionId, optionText) => {
-        // Add user message
         const userMessage = {
             id: Date.now(),
             senderType: 'customer',
@@ -227,7 +223,6 @@ const Chatbot = () => {
         switch (optionId) {
             case 'all-products':
                 navigate('/products');
-                // Close chat after navigation
                 setTimeout(() => {
                     useChatStore.getState().closeChat();
                 }, 100);
@@ -239,28 +234,24 @@ const Chatbot = () => {
             case 'processed':
             case 'seafood':
                 navigate(`/category/${optionId}`);
-                // Close chat after navigation
                 setTimeout(() => {
                     useChatStore.getState().closeChat();
                 }, 100);
                 break;
             case 'track-orders':
                 navigate('/track-orders');
-                // Close chat after navigation
                 setTimeout(() => {
                     useChatStore.getState().closeChat();
                 }, 100);
                 break;
             case 'view-replacement-requests':
                 navigate('/replacement-requests');
-                // Close chat after navigation
                 setTimeout(() => {
                     useChatStore.getState().closeChat();
                 }, 100);
                 break;
             case 'new-replacement-request':
                 navigate('/replacement-request/new');
-                // Close chat after navigation
                 setTimeout(() => {
                     useChatStore.getState().closeChat();
                 }, 100);

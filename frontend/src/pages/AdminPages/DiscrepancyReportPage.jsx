@@ -66,7 +66,6 @@ const DiscrepancyReportPage = () => {
     const { products, fetchAllProducts } = productStore();
     const { user } = useAuthStore();
 
-    // Load initial data
     useEffect(() => {
         loadData();
     }, [dataSource, timeframe, customDateRange]);
@@ -300,31 +299,31 @@ const AnalyticsTab = ({ analytics, writeOffs, dataSource, timeframe, customDateR
         <div className="space-y-4 sm:space-y-6">
             {/* Key Metrics */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
-                <div className="bg-gradient-to-r from-red-500 to-red-600 rounded-lg p-4 sm:p-5 md:p-6 text-white">
+                <div className="bg-gradient-to-r from-[#82695b] to-[#6b5649] rounded-lg p-4 sm:p-5 md:p-6 text-white">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-red-100 text-xs sm:text-sm font-medium">Total Stocks Lost</p>
+                            <p className="text-[#e8e3df] text-xs sm:text-sm font-medium">Total Stocks Lost</p>
                             <p className="text-2xl sm:text-3xl font-bold">{totalStocks || 0}</p>
                         </div>
-                        <Package className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-red-200 flex-shrink-0" />
+                        <Package className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-[#d3c9c0] flex-shrink-0" />
                     </div>
                 </div>
-                <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg p-4 sm:p-5 md:p-6 text-white">
+                <div className="bg-gradient-to-r from-[#a67c52] to-[#8b6b42] rounded-lg p-4 sm:p-5 md:p-6 text-white">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-orange-100 text-xs sm:text-sm font-medium">Total Cost Impact</p>
+                            <p className="text-[#f0eae4] text-xs sm:text-sm font-medium">Total Cost Impact</p>
                             <p className="text-2xl sm:text-3xl font-bold break-words">₱{totalCost?.toLocaleString() || 0}</p>
                         </div>
-                        <DollarSign className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-orange-200 flex-shrink-0" />
+                        <DollarSign className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-[#e8ddd0] flex-shrink-0" />
                     </div>
                 </div>
-                <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-lg p-4 sm:p-5 md:p-6 text-white sm:col-span-2 md:col-span-1">
+                <div className="bg-gradient-to-r from-[#a31f17] to-[#860809] rounded-lg p-4 sm:p-5 md:p-6 text-white sm:col-span-2 md:col-span-1">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-yellow-100 text-xs sm:text-sm font-medium">Categories Affected</p>
+                            <p className="text-[#f5d1cf] text-xs sm:text-sm font-medium">Categories Affected</p>
                             <p className="text-2xl sm:text-3xl font-bold">{categoryBreakdown?.length || 0}</p>
                         </div>
-                        <AlertTriangle className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-yellow-200 flex-shrink-0" />
+                        <AlertTriangle className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-[#f0c5c3] flex-shrink-0" />
                     </div>
                 </div>
             </div>

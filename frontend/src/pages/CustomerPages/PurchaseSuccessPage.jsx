@@ -35,7 +35,6 @@ const PurchaseSuccessPage = () => {
 				clearCart();
 				// Store order details if available
                 if (response.data.orderId) {
-                    // Fetch complete order details including shipping method and Lalamove details
                     const orderResponse = await axios.get(`${API_URL}/orders/${response.data.orderId}/tracking`);
 					if (orderResponse.data.success) {
 						setOrderDetails(orderResponse.data.data);

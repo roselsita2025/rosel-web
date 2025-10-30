@@ -18,13 +18,11 @@ const PaymentPage = () => {
     const { user, isAuthenticated } = useAuthStore();
     const { cart, clearCart, coupon: cartCoupon, isCouponApplied: cartIsCouponApplied } = cartStore();
 
-    // State
     const [checkoutData, setCheckoutData] = useState(null);
     const [isProcessing, setIsProcessing] = useState(false);
     const [paymentError, setPaymentError] = useState(null);
 
     useEffect(() => {
-        // Redirect if not authenticated or not customer
         if (!isAuthenticated) {
             navigate('/login');
             return;
@@ -34,7 +32,6 @@ const PaymentPage = () => {
             return;
         }
 
-        // Load checkout data from sessionStorage
         const savedCheckoutData = sessionStorage.getItem('checkoutData');
         if (!savedCheckoutData) {
             toast.error('Checkout information not found. Please start over.');
@@ -55,13 +52,11 @@ const PaymentPage = () => {
         setPaymentError(null);
 
         try {
-            // Verify Stripe is loaded
             const stripe = await stripePromise;
             if (!stripe) {
                 throw new Error('Stripe failed to load. Please check your internet connection and try again.');
             }
 
-            // Calculate correct total (no tax)
             const subtotal = checkoutData.cart.reduce((sum, item) => sum + (item.price * (item.cartQuantity || item.quantity)), 0);
             const taxAmount = 0;
             const voucherDiscount = checkoutData.coupon ? 
@@ -79,7 +74,6 @@ const PaymentPage = () => {
                 : 0;
             const correctTotal = subtotal - voucherDiscount + deliveryFee;
 
-            // Prepare payment data (ensure coupon code fallback to cart store)
             const paymentData = {
                 products: checkoutData.cart,
                 couponCode: (checkoutData.coupon?.code || cartCoupon?.code) || null,
@@ -93,7 +87,6 @@ const PaymentPage = () => {
 
             console.log('Payment data being sent:', paymentData);
 
-            // Create checkout session with Stripe
             const response = await axios.post(`${API_URL}/payments/create-checkout-session`, paymentData, {
                 timeout: 30000 // 30 second timeout
             });
@@ -101,7 +94,6 @@ const PaymentPage = () => {
             console.log('Payment response:', response.data);
 
             if (response.data.success && response.data.id) {
-                // Redirect to Stripe Checkout
                 const result = await stripe.redirectToCheckout({
                     sessionId: response.data.id,
                 });
@@ -149,11 +141,9 @@ const PaymentPage = () => {
 
     const { shippingInfo, selectedShipping, lalamoveQuote, finalTotal, cart: cartItems, coupon: checkoutCoupon, isCouponApplied: checkoutIsCouponApplied } = checkoutData;
     
-    // Use checkout data first, fallback to cart store
     const coupon = checkoutCoupon || cartCoupon;
     const isCouponApplied = checkoutIsCouponApplied || cartIsCouponApplied;
     
-    // Debug log to check coupon data
     console.log('Payment page coupon data:', { 
         checkoutCoupon, 
         checkoutIsCouponApplied, 
@@ -175,7 +165,6 @@ const PaymentPage = () => {
         ) 
         : 0;
     
-    // Calculate discount amount - voucher applies to subtotal only, not tax
     const voucherDiscount = coupon ? 
         (coupon.type === 'percent' ? subtotal * (coupon.amount / 100) : Math.min(coupon.amount, subtotal)) : 
         0;

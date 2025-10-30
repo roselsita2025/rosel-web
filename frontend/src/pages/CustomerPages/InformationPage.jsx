@@ -17,7 +17,6 @@ const InformationPage = () => {
     const { user, isAuthenticated } = useAuthStore();
     const { cart, coupon, isCouponApplied, applyCoupon, removeCoupon } = cartStore();
 
-    // Form state
     const [formData, setFormData] = useState({
         email: user?.email || "",
         firstName: "",
@@ -31,7 +30,6 @@ const InformationPage = () => {
         saveInfo: false
     });
 
-    // Google Maps state
     const [mapCenter, setMapCenter] = useState({ lat: 14.5995, lng: 120.9842 }); // Manila default
     const [selectedLocation, setSelectedLocation] = useState(null);
     const [isMapLoaded, setIsMapLoaded] = useState(false);
@@ -39,7 +37,6 @@ const InformationPage = () => {
     const [map, setMap] = useState(null);
     const [marker, setMarker] = useState(null);
 
-    // Form validation
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [locationRequired, setLocationRequired] = useState(false);
@@ -47,7 +44,6 @@ const InformationPage = () => {
     const [geocodeSuccess, setGeocodeSuccess] = useState(false);
     const [locationConfirmed, setLocationConfirmed] = useState(false);
 
-    // Philippine provinces (Luzon only)
     const luzonProvinces = [
         "Metro Manila", "Bulacan", "Pampanga", "Tarlac", "Nueva Ecija", "Bataan", "Zambales",
         "Aurora", "Quezon", "Rizal", "Laguna", "Cavite", "Batangas", "Camarines Norte",
@@ -58,7 +54,6 @@ const InformationPage = () => {
     ];
 
     useEffect(() => {
-        // Redirect if not authenticated or not customer
         if (!isAuthenticated) {
             navigate('/login');
             return;
@@ -68,7 +63,6 @@ const InformationPage = () => {
             return;
         }
 
-        // Load user's saved address if available
         if (user?.address) {
             setFormData(prev => ({
                 ...prev,
@@ -84,11 +78,9 @@ const InformationPage = () => {
             }));
         }
 
-        // Initialize Google Maps
         initializeMap();
     }, [isAuthenticated, user, navigate]);
 
-    // Re-initialize map when map element becomes available
     useEffect(() => {
         if (isAuthenticated && user?.role === 'customer') {
             const mapElement = document.getElementById('google-map');
@@ -124,7 +116,6 @@ const InformationPage = () => {
                     title: 'Delivery Location'
                 });
 
-                // Add click listener to map
                 googleMap.addListener('click', (event) => {
                     const lat = event.latLng.lat();
                     const lng = event.latLng.lng();
@@ -133,7 +124,6 @@ const InformationPage = () => {
                     setLocationConfirmed(false); // Reset confirmation when new location is selected
                 });
 
-                // Add drag listener to marker
                 googleMarker.addListener('dragend', (event) => {
                     const lat = event.latLng.lat();
                     const lng = event.latLng.lng();
@@ -146,7 +136,6 @@ const InformationPage = () => {
                 setIsMapLoaded(true);
             }
         } else {
-            // Load Google Maps script if not already loaded
             if (!document.querySelector('script[src*="maps.googleapis.com"]')) {
                 const apiKey = import.meta.env.VITE_MAPS_PLATFORM_API_KEY;
                 
@@ -177,7 +166,6 @@ const InformationPage = () => {
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
         
-        // Restrict postal code to numbers only
         let processedValue = value;
         if (name === 'postalCode') {
             processedValue = value.replace(/\D/g, ''); // Remove all non-digit characters
@@ -188,7 +176,6 @@ const InformationPage = () => {
             [name]: type === 'checkbox' ? checked : processedValue
         }));
 
-        // Clear error when user starts typing
         if (errors[name]) {
             setErrors(prev => ({
                 ...prev,
@@ -199,23 +186,19 @@ const InformationPage = () => {
 
     const validateForm = () => {
         const newErrors = {};
-
-        // Email validation
         if (!formData.email) {
             newErrors.email = "Email is required";
         } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
             newErrors.email = "Email is invalid";
         }
-
-        // Name validation
+        
         if (!formData.firstName.trim()) {
             newErrors.firstName = "First name is required";
         }
         if (!formData.lastName.trim()) {
             newErrors.lastName = "Last name is required";
         }
-
-        // Address validation
+        
         if (!formData.address.trim()) {
             newErrors.address = "Address is required";
         }
@@ -231,8 +214,7 @@ const InformationPage = () => {
         if (!formData.province) {
             newErrors.province = "Province is required";
         }
-
-        // Phone validation (Philippine format)
+        
         if (!formData.phone.trim()) {
             newErrors.phone = "Phone number is required";
         } else if (!/^(\+63|0)9\d{9}$/.test(formData.phone.replace(/\s/g, ''))) {
@@ -267,13 +249,11 @@ const InformationPage = () => {
                 setSelectedLocation(newLocation);
                 setLocationConfirmed(false); // Reset confirmation when new location is found
                 
-                // Update map and marker if they exist
                 if (map && marker) {
                     map.setCenter({ lat, lng });
                     marker.setPosition({ lat, lng });
                 }
                 
-                // Show success state briefly
                 setGeocodeSuccess(true);
                 setTimeout(() => {
                     setGeocodeSuccess(false);
@@ -291,7 +271,6 @@ const InformationPage = () => {
         if (selectedLocation) {
             setLocationConfirmed(true);
             setLocationRequired(false);
-            // You can store the confirmed coordinates here
         } else {
             toast.error("Please select a location on the map first");
         }
@@ -306,7 +285,6 @@ const InformationPage = () => {
         }
 
         if (!locationConfirmed) {
-            // Focus and highlight the location confirmation container
             setLocationRequired(true);
             const locationContainer = document.querySelector('[data-location-container]');
             if (locationContainer) {
@@ -322,7 +300,6 @@ const InformationPage = () => {
         setIsSubmitting(true);
 
         try {
-            // Save shipping information to user profile if requested
             if (formData.saveInfo) {
                 const addressData = {
                     street: formData.address,
@@ -338,8 +315,7 @@ const InformationPage = () => {
                     address: addressData
                 });
             }
-
-            // Store shipping information in session/localStorage for next step
+            
             const shippingInfo = {
                 ...formData,
                 coordinates: selectedLocation,
@@ -347,8 +323,7 @@ const InformationPage = () => {
             };
 
             sessionStorage.setItem('shippingInfo', JSON.stringify(shippingInfo));
-
-            // Navigate to shipping options page
+            
             navigate('/shipping-options');
         } catch (error) {
             console.error('Error saving information:', error);

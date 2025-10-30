@@ -16,7 +16,6 @@ const EmailVerificationPage = () => {
     const handleChange = (index, value) => {
         const newCode = [...code];
 
-        // Handle pasted content
         if (value.length > 1) {
 			const pastedCode = value.slice(0, 6).split("");
 			for (let i = 0; i < 6; i++) {
@@ -60,7 +59,6 @@ const EmailVerificationPage = () => {
 		}
 	};
 
-    // Auto submit when all fields are filled
 	useEffect(() => {
 		if (code.every((digit) => digit !== "")) {
 			handleSubmit(new Event("submit"));

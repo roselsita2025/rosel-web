@@ -5,14 +5,12 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 axios.defaults.withCredentials = true;
 
 const useOrderStore = create((set, get) => ({
-    // State
     orders: [],
     currentOrder: null,
     orderStats: null,
     isLoading: false,
     error: null,
     
-    // Actions
     fetchOrders: async (params = {}) => {
         set({ isLoading: true, error: null });
         try {
@@ -107,7 +105,6 @@ const useOrderStore = create((set, get) => ({
     
     clearCurrentOrder: () => set({ currentOrder: null }),
     
-    // Helper function to get status color
     getStatusColor: (status) => {
         const statusColors = {
             'PENDING': 'text-yellow-600 bg-yellow-100',
@@ -127,7 +124,6 @@ const useOrderStore = create((set, get) => ({
         return statusColors[status] || 'text-gray-600 bg-gray-100';
     },
     
-    // Helper function to get status icon
     getStatusIcon: (status) => {
         const statusIcons = {
             'PENDING': '⏳',
@@ -147,7 +143,6 @@ const useOrderStore = create((set, get) => ({
         return statusIcons[status] || '❓';
     },
     
-    // Helper function to get status description
     getStatusDescription: (status) => {
         const statusDescriptions = {
             'PENDING': 'Your order is being processed',

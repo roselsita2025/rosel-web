@@ -71,7 +71,6 @@ const ProductsPage = () => {
 		loadFeaturedProducts();
 	}, []);
 
-    // Load all products for the new section (force refresh to avoid stale category list)
     useEffect(() => {
         fetchAllProducts(true);
     }, [fetchAllProducts]);

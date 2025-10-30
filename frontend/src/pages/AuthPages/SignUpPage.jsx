@@ -20,13 +20,10 @@ const SignUpPage = () => {
 
     const {signup,error,isLoading, clearAuthState} = useAuthStore();
 
-    // Clear any leftover auth errors/messages when mounting signup page
     useEffect(() => {
         clearAuthState?.();
-        // also clear local error on mount
         setLocalError("");
         return () => {
-            // optional: clear on unmount too to avoid leaking into other pages
             clearAuthState?.();
         };
     }, [clearAuthState]);

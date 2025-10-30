@@ -22,6 +22,7 @@ import POSPage from "./pages/AdminPages/POSPage.jsx";
 import POSHistoryPage from "./pages/AdminPages/POSHistoryPage.jsx";
 import BackupRestorePage from "./pages/AdminPages/BackupRestorePage.jsx";
 import SalesReportPage from "./pages/AdminPages/SalesReportPage.jsx";
+import PurchaseOrderHistoryPage from "./pages/AdminPages/PurchaseOrderHistoryPage.jsx";
 
 import ProfilePage from "./pages/ProfilePage";
 import AccountSettingsPage from "./pages/AccountSettingsPage";
@@ -60,11 +61,10 @@ import { useNotificationStore } from "./store/notificationStore.js";
 import { useEffect, useRef } from "react";
 import { cartStore } from "./store/cartStore.js";
 
+  
 
 
 
-
-// Redirect unauthenticated user
 const ProtectedRoute = ({children}) => {
   const {isAuthenticated,user} = useAuthStore();
 
@@ -89,7 +89,6 @@ const RedirectAuthenticatedUser = ({children}) => {
   return children; 
 };
 
-// Admin-only route - only admins can access, others redirected to appropriate pages
 const AdminRoute = ({children}) => {
   const {isAuthenticated, user} = useAuthStore();
 
@@ -108,7 +107,6 @@ const AdminRoute = ({children}) => {
   return children;
 };
 
-// Customer-only route - only customers can access, others redirected to appropriate pages
 const CustomerRoute = ({children}) => {
   const {isAuthenticated, user} = useAuthStore();
 
@@ -127,7 +125,6 @@ const CustomerRoute = ({children}) => {
   return children;
 };
 
-// Guest-only route - only non-authenticated users can access
 const GuestRoute = ({children}) => {
   const {isAuthenticated, user} = useAuthStore();
 
@@ -141,7 +138,6 @@ const GuestRoute = ({children}) => {
   return children;
 };
 
-// Admin restricted route - admins cannot access, others can
 const AdminRestrictedRoute = ({children}) => {
   const {isAuthenticated, user} = useAuthStore();
 
@@ -152,7 +148,6 @@ const AdminRestrictedRoute = ({children}) => {
   return children;
 };
 
-// Customer restricted route - customers cannot access, others can
 const CustomerRestrictedRoute = ({children}) => {
   const {isAuthenticated, user} = useAuthStore();
 
@@ -177,7 +172,6 @@ function App() {
 
   const hideNavbar = ["/login", "/signup", "/forgot-password", "/verify-email", "/purchase-success", "/purchase-cancel"].includes(location.pathname) || location.pathname.startsWith("/reset-password/");
 
-  // Scroll to top when location changes
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
@@ -190,37 +184,29 @@ function App() {
     getCartItems();
   }, [getCartItems]);
  
-  // After authentication, if customer, merge any guest cart
   useEffect(() => {
     if (user && user.isVerified && user.role === 'customer') {
       mergeGuestCartToServer();
     }
   }, [user, mergeGuestCartToServer]);
 
-  // Initialize socket connection globally when user is authenticated
   useEffect(() => {
-    // Only proceed if authentication check is complete
     if (isCheckingAuth) return;
     
     if (user && user.isVerified && !socketInitialized.current) {
-      // Initialize chat socket with HTTP-only cookies
       initializeSocket();
       socketInitialized.current = true;
     } else if (!user && !isCheckingAuth) {
-      // Guest user - no socket connection needed (only log when auth check is complete)
-      // Guest user - no socket connection required
     }
 
     return () => {
       if (user && socketInitialized.current) {
-        // Disconnecting global socket for user
         disconnectSocket();
         socketInitialized.current = false;
       }
     };
-  }, [user?.id, user?.isVerified, isCheckingAuth]); // Include isCheckingAuth in dependencies
+  }, [user?.id, user?.isVerified, isCheckingAuth]);
 
-  // Set up notification listeners on the chat socket
   useEffect(() => {
     if (chatSocket && user && user.isVerified) {
       initNotificationSocket(chatSocket);
@@ -260,6 +246,7 @@ function App() {
         <Route path = '/coupons' element = { <AdminRoute> <CouponsPage /> </AdminRoute> } />
         <Route path = '/pos' element = { <AdminRoute> <POSPage /> </AdminRoute> } />
         <Route path = '/pos/history' element = { <AdminRoute> <POSHistoryPage /> </AdminRoute> } />
+        <Route path = '/purchase-order-history' element = { <AdminRoute> <PurchaseOrderHistoryPage /> </AdminRoute> } />
         <Route path = '/admin/replacement-requests' element = { <AdminRoute> <AdminReplacementRequestsPage /> </AdminRoute> } />
         <Route path = '/admin/replacement-requests/:requestId' element = { <AdminRoute> <ReplacementRequestDetailsPage /> </AdminRoute> } />
         <Route path = '/admin/chat-management' element = { <AdminRoute> <ChatManagementPage /> </AdminRoute> } />

@@ -32,10 +32,8 @@ const POSPage = () => {
   const { user } = useAuthStore();
   const { createTransaction, loading: transactionLoading, error: transactionError } = usePOSStore();
   
-  // Currency formatting function
   const formatCurrency = (amount) => `₱${amount.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   
-  // POS State
   const [cart, setCart] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -62,36 +60,28 @@ const POSPage = () => {
   const [showReceipt, setShowReceipt] = useState(false);
   const [currentTransaction, setCurrentTransaction] = useState(null);
   
-  // Barcode scanning state
   const [scanMode, setScanMode] = useState('usb'); // 'usb' or 'camera'
   const [isScanning, setIsScanning] = useState(false);
   const [lastScannedCode, setLastScannedCode] = useState('');
   const [scanError, setScanError] = useState('');
   
-  // Cart error state
   const [cartError, setCartError] = useState('');
   
-  // Added to cart feedback state
   const [addedToCart, setAddedToCart] = useState(null);
   
-  // Weight selection modal state
   const [showWeightModal, setShowWeightModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedWeightOption, setSelectedWeightOption] = useState(null);
   const [quantityInput, setQuantityInput] = useState(1);
   
-  // Product not found modal state
   const [showProductNotFoundModal, setShowProductNotFoundModal] = useState(false);
 
-  // Categories
   const categories = ['pork', 'beef', 'chicken', 'sliced', 'processed', 'seafood'];
 
-  // Load products on component mount
   useEffect(() => {
     fetchAllProducts();
   }, [fetchAllProducts]);
 
-  // USB Scanner (Keyboard Wedge) functionality
   useEffect(() => {
     if (scanMode !== 'usb') return;
     
@@ -110,12 +100,10 @@ const POSPage = () => {
           return; 
         }
         
-        // Normalize to digits only for lookup and display
         const digitsOnly = code.replace(/\D/g, '');
         setLastScannedCode(digitsOnly);
         setScanError('');
         
-        // Find and add product to cart
         const result = await productStore.getState().fetchProductByBarcode(digitsOnly);
         if (result) {
           const { product, matchedWeightOptionId } = result;
@@ -138,7 +126,6 @@ const POSPage = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [scanMode]);
 
-  // Camera scanning functions
   const startCameraScan = async () => {
     try {
       setIsScanning(true);
@@ -157,7 +144,6 @@ const POSPage = () => {
         }
       );
       
-      // Store controls for cleanup
       window.__posScanControls = controls;
     } catch (error) {
       console.error('Camera scan error:', error);
@@ -181,31 +167,25 @@ const POSPage = () => {
   const handleScannedCode = async (code) => {
     setScanError('');
     
-    // Find and add product to cart
     const result = await productStore.getState().fetchProductByBarcode(code);
     if (result) {
       const { product, matchedWeightOptionId } = result;
       addToCart(product, matchedWeightOptionId);
-      // Stop camera after successful scan
       if (scanMode === 'camera') {
         stopCameraScan();
       }
     } else {
       setScanError('Product not found');
-      // Show popup modal and play sound for camera scanner
       if (scanMode === 'camera') {
         setShowProductNotFoundModal(true);
         
-        // Auto-close modal after 3 seconds
         setTimeout(() => {
           setShowProductNotFoundModal(false);
         }, 3000);
         
-        // Play error sound
         try {
           const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBS13yO/eizEIHWq+8+OWT');
           audio.play().catch(() => {
-            // Fallback: create a simple beep sound
             const context = new (window.AudioContext || window.webkitAudioContext)();
             const oscillator = context.createOscillator();
             const gainNode = context.createGain();
@@ -224,7 +204,6 @@ const POSPage = () => {
     }
   };
 
-  // Cleanup camera on unmount
   useEffect(() => {
     return () => {
       if (window.__posScanControls) {
@@ -237,7 +216,6 @@ const POSPage = () => {
     };
   }, []);
 
-  // Calculate totals whenever cart changes
   useEffect(() => {
     const subtotal = cart.reduce((sum, item) => sum + ((item.unitPrice || item.price) * item.quantity), 0);
     const tax = 0; // Tax removed
@@ -262,23 +240,19 @@ const POSPage = () => {
     }));
   }, [cart, paymentInfo.discountType, paymentInfo.discountValue, paymentInfo.cashReceived]);
 
-  // Filter products based on search and category
   const filteredProducts = products?.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          product.barcode?.includes(searchQuery);
     const matchesCategory = !selectedCategory || product.category === selectedCategory;
     
-    // Check if product has stock (either legacy quantity or weight options with stock)
     const hasStock = product.quantity > 0 || (product.hasWeightOptions && product.weightOptions && product.weightOptions.some(opt => opt.stockUnits > 0));
     
     return matchesSearch && matchesCategory && product.status === 'available' && hasStock;
   }) || [];
 
-  // Cart functions
   const addToCart = (product, matchedWeightOptionId = null) => {
     setCartError(''); // Clear any previous errors
     
-    // If a specific weight option was matched by barcode, add it directly
     if (matchedWeightOptionId) {
       const matchedOption = product.weightOptions?.find(opt => String(opt._id) === String(matchedWeightOptionId));
       if (matchedOption) {
@@ -287,15 +261,12 @@ const POSPage = () => {
       }
     }
     
-    // Check if product has weight options (and no specific weight was matched)
     if (product.hasWeightOptions && product.weightOptions && product.weightOptions.length > 0) {
-      // Show weight selection modal
       setSelectedProduct(product);
       setShowWeightModal(true);
       return;
     }
     
-    // For products without weight options, add directly to cart
     addProductToCart(product);
   };
 
@@ -309,7 +280,6 @@ const POSPage = () => {
       if (existingItem) {
         const maxStock = selectedWeightOption ? selectedWeightOption.stockUnits : (existingItem.stockQuantity || product.quantity);
         if (existingItem.quantity < maxStock) {
-          // Show added to cart feedback
           setAddedToCart(product._id);
           setTimeout(() => setAddedToCart(null), 1000);
           
@@ -319,14 +289,12 @@ const POSPage = () => {
               : item
           );
         } else {
-          // Show error when trying to exceed stock
           setCartError(`Cannot add more ${product.name}. Only ${maxStock} items available in stock.`);
           return prev;
         }
       } else {
         const stockQuantity = selectedWeightOption ? selectedWeightOption.stockUnits : product.quantity;
         if (stockQuantity > 0) {
-          // Show added to cart feedback
           setAddedToCart(product._id);
           setTimeout(() => setAddedToCart(null), 1000);
           
@@ -341,7 +309,6 @@ const POSPage = () => {
           
           return [...prev, cartItem];
         } else {
-          // Show error when product is out of stock
           setCartError(`${product.name} is out of stock.`);
           return prev;
         }
@@ -388,13 +355,11 @@ const POSPage = () => {
       cashReceived: 0,
       change: 0
     }));
-    // Reset modal states
     setShowPaymentMethodModal(false);
     setShowCustomerInfoModal(false);
     setShowPaymentModal(false);
   };
 
-  // Payment functions
   const handlePayment = () => {
     if (cart.length === 0) return;
     setShowPaymentMethodModal(true);
@@ -407,7 +372,6 @@ const POSPage = () => {
   };
 
   const handleCustomerInfoSubmit = () => {
-    // Validate customer info based on payment method
     if (paymentMethod !== 'cash') {
       if (!customerInfo.name.trim()) {
         setCartError('Customer name is required for this payment method');
@@ -430,18 +394,15 @@ const POSPage = () => {
   };
 
   const processPayment = async () => {
-    // Validate payment based on method
     if (paymentMethod === 'cash' && paymentInfo.cashReceived < paymentInfo.total) {
       return;
     }
     
-    // Check if user is authenticated
     if (!user || !user._id) {
       setCartError('You must be logged in to process transactions');
       return;
     }
     
-    // Prepare transaction data for backend
     const transactionData = {
       items: cart.map(item => ({
         productId: item._id,
@@ -464,11 +425,9 @@ const POSPage = () => {
     };
 
 
-    // Save transaction to backend
     const result = await createTransaction(transactionData);
     
     if (result.success) {
-      // Create local transaction object for receipt display
       const transaction = {
         id: result.data.transactionId,
         timestamp: new Date(result.data.timestamp),
@@ -482,42 +441,34 @@ const POSPage = () => {
       setShowPaymentModal(false);
       setShowReceipt(true);
       
-      // Refresh products to get updated stock counts immediately after successful payment
       refreshProducts();
     } else {
-      // Show error message
       setCartError(result.error || 'Failed to process transaction');
     }
   };
 
   const completeTransaction = () => {
-    // Here you would typically save to backend
     clearCart();
     setShowReceipt(false);
     setCurrentTransaction(null);
     
-    // Refresh products to get updated stock counts
     refreshProducts();
   };
 
   const handlePrintReceipt = () => {
     if (!currentTransaction) return;
     
-    // Create a new window for printing
     const printWindow = window.open('', '_blank', 'width=400,height=600');
     
-    // Generate the receipt HTML
     const receiptHTML = generateReceiptHTML(currentTransaction);
     
     printWindow.document.write(receiptHTML);
     printWindow.document.close();
     
-    // Wait for content to load, then print
     printWindow.onload = () => {
       printWindow.focus();
       printWindow.print();
       
-      // Close the print window after printing
       printWindow.onafterprint = () => {
         printWindow.close();
       };
@@ -1588,7 +1539,6 @@ const POSPage = () => {
                 <button
                   onClick={() => {
                     if (quantityInput > 0) {
-                      // Add multiple quantities to cart
                       for (let i = 0; i < quantityInput; i++) {
                         addProductToCart(selectedProduct, selectedWeightOption);
                       }

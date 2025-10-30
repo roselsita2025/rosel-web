@@ -972,8 +972,14 @@ export const addWeightOption = async (req, res) => {
 
         product.weightOptions = Array.isArray(product.weightOptions) ? product.weightOptions : [];
         
-        // Create new weight option with optional barcode
-        const newWeightOption = { weightKg, stockUnits };
+        // Create new weight option with optional barcode and timestamps
+        const newWeightOption = { 
+            weightKg, 
+            stockUnits,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            expireAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000) // 1 year from now
+        };
         if (barcode && barcode.trim()) {
             newWeightOption.barcode = barcode.trim();
         }
@@ -1032,17 +1038,20 @@ export const updateWeightOption = async (req, res) => {
         if (!opt) return res.status(404).json({ message: "Weight option not found" });
 
         let oldStock = opt.stockUnits;
+        let wasUpdated = false;
 
         if (typeof weightKg !== 'undefined') {
             if (typeof weightKg !== 'number' || weightKg <= 0 || !Number.isFinite(weightKg)) {
                 return res.status(400).json({ message: "weightKg must be a positive finite number" });
             }
             opt.weightKg = Math.round(weightKg * 100) / 100;
+            wasUpdated = true;
         }
         
         if (typeof barcode !== 'undefined') {
             // Allow setting barcode to empty/null or to a new value
             opt.barcode = barcode && barcode.trim() ? barcode.trim() : undefined;
+            wasUpdated = true;
         }
         
         if (typeof stockUnits !== 'undefined') {
@@ -1051,6 +1060,12 @@ export const updateWeightOption = async (req, res) => {
             }
             oldStock = opt.stockUnits;
             opt.stockUnits = stockUnits;
+            wasUpdated = true;
+        }
+        
+        // Update updatedAt if any changes were made
+        if (wasUpdated) {
+            opt.updatedAt = new Date();
         }
         
         const updated = await product.save();

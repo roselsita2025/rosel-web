@@ -47,7 +47,6 @@ const ReplacementRequestsPage = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [showStats, setShowStats] = useState(true);
 
-    // Fetch data on component mount
     useEffect(() => {
         const loadData = async () => {
             try {

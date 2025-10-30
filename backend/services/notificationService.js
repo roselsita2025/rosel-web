@@ -192,8 +192,7 @@ class NotificationService {
                 threshold,
                 productImage: product.image || product.mainImageUrl
             },
-            priority: currentStock <= 5 ? 'high' : 'medium',
-            actionUrl: `/manage-products?product=${product._id}`
+            priority: currentStock <= 5 ? 'high' : 'medium'
         };
 
         const result = await this.notifyAdmins(notificationData);

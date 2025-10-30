@@ -47,43 +47,35 @@ const ChatManagementPage = () => {
     const { user } = useAuthStore();
 
     useEffect(() => {
-        // Load admin chats
         loadChats();
     }, []);
 
     useEffect(() => {
-        // Listen for new support messages and chat updates
         if (socket) {
             socket.on('new_support_message', (data) => {
                 console.log('New support message received:', data);
-                // Reload chats to show new messages
                 loadChats();
             });
 
             socket.on('chat_assigned', (data) => {
                 console.log('Chat assigned:', data);
-                // Update the selected chat if it's the one being assigned
                 if (selectedChat && selectedChat.chatId === data.chat.chatId) {
                     setSelectedChat(data.chat);
                 }
-                // Reload chats to show updated status
                 loadChats();
             });
 
             socket.on('customer_left_chat', (data) => {
                 console.log('Customer left chat:', data);
-                // Show notification and reload chats
                 alert(`Customer has ended the conversation for chat ${data.chat.chatId}`);
                 loadChats();
             });
 
             socket.on('chat_status_updated', (data) => {
                 console.log('Chat status updated:', data);
-                // Update the selected chat if it's the one being updated
                 if (selectedChat && selectedChat.chatId === data.chatId) {
                     setSelectedChat(data.chat);
                 }
-                // Reload chats to show updated status
                 loadChats();
             });
 
@@ -99,7 +91,6 @@ const ChatManagementPage = () => {
     useEffect(() => {
         if (selectedChat) {
             loadChatMessages(selectedChat.chatId);
-            // Join the chat room for real-time updates
             if (socket) {
                 socket.emit('join_chat', selectedChat.chatId);
                 console.log('Admin joined chat:', selectedChat.chatId);
@@ -127,17 +118,14 @@ const ChatManagementPage = () => {
         setSidebarOpen(false); // Close sidebar on mobile when chat is selected
         
         if (!chat.admin) {
-            // Auto-assign chat to current admin and wait for completion
             try {
                 const updatedChat = await assignChatToAdmin(chat.chatId);
                 setSelectedChat(updatedChat);
             } catch (error) {
                 console.error('Error assigning chat:', error);
-                // Still set the chat even if assignment fails
                 setSelectedChat(chat);
             }
         } else {
-            // Chat already has an admin, just select it
             setSelectedChat(chat);
         }
     };
@@ -459,7 +447,6 @@ const ChatManagementPage = () => {
                                 {/* Messages Area */}
                                 <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4 bg-[#fffefc]">
                                     {messages.map((message, index) => {
-                                        // Handle system messages differently
                                         if (message.messageType === 'system') {
                                             return (
                                                 <motion.div
@@ -475,7 +462,6 @@ const ChatManagementPage = () => {
                                             );
                                         }
 
-                                        // Regular messages
                                         return (
                                             <motion.div
                                                 key={index}

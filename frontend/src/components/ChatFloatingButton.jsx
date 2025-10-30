@@ -23,10 +23,8 @@ const ChatFloatingButton = () => {
 
     const handleClick = () => {
         if (isChatOpen) {
-            // If chat is open, close it
             useChatStore.getState().closeChat();
         } else {
-            // If chat is closed, open the selection modal
             openChat('selection');
         }
     };

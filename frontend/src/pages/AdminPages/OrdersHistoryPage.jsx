@@ -26,14 +26,12 @@ const OrdersHistoryPage = () => {
   const [pagination, setPagination] = useState({});
   const [expandedOrders, setExpandedOrders] = useState(new Set());
   
-  // Search and filter states
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState("createdAt");
   const [sortOrder, setSortOrder] = useState("desc");
 
-  // Fetch orders
   const fetchOrders = async () => {
     try {
       setLoading(true);
@@ -65,7 +63,6 @@ const OrdersHistoryPage = () => {
     fetchOrders();
   }, [currentPage, searchTerm, statusFilter, sortBy, sortOrder]);
 
-  // Toggle order expansion
   const toggleOrderExpansion = (orderId) => {
     const newExpanded = new Set(expandedOrders);
     if (newExpanded.has(orderId)) {
@@ -76,7 +73,6 @@ const OrdersHistoryPage = () => {
     setExpandedOrders(newExpanded);
   };
 
-  // Format date
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
@@ -89,7 +85,6 @@ const OrdersHistoryPage = () => {
     });
   };
 
-  // Get status color
   const getStatusColor = (status) => {
     switch (status) {
       case 'PENDING': return 'bg-yellow-100 text-yellow-800';
@@ -102,20 +97,17 @@ const OrdersHistoryPage = () => {
     }
   };
 
-  // Handle search
   const handleSearch = (e) => {
     e.preventDefault();
     setCurrentPage(1);
     fetchOrders();
   };
 
-  // Handle filter change
   const handleFilterChange = (newFilter) => {
     setStatusFilter(newFilter);
     setCurrentPage(1);
   };
 
-  // Handle sort change
   const handleSortChange = (newSortBy) => {
     if (sortBy === newSortBy) {
       setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc');

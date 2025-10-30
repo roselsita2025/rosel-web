@@ -44,10 +44,8 @@ export const productStore = create((set, get) => ({
         const trimmedBarcode = String(barcode || '').trim();
         if (!trimmedBarcode) return false;
         
-        // Check in all products' weight options
         for (const product of products) {
             if (product._id === excludeProductId) {
-                // For the same product, check excluding the specific weight option
                 if (product.weightOptions && Array.isArray(product.weightOptions)) {
                     const conflict = product.weightOptions.some(opt => 
                         opt.barcode === trimmedBarcode && 
@@ -56,7 +54,6 @@ export const productStore = create((set, get) => ({
                     if (conflict) return true;
                 }
             } else {
-                // For other products, check all weight options
                 if (product.weightOptions && Array.isArray(product.weightOptions)) {
                     const conflict = product.weightOptions.some(opt => 
                         opt.barcode === trimmedBarcode
@@ -66,7 +63,6 @@ export const productStore = create((set, get) => ({
             }
         }
         
-        // Also check if it conflicts with any product-level barcode
         return products.some(p => 
             p.barcode === trimmedBarcode && 
             p._id !== excludeProductId
@@ -112,7 +108,6 @@ export const productStore = create((set, get) => ({
                 set({ loading: false });
             }
             
-            // Return both product and matchedWeightOptionId
             return product ? { product, matchedWeightOptionId } : null;
         } catch (error) {
             set({ loading: false });
@@ -250,7 +245,6 @@ export const productStore = create((set, get) => ({
             set({ suggestions });
             return suggestions;
         } catch (error) {
-            // Silent fail for suggestions
             return [];
         }
     },
@@ -478,6 +472,94 @@ export const productStore = create((set, get) => ({
         } catch (error) {
             set({ loading: false });
             const errorMessage = error.response?.data?.message || "Failed to update weight option";
+            toast.error(errorMessage);
+            return { success: false, error: errorMessage };
+        }
+    },
+
+    // ==================== Purchase Orders ====================
+    createPurchaseOrder: async (purchaseOrderData) => {
+        set({ loading: true });
+        try {
+            const response = await axios.post(`${API_URL}/purchase-orders`, purchaseOrderData);
+            set({ loading: false });
+            toast.success("Purchase order created successfully");
+            return { success: true, data: response.data.data };
+        } catch (error) {
+            set({ loading: false });
+            const errorMessage = error.response?.data?.message || "Failed to create purchase order";
+            toast.error(errorMessage);
+            return { success: false, error: errorMessage };
+        }
+    },
+
+    getPurchaseOrderHistory: async (params = {}) => {
+        set({ loading: true });
+        try {
+            const response = await axios.get(`${API_URL}/purchase-orders`, { params });
+            set({ loading: false });
+            return { success: true, data: response.data.data };
+        } catch (error) {
+            set({ loading: false });
+            const errorMessage = error.response?.data?.message || "Failed to fetch purchase order history";
+            toast.error(errorMessage);
+            return { success: false, error: errorMessage };
+        }
+    },
+
+    getPurchaseOrderById: async (id) => {
+        set({ loading: true });
+        try {
+            const response = await axios.get(`${API_URL}/purchase-orders/${id}`);
+            set({ loading: false });
+            return { success: true, data: response.data.data };
+        } catch (error) {
+            set({ loading: false });
+            const errorMessage = error.response?.data?.message || "Failed to fetch purchase order";
+            toast.error(errorMessage);
+            return { success: false, error: errorMessage };
+        }
+    },
+
+    completePurchaseOrder: async (id) => {
+        set({ loading: true });
+        try {
+            const response = await axios.post(`${API_URL}/purchase-orders/${id}/complete`);
+            set({ loading: false });
+            toast.success("Purchase order completed successfully");
+            return { success: true, data: response.data.data };
+        } catch (error) {
+            set({ loading: false });
+            const errorMessage = error.response?.data?.message || "Failed to complete purchase order";
+            toast.error(errorMessage);
+            return { success: false, error: errorMessage };
+        }
+    },
+
+    cancelPurchaseOrder: async (id) => {
+        set({ loading: true });
+        try {
+            const response = await axios.post(`${API_URL}/purchase-orders/${id}/cancel`);
+            set({ loading: false });
+            toast.success("Purchase order cancelled successfully");
+            return { success: true, data: response.data.data };
+        } catch (error) {
+            set({ loading: false });
+            const errorMessage = error.response?.data?.message || "Failed to cancel purchase order";
+            toast.error(errorMessage);
+            return { success: false, error: errorMessage };
+        }
+    },
+
+    getPurchaseOrderAnalytics: async (params = {}) => {
+        set({ loading: true });
+        try {
+            const response = await axios.get(`${API_URL}/purchase-orders/analytics`, { params });
+            set({ loading: false });
+            return { success: true, data: response.data.data };
+        } catch (error) {
+            set({ loading: false });
+            const errorMessage = error.response?.data?.message || "Failed to fetch analytics";
             toast.error(errorMessage);
             return { success: false, error: errorMessage };
         }

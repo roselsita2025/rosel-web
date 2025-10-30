@@ -48,10 +48,8 @@ const OrderManagementPage = () => {
         clearError
     } = useAdminOrderStore();
 
-    // Tab state
     const [activeTab, setActiveTab] = useState('manage');
 
-    // Manage Orders state
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [statusFilter, setStatusFilter] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
@@ -59,28 +57,24 @@ const OrderManagementPage = () => {
     const [expandedOrders, setExpandedOrders] = useState(new Set());
     const [actionLoading, setActionLoading] = useState({});
 
-    // Orders History state
     const [historyOrders, setHistoryOrders] = useState([]);
     const [historyLoading, setHistoryLoading] = useState(false);
     const [historyError, setHistoryError] = useState(null);
     const [historyPagination, setHistoryPagination] = useState({});
     const [expandedHistoryOrders, setExpandedHistoryOrders] = useState(new Set());
     
-    // History search and filter states
     const [historySearchTerm, setHistorySearchTerm] = useState("");
     const [historyStatusFilter, setHistoryStatusFilter] = useState("");
     const [historyCurrentPage, setHistoryCurrentPage] = useState(1);
     const [historySortBy, setHistorySortBy] = useState("createdAt");
     const [historySortOrder, setHistorySortOrder] = useState("desc");
     
-    // Time filter states for history
     const [historyTimeframe, setHistoryTimeframe] = useState('today');
     const [historySelectedDate, setHistorySelectedDate] = useState('');
     const [historyRangeStart, setHistoryRangeStart] = useState('');
     const [historyRangeEnd, setHistoryRangeEnd] = useState('');
     const [historyCustomMode, setHistoryCustomMode] = useState('date');
 
-    // Fetch history orders
     const fetchHistoryOrders = async () => {
         try {
             setHistoryLoading(true);
@@ -104,7 +98,6 @@ const OrderManagementPage = () => {
                 console.log('Added status param:', historyStatusFilter);
             }
             
-            // Add time filter parameters
             if (historyTimeframe !== 'all') {
                 params.append("timeframe", historyTimeframe);
                 console.log('Added timeframe param:', historyTimeframe);
@@ -139,7 +132,6 @@ const OrderManagementPage = () => {
                 finalParams: params.toString()
             });
             
-            // Use different endpoint for history orders if available, otherwise use the same endpoint
             const endpoint = `${API_URL}/admin/orders`;
             const fullUrl = `${endpoint}?${params.toString()}`;
             console.log('Fetching from endpoint:', endpoint);
@@ -148,7 +140,6 @@ const OrderManagementPage = () => {
             
             let orders = response.data.data.orders;
             
-            // Client-side time filtering (workaround for backend not filtering properly)
             if (historyTimeframe !== 'all') {
                 const originalCount = orders.length;
                 orders = filterOrdersByTimeframe(orders, historyTimeframe, historySelectedDate, historyRangeStart, historyRangeEnd, historyCustomMode);
@@ -165,7 +156,6 @@ const OrderManagementPage = () => {
         }
     };
 
-    // Fetch pending orders on component mount
     useEffect(() => {
         const loadOrders = async () => {
             try {
@@ -181,19 +171,16 @@ const OrderManagementPage = () => {
         loadOrders();
     }, [currentPage, statusFilter]);
 
-    // Fetch history orders when tab changes or filters change
     useEffect(() => {
         if (activeTab === 'history') {
             fetchHistoryOrders();
         }
     }, [activeTab, historyCurrentPage, historySearchTerm, historyStatusFilter, historySortBy, historySortOrder, historyTimeframe, historySelectedDate, historyRangeStart, historyRangeEnd, historyCustomMode]);
 
-    // Clear error when component unmounts
     useEffect(() => {
         return () => clearError();
     }, [clearError]);
 
-    // Filter orders based on search term
     const filteredOrders = pendingOrders.filter(order => {
         if (!searchTerm) return true;
         const orderNumber = order._id.slice(-8).toUpperCase();
@@ -206,7 +193,6 @@ const OrderManagementPage = () => {
         );
     });
 
-    // History order functions
     const toggleHistoryOrderExpansion = (orderId) => {
         const newExpanded = new Set(expandedHistoryOrders);
         if (newExpanded.has(orderId)) {
@@ -217,7 +203,6 @@ const OrderManagementPage = () => {
         setExpandedHistoryOrders(newExpanded);
     };
 
-    // Reset time filter
     const resetTimeFilter = () => {
         setHistoryTimeframe('all');
         setHistorySelectedDate('');
@@ -226,7 +211,6 @@ const OrderManagementPage = () => {
         setHistoryCustomMode('date');
     };
 
-    // Client-side time filtering function
     const filterOrdersByTimeframe = (orders, timeframe, selectedDate, rangeStart, rangeEnd, customMode) => {
         if (!orders || !Array.isArray(orders)) return orders;
         
@@ -297,7 +281,6 @@ const OrderManagementPage = () => {
         }
     };
 
-    // Get status color for history orders
     const getHistoryStatusColor = (status) => {
         if (!status) return 'bg-gray-100 text-gray-800';
         
@@ -341,7 +324,6 @@ const OrderManagementPage = () => {
         }
     };
 
-    // Helper functions for Orders History summary statistics
     const getHistoryTotalSales = () => {
         if (!historyOrders || !Array.isArray(historyOrders)) return 0;
         return historyOrders.reduce((sum, order) => sum + (order.totalPrice || order.totalAmount || 0), 0);
@@ -355,11 +337,9 @@ const OrderManagementPage = () => {
     const getHistoryTotalItems = () => {
         if (!historyOrders || !Array.isArray(historyOrders)) return 0;
         return historyOrders.reduce((sum, order) => {
-            // Try itemsCount first (pre-calculated field)
             if (order.itemsCount !== undefined) {
                 return sum + (order.itemsCount || 0);
             }
-            // Fallback to calculating from products array
             if (!order.products || !Array.isArray(order.products)) return sum;
             return sum + order.products.reduce((itemSum, item) => itemSum + (item.quantity || 0), 0);
         }, 0);
@@ -506,7 +486,6 @@ const OrderManagementPage = () => {
     const formatDate = (dateString) => {
         if (!dateString) return 'N/A';
         
-        // Handle MongoDB ObjectId timestamps (24 character hex strings)
         if (typeof dateString === 'string' && dateString.length === 24 && /^[0-9a-fA-F]{24}$/.test(dateString)) {
             try {
                 const timestamp = parseInt(dateString.substring(0, 8), 16) * 1000;
@@ -522,14 +501,11 @@ const OrderManagementPage = () => {
                     });
                 }
             } catch (e) {
-                // Fall through to regular date parsing
             }
         }
         
-        // Handle regular date strings (ISO format, etc.)
         const date = new Date(dateString);
         
-        // Check if the date is valid AND not the Unix epoch start (Jan 1, 1970, 00:00:00 UTC)
         if (isNaN(date.getTime()) || date.getTime() === 0) {
             return 'N/A';
         }
@@ -550,7 +526,6 @@ const OrderManagementPage = () => {
         const isRebookable = isLalamoveOrder && ['pending_placement','failed','cancelled','expired','REJECTED','CANCELED','EXPIRED'].includes(order.lalamoveDetails?.status);
         const isReadyForPlacement = isRebookable && ['order_prepared','order_placed'].includes(order.adminStatus);
 
-        // Only allow placement when admin has set status to prepared
         if (isReadyForPlacement) {
             return (
                 <button
@@ -771,7 +746,6 @@ const OrderManagementPage = () => {
                         transition={{ duration: 0.5, delay: 0.1 }}
                     >
                         {activeTab === 'manage' ? (
-                            // Manage Orders Content
                             <>
                                 {error ? (
                                     <div className="p-4 sm:p-8 text-center text-red-600 text-sm sm:text-base">
@@ -1047,7 +1021,6 @@ const OrderManagementPage = () => {
                                 )}
                             </>
                         ) : (
-                            // Orders History Content
                             <>
                                 {historyLoading ? (
                                     <div className="p-8 text-center">
@@ -1561,7 +1534,6 @@ const OrderManagementPage = () => {
 
                     {/* Pagination */}
                     {activeTab === 'manage' ? (
-                        // Manage Orders Pagination
                         pagination && pagination.totalPages > 1 && (
                             <motion.div
                                 className="flex flex-col items-center justify-between gap-3 sm:gap-4 mt-4 sm:mt-6 px-3 sm:px-0"
@@ -1630,7 +1602,6 @@ const OrderManagementPage = () => {
                             </motion.div>
                         )
                     ) : (
-                        // Orders History Pagination
                         historyPagination && historyPagination.totalPages > 1 && (
                             <motion.div
                                 className="flex flex-col items-center justify-between gap-3 sm:gap-4 mt-4 sm:mt-6 px-3 sm:px-0"

@@ -42,7 +42,6 @@ const TrackOrdersPage = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [pagination, setPagination] = useState(null);
 
-    // Fetch orders and stats on component mount
     useEffect(() => {
         const loadData = async () => {
             try {
@@ -58,7 +57,6 @@ const TrackOrdersPage = () => {
         loadData();
     }, [currentPage]);
 
-    // Filter orders based on search term
     const filteredOrders = orders.filter(order => {
         if (!searchTerm) return true;
         const orderNumber = order._id.slice(-8).toUpperCase();
@@ -728,11 +726,9 @@ const OrderDetailsModal = ({ order, onClose, getStatusColor, getStatusIcon, getS
                                         <h4 className="font-medium text-[#030105] font-alice text-xs sm:text-sm truncate">
                                             {item.product?.name || 'Product'}
                                             {(() => {
-                                                // Try to get weight info from stored data first, then from product data
                                                 if (item.weightKg) {
                                                     return ` (${item.weightKg}kg)`;
                                                 } else if (item.product?.weightOptions && item.product.weightOptions.length > 0) {
-                                                    // If no stored weight info, try to get it from the product's weight options
                                                     const firstWeight = item.product.weightOptions[0];
                                                     if (firstWeight && firstWeight.weightKg) {
                                                         return ` (${firstWeight.weightKg}kg)`;

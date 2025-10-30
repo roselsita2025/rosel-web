@@ -64,12 +64,10 @@ const AdminNotificationCenterPage = () => {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showSettings, setShowSettings] = useState(false);
 
-    // Initialize socket and fetch notifications on component mount
     useEffect(() => {
         if (user && user.isVerified) {
             console.log('🔔 AdminNotificationCenter: Initializing for user:', user);
             
-            // Get token from localStorage or cookies
             const token = localStorage.getItem('token') || document.cookie
                 .split('; ')
                 .find(row => row.startsWith('token='))
@@ -80,20 +78,17 @@ const AdminNotificationCenterPage = () => {
                 initializeSocket(token);
             }
             
-            // Fetch initial notifications
             fetchNotifications(1, 20, filters);
         } else {
             // Disconnect socket if user is not authenticated
             disconnectSocket();
         }
         
-        // Cleanup on unmount
         return () => {
             disconnectSocket();
         };
     }, [user, initializeSocket, disconnectSocket, fetchNotifications, filters]);
 
-    // Clear messages after 3 seconds
     useEffect(() => {
         if (message) {
             const timer = setTimeout(() => {
@@ -103,26 +98,20 @@ const AdminNotificationCenterPage = () => {
         }
     }, [message, clearMessage]);
 
-    // Handle filter change
     const handleFilterChange = (key, value) => {
         setFilters({ [key]: value });
         setCurrentPage(1); // Reset to first page when filtering
     };
 
-    // Handle search
     const handleSearch = (e) => {
         e.preventDefault();
         setCurrentPage(1); // Reset to first page when searching
-        // For now, we'll implement client-side search
-        // In a real app, you might want to implement server-side search
     };
 
-    // Handle page change
     const handlePageChange = (page) => {
         fetchNotifications(page, 20, filters);
     };
 
-    // Handle mark as read
     const handleMarkAsRead = async (notificationId) => {
         try {
             await markAsRead(notificationId);
@@ -131,7 +120,6 @@ const AdminNotificationCenterPage = () => {
         }
     };
 
-    // Handle mark all as read
     const handleMarkAllAsRead = async () => {
         try {
             await markAllAsRead();
@@ -140,7 +128,6 @@ const AdminNotificationCenterPage = () => {
         }
     };
 
-    // Handle delete notification
     const handleDeleteNotification = async (notificationId) => {
         try {
             await deleteNotification(notificationId);
@@ -149,7 +136,6 @@ const AdminNotificationCenterPage = () => {
         }
     };
 
-    // Handle select notification
     const handleSelectNotification = (notificationId) => {
         setSelectedNotifications(prev => 
             prev.includes(notificationId) 
@@ -158,7 +144,6 @@ const AdminNotificationCenterPage = () => {
         );
     };
 
-    // Handle select all
     const handleSelectAll = () => {
         if (selectedNotifications.length === notifications.length) {
             setSelectedNotifications([]);
@@ -167,7 +152,6 @@ const AdminNotificationCenterPage = () => {
         }
     };
 
-    // Get category icon component
     const getCategoryIconComponent = (category) => {
         const iconProps = { size: 20 };
         switch (category) {
@@ -184,15 +168,28 @@ const AdminNotificationCenterPage = () => {
         }
     };
 
-    // Get action URL
     const getActionUrl = (notification) => {
+        if (notification.type === 'inventory_alert') {
+            let productId = notification.metadata?.productId;
+            if (!productId && notification.relatedEntity?.id) {
+                productId = notification.relatedEntity.id;
+            }
+            if (!productId && notification.actionUrl) {
+                // Extract productId from old actionUrl format like '/manage-products?product=68faf596df82ceabb6762f53'
+                const match = notification.actionUrl.match(/[?&]product=([^&]+)/);
+                if (match) productId = match[1];
+            }
+            if (productId) {
+                return `/manage-products?tab=update&subtab=purchase-order&product=${productId}`;
+            }
+            return '/manage-products?tab=update&subtab=purchase-order';
+        }
+        
         if (notification.actionUrl) {
             return notification.actionUrl;
         }
 
         switch (notification.type) {
-            case 'inventory_alert':
-                return '/manage-products';
             case 'order_alert':
                 return '/orders-history';
             case 'customer_alert':
@@ -207,7 +204,6 @@ const AdminNotificationCenterPage = () => {
         }
     };
 
-    // Filter notifications based on search term
     const filteredNotifications = notifications.filter(notification =>
         notification.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         notification.message.toLowerCase().includes(searchTerm.toLowerCase())
@@ -614,7 +610,7 @@ const AdminNotificationCenterPage = () => {
                                                     >
                                                         <Trash2 size={16} />
                                                     </button>
-                                                    {notification.actionUrl && (
+                                                    {(notification.actionUrl || notification.type === 'inventory_alert' || notification.type === 'order_alert' || notification.type === 'customer_alert') && (
                                                         <Link
                                                             to={getActionUrl(notification)}
                                                             className="p-2 hover:bg-gray-200 rounded-lg text-gray-400 hover:text-[#a31f17] transition-colors"

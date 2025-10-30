@@ -30,12 +30,10 @@ const RatingsPage = () => {
 
   const handleOpenFeedbackModal = () => {
     if (!isAuthenticated) {
-      // Redirect guest users to login
       navigate('/login');
       return;
     }
     
-    // Show modal for authenticated customers
     setIsFeedbackModalOpen(true);
   };
 
@@ -43,7 +41,6 @@ const RatingsPage = () => {
     setIsFeedbackModalOpen(false);
   };
 
-  // Fetch data on component mount
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -58,7 +55,6 @@ const RatingsPage = () => {
     loadData();
   }, []);
 
-  // Fetch reviews when filters or page change
   useEffect(() => {
     const loadReviews = async () => {
       try {
@@ -298,7 +294,6 @@ const RatingsPage = () => {
               className="space-y-3 sm:space-y-4"
             >
               {isLoading ? (
-                // Loading state
                 Array.from({ length: 5 }).map((_, index) => (
                   <div key={`loading-${index}`} className="bg-white rounded-xl p-4 sm:p-6 shadow-lg">
                     <div className="animate-pulse">
@@ -362,7 +357,6 @@ const RatingsPage = () => {
                   </div>
                 ))
               ) : (
-                // No reviews state
                 <div className="text-center py-8 sm:py-12">
                   <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
                     <Star className="w-7 h-7 sm:w-8 sm:h-8 text-gray-400" />

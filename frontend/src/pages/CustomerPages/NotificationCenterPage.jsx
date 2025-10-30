@@ -54,12 +54,10 @@ const NotificationCenterPage = () => {
     const [selectedNotifications, setSelectedNotifications] = useState([]);
     const [showFilters, setShowFilters] = useState(false);
 
-    // Initialize socket and fetch notifications on component mount
     useEffect(() => {
         if (user && user.isVerified) {
             console.log('🔔 CustomerNotificationCenter: Initializing for user:', user);
             
-            // Get token from localStorage or cookies
             const token = localStorage.getItem('token') || document.cookie
                 .split('; ')
                 .find(row => row.startsWith('token='))
@@ -70,7 +68,6 @@ const NotificationCenterPage = () => {
                 initializeSocket(token);
             }
             
-            // Fetch initial notifications
             fetchNotifications(1, 20, filters);
         } else {
             // Disconnect socket if user is not authenticated
@@ -83,7 +80,6 @@ const NotificationCenterPage = () => {
         };
     }, [user, initializeSocket, disconnectSocket, fetchNotifications, filters]);
 
-    // Clear messages after 3 seconds
     useEffect(() => {
         if (message) {
             const timer = setTimeout(() => {
@@ -93,26 +89,20 @@ const NotificationCenterPage = () => {
         }
     }, [message, clearMessage]);
 
-    // Handle filter change
     const handleFilterChange = (key, value) => {
         setFilters({ [key]: value });
         setCurrentPage(1); // Reset to first page when filtering
     };
 
-    // Handle search
     const handleSearch = (e) => {
         e.preventDefault();
         setCurrentPage(1); // Reset to first page when searching
-        // For now, we'll implement client-side search
-        // In a real app, you might want to implement server-side search
     };
 
-    // Handle page change
     const handlePageChange = (page) => {
         fetchNotifications(page, 20, filters);
     };
 
-    // Handle mark as read
     const handleMarkAsRead = async (notificationId) => {
         try {
             await markAsRead(notificationId);
@@ -121,7 +111,6 @@ const NotificationCenterPage = () => {
         }
     };
 
-    // Handle mark all as read
     const handleMarkAllAsRead = async () => {
         try {
             await markAllAsRead();
@@ -130,7 +119,6 @@ const NotificationCenterPage = () => {
         }
     };
 
-    // Handle delete notification
     const handleDeleteNotification = async (notificationId) => {
         try {
             await deleteNotification(notificationId);
@@ -139,7 +127,6 @@ const NotificationCenterPage = () => {
         }
     };
 
-    // Handle select notification
     const handleSelectNotification = (notificationId) => {
         setSelectedNotifications(prev => 
             prev.includes(notificationId) 
@@ -148,7 +135,6 @@ const NotificationCenterPage = () => {
         );
     };
 
-    // Handle select all
     const handleSelectAll = () => {
         if (selectedNotifications.length === notifications.length) {
             setSelectedNotifications([]);
@@ -157,7 +143,6 @@ const NotificationCenterPage = () => {
         }
     };
 
-    // Get category icon component
     const getCategoryIconComponent = (category) => {
         const iconProps = { className: "w-4 h-4 sm:w-5 sm:h-5" };
         switch (category) {
@@ -172,7 +157,6 @@ const NotificationCenterPage = () => {
         }
     };
 
-    // Get action URL
     const getActionUrl = (notification) => {
         if (notification.actionUrl) {
             return notification.actionUrl;
@@ -190,7 +174,6 @@ const NotificationCenterPage = () => {
         }
     };
 
-    // Filter notifications based on search term
     const filteredNotifications = notifications.filter(notification =>
         notification.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         notification.message.toLowerCase().includes(searchTerm.toLowerCase())

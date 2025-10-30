@@ -8,12 +8,10 @@ const BarcodePrintModal = ({ isOpen, onClose, barcode, productName, weightKg = n
   useEffect(() => {
     if (isOpen && barcode && canvasRef.current) {
       try {
-        // Clear previous barcode
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
-        // Generate new barcode
         JsBarcode(canvas, barcode, {
           format: "CODE128",
           width: 2,
@@ -99,7 +97,6 @@ const BarcodePrintModal = ({ isOpen, onClose, barcode, productName, weightKg = n
       </html>
     `);
     
-    // Generate barcode in the new window
     setTimeout(() => {
       const canvas = printWindow.document.getElementById('barcode-canvas');
       if (canvas) {
@@ -119,7 +116,6 @@ const BarcodePrintModal = ({ isOpen, onClose, barcode, productName, weightKg = n
         }
       }
       
-      // Auto-print after a short delay
       setTimeout(() => {
         printWindow.print();
         printWindow.close();

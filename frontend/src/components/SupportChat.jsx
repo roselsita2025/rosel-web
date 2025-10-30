@@ -34,26 +34,21 @@ const SupportChat = () => {
     const { user } = useAuthStore();
 
     useEffect(() => {
-        // Initialize support chat if none exists
         if (!currentChat || currentChat.type !== 'support') {
             if (!chatInitialized.current) {
                 initializeSupportChat();
                 chatInitialized.current = true;
             }
         } else {
-            // Load existing chat messages
             getChatMessages(currentChat.chatId);
-            // Join the chat room for real-time updates
             if (socket) {
                 socket.emit('join_chat', currentChat.chatId);
             }
         }
     }, [currentChat?.chatId]); // Only depend on chatId to prevent infinite loop
 
-    // Separate effect for admin status updates
     useEffect(() => {
         if (currentChat && currentChat.type === 'support') {
-            // Check if admin is connected
             if (currentChat.admin) {
                 setAdminConnected(true);
                 setIsWaitingForAdmin(false);
@@ -65,12 +60,10 @@ const SupportChat = () => {
     }, [currentChat?.admin]);
 
     useEffect(() => {
-        // Scroll to bottom when new messages arrive
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
 
     useEffect(() => {
-        // Listen for admin connection events
         if (socket) {
             socket.on('admin_joined', (data) => {
                 setAdminConnected(true);
@@ -87,12 +80,10 @@ const SupportChat = () => {
         try {
             const chat = await createChat('support');
             
-            // Join the chat room after creating it
             if (socket && chat) {
                 socket.emit('join_chat', chat.chatId);
             }
             
-            // Set initial state
             setIsWaitingForAdmin(true);
             setAdminConnected(false);
         } catch (error) {
@@ -123,12 +114,10 @@ const SupportChat = () => {
             startTyping(currentChat.chatId);
         }
 
-        // Clear existing timeout
         if (typingTimeoutRef.current) {
             clearTimeout(typingTimeoutRef.current);
         }
 
-        // Set new timeout to stop typing
         typingTimeoutRef.current = setTimeout(() => {
             setIsTyping(false);
             if (currentChat) {
@@ -148,7 +137,6 @@ const SupportChat = () => {
     const handleEndChat = async () => {
         try {
             if (currentChat) {
-                // End the conversation
                 await endChat(currentChat.chatId);
             }
             setShowEndChatDialog(false);
@@ -239,7 +227,6 @@ const SupportChat = () => {
                     <>
                         <AnimatePresence>
                             {messages.map((message, index) => {
-                                // Handle system messages differently
                                 if (message.messageType === 'system') {
                                     return (
                                         <motion.div
@@ -256,7 +243,6 @@ const SupportChat = () => {
                                     );
                                 }
 
-                                // Regular messages
                                 return (
                                     <motion.div
                                         key={index}

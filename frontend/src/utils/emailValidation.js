@@ -20,7 +20,6 @@ export const isValidEmail = (email) => {
         return false;
     }
     
-    // Additional checks for common invalid patterns
     const parts = email.split('@');
     if (parts.length !== 2) {
         return false;
@@ -28,17 +27,14 @@ export const isValidEmail = (email) => {
     
     const [localPart, domainPart] = parts;
     
-    // Check for double dots in domain
     if (domainPart.includes('..')) {
         return false;
     }
     
-    // Check for consecutive dots in local part
     if (localPart.includes('..')) {
         return false;
     }
     
-    // Check for valid TLD (at least 2 characters)
     const domainParts = domainPart.split('.');
     if (domainParts.length < 2) {
         return false;
@@ -49,21 +45,17 @@ export const isValidEmail = (email) => {
         return false;
     }
     
-    // Check for common fake domains
     const fakeDomains = ['test.com', 'example.com', 'fake.com', 'dummy.com'];
     if (fakeDomains.includes(domainPart.toLowerCase())) {
         return false;
     }
     
-    // Check for double domain pattern (e.g., gmail.com.com, yahoo.com.com)
     if (domainParts.length >= 3) {
-        // Check if the last two parts are the same (e.g., com.com, org.org)
         const lastTwoParts = domainParts.slice(-2);
         if (lastTwoParts[0] === lastTwoParts[1]) {
             return false;
         }
         
-        // Check for repeated domain patterns (e.g., gmail.com.com)
         for (let i = 0; i < domainParts.length - 1; i++) {
             const currentPart = domainParts[i];
             const nextPart = domainParts[i + 1];

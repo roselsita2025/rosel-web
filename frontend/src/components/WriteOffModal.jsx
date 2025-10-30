@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, ArrowLeft, ArrowRight, Check, AlertTriangle, Package, DollarSign, Hash, FileText, Eye } from 'lucide-react';
+import { X, ArrowLeft, ArrowRight, Check, AlertTriangle, Package, DollarSign, Hash, FileText, Eye, Beef as BeefIcon, Fish as FishIcon, Drumstick as ChickenIcon, PiggyBank as PorkIcon, ChefHat as ProcessedIcon, Scissors as SlicedIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 
@@ -15,12 +15,12 @@ const WriteOffModal = ({ isOpen, onClose, onSubmit, writeOff, products }) => {
     const [showConfirmation, setShowConfirmation] = useState(false);
 
     const categories = [
-        { value: 'beef', label: 'Beef', icon: '🥩' },
-        { value: 'chicken', label: 'Chicken', icon: '🐔' },
-        { value: 'pork', label: 'Pork', icon: '🐷' },
-        { value: 'seafood', label: 'Seafood', icon: '🐟' },
-        { value: 'processed', label: 'Processed', icon: '🥓' },
-        { value: 'sliced', label: 'Sliced', icon: '🔪' }
+        { value: 'beef', label: 'Beef', icon: BeefIcon },
+        { value: 'chicken', label: 'Chicken', icon: ChickenIcon },
+        { value: 'pork', label: 'Pork', icon: PorkIcon },
+        { value: 'seafood', label: 'Seafood', icon: FishIcon },
+        { value: 'processed', label: 'Processed', icon: ProcessedIcon },
+        { value: 'sliced', label: 'Sliced', icon: SlicedIcon }
     ];
 
     const reasons = [
@@ -34,7 +34,6 @@ const WriteOffModal = ({ isOpen, onClose, onSubmit, writeOff, products }) => {
         { value: 'other', label: 'Other' }
     ];
 
-    // Reset form when modal opens
     useEffect(() => {
         if (isOpen) {
             setCurrentStep(1);
@@ -48,13 +47,11 @@ const WriteOffModal = ({ isOpen, onClose, onSubmit, writeOff, products }) => {
         }
     }, [isOpen, products]);
 
-    // Get products filtered by category
     const getProductsByCategory = () => {
         if (!selectedCategory) return [];
         return products.filter(product => product.category === selectedCategory);
     };
 
-    // Get weight options for selected product
     const getWeightOptions = () => {
         if (!selectedProduct || !selectedProduct.weightOptions) return [];
         return selectedProduct.weightOptions.map(option => ({
@@ -63,7 +60,6 @@ const WriteOffModal = ({ isOpen, onClose, onSubmit, writeOff, products }) => {
         }));
     };
 
-    // Calculate total cost
     const getTotalCost = () => {
         if (!selectedWeightOption || !quantity) return 0;
         return selectedWeightOption.price * parseFloat(quantity);
@@ -265,11 +261,11 @@ const WriteOffModal = ({ isOpen, onClose, onSubmit, writeOff, products }) => {
                                                     }}
                                                     className="p-4 rounded-lg border-2 border-gray-200 hover:border-[#82695b] hover:bg-[#82695b] hover:text-white transition-all group pointer-events-auto relative z-[10001]"
                                                 >
-                                                        <div className="flex items-center gap-3">
-                                                            <span className="text-2xl">{category.icon}</span>
-                                                            <span className="font-medium">{category.label}</span>
-                                                        </div>
-                                                    </button>
+                                                    <div className="flex items-center gap-3">
+                                                        <category.icon className="w-6 h-6" />
+                                                        <span className="font-medium">{category.label}</span>
+                                                    </div>
+                                                </button>
                                                 ))}
                                             </div>
                                         )}

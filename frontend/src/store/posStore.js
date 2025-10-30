@@ -1,17 +1,14 @@
 import { create } from 'zustand';
 
 const usePOSStore = create((set, get) => ({
-  // State
   loading: false,
   error: null,
   recentTransactions: [],
 
-  // Actions
   createTransaction: async (transactionData) => {
     set({ loading: true, error: null });
     
     try {
-      // Creating transaction
       
       const response = await fetch(`${import.meta.env.VITE_API_URL}/pos/transaction`, {
         method: 'POST',
@@ -22,9 +19,7 @@ const usePOSStore = create((set, get) => ({
         body: JSON.stringify(transactionData),
       });
 
-      // Response received
-
-      // Check if response is HTML (error page) instead of JSON
+      
       const contentType = response.headers.get('content-type');
       if (!contentType || !contentType.includes('application/json')) {
         const text = await response.text();
@@ -74,7 +69,6 @@ const usePOSStore = create((set, get) => ({
         credentials: 'include',
       });
 
-      // Check if response is HTML (error page) instead of JSON
       const contentType = response.headers.get('content-type');
       if (!contentType || !contentType.includes('application/json')) {
         const text = await response.text();

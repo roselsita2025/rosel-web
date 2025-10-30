@@ -66,6 +66,14 @@ const productSchema = new mongoose.Schema({
                 trim: true, 
                 sparse: true,
                 default: undefined
+            },
+            createdAt: { type: Date, default: Date.now },
+            updatedAt: { type: Date, default: Date.now },
+            expireAt: { 
+                type: Date, 
+                default: function() {
+                    return new Date(Date.now() + 365 * 24 * 60 * 60 * 1000); // 1 year from now
+                }
             }
         }
     ],

@@ -27,13 +27,11 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 axios.defaults.withCredentials = true;
 
 const SalesReportPage = () => {
-  // Section 1: filters
   const [dataSource, setDataSource] = useState('combined'); // 'orders' | 'pos' | 'combined'
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [selectedYear, setSelectedYear] = useState(currentYear);
   const [selectedWeek, setSelectedWeek] = useState(-1); // -1 = All Time, 1..4 = week buckets
 
-  // When year is All Time, force month to All Time and disable month select
   useEffect(() => {
     if (selectedYear === -1) {
       if (selectedMonth !== -1) setSelectedMonth(-1);
@@ -47,24 +45,19 @@ const SalesReportPage = () => {
     }
   }, [selectedMonth]);
 
-  // Reset showAllProducts when filters change
   useEffect(() => {
     setShowAllProducts(false);
   }, [dataSource, selectedYear, selectedMonth, selectedWeek]);
 
-  // Build labels based on Month/Year selection
   const labels = useMemo(() => {
     const startYear = 2021;
     const endYear = currentYear;
     if (selectedYear === -1) {
-      // All years
       return Array.from({ length: endYear - startYear + 1 }, (_, i) => String(startYear + i));
     }
     if (selectedMonth === -1) {
-      // All months in selected year → 1..12
       return Array.from({ length: 12 }, (_, i) => String(i + 1));
     }
-    // Specific month → 1..daysInMonth
     const year = selectedYear;
     const monthIndex = selectedMonth; // 0-based
     const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
@@ -77,7 +70,6 @@ const SalesReportPage = () => {
     return Array.from({ length: daysInMonth }, (_, i) => String(i + 1));
   }, [selectedYear, selectedMonth, selectedWeek]);
 
-  // Raw from backend
   const [dailySalesData, setDailySalesData] = useState([]); // [{ date: YYYY-MM-DD, sales, revenue }]
   const [previousYearData, setPreviousYearData] = useState([]); // Previous year data for target lines
   const [topProducts, setTopProducts] = useState([]);
@@ -90,35 +82,28 @@ const SalesReportPage = () => {
   const [discrepancyCostImpact, setDiscrepancyCostImpact] = useState(0);
   const [paymentGatewayView, setPaymentGatewayView] = useState('revenue'); // 'revenue' or 'orders'
 
-  // Modal states
   const [showDateModal, setShowDateModal] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
   const [reportDateRange, setReportDateRange] = useState({ start: '', end: '' });
   const [isExporting, setIsExporting] = useState(false);
   
-  // Report filter states (separate from main page filters)
   const [reportYear, setReportYear] = useState(currentYear);
   const [reportMonth, setReportMonth] = useState(new Date().getMonth());
   const [reportWeek, setReportWeek] = useState(-1);
   const [isLoadingReportData, setIsLoadingReportData] = useState(false);
   const [waitingForExport, setWaitingForExport] = useState(false);
 
-  // Product markup from env (prefer Vite-exposed var), default 0.10
   const PRODUCT_MARKUP = useMemo(() => {
     const raw = import.meta.env.VITE_PRODUCT_MARKUP ?? import.meta.env.PRODUCT_MARKUP;
     const n = Number(raw);
     return Number.isFinite(n) ? n : 0.10;
   }, []);
 
-  // Aggregate backend dailySalesData into current labels (year/month/day)
   const dailyData = useMemo(() => {
-    // Determine grouping mode
     const mode = selectedYear === -1 ? 'year' : (selectedMonth === -1 ? 'month' : 'day');
     
-    // Aggregate current year data
     const sumByKey = new Map();
     for (const row of dailySalesData || []) {
-      // Parse date as YYYY-MM-DD (backend format)
       const parts = row.date.split('-');
       const year = parseInt(parts[0]);
       const month = parseInt(parts[1]);
@@ -132,10 +117,8 @@ const SalesReportPage = () => {
       sumByKey.set(key, { sales: prev.sales + (row.sales || 0), revenue: prev.revenue + (row.revenue || 0) });
     }
     
-    // Aggregate previous year data for targets
     const targetByKey = new Map();
     for (const row of previousYearData || []) {
-      // Parse date as YYYY-MM-DD (backend format)
       const parts = row.date.split('-');
       const year = parseInt(parts[0]);
       const month = parseInt(parts[1]);
@@ -143,8 +126,6 @@ const SalesReportPage = () => {
       
       let key = '';
       if (mode === 'year') {
-        // For year mode, the key should be the NEXT year (since this is previous year data)
-        // e.g., if previousYearData has 2021 data, it becomes the target for 2022
         key = String(year + 1);
       } else if (mode === 'month') {
         key = String(month);
@@ -159,26 +140,20 @@ const SalesReportPage = () => {
       const agg = sumByKey.get(String(label)) || { sales: 0, revenue: 0 };
       const previousYearSales = targetByKey.get(String(label)) || { sales: 0, revenue: 0 };
       
-      // Calculate growth rate per data point
       let salesGrowthRate = 0;
       if (previousYearSales.sales > 0) {
         salesGrowthRate = ((agg.sales - previousYearSales.sales) / previousYearSales.sales) * 100;
       }
-      // Cap negative growth at 0%
       salesGrowthRate = Math.max(salesGrowthRate, 0);
       
-      // Calculate growth-adjusted target sales
       const growthAdjustedTargetSales = previousYearSales.sales * (1 + (salesGrowthRate / 100));
       
-      // Calculate growth rate for revenue per data point
       let revenueGrowthRate = 0;
       if (previousYearSales.revenue > 0) {
         revenueGrowthRate = ((agg.revenue - previousYearSales.revenue) / previousYearSales.revenue) * 100;
       }
-      // Cap negative growth at 0%
       revenueGrowthRate = Math.max(revenueGrowthRate, 0);
       
-      // Calculate growth-adjusted target revenue
       const growthAdjustedTargetRevenue = previousYearSales.revenue * (1 + (revenueGrowthRate / 100));
       
       return {
@@ -187,7 +162,6 @@ const SalesReportPage = () => {
         actualSales: agg.sales,
         targetRevenue: growthAdjustedTargetRevenue,
         actualRevenue: agg.revenue,
-        // Keep original previous year data for reference
         previousYearSales: previousYearSales.sales,
         previousYearRevenue: previousYearSales.revenue,
         salesGrowthRate: salesGrowthRate,
@@ -196,39 +170,33 @@ const SalesReportPage = () => {
     });
   }, [labels, dailySalesData, previousYearData, selectedYear, selectedMonth]);
 
-  // Swapped: Use Profit series in the composed chart (Profit = Revenue * PRODUCT_MARKUP)
   const profitComposedData = useMemo(() => {
     return dailyData.map((d) => ({
       date: d.date,
       targetProfit: d.targetRevenue * PRODUCT_MARKUP,
       actualProfit: d.actualRevenue * PRODUCT_MARKUP,
-      // Keep original previous year profit for reference
       previousYearProfit: d.previousYearRevenue * PRODUCT_MARKUP,
       profitGrowthRate: d.revenueGrowthRate, // Profit growth rate same as revenue growth rate
     }));
   }, [dailyData, PRODUCT_MARKUP]);
 
-  // Swapped: Revenue (positive/up) vs Cost (negative/down) dataset
   const revenueCostData = useMemo(() => {
     return dailyData.map((d) => ({
       date: d.date,
       revenue: d.actualRevenue,
       revenueTarget: d.targetRevenue, // Already growth-adjusted from dailyData
       cost: d.actualRevenue - (d.actualRevenue * PRODUCT_MARKUP), // Cost = Revenue - Profit
-      // Keep original previous year revenue for reference
       previousYearRevenue: d.previousYearRevenue,
       revenueGrowthRate: d.revenueGrowthRate,
     }));
   }, [dailyData, PRODUCT_MARKUP]);
 
-  // Payment gateway by label (Cash, Bank, Online) aggregated from POS transactions and online orders
   const [posTxns, setPosTxns] = useState([]);
   const [onlineOrders, setOnlineOrders] = useState([]);
   const paymentGatewayData = useMemo(() => {
     const mode = selectedYear === -1 ? 'year' : (selectedMonth === -1 ? 'month' : 'day');
     const mapByKey = new Map();
     
-    // Process POS transactions
     for (const t of posTxns) {
       const d = new Date(t.createdAt || t.timestamp);
       let key = '';
@@ -256,7 +224,6 @@ const SalesReportPage = () => {
       mapByKey.set(key, prev);
     }
     
-    // Process online orders (all go to Bank)
     for (const order of onlineOrders) {
       const d = new Date(order.createdAt || order.created);
       let key = '';
@@ -282,11 +249,9 @@ const SalesReportPage = () => {
     }));
   }, [labels, posTxns, onlineOrders, selectedYear, selectedMonth]);
 
-  // Coupons/Discounts data combining online orders coupons and POS discounts
   const couponsDiscounts = useMemo(() => {
     const discountsList = [];
     
-    // Add online orders with coupons
     for (const order of onlineOrders) {
       if (order.coupon && order.coupon.discount > 0) {
         discountsList.push({
@@ -297,7 +262,6 @@ const SalesReportPage = () => {
       }
     }
     
-    // Add POS transactions with discounts
     for (const txn of posTxns) {
       if (txn.payment?.discount && txn.payment.discount > 0) {
         discountsList.push({
@@ -308,36 +272,29 @@ const SalesReportPage = () => {
       }
     }
     
-    // Sort by date descending (most recent first)
     return discountsList.sort((a, b) => b.date - a.date);
   }, [onlineOrders, posTxns]);
 
-  // Format discrepancy trends to match labels (same as other charts)
   const formattedDiscrepancyTrends = useMemo(() => {
     const mode = selectedYear === -1 ? 'year' : (selectedMonth === -1 ? 'month' : 'day');
     const quantityByKey = new Map();
     const costByKey = new Map();
     
-    // Aggregate discrepancy data by date
     for (const item of discrepancyTrends || []) {
-      // Handle different date formats
       let key = '';
       if (mode === 'year') {
-        // For year mode, extract year from date string or use item.date directly
         if (typeof item.date === 'string' && item.date.includes('-')) {
           key = String(new Date(item.date).getFullYear());
         } else {
           key = String(selectedYear);
         }
       } else if (mode === 'month') {
-        // For month mode, extract month from date string or use item.date directly
         if (typeof item.date === 'string' && item.date.includes('-')) {
           key = String(new Date(item.date).getMonth() + 1);
         } else {
           key = String(selectedMonth + 1);
         }
       } else {
-        // For day mode, use item.date directly (it's already the day number)
         key = String(item.date);
       }
       
@@ -347,7 +304,6 @@ const SalesReportPage = () => {
       costByKey.set(key, prevCost + (item.cost || 0));
     }
     
-    // Map to labels to ensure all dates are shown
     return labels.map((label) => ({
       date: label,
       quantity: quantityByKey.get(String(label)) || 0,
@@ -355,7 +311,6 @@ const SalesReportPage = () => {
     }));
   }, [labels, discrepancyTrends, selectedYear, selectedMonth]);
 
-  // Derived cards: Cost and Profit based on revenue and product markup
   const costDerived = useMemo(() => {
     const rev = Number(revenueSum) || 0;
     return rev - rev * PRODUCT_MARKUP;
@@ -366,7 +321,6 @@ const SalesReportPage = () => {
     return rev * PRODUCT_MARKUP;
   }, [revenueSum, PRODUCT_MARKUP]);
 
-  // Export handlers
   const handleCSVExport = async () => {
     setIsExporting(true);
     try {
@@ -402,7 +356,6 @@ const SalesReportPage = () => {
   const handlePDFExport = async () => {
     setIsExporting(true);
     try {
-      // Capture chart images
       const chartImages = {};
       const chartIds = [
         'sales-forecast-chart',
@@ -455,7 +408,6 @@ const SalesReportPage = () => {
     }
   };
 
-  // Build date range for API calls based on Year/Month/Week
   const buildRange = useMemo(() => {
     const pad = (n) => String(n).padStart(2, '0');
     return () => {
@@ -474,7 +426,6 @@ const SalesReportPage = () => {
     };
   }, [selectedYear, selectedMonth, selectedWeek]);
 
-  // Build date range for report generation based on report filters
   const buildReportRange = (year, month, week) => {
     const pad = (n) => String(n).padStart(2, '0');
     
@@ -492,7 +443,6 @@ const SalesReportPage = () => {
     return { start, end };
   };
 
-  // Fetch data on filter change
   useEffect(() => {
     const { start, end } = buildRange();
     const params = { source: dataSource, timeframe: 'custom', start, end };
@@ -501,25 +451,20 @@ const SalesReportPage = () => {
       try {
         const res = await axios.get(`${API_URL}/analytics/by-source`, { params });
         setDailySalesData(res.data?.dailySalesData || []);
-        // Do NOT set card totals here to avoid overriding date-filtered values
       } catch (_) { setDailySalesData([]); }
     };
 
     const fetchPreviousYearData = async () => {
-      try {
-        // Calculate previous year date range
+        try {
         let prevStart, prevEnd;
         
         if (selectedYear === -1) {
-          // All time: get data from 2020-2024 (one year before 2021-2025)
           prevStart = '2020-01-01';
           prevEnd = `${currentYear - 1}-12-31`;
         } else if (selectedMonth === -1) {
-          // All months: get previous year
           prevStart = `${selectedYear - 1}-01-01`;
           prevEnd = `${selectedYear - 1}-12-31`;
         } else {
-          // Specific month/week: get same period from previous year
           const pad = (n) => String(n).padStart(2, '0');
           const startDay = selectedWeek !== -1 ? Math.min((selectedWeek - 1) * 7 + 1, 28) : 1;
           const lastDayOfMonth = new Date(selectedYear - 1, selectedMonth + 1, 0).getDate();
@@ -540,7 +485,6 @@ const SalesReportPage = () => {
       try {
         const r = await axios.get(`${API_URL}/analytics/top-products-by-source`, { params: { ...params, limit: 10 } });
         const products = r.data?.products || [];
-        // Sort by revenue in descending order (highest to lowest)
         const sortedProducts = products.sort((a, b) => {
           const revenueA = Number(a.revenue || 0);
           const revenueB = Number(b.revenue || 0);
@@ -566,17 +510,14 @@ const SalesReportPage = () => {
 
     const fetchPosTxns = async () => {
       try {
-        // Only fetch POS transactions if dataSource includes 'pos' or 'combined'
         if (dataSource === 'orders') {
           setPosTxns([]);
           return;
         }
         
-        // Fetch all POS transactions (backend date filtering not working)
         const r = await axios.get(`${API_URL}/pos/transactions`, { params: { timeframe: 'all', limit: 100000 } });
         const allTxns = r.data?.data || [];
         
-        // Filter by date range on frontend
         const startDate = new Date(start);
         const endDate = new Date(end);
         endDate.setHours(23, 59, 59, 999);
@@ -595,7 +536,6 @@ const SalesReportPage = () => {
 
     const fetchOnlineOrders = async () => {
       try {
-        // Only fetch online orders if dataSource includes 'orders' or 'combined'
         if (dataSource === 'pos') {
           setOnlineOrders([]);
           return;
@@ -609,7 +549,6 @@ const SalesReportPage = () => {
         });
         const allOrders = r.data?.data?.orders || [];
         
-        // Filter by date range on frontend
         const startDate = new Date(start);
         const endDate = new Date(end);
         endDate.setHours(23, 59, 59, 999);
@@ -629,11 +568,9 @@ const SalesReportPage = () => {
       try {
         let totalDiscounts = 0;
         
-        // Use all-time data when "All Time" is selected, otherwise use filtered data
         const useAllTime = selectedYear === -1 || (selectedYear !== -1 && selectedMonth === -1);
         
         if (dataSource !== 'pos') {
-          // Always fetch all orders since backend date filtering is not working
           const allTimeOrders = await axios.get(`${API_URL}/admin/orders`, { 
             params: { 
               timeframe: 'all', 
@@ -642,7 +579,6 @@ const SalesReportPage = () => {
           });
           const allOrders = allTimeOrders.data?.data?.orders || [];
           
-          // Filter orders on frontend based on date range
           let orders = allOrders;
           if (!useAllTime) {
             const startDate = new Date(start);
@@ -667,7 +603,6 @@ const SalesReportPage = () => {
         }
         
         if (dataSource !== 'orders') {
-          // Always fetch all POS transactions since backend date filtering is not working
           const allTimePos = await axios.get(`${API_URL}/pos/transactions`, { 
             params: { 
               timeframe: 'all', 
@@ -676,7 +611,6 @@ const SalesReportPage = () => {
           });
           const allTxns = allTimePos.data?.data || [];
           
-          // Filter POS transactions on frontend based on date range
           let txns = allTxns;
           if (!useAllTime) {
             const startDate = new Date(start);
@@ -703,7 +637,6 @@ const SalesReportPage = () => {
         setDiscountsUsedSum(0); 
       }
       
-      // Keep table list available (not scoped by range yet; optional)
       try {
         const r = await axios.get(`${API_URL}/coupons/admin`);
         setCouponsTable(r.data || []);
@@ -714,7 +647,6 @@ const SalesReportPage = () => {
       try {
         const useAllTime = selectedYear === -1 || (selectedYear !== -1 && selectedMonth === -1);
         
-        // Use the analytics endpoint for discrepancy data (same as Discrepancy Report page)
         const params = {
           dataSource: 'combined',
           timeframe: useAllTime ? 'all' : 'custom'
@@ -730,24 +662,18 @@ const SalesReportPage = () => {
         if (response.data.success) {
           const analytics = response.data.data;
           
-          // Extract trends data from analytics
           const trendsData = analytics.trendsData || [];
           
-          // Group trends by date for the chart
           const dateMap = {};
           let totalCostImpact = 0;
           
           trendsData.forEach(item => {
-            // Handle different possible data structures
             let dayOfMonth;
             if (item._id && item._id.day) {
-              // MongoDB aggregation format: { _id: { year: 2025, month: 10, day: 24 } }
               dayOfMonth = item._id.day;
             } else if (item.date) {
-              // Direct date format: "2025-10-24"
               dayOfMonth = new Date(item.date).getDate();
             } else if (item.day) {
-              // Direct day format: 24
               dayOfMonth = item.day;
             } else {
               console.warn('Unknown trend item format:', item);
@@ -760,7 +686,6 @@ const SalesReportPage = () => {
             totalCostImpact += item.cost || 0;
           });
           
-          // Convert to array format matching the chart labels
           const formatted = Object.entries(dateMap).map(([day, data]) => ({
             date: day,
             quantity: data.quantity,
@@ -798,7 +723,6 @@ const SalesReportPage = () => {
     fetchAllData();
   }, [dataSource, selectedYear, selectedMonth, selectedWeek, buildRange]);
 
-  // When data loading completes and we're waiting for export, show export modal
   useEffect(() => {
     if (!isLoadingReportData && waitingForExport) {
       setWaitingForExport(false);
@@ -1238,7 +1162,6 @@ const SalesReportPage = () => {
               <button
                 onClick={() => {
                   setShowDateModal(false);
-                  // Reset to current date
                   setReportYear(currentYear);
                   setReportMonth(new Date().getMonth());
                   setReportWeek(-1);
@@ -1252,15 +1175,12 @@ const SalesReportPage = () => {
                   const range = buildReportRange(reportYear, reportMonth, reportWeek);
                   setReportDateRange(range);
                   
-                  // Update main page filters to match report filters
-                  // This will trigger data fetch for the selected report period
                   setSelectedYear(reportYear);
                   setSelectedMonth(reportMonth);
                   setSelectedWeek(reportWeek);
                   
                   setShowDateModal(false);
                   
-                  // Set flag to show export modal once data loading completes
                   setWaitingForExport(true);
                 }}
                 className='flex-1 px-3 sm:px-4 py-2 text-xs sm:text-sm bg-[#860809] text-white rounded-md hover:bg-[#a31f17] active:bg-[#a31f17] transition-colors font-alice active:scale-95'

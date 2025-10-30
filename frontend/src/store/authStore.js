@@ -38,12 +38,10 @@ export const useAuthStore = create((set, get) => ({
         try {
             const captchaToken = await getRecaptchaToken("login");
             const response = await axios.post(`${API_URL}/login`, {email,password, captchaToken, captchaAction: "login"});
-            // If backend indicates verification is required, route to verify flow
             if (response.data.verificationRequired) {
                 set({ pendingEmail: email, isLoading: false, message: response.data.message, otpRequired: false });
                 return response.data;
             }
-            // In OTP flow, backend returns otpRequired and no user yet
             if (response.data.otpRequired) {
                 set({ otpRequired: true, pendingEmail: email, isLoading: false, message: response.data.message });
                 return response.data;
@@ -98,7 +96,6 @@ export const useAuthStore = create((set, get) => ({
         try {
             const email = get().pendingEmail;
             const response = await axios.post(`${API_URL}/verify-email`, { code, email });
-            // After verification, keep user as guest; they can log in
             set({ isLoading: false, message: response.data.message });
             return response.data;
         } catch (error) {
@@ -126,8 +123,6 @@ export const useAuthStore = create((set, get) => ({
             const response = await axios.get(`${API_URL}/check-auth`);
             set({user:response.data.user, isAuthenticated:true, isCheckingAuth: false});
         } catch (error) {
-            // Silently handle authentication check failure for guests
-            // This is expected behavior for non-authenticated users
             set({error: null, isCheckingAuth: false, isAuthenticated: false, user: null});
         }
     },

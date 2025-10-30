@@ -35,7 +35,6 @@ const ReplacementRequestsPage = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
 
-    // Fetch requests on component mount
     useEffect(() => {
         const loadRequests = async () => {
             try {

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { productStore } from "../../store/productStore.js";
 import { useAuthStore } from "../../store/authStore.js";
@@ -22,6 +23,7 @@ const STOCK_OUT_REASONS = [
 ];
 
 const ManageProductsPage = () => {
+    const navigate = useNavigate();
     const { isAuthenticated, isCheckingAuth } = useAuthStore();
 	const {
 		products,
@@ -39,10 +41,11 @@ const ManageProductsPage = () => {
         updateBasePricePerKg,
         checkNameExists,
         checkBarcodeExists,
+		createPurchaseOrder,
 	} = productStore();
 
 	const [activeTab, setActiveTab] = useState("monitor"); // create | update | monitor
-	const [updateSubTab, setUpdateSubTab] = useState("select"); // select | price | stocks
+	const [updateSubTab, setUpdateSubTab] = useState("select"); // select | price | stocks | purchase-order
 
 	// Create product state
 	const [newProduct, setNewProduct] = useState({
@@ -70,12 +73,10 @@ const ManageProductsPage = () => {
     const [scanAccum, setScanAccum] = useState(0);
     const [scanActive, setScanActive] = useState(false);
     
-    // Stock removal state
     const [stockOutQuantity, setStockOutQuantity] = useState("");
     const [stockOutReason, setStockOutReason] = useState("");
     const [showStockOutConfirm, setShowStockOutConfirm] = useState(false);
 
-    // Barcode modes and scan feedback
     const [createBarcodeMode, setCreateBarcodeMode] = useState("manual"); // manual | usb | camera
     const [updateSearchMode, setUpdateSearchMode] = useState("manual"); // manual | usb | camera
     const [qtyScanMode, setQtyScanMode] = useState("usb"); // usb | camera
@@ -88,7 +89,6 @@ const ManageProductsPage = () => {
     const [invalidQtyScan, setInvalidQtyScan] = useState("");
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-    // Barcode print modal state
     const [showBarcodeModal, setShowBarcodeModal] = useState(false);
     const [selectedBarcode, setSelectedBarcode] = useState('');
     const [selectedProductName, setSelectedProductName] = useState('');
@@ -100,14 +100,15 @@ const ManageProductsPage = () => {
 	const [updateFilterStatus, setUpdateFilterStatus] = useState("");
 	const [updateSortKey, setUpdateSortKey] = useState("nameAsc");
 
-    // Stocks Updates UI state
     const [showAddWeight, setShowAddWeight] = useState(false);
+    const [showPurchaseOrderInWeight, setShowPurchaseOrderInWeight] = useState(false); // For PO flow in Add Weight modal
+    const [pendingWeightForPO, setPendingWeightForPO] = useState(null); // Weight data pending PO creation
+    const [newWeightPOCart, setNewWeightPOCart] = useState([]); // Cart for new weight PO
     const [weightFilterCategory, setWeightFilterCategory] = useState("");
     const [weightFilterText, setWeightFilterText] = useState("");
     const [weightSortKey, setWeightSortKey] = useState("nameAsc");
     const [addByKey, setAddByKey] = useState({}); // { [rowKey]: qty }
 
-    // Price Updates local state
     const [priceFilterCategory, setPriceFilterCategory] = useState("");
     const [priceFilterText, setPriceFilterText] = useState("");
     const [priceSortKey, setPriceSortKey] = useState("nameAsc");
@@ -120,7 +121,18 @@ const ManageProductsPage = () => {
     const [weightCurrentPage, setWeightCurrentPage] = useState(1);
     const ITEMS_PER_PAGE = 10;
 
-    // Header renderer for sorting
+    const [poSupplier, setPoSupplier] = useState('');
+    const [poSupplierSearchText, setPoSupplierSearchText] = useState('');
+    const [showPoSupplierDropdown, setShowPoSupplierDropdown] = useState(false);
+    const [poSearchText, setPoSearchText] = useState('');
+    const [poCart, setPoCart] = useState([]);
+    const [allSuppliers, setAllSuppliers] = useState([]);
+    const [showPoConfirmModal, setShowPoConfirmModal] = useState(false);
+    const [createdPurchaseOrder, setCreatedPurchaseOrder] = useState(null);
+    const [showPoSuccessModal, setShowPoSuccessModal] = useState(false);
+    const [isCreatingProductPO, setIsCreatingProductPO] = useState(false); // Flag for create product PO flow
+    const supplierDropdownRef = useRef(null);
+
     const renderWeightHeader = (label, field) => (
         <th className='px-4 py-3 text-left text-xs font-medium text-[#feffff] uppercase tracking-wider'>
             <div className='flex items-center justify-between'>
@@ -137,29 +149,25 @@ const ManageProductsPage = () => {
         </th>
     );
 
-    // Flatten rows from products
     const allWeightRows = useMemo(() => (products || [])
         .filter(p => !updateFilterCategory || p.category === updateFilterCategory)
         .filter(p => {
             if (!updateFilterText) return true;
             const searchLower = updateFilterText.toLowerCase();
-            // Check product name
             if (p.name.toLowerCase().includes(searchLower)) return true;
-            // Check product-level barcode
             if (p.barcode?.toLowerCase().includes(searchLower)) return true;
-            // Check weight option barcodes
             if (p.weightOptions?.some(opt => opt.barcode?.toLowerCase().includes(searchLower))) return true;
             return false;
         })
         .flatMap(p => {
             const hasOpts = Array.isArray(p.weightOptions) && p.weightOptions.length > 0;
             if (!hasOpts) {
-                // Show legacy products but disable add
                 return [{
                     key: `${p._id}-legacy`,
                     productId: p._id,
                     name: p.name,
                     category: p.category,
+                    supplier: p.supplier || '',
                     weightLabel: '—',
                     weightOptionId: null,
                     stocks: p.quantity ?? 0,
@@ -171,6 +179,7 @@ const ManageProductsPage = () => {
                 productId: p._id,
                 name: p.name,
                 category: p.category,
+                supplier: p.supplier || '',
                 weightLabel: typeof opt.weightKg === 'number' ? opt.weightKg.toFixed(2) : String(opt.weightKg),
                 weightOptionId: opt._id,
                 stocks: opt.stockUnits ?? 0,
@@ -179,6 +188,8 @@ const ManageProductsPage = () => {
         })
         .sort((a,b)=>{
             switch(weightSortKey){
+                case 'supplierAsc': return (a.supplier||'').localeCompare(b.supplier||'');
+                case 'supplierDesc': return (b.supplier||'').localeCompare(a.supplier||'');
                 case 'nameAsc': return a.name.localeCompare(b.name);
                 case 'nameDesc': return b.name.localeCompare(a.name);
                 case 'categoryAsc': return a.category.localeCompare(b.category);
@@ -197,7 +208,6 @@ const ManageProductsPage = () => {
         weightCurrentPage * ITEMS_PER_PAGE
     );
 
-    // Helpers for Price Updates
     const renderPriceHeader = (label, field) => (
         <th className='px-4 py-3 text-left text-xs font-medium text-[#feffff] uppercase tracking-wider'>
             <div className='flex items-center justify-between'>
@@ -219,11 +229,8 @@ const ManageProductsPage = () => {
         .filter(p => {
             if (!updateFilterText) return true;
             const searchLower = updateFilterText.toLowerCase();
-            // Check product name
             if (p.name.toLowerCase().includes(searchLower)) return true;
-            // Check product-level barcode
             if (p.barcode?.toLowerCase().includes(searchLower)) return true;
-            // Check weight option barcodes
             if (p.weightOptions?.some(opt => opt.barcode?.toLowerCase().includes(searchLower))) return true;
             return false;
         })
@@ -231,10 +238,13 @@ const ManageProductsPage = () => {
             productId: p._id,
             name: p.name,
             category: p.category,
+            supplier: p.supplier || 'N/A',
             basePrice: Number(p.basePricePerKg ?? 1000),
         }))
         .sort((a,b)=>{
             switch(priceSortKey){
+                case 'supplierAsc': return a.supplier.localeCompare(b.supplier);
+                case 'supplierDesc': return b.supplier.localeCompare(a.supplier);
                 case 'nameAsc': return a.name.localeCompare(b.name);
                 case 'nameDesc': return b.name.localeCompare(a.name);
                 case 'categoryAsc': return a.category.localeCompare(b.category);
@@ -311,6 +321,62 @@ const ManageProductsPage = () => {
 		}
 	}, [selectedProduct]);
 
+	// Extract unique suppliers when Purchase Order subtab is active
+	useEffect(() => {
+		if (updateSubTab === 'purchase-order') {
+			const uniqueSuppliers = [...new Set(products.filter(p => p.supplier).map(p => p.supplier))];
+			setAllSuppliers(uniqueSuppliers);
+		}
+	}, [updateSubTab, products]);
+
+	// Handle URL parameters for deep linking
+	useEffect(() => {
+		const urlParams = new URLSearchParams(window.location.search);
+		const tab = urlParams.get('tab');
+		const subtab = urlParams.get('subtab');
+		
+		if (tab && ['create', 'update', 'monitor', 'activity'].includes(tab)) {
+			setActiveTab(tab);
+		}
+		
+		if (subtab && ['select', 'price', 'stocks', 'purchase-order'].includes(subtab)) {
+			setUpdateSubTab(subtab);
+		}
+	}, []); // Run once on mount
+	
+	// Handle product selection when products are loaded
+	useEffect(() => {
+		if (products.length > 0 && updateSubTab === 'purchase-order') {
+			const urlParams = new URLSearchParams(window.location.search);
+			const productIdParam = urlParams.get('productId') || urlParams.get('product');
+			
+			if (productIdParam) {
+				const product = products.find(p => p._id === productIdParam);
+				if (product && product.supplier) {
+					setPoSupplier(product.supplier);
+					setPoSupplierSearchText(product.supplier);
+				}
+			}
+		}
+	}, [products, updateSubTab]);
+
+	// Handle click outside supplier dropdown
+	useEffect(() => {
+		const handleClickOutside = (event) => {
+			if (supplierDropdownRef.current && !supplierDropdownRef.current.contains(event.target)) {
+				setShowPoSupplierDropdown(false);
+			}
+		};
+
+		if (showPoSupplierDropdown) {
+			document.addEventListener('mousedown', handleClickOutside);
+		}
+
+		return () => {
+			document.removeEventListener('mousedown', handleClickOutside);
+		};
+	}, [showPoSupplierDropdown]);
+
 	const handleCreateImageChange = (e) => {
 		const files = Array.from(e.target.files || []);
 		files.forEach((file) => {
@@ -371,22 +437,13 @@ const ManageProductsPage = () => {
 			return;
 		}
 		
-		const result = await createProduct({
-			name: newProduct.name,
-			description: newProduct.description,
-			basePricePerKg: Number(newProduct.price), // base price per kg
-			category: newProduct.category,
-			quantity: Number(newProduct.quantity),
-			weightKg: Number(newProduct.weightKg),
-			weightBarcode: newProduct.weightBarcode.trim(), // weight-specific barcode
-			images: newProduct.images,
-			barcode: newProduct.barcode?.trim() || undefined, // product-level barcode (optional)
-			supplier: newProduct.supplier?.trim() || "",
-		});
-		
-		if (result?.success) {
-			setNewProduct({ name: "", description: "", price: "", category: "", quantity: "", weightKg: "", images: [], barcode: "", supplier: "", weightBarcode: "" });
+		// Set flag and auto-select supplier from form if provided
+		setIsCreatingProductPO(true);
+		if (newProduct.supplier?.trim()) {
+			setPoSupplier(newProduct.supplier.trim());
 		}
+		// Show PO confirmation modal
+		setShowPoConfirmModal(true);
 	};
 
 	const onUpdate = async (e) => {
@@ -517,6 +574,287 @@ const ManageProductsPage = () => {
 		setActivitySortKey(sortKey);
 	};
 
+	// Purchase Order helper functions
+	const filteredPoSuppliers = useMemo(() => {
+		if (!allSuppliers || allSuppliers.length === 0) return [];
+		
+		if (!poSupplierSearchText) return allSuppliers;
+		
+		const searchLower = poSupplierSearchText.toLowerCase();
+		return allSuppliers.filter(supplier => 
+			supplier.toLowerCase().includes(searchLower)
+		);
+	}, [allSuppliers, poSupplierSearchText]);
+
+	const filteredPoProducts = useMemo(() => {
+		if (!products || products.length === 0) return [];
+		
+		let filtered = products.filter(p => {
+			// Filter by supplier
+			if (poSupplier && p.supplier !== poSupplier) return false;
+			
+			// Filter by search text
+			if (poSearchText) {
+				const searchLower = poSearchText.toLowerCase();
+				if (!p.name.toLowerCase().includes(searchLower) && 
+					!p.barcode?.toLowerCase().includes(searchLower) &&
+					!p.weightOptions?.some(opt => opt.barcode?.toLowerCase().includes(searchLower))) {
+					return false;
+				}
+			}
+			
+			return true;
+		});
+		
+		return filtered;
+	}, [products, poSupplier, poSearchText]);
+
+	const addToPoCart = (product, weightOption) => {
+		// Check if supplier matches
+		if (poSupplier && product.supplier !== poSupplier) {
+			toast.error(`Cannot add product from different supplier. Selected supplier: ${poSupplier}`);
+			return;
+		}
+
+		const existingIndex = poCart.findIndex(
+			item => item.productId === product._id && 
+					item.weightOptionId === (weightOption?._id || null)
+		);
+
+		if (existingIndex >= 0) {
+			const updatedCart = [...poCart];
+			updatedCart[existingIndex].quantity += 1;
+			setPoCart(updatedCart);
+		} else {
+			setPoCart([...poCart, {
+				productId: product._id,
+				productName: product.name,
+				category: product.category,
+				weightOptionId: weightOption?._id || null,
+				weightKg: weightOption?.weightKg || 0,
+				quantity: 1,
+				basePricePerKg: product.basePricePerKg,
+			}]);
+		}
+		toast.success(`${product.name} added to purchase order`);
+	};
+
+	const updatePoCartQuantity = (productId, weightOptionId, newQuantity) => {
+		if (newQuantity <= 0) {
+			setPoCart(poCart.filter(item => 
+				!(item.productId === productId && item.weightOptionId === weightOptionId)
+			));
+			toast.success('Item removed from purchase order');
+		} else {
+			setPoCart(poCart.map(item =>
+				item.productId === productId && item.weightOptionId === weightOptionId
+					? { ...item, quantity: newQuantity }
+					: item
+			));
+		}
+	};
+
+	const removePoCartItem = (productId, weightOptionId) => {
+		setPoCart(poCart.filter(item => 
+			!(item.productId === productId && item.weightOptionId === weightOptionId)
+		));
+		toast.success('Item removed from purchase order');
+	};
+
+	const handleCreatePurchaseOrder = () => {
+		if (!poSupplier) {
+			toast.error('Please select a supplier first');
+			return;
+		}
+
+		if (poCart.length === 0) {
+			toast.error('Please add products to the purchase order');
+			return;
+		}
+
+		setShowPoConfirmModal(true);
+	};
+
+	const confirmCreatePurchaseOrder = async () => {
+		setShowPoConfirmModal(false);
+		
+		// If creating a new product through create tab, create product first
+        if (isCreatingProductPO) {
+            const productResult = await createProduct({
+				name: newProduct.name,
+				description: newProduct.description,
+				basePricePerKg: Number(newProduct.price),
+				category: newProduct.category,
+				quantity: Number(newProduct.quantity),
+				weightKg: Number(newProduct.weightKg),
+				weightBarcode: newProduct.weightBarcode.trim(),
+				images: newProduct.images,
+				barcode: newProduct.barcode?.trim() || undefined,
+				supplier: newProduct.supplier?.trim() || "",
+			});
+			
+			if (!productResult?.success) {
+				setIsCreatingProductPO(false);
+				return; // Error already shown by createProduct
+			}
+			
+			// Prepare PO data with the newly created product
+			const supplierForPO = newProduct.supplier?.trim() || poSupplier || "Unknown Supplier";
+			const purchaseOrderData = {
+				supplier: supplierForPO,
+				items: [{
+					productId: productResult.product._id,
+					weightKg: Number(newProduct.weightKg),
+					quantity: Number(newProduct.quantity)
+				}]
+			};
+			
+			const result = await createPurchaseOrder(purchaseOrderData);
+			
+			if (result?.success) {
+				setCreatedPurchaseOrder(result.data);
+				setShowPoSuccessModal(true);
+				// Reset create product form
+				setNewProduct({ name: "", description: "", price: "", category: "", quantity: "", weightKg: "", images: [], barcode: "", supplier: "", weightBarcode: "" });
+				setIsCreatingProductPO(false);
+				setPoCart([]); // Clear PO cart
+			}
+		} else {
+			// Regular PO creation flow
+			const purchaseOrderData = {
+				supplier: poSupplier,
+				items: poCart.map(item => ({
+					productId: item.productId,
+					weightOptionId: item.weightOptionId,
+					weightKg: item.weightKg,
+					quantity: item.quantity
+				}))
+			};
+
+			const result = await createPurchaseOrder(purchaseOrderData);
+			
+			if (result?.success) {
+				setCreatedPurchaseOrder(result.data);
+				setShowPoSuccessModal(true);
+				// Don't clear the cart yet - user will do it after seeing receipt
+			}
+		}
+	};
+
+	const handlePrintReceipt = () => {
+		// Create a printable receipt window
+		const receiptWindow = window.open('', '_blank', 'width=350,height=600');
+		
+		const receiptContent = `
+			<!DOCTYPE html>
+			<html>
+			<head>
+				<title>Purchase Order Receipt</title>
+				<style>
+					* { margin: 0; padding: 0; box-sizing: border-box; }
+					body { font-family: 'Courier New', monospace; padding: 20px; background: white; font-size: 12px; }
+					.receipt { max-width: 300px; margin: 0 auto; }
+					.divider { border-top: 1px dashed #000; margin: 15px 0; }
+					.header { text-align: center; margin-bottom: 15px; }
+					.company-name { font-weight: bold; font-size: 16px; margin-bottom: 5px; }
+					.order-info { margin: 15px 0; }
+					.order-info p { display: flex; justify-content: space-between; margin: 3px 0; }
+					.order-info .label { font-weight: bold; }
+					.items-section { margin: 15px 0; }
+					.item-header { font-weight: bold; margin-bottom: 5px; }
+					.item { margin: 8px 0; }
+					.item-name { margin-bottom: 2px; }
+					.item-details { font-size: 11px; display: flex; justify-content: space-between; }
+					.total-section { margin: 15px 0; }
+					.total-line { display: flex; justify-content: space-between; margin: 5px 0; }
+					.grand-total { font-weight: bold; font-size: 14px; border-top: 1px dashed #000; padding-top: 5px; margin-top: 10px; }
+					.footer { text-align: center; margin-top: 20px; font-size: 11px; }
+					.footer-message { font-weight: bold; font-size: 12px; text-transform: uppercase; margin-bottom: 5px; }
+					@media print {
+						body { padding: 10px; }
+						button { display: none; }
+					}
+				</style>
+			</head>
+			<body>
+				<div class="receipt">
+					<div class="header">
+						<div class="company-name">ROSEL FROZEN MEATS</div>
+						<div>Quality Frozen Meats for Your Family</div>
+					</div>
+					
+					<div class="divider"></div>
+					
+					<div class="order-info">
+						<div style="font-weight: bold; margin-bottom: 5px;">Transaction ID:</div>
+						<div style="text-align: center; margin-bottom: 10px;">${createdPurchaseOrder.purchaseOrderId}</div>
+						<p><span class="label">PO Number:</span> ${createdPurchaseOrder.purchaseOrderId.substring(0, 8)}</p>
+						<p><span class="label">Supplier:</span> ${createdPurchaseOrder.supplier}</p>
+						<p><span class="label">Date & Time:</span> ${new Date(createdPurchaseOrder.createdAt).toLocaleString('en-US', { 
+							year: 'numeric', 
+							month: 'short', 
+							day: 'numeric',
+							hour: '2-digit',
+							minute: '2-digit'
+						})}</p>
+					</div>
+					
+					<div class="divider"></div>
+					
+					<div class="items-section">
+						<div class="item-header">ITEMS PURCHASED:</div>
+						${createdPurchaseOrder.items.map((item, idx) => `
+							<div class="item">
+								<div class="item-name">${item.productName} (${item.weightKg.toFixed(2)}kg)</div>
+								<div class="item-details">
+									<span>₱${parseFloat(item.unitPrice).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})} x ${item.quantity}</span>
+								</div>
+								<div class="item-details">
+									<span>₱${parseFloat(item.totalPrice).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+								</div>
+							</div>
+						`).join('')}
+					</div>
+					
+					<div class="divider"></div>
+					
+					<div class="total-section">
+						<div class="total-line">
+							<span>Subtotal:</span>
+							<span>₱${parseFloat(createdPurchaseOrder.subtotal).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+						</div>
+						<div class="total-line grand-total">
+							<span>TOTAL:</span>
+							<span>₱${parseFloat(createdPurchaseOrder.totalAmount).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+						</div>
+					</div>
+					
+					<div class="divider"></div>
+					
+					<div class="footer">
+						<div class="footer-message">THANK YOU FOR YOUR PURCHASE!</div>
+						<div>Please keep this receipt for your records</div>
+					</div>
+				</div>
+				<button onclick="window.print()" style="position: fixed; top: 10px; right: 10px; padding: 10px 20px; background: #860809; color: white; border: none; border-radius: 5px; cursor: pointer;">Print Receipt</button>
+			</body>
+			</html>
+		`;
+		
+		receiptWindow.document.write(receiptContent);
+		receiptWindow.document.close();
+	};
+
+	const handleCreateNewOrder = () => {
+		setPoCart([]);
+		setPoSupplier('');
+		setPoSearchText('');
+		setCreatedPurchaseOrder(null);
+		setShowPoSuccessModal(false);
+		// Refresh products to reflect updated stock
+		fetchAllProducts();
+	};
+
 	const fetchActivityLogs = async () => {
 		setActivityLoading(true);
 		try {
@@ -534,16 +872,15 @@ const ManageProductsPage = () => {
 			// Check if response.data.logs exists and is an array
 			const logs = response.data.logs || response.data || [];
 			
-			if (!Array.isArray(logs)) {
-				setActivityLogs([]);
-				return;
-			}
-			
-			// If no logs found, show empty array (this is normal for new installations)
-			if (logs.length === 0) {
-				setActivityLogs([]);
-				return;
-			}
+		if (!Array.isArray(logs)) {
+			setActivityLogs([]);
+			return;
+		}
+		
+		if (logs.length === 0) {
+			setActivityLogs([]);
+			return;
+		}
 			
 		// Transform the response data to match the expected format
 		// Filter out write_off and stock_out actions
@@ -581,7 +918,6 @@ const ManageProductsPage = () => {
         return p?.quantity || 0;
     };
 
-    // Get stock status based on quantity
     const getStockStatus = (product) => {
         const totalStocks = getTotalStocks(product);
         if (totalStocks === 0) return 'out of stock';
@@ -968,10 +1304,10 @@ const filteredUpdateProducts = useMemo(() => {
 							<span className='whitespace-nowrap'>Update Price</span>
 						</button>
 						<button 
-							onClick={()=>setUpdateSubTab('stocks')} 
-							className={`px-2.5 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded font-alice transition-colors text-xs sm:text-sm active:scale-95 ${updateSubTab==='stocks' ? 'bg-[#860809] text-white' : 'bg-[#a31f17] text-white hover:bg-[#860809]'}`}
+							onClick={()=>setUpdateSubTab('purchase-order')} 
+							className={`px-2.5 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded font-alice transition-colors text-xs sm:text-sm active:scale-95 ${updateSubTab==='purchase-order' ? 'bg-[#860809] text-white' : 'bg-[#a31f17] text-white hover:bg-[#860809]'}`}
 						>
-							<span className='whitespace-nowrap'>Update Stocks</span>
+							<span className='whitespace-nowrap'>Purchase Order</span>
 						</button>
 					</div>
 
@@ -1250,6 +1586,7 @@ const filteredUpdateProducts = useMemo(() => {
                             <table className='min-w-full divide-y divide-[#82695b]'>
                                 <thead className='bg-[#82695b]'>
                                     <tr>
+                                        {renderPriceHeader('Supplier','supplier')}
                                         {renderPriceHeader('Product Name','name')}
                                         {renderPriceHeader('Product Category','category')}
                                         {renderPriceHeader('Base Price Per Kilo','price')}
@@ -1259,6 +1596,7 @@ const filteredUpdateProducts = useMemo(() => {
                                 <tbody className='bg-[#feffff] divide-y divide-[#82695b]'>
                                     {priceRows.map((row)=> (
                                         <tr key={row.productId} className='hover:bg-[#f8f3ed] transition-colors'>
+                                            <td className='px-4 py-3 text-[#82695b] text-sm'>{row.supplier}</td>
                                             <td className='px-4 py-3 text-[#82695b] text-sm'>{row.name}</td>
                                             <td className='px-4 py-3 text-[#82695b] text-sm capitalize'>{row.category}</td>
                                             <td className='px-4 py-3 text-[#82695b] text-sm'>
@@ -1309,7 +1647,7 @@ const filteredUpdateProducts = useMemo(() => {
                                         </tr>
                                     ))}
                                     {priceRows.length === 0 && (
-                                        <tr><td colSpan='4' className='px-4 py-6 text-center text-[#82695b]'>No products found</td></tr>
+                                        <tr><td colSpan='5' className='px-4 py-6 text-center text-[#82695b]'>No products found</td></tr>
                                     )}
                                 </tbody>
                             </table>
@@ -1360,182 +1698,234 @@ const filteredUpdateProducts = useMemo(() => {
                     </motion.div>
                 )}
 
-			{/* Stocks Updates Sub-Tab */}
-			{updateSubTab === 'stocks' && (
-				<motion.div className='bg-[#fffefc] shadow-lg rounded-lg p-6 border border-gray-300' initial={{opacity:0,y:20}} animate={{opacity:1,y:0}}>
-					<div className='flex items-center justify-between mb-4'>
-						<h3 className='text-lg font-semibold text-[#860809] font-libre'>Update Stocks</h3>
+			{/* Purchase Order Sub-Tab */}
+			{updateSubTab === 'purchase-order' && (
+				<div className='grid grid-cols-1 lg:grid-cols-[60%_40%] gap-6'>
+					{/* Left Column - Product Selection */}
+					<motion.div className='bg-[#fffefc] shadow-lg rounded-lg p-6 border border-gray-300' initial={{opacity:0,y:20}} animate={{opacity:1,y:0}}>
+					<div className='mb-6 flex justify-between items-start'>
+						<div>
+							<h3 className='text-lg font-semibold text-[#860809] font-libre mb-2'>Purchase Order</h3>
+							<p className='text-sm text-[#82695b]'>Create a new purchase order to add products to inventory from a supplier</p>
+						</div>
 						<div className='flex gap-2'>
-							{!isBatchStockEditing ? (
-								<button
-									type='button'
-									onClick={()=>{
-										setIsBatchStockEditing(true);
-										// Initialize all stock input fields with empty values
-										const next = {};
-										(weightRows||[]).forEach(r=>{ next[r.key] = ''; });
-										setAddByKey(prev=>({ ...next, ...prev }));
-									}}
-									className='px-3 py-2 bg-[#901414] text-white rounded hover:bg-[#7a0f0f] font-alice'
-								>Batch Update</button>
-							) : (
-								<>
-									<button
-										type='button'
-										onClick={async()=>{
-											// Apply all stock additions
-											const tasks = [];
-											(weightRows||[]).forEach(r=>{
-												const delta = parseInt(addByKey[r.key], 10);
-												if (Number.isInteger(delta) && delta > 0) {
-													if (r.weightOptionId) {
-														const newTotal = Number(r.stocks) + delta;
-														tasks.push(updateWeightOptionStock(r.productId, r.weightOptionId, newTotal));
-													} else {
-														tasks.push(addProductQuantity(r.productId, delta));
-													}
-												}
-											});
-											await Promise.all(tasks);
-											setIsBatchStockEditing(false);
-											setAddByKey({});
-										}}
-										className='px-3 py-2 bg-[#901414] text-white rounded hover:bg-[#7a0f0f] font-alice'
-									>Update</button>
-									<button
-										type='button'
-										onClick={()=>{ setIsBatchStockEditing(false); setAddByKey({}); }}
-										className='px-3 py-2 bg-[#82695b] text-white rounded hover:bg-[#6b5649] font-alice'
-									>Cancel</button>
-								</>
-							)}
-							<button onClick={()=>setShowAddWeight(true)} className='px-3 py-2 bg-[#901414] text-white rounded hover:bg-[#7a0f0f] font-alice'>Add New Weight</button>
+							<button
+								onClick={() => navigate('/purchase-order-history')}
+								className='bg-[#860809] text-white px-4 py-2 rounded hover:bg-[#7a0f0f] flex items-center gap-2 whitespace-nowrap'
+							>
+								<History size={18} />
+								View History
+							</button>
+							<button
+								onClick={() => setShowAddWeight(true)}
+								className='bg-[#82695b] text-white px-4 py-2 rounded hover:bg-[#6b5649] font-alice whitespace-nowrap'
+							>
+								Add New Weight
+							</button>
 						</div>
 					</div>
 
-                        {/* Table */}
-                        <div className='overflow-x-auto'>
-                            <table className='min-w-full divide-y divide-[#82695b]'>
-                                <thead className='bg-[#82695b]'>
-                                    <tr>
-                                        {renderWeightHeader('Product Name','name')}
-                                        {renderWeightHeader('Product Category','category')}
-                                        {renderWeightHeader('Weight (kg)','weight')}
-                                        {renderWeightHeader('Stocks','stocks')}
-                                        <th className='px-4 py-3 text-left text-xs font-medium text-[#feffff] uppercase tracking-wider'>Barcode</th>
-                                        <th className='px-4 py-3 text-left text-xs font-medium text-[#feffff] uppercase tracking-wider'>Add Stock</th>
-                                        <th className='px-4 py-3 text-left text-xs font-medium text-[#feffff] uppercase tracking-wider'>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody className='bg-[#feffff] divide-y divide-[#82695b]'>
-                                    {weightRows.map((row)=> (
-                                        <tr key={row.key} className='hover:bg-[#f8f3ed] transition-colors'>
-                                            <td className='px-4 py-3 text-[#82695b] text-sm'>{row.name}</td>
-                                            <td className='px-4 py-3 text-[#82695b] text-sm capitalize'>{row.category}</td>
-                                            <td className='px-4 py-3 text-[#82695b] text-sm'>{row.weightLabel}</td>
-                                            <td className='px-4 py-3 text-[#82695b] text-sm'>{row.stocks}</td>
-                                            <td className='px-4 py-3 text-[#82695b] text-sm'>
-                                                {row.barcode ? (
-                                                    <span className='font-mono'>{row.barcode}</span>
-                                                ) : (
-                                                    <span className='text-gray-400 text-xs'>—</span>
-                                                )}
-                                            </td>
-                                            <td className='px-4 py-3 text-[#82695b] text-sm'>
-                                                <input type='number' min='1' step='1' value={addByKey[row.key] || ''} onChange={(e)=> setAddByKey(prev=>({ ...prev, [row.key]: e.target.value }))} className='w-28 bg-[#f8f3ed] border border-[#82695b] rounded px-2 py-1 text-[#82695b]' placeholder='Qty' />
-                                            </td>
-                                            <td className='px-4 py-3 text-[#82695b] text-sm'>
-                                                {isBatchStockEditing ? (
-                                                    <span className='text-xs text-[#82695b] opacity-70'>Batch editing…</span>
-                                                ) : (
-                                                    <div className='flex gap-2'>
-                                                        <button
-                                                            type='button'
-                                                            disabled={loading || !addByKey[row.key] || Number(addByKey[row.key]) <= 0}
-                                                            onClick={async()=>{
-                                                                const delta = parseInt(addByKey[row.key], 10);
-                                                                if (!Number.isInteger(delta) || delta <= 0) return;
-                                                                if (row.weightOptionId) {
-                                                                    const newTotal = Number(row.stocks) + delta;
-                                                                    await updateWeightOptionStock(row.productId, row.weightOptionId, newTotal);
-                                                                } else {
-                                                                    await addProductQuantity(row.productId, delta);
-                                                                }
-                                                                setAddByKey(prev=> ({ ...prev, [row.key]: '' }));
-                                                            }}
-                                                            className='px-3 py-2 bg-[#901414] text-white rounded hover:bg-[#7a0f0f] disabled:opacity-50'
-                                                        >Add</button>
-                                                        {row.barcode && row.weightOptionId && (
-                                                            <button
-                                                                type='button'
-                                                                onClick={() => {
-                                                                    setSelectedBarcode(row.barcode);
-                                                                    setSelectedProductName(row.name);
-                                                                    setSelectedWeightKg(parseFloat(row.weightLabel));
-                                                                    setShowBarcodeModal(true);
-                                                                }}
-                                                                className='px-3 py-2 bg-[#82695b] text-white rounded hover:bg-[#6b5649] flex items-center gap-1'
-                                                                title='Print barcode'
-                                                            >
-                                                                <Printer className='h-4 w-4' />
-                                                            </button>
-                                                        )}
-                                                    </div>
-                                                )}
-                                            </td>
-                                        </tr>
-                                    ))}
-                                    {weightRows.length === 0 && (
-                                        <tr><td colSpan='7' className='px-4 py-6 text-center text-[#82695b]'>No products found</td></tr>
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
+						{/* Supplier Selection */}
+						<div className='mb-6 relative'>
+							<label className='block text-sm font-medium text-[#82695b] mb-2'>Select Supplier</label>
+							<div className='relative' ref={supplierDropdownRef}>
+								<input
+									type='text'
+									value={poSupplierSearchText}
+									onChange={(e) => {
+										setPoSupplierSearchText(e.target.value);
+										setShowPoSupplierDropdown(true);
+									}}
+									onFocus={() => setShowPoSupplierDropdown(true)}
+									placeholder='Type to search suppliers'
+									className='w-full bg-[#fffefc] border border-[#82695b] rounded px-3 py-2 text-[#82695b] focus:ring-2 focus:ring-[#860809]'
+								/>
+								{showPoSupplierDropdown && filteredPoSuppliers.length > 0 && (
+									<div className='absolute z-10 w-full mt-1 bg-white border border-[#82695b] rounded shadow-lg max-h-60 overflow-y-auto'>
+										{filteredPoSuppliers.map(supplier => (
+											<button
+												key={supplier}
+												type='button'
+												onClick={() => {
+													setPoSupplier(supplier);
+													setPoSupplierSearchText(supplier);
+													setShowPoSupplierDropdown(false);
+													setPoCart([]); // Clear cart if supplier changes
+												}}
+												className='w-full text-left px-3 py-2 hover:bg-[#f8f3ed] text-[#82695b] block'
+											>
+												{supplier}
+											</button>
+										))}
+									</div>
+								)}
+							</div>
+							{poSupplier && (
+								<div className='mt-2'>
+									<span className='text-sm text-[#82695b]'>Selected: </span>
+									<span className='text-sm font-semibold text-[#860809]'>{poSupplier}</span>
+								</div>
+							)}
+						</div>
 
-                        {/* Pagination Controls */}
-                        {weightTotalPages > 1 && (
-                            <div className='flex flex-col sm:flex-row items-center justify-between gap-3 mt-4'>
-                                <div className='text-xs sm:text-sm text-[#82695b] text-center sm:text-left'>
-                                    Showing {((weightCurrentPage - 1) * ITEMS_PER_PAGE) + 1} to {Math.min(weightCurrentPage * ITEMS_PER_PAGE, allWeightRows.length)} of {allWeightRows.length} products
-                                </div>
-                                <div className='flex flex-wrap items-center justify-center gap-1.5 sm:gap-2'>
-                                    <button
-                                        onClick={() => setWeightCurrentPage(prev => Math.max(1, prev - 1))}
-                                        disabled={weightCurrentPage === 1}
-                                        className='px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm bg-[#82695b] text-white rounded hover:bg-[#6b5649] active:bg-[#6b5649] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all'
-                                    >
-                                        Previous
-                                    </button>
-                                    <div className='flex items-center gap-1'>
-                                        {Array.from({ length: Math.min(5, weightTotalPages) }, (_, i) => {
-                                            const start = Math.max(1, Math.min(weightCurrentPage - 2, weightTotalPages - 4));
-                                            return start + i;
-                                        }).map(page => (
-                                            <button
-                                                key={page}
-                                                onClick={() => setWeightCurrentPage(page)}
-                                                className={`min-w-[32px] px-2 sm:px-3 py-1.5 text-xs sm:text-sm rounded active:scale-95 transition-all ${
-                                                    weightCurrentPage === page
-                                                        ? 'bg-[#901414] text-white'
-                                                        : 'bg-[#f8f3ed] text-[#82695b] hover:bg-[#82695b] hover:text-white'
-                                                }`}
-                                            >
-                                                {page}
-                                            </button>
-                                        ))}
-                                    </div>
-                                    <button
-                                        onClick={() => setWeightCurrentPage(prev => Math.min(weightTotalPages, prev + 1))}
-                                        disabled={weightCurrentPage === weightTotalPages}
-                                        className='px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm bg-[#82695b] text-white rounded hover:bg-[#6b5649] active:bg-[#6b5649] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all'
-                                    >
-                                        Next
-                                    </button>
-                                </div>
-                            </div>
-                        )}
-                    </motion.div>
-                )}
+						{/* Product Search */}
+						<div className='mb-6'>
+							<label className='block text-sm font-medium text-[#82695b] mb-2'>Search Products</label>
+							<input
+								type='text'
+								value={poSearchText}
+								onChange={(e) => setPoSearchText(e.target.value)}
+								placeholder='Search by name or barcode'
+								className='w-full bg-[#fffefc] border border-[#82695b] rounded px-3 py-2 text-[#82695b] focus:ring-2 focus:ring-[#860809]'
+							/>
+						</div>
+
+						{/* Available Products */}
+						<div>
+							<h4 className='text-md font-semibold text-[#860809] mb-3'>Available Products</h4>
+							{!poSupplier ? (
+								<div className='text-center text-[#82695b] py-8'>
+									Please select a supplier first
+								</div>
+							) : filteredPoProducts.length === 0 ? (
+								<div className='text-center text-[#82695b] py-8'>
+									No products found for supplier: {poSupplier}
+								</div>
+							) : (
+								<div className='overflow-x-auto max-h-[600px] overflow-y-auto'>
+									<table className='min-w-full divide-y divide-[#82695b]'>
+										<thead className='bg-[#82695b] sticky top-0'>
+											<tr>
+												<th className='px-3 py-2 text-left text-xs font-medium text-[#feffff] uppercase'>Product</th>
+												<th className='px-3 py-2 text-left text-xs font-medium text-[#feffff] uppercase'>Stock</th>
+												<th className='px-3 py-2 text-left text-xs font-medium text-[#feffff] uppercase'>Weight</th>
+												<th className='px-3 py-2 text-left text-xs font-medium text-[#feffff] uppercase'>Price</th>
+												<th className='px-3 py-2 text-left text-xs font-medium text-[#feffff] uppercase'>Action</th>
+											</tr>
+										</thead>
+										<tbody className='bg-[#feffff] divide-y divide-[#82695b]'>
+											{filteredPoProducts.flatMap(product => 
+												product.weightOptions && product.weightOptions.length > 0
+													? product.weightOptions.map(opt => {
+														const basePrice = product.basePricePerKg * opt.weightKg;
+														const PRODUCT_MARKUP = 50;
+														const purchasePrice = Math.max(0, basePrice - PRODUCT_MARKUP);
+														
+														return (
+															<tr key={`${product._id}-${opt._id}`} className='hover:bg-[#f8f3ed]'>
+																<td className='px-3 py-2 text-sm text-[#82695b]'>{product.name}</td>
+																<td className='px-3 py-2 text-sm text-[#82695b]'>{opt.stockUnits || 0}</td>
+																<td className='px-3 py-2 text-sm text-[#82695b]'>{opt.weightKg.toFixed(2)}kg</td>
+																<td className='px-3 py-2 text-sm text-[#82695b]'>₱{purchasePrice.toFixed(2)}</td>
+																<td className='px-3 py-2 text-sm'>
+																	<button
+																		onClick={() => addToPoCart(product, opt)}
+																		disabled={!poSupplier || product.supplier !== poSupplier}
+																		className='bg-[#a31f17] text-white px-2 py-1 rounded hover:bg-[#860809] disabled:opacity-50 disabled:cursor-not-allowed text-xs'
+																	>
+																		Add
+																	</button>
+																</td>
+															</tr>
+														);
+													})
+													: []
+											)}
+										</tbody>
+									</table>
+								</div>
+							)}
+						</div>
+					</motion.div>
+
+					{/* Right Column - Purchase Summary */}
+					<motion.div className='bg-[#fffefc] shadow-lg rounded-lg p-6 border border-gray-300' initial={{opacity:0,y:20}} animate={{opacity:1,y:0}}>
+						<h4 className='text-md font-semibold text-[#860809] mb-3'>Purchase Order Summary</h4>
+						{!poSupplier ? (
+							<div className='bg-[#f8f3ed] p-8 rounded-lg text-center border border-[#82695b]'>
+								<p className='text-[#82695b]'>Please select a supplier to start creating a purchase order</p>
+							</div>
+						) : poCart.length === 0 ? (
+							<div className='bg-[#f8f3ed] p-8 rounded-lg text-center border border-[#82695b]'>
+								<p className='text-[#82695b]'>No items added yet</p>
+								<p className='text-sm text-[#82695b] mt-2'>Add products from the left column</p>
+							</div>
+						) : (
+							<div className='space-y-4'>
+								{/* Cart Items */}
+								<div className='overflow-x-auto max-h-[500px] overflow-y-auto'>
+									<table className='min-w-full divide-y divide-[#82695b]'>
+										<thead className='bg-[#82695b] sticky top-0'>
+											<tr>
+												<th className='px-3 py-2 text-left text-xs font-medium text-[#feffff] uppercase'>Product</th>
+												<th className='px-3 py-2 text-left text-xs font-medium text-[#feffff] uppercase'>Qty</th>
+												<th className='px-3 py-2 text-left text-xs font-medium text-[#feffff] uppercase'>Price</th>
+												<th className='px-3 py-2 text-left text-xs font-medium text-[#feffff] uppercase'>Total</th>
+												<th className='px-3 py-2 text-left text-xs font-medium text-[#feffff] uppercase'></th>
+											</tr>
+										</thead>
+										<tbody className='bg-[#feffff] divide-y divide-[#82695b]'>
+											{poCart.map(item => {
+												const basePrice = item.basePricePerKg * item.weightKg;
+												const PRODUCT_MARKUP = 50;
+												const purchasePrice = Math.max(0, basePrice - PRODUCT_MARKUP);
+												const total = purchasePrice * item.quantity;
+												
+												return (
+													<tr key={`${item.productId}-${item.weightOptionId}`} className='hover:bg-[#f8f3ed]'>
+														<td className='px-3 py-2 text-sm text-[#82695b]'>
+															<div>
+																<div className='font-semibold'>{item.productName}</div>
+																<div className='text-xs text-gray-500'>{item.weightKg.toFixed(2)}kg</div>
+															</div>
+														</td>
+														<td className='px-3 py-2 text-sm text-[#82695b]'>
+															<div className='flex items-center gap-2'>
+																<button onClick={() => updatePoCartQuantity(item.productId, item.weightOptionId, item.quantity - 1)} className='bg-gray-200 px-2 py-1 rounded hover:bg-gray-300'>-</button>
+																<span className='min-w-[2rem] text-center'>{item.quantity}</span>
+																<button onClick={() => updatePoCartQuantity(item.productId, item.weightOptionId, item.quantity + 1)} className='bg-gray-200 px-2 py-1 rounded hover:bg-gray-300'>+</button>
+															</div>
+														</td>
+														<td className='px-3 py-2 text-sm text-[#82695b]'>₱{purchasePrice.toFixed(2)}</td>
+														<td className='px-3 py-2 text-sm text-[#82695b] font-semibold'>₱{total.toFixed(2)}</td>
+														<td className='px-3 py-2 text-sm'>
+															<button onClick={() => removePoCartItem(item.productId, item.weightOptionId)} className='text-red-600 hover:text-red-800'>
+																<Trash2 size={16} />
+															</button>
+														</td>
+													</tr>
+												);
+											})}
+										</tbody>
+									</table>
+								</div>
+
+								{/* Total and Submit */}
+								<div className='bg-[#f8f3ed] p-4 rounded-lg border border-[#82695b]'>
+									<div className='flex justify-between items-center mb-4'>
+										<span className='text-lg font-semibold text-[#860809]'>Total Amount:</span>
+										<span className='text-xl font-bold text-[#860809]'>
+											₱{poCart.reduce((sum, item) => {
+												const basePrice = item.basePricePerKg * item.weightKg;
+												const PRODUCT_MARKUP = 50;
+												const purchasePrice = Math.max(0, basePrice - PRODUCT_MARKUP);
+												return sum + (purchasePrice * item.quantity);
+											}, 0).toFixed(2)}
+										</span>
+									</div>
+									<button
+										onClick={handleCreatePurchaseOrder}
+										className='w-full bg-[#860809] text-white px-6 py-3 rounded hover:bg-[#7a0f0f] disabled:opacity-50 disabled:cursor-not-allowed font-semibold'
+										disabled={loading || poCart.length === 0 || !poSupplier}
+									>
+										{loading ? 'Creating Purchase Order...' : 'Create Purchase Order'}
+									</button>
+								</div>
+							</div>
+						)}
+					</motion.div>
+				</div>
+			)}
 		</>
 	)}
 
@@ -1587,7 +1977,6 @@ const filteredUpdateProducts = useMemo(() => {
                                         document.body.removeChild(a);
                                         window.URL.revokeObjectURL(url);
                                     } catch (e) {
-                                        // CSV generation failed silently
                                     }
                                 }}
                                 className='px-3 py-2 bg-[#901414] border border-[#901414] rounded text-[#feffff] hover:bg-[#7a0f0f]'>
@@ -1775,6 +2164,8 @@ const filteredUpdateProducts = useMemo(() => {
 																			<th className='px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Stocks/Units</th>
 																			<th className='px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Price per unit</th>
 																			<th className='px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Total price</th>
+																			<th className='px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Created At</th>
+																			<th className='px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Expire At</th>
 																			<th className='px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Weight Barcode</th>
 																		</tr>
 																	</thead>
@@ -1788,6 +2179,20 @@ const filteredUpdateProducts = useMemo(() => {
 																					<td className='px-4 py-2 text-sm text-gray-900'>{option.stockUnits} units</td>
 																					<td className='px-4 py-2 text-sm text-gray-900'>₱{pricePerUnit.toFixed(2)}</td>
 																					<td className='px-4 py-2 text-sm text-gray-900 font-semibold'>₱{totalPrice.toFixed(2)}</td>
+																					<td className='px-4 py-2 text-sm text-gray-900'>
+																						{option.createdAt ? new Date(option.createdAt).toLocaleDateString('en-US', { 
+																							year: 'numeric', 
+																							month: 'short', 
+																							day: 'numeric' 
+																						}) : 'N/A'}
+																					</td>
+																					<td className='px-4 py-2 text-sm text-gray-900'>
+																						{option.expireAt ? new Date(option.expireAt).toLocaleDateString('en-US', { 
+																							year: 'numeric', 
+																							month: 'short', 
+																							day: 'numeric' 
+																						}) : 'N/A'}
+																					</td>
 																					<td className='px-4 py-2 text-sm text-gray-900'>
 																						{option.barcode ? (
 																							<div className='flex items-center gap-2'>
@@ -2102,12 +2507,194 @@ const filteredUpdateProducts = useMemo(() => {
                         </div>
                         <AddWeightForm 
                             products={products}
+                            hideStocks={updateSubTab === 'purchase-order'}
                             onCancel={()=>setShowAddWeight(false)}
                             onSubmit={async (payload)=>{
-                                await addWeightOption(payload.productId, { weightKg: payload.weightKg, stockUnits: payload.stockUnits, barcode: payload.barcode });
-                                setShowAddWeight(false);
+                                if (updateSubTab === 'purchase-order') {
+                                    setPendingWeightForPO(payload);
+                                    setShowAddWeight(false);
+                                    setShowPurchaseOrderInWeight(true);
+                                } else {
+                                    await addWeightOption(payload.productId, { weightKg: payload.weightKg, stockUnits: payload.stockUnits, barcode: payload.barcode });
+                                    setShowAddWeight(false);
+                                }
                             }}
                         />
+                    </div>
+                </div>
+            )}
+
+            {/* Purchase Order for New Weight Modal */}
+            {showPurchaseOrderInWeight && pendingWeightForPO && (
+                <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4'>
+                    <div className='bg-[#feffff] rounded-lg p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-[#82695b]'>
+                        <div className='mb-4 flex justify-between items-start'>
+                            <div>
+                                <h3 className='text-xl font-semibold text-[#860809] mb-2'>Create Purchase Order for New Weight</h3>
+                                <p className='text-sm text-[#82695b]'>Add the new weight option to your purchase order</p>
+                            </div>
+                            <button
+                                onClick={() => navigate('/purchase-order-history')}
+                                className='bg-[#860809] text-white px-4 py-2 rounded hover:bg-[#7a0f0f] flex items-center gap-2'
+                            >
+                                <History size={18} />
+                                View History
+                            </button>
+                        </div>
+
+                        <div className='grid grid-cols-1 lg:grid-cols-[60%_40%] gap-4'>
+                            {/* Left: Product Info */}
+                            <div className='bg-[#f8f3ed] p-4 rounded-lg border border-[#82695b]'>
+                                <h4 className='text-md font-semibold text-[#860809] mb-3'>New Weight Details</h4>
+                                {(() => {
+                                    const product = products.find(p => p._id === pendingWeightForPO.productId);
+                                    if (!product) return <p className='text-[#82695b]'>Loading...</p>;
+                                    
+                                    return (
+                                        <div className='space-y-2 text-sm text-[#82695b]'>
+                                            <p><span className='font-semibold'>Product:</span> {product.name}</p>
+                                            <p><span className='font-semibold'>Category:</span> {product.category}</p>
+                                            <p><span className='font-semibold'>Supplier:</span> {product.supplier || 'N/A'}</p>
+                                            <p><span className='font-semibold'>Weight:</span> {pendingWeightForPO.weightKg}kg</p>
+                                            <p><span className='font-semibold'>Barcode:</span> {pendingWeightForPO.barcode}</p>
+                                        </div>
+                                    );
+                                })()}
+                            </div>
+
+                            {/* Right: Purchase Summary */}
+                            <div className='bg-[#f8f3ed] p-4 rounded-lg border border-[#82695b]'>
+                                <h4 className='text-md font-semibold text-[#860809] mb-3'>Purchase Summary</h4>
+                                {newWeightPOCart.length === 0 ? (
+                                    <div className='text-center text-[#82695b] py-8'>
+                                        <p>Add this weight to create a purchase order</p>
+                                        <button
+                                            onClick={() => {
+                                                setNewWeightPOCart([{
+                                                    ...pendingWeightForPO,
+                                                    quantity: 1
+                                                }]);
+                                            }}
+                                            className='mt-4 px-4 py-2 bg-[#860809] text-white rounded hover:bg-[#7a0f0f]'
+                                        >
+                                            Add to Purchase Order
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className='space-y-3'>
+                                        <div className='space-y-2'>
+                                            {newWeightPOCart.map((item, idx) => {
+                                                const product = products.find(p => p._id === item.productId);
+                                                const basePrice = product?.basePricePerKg || 0;
+                                                const PRODUCT_MARKUP = 50;
+                                                const purchasePrice = Math.max(0, basePrice * parseFloat(item.weightKg) - PRODUCT_MARKUP);
+                                                const total = purchasePrice * item.quantity;
+                                                
+                                                return (
+                                                    <div key={idx} className='bg-white p-3 rounded border border-[#82695b]'>
+                                                        <p className='font-semibold text-[#82695b]'>{product?.name}</p>
+                                                        <p className='text-xs text-[#82695b]'>{item.weightKg}kg</p>
+                                                        <div className='flex items-center justify-between mt-2'>
+                                                            <div className='flex items-center gap-2'>
+                                                                <button
+                                                                    onClick={() => setNewWeightPOCart(prev => prev.map((cartItem, index) => index === idx ? { ...cartItem, quantity: Math.max(0, cartItem.quantity - 1) } : cartItem))}
+                                                                    className='w-6 h-6 flex items-center justify-center bg-[#860809] text-white rounded'
+                                                                >
+                                                                    -
+                                                                </button>
+                                                                <span className='text-[#82695b]'>{item.quantity}</span>
+                                                                <button
+                                                                    onClick={() => setNewWeightPOCart(prev => prev.map((cartItem, index) => index === idx ? { ...cartItem, quantity: cartItem.quantity + 1 } : cartItem))}
+                                                                    className='w-6 h-6 flex items-center justify-center bg-[#860809] text-white rounded'
+                                                                >
+                                                                    +
+                                                                </button>
+                                                            </div>
+                                                            <span className='font-semibold text-[#860809]'>₱{total.toFixed(2)}</span>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                        
+                                        <div className='border-t border-[#82695b] pt-2'>
+                                            <div className='flex justify-between items-center'>
+                                                <span className='font-semibold text-[#82695b]'>Total:</span>
+                                                <span className='text-lg font-bold text-[#860809]'>
+                                                    ₱{newWeightPOCart.reduce((sum, item) => {
+                                                        const product = products.find(p => p._id === item.productId);
+                                                        const basePrice = product?.basePricePerKg || 0;
+                                                        const PRODUCT_MARKUP = 50;
+                                                        const purchasePrice = Math.max(0, basePrice * parseFloat(item.weightKg) - PRODUCT_MARKUP);
+                                                        return sum + (purchasePrice * item.quantity);
+                                                    }, 0).toFixed(2)}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div className='flex gap-2'>
+                                            <button
+                                                onClick={async () => {
+                                                    const product = products.find(p => p._id === pendingWeightForPO.productId);
+                                                    const supplier = product?.supplier || '';
+                                                    
+                                                    if (!supplier) {
+                                                        toast.error('Product has no supplier');
+                                                        return;
+                                                    }
+
+                                                    const items = newWeightPOCart.map(item => ({
+                                                        productId: item.productId,
+                                                        weightKg: parseFloat(item.weightKg),
+                                                        quantity: item.quantity
+                                                    }));
+
+                                                    try {
+                                                        await addWeightOption(pendingWeightForPO.productId, { 
+                                                            weightKg: pendingWeightForPO.weightKg, 
+                                                            stockUnits: pendingWeightForPO.stockUnits, 
+                                                            barcode: pendingWeightForPO.barcode 
+                                                        });
+                                                        
+                                                        const result = await createPurchaseOrder({
+                                                            supplier: supplier,
+                                                            items: items
+                                                        });
+
+                                                        if (result?.success) {
+                                                            setCreatedPurchaseOrder(result.data);
+                                                            setShowPurchaseOrderInWeight(false);
+                                                            setNewWeightPOCart([]);
+                                                            setPendingWeightForPO(null);
+                                                            setShowPoSuccessModal(true);
+                                                            toast.success('Purchase order created and weight added!');
+                                                            await fetchAllProducts(); // Refresh products
+                                                        } else {
+                                                            toast.error(result?.error || 'Failed to create purchase order');
+                                                        }
+                                                    } catch (error) {
+                                                        toast.error('Failed to create weight option: ' + (error.message || 'Unknown error'));
+                                                    }
+                                                }}
+                                                className='flex-1 px-4 py-2 bg-[#860809] text-white rounded hover:bg-[#7a0f0f]'
+                                            >
+                                                Create Purchase Order
+                                            </button>
+                                            <button
+                                                onClick={() => {
+                                                    setShowPurchaseOrderInWeight(false);
+                                                    setNewWeightPOCart([]);
+                                                    setPendingWeightForPO(null);
+                                                }}
+                                                className='px-4 py-2 bg-[#82695b] text-white rounded hover:bg-[#6b5649]'
+                                            >
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}
@@ -2125,6 +2712,182 @@ const filteredUpdateProducts = useMemo(() => {
                     weightKg={selectedWeightKg}
                 />
             )}
+
+		{/* Purchase Order Confirmation Modal */}
+		{showPoConfirmModal && (
+			<div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
+				<div className='bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto'>
+					<h3 className='text-xl font-bold text-[#860809] mb-4'>
+						{isCreatingProductPO ? 'Create Product & Purchase Order' : 'Confirm Purchase Order'}
+					</h3>
+					
+					{isCreatingProductPO ? (
+						// New Product Creation Summary
+						<div>
+							<p className='text-sm text-gray-600 mb-4'>Creating a new product and adding it to purchase order</p>
+							<div className='mb-4'>
+								<p className='text-[#82695b] font-semibold'>Product: {newProduct.name}</p>
+								<p className='text-[#82695b] font-semibold'>Supplier: {newProduct.supplier?.trim() || poSupplier || 'Not specified'}</p>
+								<p className='text-[#82695b]'>Weight: {newProduct.weightKg} kg</p>
+								<p className='text-[#82695b]'>Quantity: {newProduct.quantity} units</p>
+								<p className='text-[#82695b]'>Base Price: ₱{newProduct.price} per kg</p>
+								<p className='text-[#82695b] font-semibold text-lg mt-2'>
+									Total: ₱{(Number(newProduct.price) * Number(newProduct.weightKg) * Number(newProduct.quantity)).toFixed(2)}
+								</p>
+							</div>
+						</div>
+					) : (
+						// Regular PO Summary
+						<>
+							<div className='mb-4'>
+								<p className='text-[#82695b] font-semibold'>Supplier: {poSupplier}</p>
+								<p className='text-[#82695b]'>Items: {poCart.length}</p>
+								<p className='text-[#82695b] font-semibold text-lg'>
+									Total: ₱{poCart.reduce((sum, item) => {
+										const basePrice = item.basePricePerKg * item.weightKg;
+										const PRODUCT_MARKUP = 50;
+										const purchasePrice = Math.max(0, basePrice - PRODUCT_MARKUP);
+										return sum + (purchasePrice * item.quantity);
+									}, 0).toFixed(2)}
+								</p>
+							</div>
+							<div className='mb-4'>
+								<p className='text-sm text-[#82695b] mb-2'>Items:</p>
+								<div className='max-h-60 overflow-y-auto'>
+									{poCart.map(item => {
+										const basePrice = item.basePricePerKg * item.weightKg;
+										const PRODUCT_MARKUP = 50;
+										const purchasePrice = Math.max(0, basePrice - PRODUCT_MARKUP);
+										return (
+											<div key={`${item.productId}-${item.weightOptionId}`} className='border-b py-2'>
+												<p className='font-semibold text-[#82695b]'>{item.productName}</p>
+												<p className='text-sm text-[#82695b]'>
+													{item.weightKg.toFixed(2)}kg × {item.quantity} @ ₱{purchasePrice.toFixed(2)} = ₱{(purchasePrice * item.quantity).toFixed(2)}
+												</p>
+											</div>
+										);
+									})}
+								</div>
+							</div>
+						</>
+					)}
+					
+					<div className='flex gap-3 justify-end'>
+						<button
+							onClick={() => {
+								setShowPoConfirmModal(false);
+								setIsCreatingProductPO(false);
+							}}
+							className='px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded text-gray-800'
+						>
+							Cancel
+						</button>
+						<button
+							onClick={confirmCreatePurchaseOrder}
+							className='px-4 py-2 bg-[#860809] hover:bg-[#7a0f0f] rounded text-white'
+						>
+							{isCreatingProductPO ? 'Create Product & Order' : 'Confirm & Create Order'}
+						</button>
+					</div>
+				</div>
+			</div>
+		)}
+
+			{/* Purchase Order Success Modal */}
+			{showPoSuccessModal && createdPurchaseOrder && (
+				<div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
+					<div className='bg-white rounded-lg p-6 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto font-mono'>
+						{/* Receipt Header */}
+						<div className='text-center mb-6'>
+							<div className='text-xl font-bold mb-2'>ROSEL FROZEN MEATS</div>
+							<div className='text-xs text-gray-600'>Quality Frozen Meats for Your Family</div>
+						</div>
+
+						<div className='border-t border-dashed border-gray-400 my-4'></div>
+
+						{/* Order Info */}
+						<div className='mb-4'>
+							<div className='text-xs font-bold mb-2'>Transaction ID:</div>
+							<div className='text-xs text-center mb-3 break-all'>{createdPurchaseOrder.purchaseOrderId}</div>
+							<div className='text-xs flex justify-between'>
+								<span className='font-bold'>PO Number:</span>
+								<span>{createdPurchaseOrder.purchaseOrderId.substring(0, 8)}</span>
+							</div>
+							<div className='text-xs flex justify-between mt-1'>
+								<span className='font-bold'>Supplier:</span>
+								<span>{createdPurchaseOrder.supplier}</span>
+							</div>
+							<div className='text-xs flex justify-between mt-1'>
+								<span className='font-bold'>Date & Time:</span>
+								<span>{new Date(createdPurchaseOrder.createdAt).toLocaleString('en-US', { 
+									year: 'numeric', 
+									month: 'short', 
+									day: 'numeric',
+									hour: '2-digit',
+									minute: '2-digit'
+								})}</span>
+							</div>
+						</div>
+
+						<div className='border-t border-dashed border-gray-400 my-4'></div>
+
+						{/* Items */}
+						<div className='mb-4'>
+							<div className='text-xs font-bold mb-2'>ITEMS PURCHASED:</div>
+							{createdPurchaseOrder.items.map((item, idx) => (
+								<div key={idx} className='mb-3'>
+									<div className='text-xs mb-1'>{item.productName} ({item.weightKg.toFixed(2)}kg)</div>
+									<div className='text-xs flex justify-between'>
+										<span>₱{parseFloat(item.unitPrice).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})} x {item.quantity}</span>
+									</div>
+									<div className='text-xs flex justify-between font-semibold'>
+										<span>₱{parseFloat(item.totalPrice).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+									</div>
+								</div>
+							))}
+						</div>
+
+						<div className='border-t border-dashed border-gray-400 my-4'></div>
+
+						{/* Totals */}
+						<div className='mb-4'>
+							<div className='text-xs flex justify-between mb-1'>
+								<span>Subtotal:</span>
+								<span>₱{parseFloat(createdPurchaseOrder.subtotal).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+							</div>
+							<div className='text-sm flex justify-between font-bold border-t border-dashed border-gray-400 pt-2 mt-2'>
+								<span>TOTAL:</span>
+								<span>₱{parseFloat(createdPurchaseOrder.totalAmount).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+							</div>
+						</div>
+
+						<div className='border-t border-dashed border-gray-400 my-4'></div>
+
+						{/* Footer */}
+						<div className='text-center text-xs mb-6'>
+							<div className='font-bold uppercase'>Thank You For Your Purchase!</div>
+							<div className='mt-1'>Please keep this receipt for your records</div>
+						</div>
+
+						{/* Action Buttons */}
+						<div className='flex gap-3 justify-end pt-4 border-t border-gray-300'>
+							<button
+								onClick={handlePrintReceipt}
+								className='px-4 py-2 bg-[#82695b] hover:bg-[#6b5649] rounded text-white flex items-center gap-2'
+							>
+								<Printer size={18} />
+								Print Receipt
+							</button>
+							<button
+								onClick={handleCreateNewOrder}
+								className='px-4 py-2 bg-[#860809] hover:bg-[#7a0f0f] rounded text-white'
+							>
+								Create New Order
+							</button>
+						</div>
+					</div>
+				</div>
+			)}
 		</AdminLayout>
 	);
 };
@@ -2133,23 +2896,21 @@ export default ManageProductsPage;
 
 
 
-// Lightweight inline form component for adding weight
-const AddWeightForm = ({ products, onCancel, onSubmit }) => {
+const AddWeightForm = ({ products, hideStocks = false, onCancel, onSubmit }) => {
     const [mode, setMode] = useState("manual"); // manual | scanner
-    const [category, setCategory] = useState("");
+    const [supplier, setSupplier] = useState("");
     const [productId, setProductId] = useState("");
     const [weightKg, setWeightKg] = useState("");
     const [stockUnits, setStockUnits] = useState("");
     const [barcode, setBarcode] = useState("");
     const [lastScanned, setLastScanned] = useState("");
 
-    const productChoices = useMemo(()=> (products||[]).filter(p => !category || p.category === category), [products, category]);
+    const productChoices = useMemo(()=> (products||[]).filter(p => !supplier || p.supplier === supplier), [products, supplier]);
     const selected = useMemo(()=> {
         const found = (products||[]).find(p => p._id === productId);
         return found;
     }, [products, productId]);
 
-    // USB Scanner handler for this modal
     useEffect(() => {
         if (mode !== 'scanner') return;
         
@@ -2160,11 +2921,9 @@ const AddWeightForm = ({ products, onCancel, onSubmit }) => {
             const now = Date.now();
             if (now - lastTs > 50) buffer = '';
             
-            // Check if the Weight Barcode input field is focused
             const activeElement = document.activeElement;
             const isBarcodeInputFocused = activeElement && activeElement.type === 'text' && activeElement.placeholder?.includes('barcode');
             
-            // If Weight Barcode field is focused, let the browser handle the input naturally (no product search)
             if (isBarcodeInputFocused) {
                 lastTs = now;
                 return;
@@ -2179,22 +2938,18 @@ const AddWeightForm = ({ products, onCancel, onSubmit }) => {
                 
                 setLastScanned(code);
                 
-                // Find product by product-level barcode (try exact match first, then try without dashes)
                 let product = (products || []).find(p => p.barcode === code);
                 
-                // If not found, try removing dashes from scanned code
                 if (!product) {
                     const codeNoDashes = code.replace(/-/g, '');
                     product = (products || []).find(p => p.barcode === codeNoDashes);
                 }
                 
-                // If still not found, try comparing without dashes on both sides
                 if (!product) {
                     const codeNoDashes = code.replace(/-/g, '');
                     product = (products || []).find(p => p.barcode?.replace(/-/g, '') === codeNoDashes);
                 }
                 
-                // If still not found, check if it's a weight option barcode
                 if (!product) {
                     const codeNoDashes = code.replace(/-/g, '');
                     product = (products || []).find(p => 
@@ -2205,20 +2960,17 @@ const AddWeightForm = ({ products, onCancel, onSubmit }) => {
                         )
                     );
                     if (product) {
-                        // Found product by weight option barcode - auto-fill the weight barcode field
-                        setCategory(product.category);
+                        setSupplier(product.supplier || '');
                         setProductId(product._id);
                         setBarcode(code);
                         toast.success(`Product selected: ${product.name} (weight barcode detected)`);
                     }
                 } else {
-                    // Found by product-level barcode
-                    setCategory(product.category);
+                    setSupplier(product.supplier || '');
                     setProductId(product._id);
                     toast.success(`Product selected: ${product.name}`);
                 }
                 
-                // Only show error if no product found at all
                 if (!product) {
                     toast.error('Product not found with barcode: ' + code);
                 }
@@ -2237,11 +2989,10 @@ const AddWeightForm = ({ products, onCancel, onSubmit }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         const w = parseFloat(weightKg);
-        const s = parseInt(stockUnits, 10);
+        const s = stockUnits ? parseInt(stockUnits, 10) : 0; // Default to 0 if hidden
         const b = barcode.trim();
         
-        // Validate required fields
-        if (!productId || !Number.isFinite(w) || w <= 0 || !Number.isInteger(s) || s < 0 || !b) {
+        if (!productId || !Number.isFinite(w) || w <= 0 || (hideStocks ? false : (!Number.isInteger(s) || s < 0)) || !b) {
             if (!b) toast.error('Barcode is required');
             return;
         }
@@ -2249,7 +3000,7 @@ const AddWeightForm = ({ products, onCancel, onSubmit }) => {
         const payload = { 
             productId, 
             weightKg: Math.round(w*100)/100, 
-            stockUnits: s,
+            stockUnits: hideStocks ? 0 : s, // Don't send stocks if hidden
             barcode: b
         };
         
@@ -2264,7 +3015,7 @@ const AddWeightForm = ({ products, onCancel, onSubmit }) => {
                 <div className='flex gap-2'>
                     <button
                         type='button'
-                        onClick={() => { setMode('manual'); setCategory(''); setProductId(''); setLastScanned(''); }}
+                        onClick={() => { setMode('manual'); setSupplier(''); setProductId(''); setLastScanned(''); }}
                         className={`flex-1 px-4 py-2 rounded font-medium transition-colors ${
                             mode === 'manual' 
                                 ? 'bg-[#901414] text-white' 
@@ -2275,7 +3026,7 @@ const AddWeightForm = ({ products, onCancel, onSubmit }) => {
                     </button>
                     <button
                         type='button'
-                        onClick={() => { setMode('scanner'); setCategory(''); setProductId(''); setLastScanned(''); }}
+                        onClick={() => { setMode('scanner'); setSupplier(''); setProductId(''); setLastScanned(''); }}
                         className={`flex-1 px-4 py-2 rounded font-medium transition-colors ${
                             mode === 'scanner' 
                                 ? 'bg-[#901414] text-white' 
@@ -2290,22 +3041,22 @@ const AddWeightForm = ({ products, onCancel, onSubmit }) => {
                 )}
             </div>
 
-            {/* Category Selection */}
+            {/* Supplier Selection */}
             <div>
-                <label className='block text-sm text-[#82695b] mb-1 font-medium'>Product Category</label>
-                {mode === 'scanner' && category ? (
-                    <div className='w-full bg-gray-100 border border-[#82695b] rounded px-3 py-2 text-[#82695b] capitalize'>
-                        {category}
+                <label className='block text-sm text-[#82695b] mb-1 font-medium'>Supplier</label>
+                {mode === 'scanner' && supplier ? (
+                    <div className='w-full bg-gray-100 border border-[#82695b] rounded px-3 py-2 text-[#82695b]'>
+                        {supplier}
                     </div>
                 ) : (
                     <select 
-                        value={category} 
-                        onChange={(e)=>{ setCategory(e.target.value); setProductId(""); }} 
+                        value={supplier} 
+                        onChange={(e)=>{ setSupplier(e.target.value); setProductId(""); }} 
                         disabled={mode === 'scanner'}
                         className='w-full bg-[#f8f3ed] border border-[#82695b] rounded px-3 py-2 text-[#82695b] disabled:opacity-50 disabled:cursor-not-allowed'
                     >
-                        <option value=''>{mode === 'scanner' ? 'Will be auto-selected' : 'Select Category'}</option>
-                        {FIXED_CATEGORIES.map(c=> <option key={c} value={c}>{c}</option>)}
+                        <option value=''>{mode === 'scanner' ? 'Will be auto-selected' : 'Select Supplier'}</option>
+                        {[...new Set((products||[]).filter(p => p.supplier).map(p => p.supplier))].map(s=> <option key={s} value={s}>{s}</option>)}
                     </select>
                 )}
             </div>
@@ -2321,11 +3072,11 @@ const AddWeightForm = ({ products, onCancel, onSubmit }) => {
                     <select 
                         value={productId} 
                         onChange={(e)=>setProductId(e.target.value)} 
-                        disabled={mode === 'scanner' || (mode === 'manual' && !category)} 
+                        disabled={mode === 'scanner' || (mode === 'manual' && !supplier)} 
                         className='w-full bg-[#f8f3ed] border border-[#82695b] rounded px-3 py-2 text-[#82695b] disabled:opacity-50 disabled:cursor-not-allowed'
                     >
                         <option value=''>
-                            {mode === 'scanner' ? 'Will be auto-selected' : (category ? 'Select Product' : 'Select category first')}
+                            {mode === 'scanner' ? 'Will be auto-selected' : (supplier ? 'Select Product' : 'Select supplier first')}
                         </option>
                         {productChoices.map(p=> <option key={p._id} value={p._id}>{p.name}</option>)}
                     </select>
@@ -2352,23 +3103,30 @@ const AddWeightForm = ({ products, onCancel, onSubmit }) => {
                 <p className='text-xs text-[#82695b] mt-1'>Required: Each weight must have a unique barcode</p>
             </div>
 
-            <div className='grid grid-cols-2 gap-3'>
+            {hideStocks ? (
                 <div>
                     <label className='block text-sm text-[#82695b] mb-1 font-medium'>Weight (kg)</label>
                     <input type='number' step='0.01' min='0.01' value={weightKg} onChange={(e)=>setWeightKg(e.target.value)} disabled={!productId} className='w-full bg-[#f8f3ed] border border-[#82695b] rounded px-3 py-2 text-[#82695b] disabled:opacity-50' />
                 </div>
-                <div>
-                    <label className='block text-sm text-[#82695b] mb-1 font-medium'>Stocks</label>
-                    <input type='number' step='1' min='0' value={stockUnits} onChange={(e)=>setStockUnits(e.target.value)} disabled={!productId} className='w-full bg-[#f8f3ed] border border-[#82695b] rounded px-3 py-2 text-[#82695b] disabled:opacity-50' />
+            ) : (
+                <div className='grid grid-cols-2 gap-3'>
+                    <div>
+                        <label className='block text-sm text-[#82695b] mb-1 font-medium'>Weight (kg)</label>
+                        <input type='number' step='0.01' min='0.01' value={weightKg} onChange={(e)=>setWeightKg(e.target.value)} disabled={!productId} className='w-full bg-[#f8f3ed] border border-[#82695b] rounded px-3 py-2 text-[#82695b] disabled:opacity-50' />
+                    </div>
+                    <div>
+                        <label className='block text-sm text-[#82695b] mb-1 font-medium'>Stocks</label>
+                        <input type='number' step='1' min='0' value={stockUnits} onChange={(e)=>setStockUnits(e.target.value)} disabled={!productId} className='w-full bg-[#f8f3ed] border border-[#82695b] rounded px-3 py-2 text-[#82695b] disabled:opacity-50' />
+                    </div>
                 </div>
-            </div>
+            )}
 
             {selected && (
                 <div className='text-xs text-[#82695b]'>Current weight options: {(selected.weightOptions||[]).map(o=>`${o.weightKg}kg (${o.stockUnits})`).join(', ') || 'none'}</div>
             )}
             <div className='flex justify-end gap-2 pt-2'>
                 <button type='button' onClick={onCancel} className='px-3 py-2 bg-[#82695b] hover:bg-[#6b5649] text-white rounded'>Cancel</button>
-                <button type='submit' disabled={!productId || !weightKg || !stockUnits || !barcode.trim()} className='px-3 py-2 bg-[#901414] hover:bg-[#7a0f0f] text-white rounded disabled:opacity-50'>Add</button>
+                <button type='submit' disabled={!productId || !weightKg || !barcode.trim() || (!hideStocks && !stockUnits)} className='px-3 py-2 bg-[#901414] hover:bg-[#7a0f0f] text-white rounded disabled:opacity-50'>Add</button>
             </div>
         </form>
     );

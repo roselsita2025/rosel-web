@@ -11,10 +11,8 @@ import toast from "react-hot-toast";
 const AccountSettingsPage = () => {
     const { user, updateProfile, changePassword, changeEmail, isLoading } = useAuthStore();
     
-    // Tab state
     const [activeTab, setActiveTab] = useState('details');
     
-    // Form states
     const [formData, setFormData] = useState({
         firstName: user?.name?.split(' ')[0] || '',
         lastName: user?.name?.split(' ').slice(1).join(' ') || '',
@@ -29,20 +27,17 @@ const AccountSettingsPage = () => {
         profileImage: user?.profileImageUrl || user?.avatarUrl || user?.profileImage || user?.photoURL || user?.photo || ''
     });
     
-    // Password form states
     const [passwordData, setPasswordData] = useState({
         currentPassword: '',
         newPassword: '',
         confirmPassword: ''
     });
     
-    // Email change states
     const [emailData, setEmailData] = useState({
         newEmail: '',
         currentPassword: ''
     });
     
-    // UI states
     const [showPasswords, setShowPasswords] = useState({
         current: false,
         new: false,
@@ -136,7 +131,6 @@ const AccountSettingsPage = () => {
             setPasswordMessage('Password changed successfully!');
             setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
         } catch (error) {
-            // Check if it's a 400 error (likely invalid current password)
             if (error.response?.status === 400) {
                 setPasswordMessage('Invalid Password. Try again.');
             } else {

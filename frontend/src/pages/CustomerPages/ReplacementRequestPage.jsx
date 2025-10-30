@@ -17,7 +17,6 @@ const ReplacementRequestPage = () => {
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [isOrderSelected, setIsOrderSelected] = useState(false);
 
-    // Get order and product from URL params
     const orderId = searchParams.get('orderId');
     const productId = searchParams.get('productId');
 
@@ -48,7 +47,6 @@ const ReplacementRequestPage = () => {
     }, [orderId, productId, orders]);
 
     const handleOrderSelect = (order) => {
-        // Check if order is eligible for replacement request
         if (!isOrderEligibleForReplacement(order)) {
             return;
         }
@@ -58,17 +56,14 @@ const ReplacementRequestPage = () => {
     };
 
     const isOrderEligibleForReplacement = (order) => {
-        // Check if order is completed (both adminStatus and status)
         if (order.adminStatus !== 'order_completed' || order.status !== 'delivered') {
             return false;
         }
 
-        // Check if order has completion date
         if (!order.completedAt) {
             return false;
         }
 
-        // Check if order was completed within the last 24 hours
         const now = new Date();
         const completedAt = new Date(order.completedAt);
         const hoursSinceCompletion = (now - completedAt) / (1000 * 60 * 60);
@@ -330,11 +325,9 @@ const ReplacementRequestPage = () => {
                                             <h3 className="font-medium text-[#030105] font-alice text-sm sm:text-base">
                                                 {item.product.name}
                                                 {(() => {
-                                                    // Try to get weight info from stored data first, then from product data
                                                     if (item.weightKg) {
                                                         return ` (${item.weightKg}kg)`;
                                                     } else if (item.product?.weightOptions && item.product.weightOptions.length > 0) {
-                                                        // If no stored weight info, try to get it from the product's weight options
                                                         const firstWeight = item.product.weightOptions[0];
                                                         if (firstWeight && firstWeight.weightKg) {
                                                             return ` (${firstWeight.weightKg}kg)`;

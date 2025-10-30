@@ -5,7 +5,6 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 axios.defaults.withCredentials = true;
 
 export const useReviewStore = create((set, get) => ({
-  // State
   reviews: [],
   randomReviews: [],
   stats: null,
@@ -15,7 +14,6 @@ export const useReviewStore = create((set, get) => ({
   error: null,
   message: null,
 
-  // Actions
   fetchReviews: async (params = {}) => {
     set({ isLoading: true, error: null });
     try {
@@ -95,7 +93,6 @@ export const useReviewStore = create((set, get) => ({
         isSubmitting: false 
       });
       
-      // Refresh reviews and stats after successful submission
       get().fetchReviews();
       get().fetchStats();
       get().fetchRandomReviews();
@@ -120,7 +117,6 @@ export const useReviewStore = create((set, get) => ({
         error: null 
       });
       
-      // Refresh reviews and stats after successful deletion
       get().fetchReviews();
       get().fetchStats();
       get().fetchRandomReviews();
@@ -159,7 +155,6 @@ export const useReviewStore = create((set, get) => ({
   clearError: () => set({ error: null }),
   clearMessage: () => set({ message: null }),
 
-  // Helper function to get rating distribution for display
   getRatingDistribution: () => {
     const { stats } = get();
     if (!stats || !stats.ratingDistribution) {
@@ -168,13 +163,11 @@ export const useReviewStore = create((set, get) => ({
     return stats.ratingDistribution;
   },
 
-  // Helper function to get average rating
   getAverageRating: () => {
     const { stats } = get();
     return stats?.averageRating || 0;
   },
 
-  // Helper function to get total reviews count
   getTotalReviews: () => {
     const { stats } = get();
     return stats?.totalReviews || 0;

@@ -27,7 +27,6 @@ const WelcomePage = () => {
     if (!product) return;
     if (user?.role === 'admin') return;
     
-    // For products with weight options, automatically select the lowest weight
     let weightOptionId = null;
     if (product.hasWeightOptions && product.weightOptions && product.weightOptions.length > 0) {
       console.log('WelcomePage: Original weight options:', product.weightOptions);
@@ -54,14 +53,12 @@ const WelcomePage = () => {
 
   useEffect(() => {
     const loadProducts = async () => {
-      // Always fetch fresh products for the welcome page
       try {
         const response = await axios.get(`${API_URL}/products/all`);
         if (response.data?.products) {
           setProducts(response.data.products);
         }
       } catch (error) {
-        // Fallback to featured products if unauthorized
         if (error.response?.status === 401 || error.response?.status === 403) {
           try {
             const featuredResponse = await axios.get(`${API_URL}/products/featured`);
@@ -77,7 +74,6 @@ const WelcomePage = () => {
 
   useEffect(() => {
     if (products && products.length > 0) {
-      // Sort products by price in descending order and take the top 5
       const sortedProducts = [...products]
         .filter(product => product.status === 'available' && (product.totalStockUnits || product.quantity) > 0)
         .sort((a, b) => (b.priceMin || b.price || 0) - (a.priceMin || a.price || 0))
@@ -86,7 +82,6 @@ const WelcomePage = () => {
     }
   }, [products]);
 
-  // Fetch random reviews and stats on component mount
   useEffect(() => {
     const loadReviewsAndStats = async () => {
       try {
@@ -101,31 +96,23 @@ const WelcomePage = () => {
     loadReviewsAndStats();
   }, [fetchRandomReviews, fetchStats]);
 
-  // Set initial displayed reviews - all random content
   useEffect(() => {
     if (randomReviews.length > 0) {
-      // All cards show random content
       setDisplayedReviews(randomReviews);
     }
   }, [randomReviews]);
 
-  // Auto-refresh all cards with fade effect every 60 seconds
   useEffect(() => {
     const interval = setInterval(async () => {
       try {
-        // Start fade out
         setIsRefreshing(true);
         
-        // Wait for fade out to complete
         await new Promise(resolve => setTimeout(resolve, 500));
         
-        // Fetch 3 new random reviews for all cards
         await fetchRandomReviews(3);
         
-        // Wait a bit for data to update
         await new Promise(resolve => setTimeout(resolve, 100));
         
-        // Start fade in
         setIsRefreshing(false);
       } catch (error) {
         console.error('Error refreshing random reviews:', error);
@@ -335,7 +322,6 @@ const WelcomePage = () => {
                 </motion.div>
               ))
             ) : (
-              // Loading or placeholder cards
               Array.from({ length: 5 }).map((_, index) => (
                 <div key={index} className="bg-white p-4 rounded-lg group hover:shadow-lg hover:bg-[#f8f3ed] transition-shadow duration-300 animate-pulse">
                   <div className="aspect-square bg-gray-200 rounded-lg mb-4"></div>
@@ -456,7 +442,6 @@ const WelcomePage = () => {
                 </motion.div>
               </>
             ) : (
-              // Loading placeholder for mobile
               <div className="bg-white p-4 rounded-lg animate-pulse">
                 <div className="aspect-square bg-gray-200 rounded-lg mb-4"></div>
                 <div className="h-4 bg-gray-200 rounded mb-2"></div>
@@ -511,7 +496,6 @@ const WelcomePage = () => {
           {/* Reviews Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {reviewsLoading ? (
-              // Loading state
               Array.from({ length: 3 }).map((_, index) => (
                 <motion.div
                   key={`loading-${index}`}
@@ -543,7 +527,6 @@ const WelcomePage = () => {
                 </motion.div>
               ))
             ) : displayedReviews.length > 0 ? (
-              // All cards show random content with fade in/out effect
               <AnimatePresence>
                 {displayedReviews.map((review, index) => (
                   <motion.div
@@ -586,7 +569,6 @@ const WelcomePage = () => {
                 ))}
               </AnimatePresence>
             ) : (
-              // No reviews state - show "Leave Us Feedback" cards
               Array.from({ length: 3 }).map((_, index) => (
                 <div
                   key={`empty-${index}`}

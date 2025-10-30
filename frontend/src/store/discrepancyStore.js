@@ -2,7 +2,6 @@ import { create } from 'zustand';
 import axios from '../lib/axios';
 
 const useDiscrepancyStore = create((set, get) => ({
-    // State
     analytics: null,
     writeOffs: [],
     discrepancyDetails: [],
@@ -20,7 +19,6 @@ const useDiscrepancyStore = create((set, get) => ({
     setLoading: (loading) => set({ loading }),
     setError: (error) => set({ error }),
 
-    // Fetch analytics data
     fetchAnalytics: async (params = {}) => {
         try {
             set({ loading: true, error: null });
@@ -49,7 +47,6 @@ const useDiscrepancyStore = create((set, get) => ({
         }
     },
 
-    // Fetch write-offs
     fetchWriteOffs: async (params = {}) => {
         try {
             set({ loading: true, error: null });
@@ -81,7 +78,6 @@ const useDiscrepancyStore = create((set, get) => ({
         }
     },
 
-    // Create write-off
     createWriteOff: async (writeOffData) => {
         try {
             set({ loading: true, error: null });
@@ -89,7 +85,6 @@ const useDiscrepancyStore = create((set, get) => ({
             const response = await axios.post('/write-offs', writeOffData);
             
             if (response.data.success) {
-                // Refresh the write-offs list
                 const currentParams = get().getCurrentParams();
                 await get().fetchWriteOffs(currentParams);
                 
@@ -106,7 +101,6 @@ const useDiscrepancyStore = create((set, get) => ({
         }
     },
 
-    // Update write-off
     updateWriteOff: async (writeOffId, updateData) => {
         try {
             set({ loading: true, error: null });
@@ -114,7 +108,6 @@ const useDiscrepancyStore = create((set, get) => ({
             const response = await axios.put(`/write-offs/${writeOffId}`, updateData);
             
             if (response.data.success) {
-                // Update the write-off in the list
                 set(state => ({
                     writeOffs: state.writeOffs.map(writeOff => 
                         writeOff._id === writeOffId 
@@ -136,7 +129,6 @@ const useDiscrepancyStore = create((set, get) => ({
         }
     },
 
-    // Delete write-off
     deleteWriteOff: async (writeOffId) => {
         try {
             set({ loading: true, error: null });
@@ -144,7 +136,6 @@ const useDiscrepancyStore = create((set, get) => ({
             const response = await axios.delete(`/write-offs/${writeOffId}`);
             
             if (response.data.success) {
-                // Remove the write-off from the list
                 set(state => ({
                     writeOffs: state.writeOffs.filter(writeOff => writeOff._id !== writeOffId)
                 }));
@@ -162,7 +153,6 @@ const useDiscrepancyStore = create((set, get) => ({
         }
     },
 
-    // Get write-off analytics
     getWriteOffAnalytics: async (params = {}) => {
         try {
             set({ loading: true, error: null });
@@ -190,7 +180,6 @@ const useDiscrepancyStore = create((set, get) => ({
         }
     },
 
-    // Get write-off trends
     getWriteOffTrends: async (params = {}) => {
         try {
             set({ loading: true, error: null });
@@ -218,7 +207,6 @@ const useDiscrepancyStore = create((set, get) => ({
         }
     },
 
-    // Get write-offs by category
     getWriteOffByCategory: async (params = {}) => {
         try {
             set({ loading: true, error: null });
@@ -246,7 +234,6 @@ const useDiscrepancyStore = create((set, get) => ({
         }
     },
 
-    // Get discrepancy details
     getDiscrepancyDetails: async (params = {}) => {
         try {
             set({ loading: true, error: null });
@@ -275,7 +262,6 @@ const useDiscrepancyStore = create((set, get) => ({
         }
     },
 
-    // Fetch discrepancy details (wrapper function)
     fetchDiscrepancyDetails: async (params = {}) => {
         try {
             set({ loading: true, error: null });
@@ -307,13 +293,10 @@ const useDiscrepancyStore = create((set, get) => ({
         }
     },
 
-    // Helper function to get current params (for refreshing data)
     getCurrentParams: () => {
-        // This would need to be implemented based on how you want to track current filters
         return {};
     },
 
-    // Clear all data
     clearData: () => set({
         analytics: null,
         writeOffs: [],
@@ -327,7 +310,6 @@ const useDiscrepancyStore = create((set, get) => ({
         error: null
     }),
 
-    // Reset loading and error states
     reset: () => set({
         loading: false,
         error: null
